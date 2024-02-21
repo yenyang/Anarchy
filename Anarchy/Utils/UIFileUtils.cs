@@ -8,6 +8,8 @@ namespace Anarchy.Utils
     using System.IO;
     using System.Text;
     using cohtml.Net;
+    using Game.SceneFlow;
+    using static Game.Rendering.Debug.RenderPrefabRenderer;
 
     /// <summary>
     /// Utilities for loading and parsing UI related files (css, html, css).
@@ -27,7 +29,15 @@ namespace Anarchy.Utils
                 // Update cached path if the existing one is invalid.
                 if (string.IsNullOrWhiteSpace(s_assemblyPath))
                 {
-                    s_assemblyPath = Path.GetDirectoryName(typeof(AnarchyPlugin).Assembly.Location);
+                    if (GameManager.instance.modManager.TryGetExecutableAsset(Mod.Instance, out var asset))
+                    {
+                        s_assemblyPath = asset.path;
+                        Mod.Instance.Log.Info($"{nameof(UIFileUtils)}.{nameof(AssemblyPath)} Current mod asset at {asset.path}");
+                    }
+                    else
+                    {
+                        Mod.Instance.Log.Warn($"{nameof(UIFileUtils)}.{nameof(AssemblyPath)} Could not find Executable asset path!");
+                    }
                 }
 
                 // Return cached path.
@@ -62,7 +72,7 @@ namespace Anarchy.Utils
                 string directoryPath = Path.Combine(AssemblyPath, directoryName);
                 if (!Directory.Exists(directoryPath))
                 {
-                    AnarchyMod.Instance.Logger.Error(new Exception("unable to locate UI file directory "), directoryPath);
+                    Mod.Instance.Log.Error(new Exception("unable to locate UI file directory "), directoryPath);
                     return;
                 }
 
@@ -86,7 +96,7 @@ namespace Anarchy.Utils
             }
             catch (Exception e)
             {
-                AnarchyMod.Instance.Logger.Error(e, "exception reading UI files");
+                Mod.Instance.Log.Error(e, "exception reading UI files");
             }
         }
 
@@ -108,7 +118,7 @@ namespace Anarchy.Utils
             }
             catch (Exception e)
             {
-                AnarchyMod.Instance.Logger.Error(e, $" exception reading HTML file {fileName}");
+                Mod.Instance.Log.Error(e, $" exception reading HTML file {fileName}");
             }
             return null;
         }
@@ -134,7 +144,7 @@ namespace Anarchy.Utils
             }
             catch (Exception e)
             {
-                AnarchyMod.Instance.Logger.Error(e, $" exception reading HTML file {fileName}");
+                Mod.Instance.Log.Error(e, $" exception reading HTML file {fileName}");
             }
 
             // If we got here, something went wrong.; return null.
@@ -162,7 +172,7 @@ namespace Anarchy.Utils
             }
             catch (Exception e)
             {
-                AnarchyMod.Instance.Logger.Error(e, $" exception reading JS file {fileName}");
+                Mod.Instance.Log.Error(e, $" exception reading JS file {fileName}");
             }
 
             // If we got here, something went wrong.; return null.
@@ -190,7 +200,7 @@ namespace Anarchy.Utils
             }
             catch (Exception e)
             {
-                AnarchyMod.Instance.Logger.Error(e, $" exception reading CSS file {fileName}");
+                Mod.Instance.Log.Error(e, $" exception reading CSS file {fileName}");
             }
 
             // If we got here, something went wrong.; return null.
@@ -215,7 +225,7 @@ namespace Anarchy.Utils
             }
             catch (Exception e)
             {
-                AnarchyMod.Instance.Logger.Error(e, $" exception reading UI file {fileName}");
+                Mod.Instance.Log.Error(e, $" exception reading UI file {fileName}");
             }
 
             // If we got here, something went wrong.

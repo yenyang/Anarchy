@@ -30,7 +30,7 @@ namespace Anarchy.Tooltip
         protected override void OnCreate()
         {
             base.OnCreate();
-            m_Log = AnarchyMod.Instance.Logger;
+            m_Log = Mod.Instance.Log;
             m_AnarchySystem = World.GetOrCreateSystemManaged<AnarchySystem>();
             m_Tooltip = new StringTooltip()
             {
@@ -43,7 +43,7 @@ namespace Anarchy.Tooltip
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            if (m_ToolSystem.activeTool.toolID != null && AnarchyMod.Settings.ShowTooltip)
+            if (m_ToolSystem.activeTool.toolID != null && Mod.Instance.Settings.ShowTooltip)
             {
                 if (m_AnarchySystem.IsToolAppropriate(m_ToolSystem.activeTool.toolID) && m_AnarchySystem.AnarchyEnabled)
                 {

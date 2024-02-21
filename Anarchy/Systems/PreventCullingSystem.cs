@@ -48,7 +48,7 @@ namespace Anarchy.Systems
         /// <inheritdoc/>
         protected override void OnCreate()
         {
-            m_Log = AnarchyMod.Instance.Logger;
+            m_Log = Mod.Instance.Log;
             m_Log.Info($"{nameof(PreventCullingSystem)} Created.");
             m_ToolOutputBarrier = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolOutputBarrier>();
             m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
@@ -85,7 +85,7 @@ namespace Anarchy.Systems
                 return;
             }
 
-            if (m_FrameCount < AnarchyMod.Settings.PropRefreshFrequency && !RunNow)
+            if (m_FrameCount < Mod.Instance.Settings.PropRefreshFrequency && !RunNow)
             {
                 m_FrameCount++;
                 return;
@@ -93,7 +93,7 @@ namespace Anarchy.Systems
 
             m_FrameCount = 0;
 
-            if (!AnarchyMod.Settings.PreventAccidentalPropCulling && !RunNow)
+            if (!Mod.Instance.Settings.PreventAccidentalPropCulling && !RunNow)
             {
                 return;
             }

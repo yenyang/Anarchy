@@ -31,7 +31,7 @@ namespace Anarchy.Systems
         /// <inheritdoc/>
         protected override void OnCreate()
         {
-            m_Log = AnarchyMod.Instance.Logger;
+            m_Log = Mod.Instance.Log;
             m_Log.Info($"{nameof(PreventOverrideSystem)} Created.");
             m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
             m_NeedToPreventOverrideQuery = GetEntityQuery(new EntityQueryDesc

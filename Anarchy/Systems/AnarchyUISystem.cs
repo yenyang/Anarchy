@@ -72,7 +72,7 @@ namespace Anarchy.Systems
 
                 // This script finds sets Anarchy button colored if toggled using key board shortcut.
                 m_UiView.ExecuteScript($"yyAnarchy.imageElement = document.getElementById(\"YYA-Anarchy-Image\"); if (yyAnarchy.imageElement != null) {{ yyAnarchy.imageElement.src = \"coui://uil/Colored/Anarchy.svg\"; }} ");
-                if (AnarchyMod.Settings.FlamingChirper)
+                if (Mod.Instance.Settings.FlamingChirper)
                 {
                     // This script sets flaming chirper if toggled using key board shortcut.
                     m_UiView.ExecuteScript($"yyAnarchy.tagElements = document.getElementsByTagName(\"img\"); for (yyAnarchy.i = 0; yyAnarchy.i < yyAnarchy.tagElements.length; yyAnarchy.i++) {{ if (yyAnarchy.tagElements[yyAnarchy.i].src == \"coui://GameUI/Media/Game/Icons/Chirper.svg\" || yyAnarchy.tagElements[yyAnarchy.i].src == \"Media/Game/Icons/Chirper.svg\") yyAnarchy.tagElements[yyAnarchy.i].src = \"coui://uil/Colored/AnarchyChirper.svg\"; }}");
@@ -96,7 +96,7 @@ namespace Anarchy.Systems
         /// <inheritdoc/>
         protected override void OnCreate()
         {
-            m_Log = AnarchyMod.Instance.Logger;
+            m_Log = Mod.Instance.Log;
             m_Log.effectivenessLevel = Level.Info;
             m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
             m_UiView = GameManager.instance.userInterface.view.View;
@@ -204,7 +204,7 @@ namespace Anarchy.Systems
                     return;
                 }
 
-                if (AnarchyMod.Settings.ToolIcon)
+                if (Mod.Instance.Settings.ToolIcon)
                 {
                     if (m_ToolSystem.activeTool.toolID != "Line Tool")
                     {
@@ -222,7 +222,7 @@ namespace Anarchy.Systems
                     m_BoundEventHandles.Add(m_UiView.RegisterForEvent("YYA-AnarchyToggled", (Action<bool>)AnarchyToggled));
                     m_BoundEventHandles.Add(m_UiView.RegisterForEvent("CheckForElement-YYA-anarchy-item", (Action<bool>)ElementCheck));
                 }
-                else if (AnarchyMod.Settings.FlamingChirper)
+                else if (Mod.Instance.Settings.FlamingChirper)
                 {
                     ToggleAnarchyButton();
                 }
@@ -331,7 +331,7 @@ namespace Anarchy.Systems
             UIFileUtils.ExecuteScript(m_UiView, $"yyAnarchy.enabled = {BoolToString(m_AnarchySystem.AnarchyEnabled)};");
 
             // This script passes the option to have flaming Chirper to JS.
-            UIFileUtils.ExecuteScript(m_UiView, $"yyAnarchy.flamingChirper = {BoolToString(AnarchyMod.Settings.FlamingChirper)};");
+            UIFileUtils.ExecuteScript(m_UiView, $"yyAnarchy.flamingChirper = {BoolToString(Mod.Instance.Settings.FlamingChirper)};");
         }
 
         /// <summary>
@@ -401,7 +401,7 @@ namespace Anarchy.Systems
             }
 
             // Implements Anarchic Bulldozer when bulldoze tool is activated from inappropriate tool.
-            if (AnarchyMod.Settings.AnarchicBulldozer && m_AnarchySystem.AnarchyEnabled == false && tool == m_BulldozeToolSystem)
+            if (Mod.Instance.Settings.AnarchicBulldozer && m_AnarchySystem.AnarchyEnabled == false && tool == m_BulldozeToolSystem)
             {
                 m_AnarchySystem.AnarchyEnabled = true;
                 m_DisableAnarchyWhenCompleted = true;
