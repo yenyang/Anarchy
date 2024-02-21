@@ -1,4 +1,4 @@
-﻿// <copyright file="AnarchyUISystem.cs" company="Yenyang's Mods. MIT License">
+﻿// <copyright file="AnarchyReactUISystem.cs" company="Yenyang's Mods. MIT License">
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
@@ -80,7 +80,7 @@ namespace Anarchy.Systems
             m_NetToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<NetToolSystem>();
             m_Log.Info($"{nameof(AnarchyReactUISystem)}.{nameof(OnCreate)}");
             AddBinding(m_AnarchyToggled = new ValueBinding<bool>("Anarchy", "AnarchyToggled", m_AnarchySystem.AnarchyEnabled));
-            AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", (Action)AnarchyToggled);
+            AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", (Action)AnarchyToggled));
             base.OnCreate();
         }
 

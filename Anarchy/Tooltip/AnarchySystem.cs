@@ -61,7 +61,7 @@ namespace Anarchy.Tooltip
         };
 
         private ILog m_Log;
-        private AnarchyUISystem m_AnarchyUISystem;
+        private AnarchyReactUISystem m_AnarchyUISystem;
         private ResetNetCompositionDataSystem m_ResetNetCompositionDataSystem;
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace Anarchy.Tooltip
         protected override void OnCreate()
         {
             m_Log = Mod.Instance.Log;
-            m_AnarchyUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyUISystem>();
+            m_AnarchyUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyReactUISystem>();
             m_ResetNetCompositionDataSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ResetNetCompositionDataSystem>();
             m_Log.Info($"{nameof(AnarchySystem)} System Created.");
             AnarchyEnabled = false;
