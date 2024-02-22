@@ -43,6 +43,7 @@ namespace Anarchy.Systems
         private ResetNetCompositionDataSystem m_ResetNetCompositionDataSystem;
         private bool m_RaycastingMarkers = false;
         private ValueBinding<bool> m_AnarchyEnabled;
+        private ValueBinding<bool> m_ShowToolIcon;
 
         /// <summary>
         /// Gets a value indicating whether whether Anarchy is only on because of Anarchic Bulldozer setting.
@@ -81,6 +82,7 @@ namespace Anarchy.Systems
             m_NetToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<NetToolSystem>();
             m_Log.Info($"{nameof(AnarchyReactUISystem)}.{nameof(OnCreate)}");
             AddBinding(m_AnarchyEnabled = new ValueBinding<bool>("Anarchy", "AnarchyEnabled", m_AnarchySystem.AnarchyEnabled));
+            AddBinding(m_ShowToolIcon = new ValueBinding<bool>("Anarchy", "ShowToolIcon", false));
             AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", AnarchyToggled));
         }
 
@@ -123,6 +125,15 @@ namespace Anarchy.Systems
                 return;
             }
 
+            if (m_AnarchySystem.IsToolAppropriate(m_ToolSystem.activeTool.toolID) && Mod.Instance.Settings.ToolIcon)
+            {
+                m_ShowToolIcon.Update(true);
+            }
+            else
+            {
+                m_ShowToolIcon.Update(false);
+            }
+
             base.OnUpdate();
         }
 
@@ -158,8 +169,7 @@ namespace Anarchy.Systems
 
         private void OnToolChanged(ToolBaseSystem tool)
         {
-            // This script creates the Anarchy object if it doesn't exist.
-            UIFileUtils.ExecuteScript(m_UiView, "if (yyAnarchy == null) var yyAnarchy = {};");
+            m_ShowToolIcon.Update(false);
 
             if (tool == null || tool.toolID == null)
             {
