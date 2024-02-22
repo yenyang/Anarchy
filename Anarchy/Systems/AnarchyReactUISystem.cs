@@ -80,6 +80,7 @@ namespace Anarchy.Systems
             m_NetToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<NetToolSystem>();
             m_Log.Info($"{nameof(AnarchyReactUISystem)}.{nameof(OnCreate)}");
             AddBinding(m_AnarchyToggled = new ValueBinding<bool>("Anarchy", "AnarchyToggled", m_AnarchySystem.AnarchyEnabled));
+            m_AnarchyToggled.Update(m_AnarchySystem.AnarchyEnabled);
             AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", (Action)AnarchyToggled));
             base.OnCreate();
         }

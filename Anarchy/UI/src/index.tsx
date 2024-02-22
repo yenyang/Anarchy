@@ -1,8 +1,8 @@
 import { ModRegistrar } from "modding/types";
-import { AnarchyRowComponent } from "mods/anarchyRow";
+import { AnarchyPanelComponent } from "mods/anarchyPanel";
 
 const register: ModRegistrar = (moduleRegistry) => {
-     moduleRegistry.extend("game-ui/game/components/tool-options/tool-options-panel.tsx", 'ToolOptionsPanel', AnarchyRowComponent)
+     moduleRegistry.append('Game', AnarchyPanelComponent);
 }
 
 export default register;
