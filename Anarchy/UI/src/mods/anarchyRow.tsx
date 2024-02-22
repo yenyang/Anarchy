@@ -1,13 +1,37 @@
-import { ModuleRegistry } from "modding/types";
+import classNames from "classnames";
+import { ModuleRegistryExtend } from "modding/types";
+import { PropsWithChildren, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 
-export const AnarchyRowComponent = (moduleRegistry: ModuleRegistry) => (Component: any) => {
-    const toolMouseModule = moduleRegistry.registry.get("game-ui/game/components/tool-options/mouse-tool-options/mouse-tool-options.tsx")
-    const Section: any = toolMouseModule?.Section;
-    const theme = moduleRegistry.registry.get("game-ui/game/components/tool-options/tool-button/tool-button.module.scss")?.classes
+export const AnarchyRowComponent : ModuleRegistryExtend = (Component) => {
+    return (props) => {
+        const { children, ...otherProps} = props || {};
 
-    return (props: any) => {
-        var result = Component()
-        result.props.children?.unshift(<Section title="Anarchy"><button className={theme.button} ><img className={theme.icon} src="coui://ui-mods/images/StandardAnarchy.svg" /></button></Section>)
-        return <>{result}</>;
+        const parentRef = useRef<HTMLDivElement>();
+        const childRef = useRef<HTMLDivElement>();
+
+        useEffect(() => {
+            if (parentRef.current) {
+                const div = document.createElement('div');
+                childRef.current =div;
+                parentRef.current?.insertBefore(div, parentRef.current?.firstChild);
+            }
+        }, [parentRef?.current]);
+    
+        const InsertedContent = ({ container, children }: PropsWithChildren<{container: any}>) => {
+            return !container ? null : createPortal(children, container);
+        }
+
+        return (
+            <>
+                <Component {...otherProps} ref={parentRef} />
+                <InsertedContent container={childRef.current}>
+                    <div className="item-content_nNz">
+                        <span className={'label_RZX'}>Anarchy</span>
+                        <button className="content_ZIz">ClickME</button>
+                    </div>
+                </InsertedContent>
+            </>
+        );
     };
 }
