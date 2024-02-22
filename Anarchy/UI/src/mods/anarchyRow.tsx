@@ -1,24 +1,13 @@
-import { ModuleRegistryExtend } from "modding/types";
+import { ModuleRegistry } from "modding/types";
 
-export const AnarchyRowComponent : ModuleRegistryExtend = (Component) => {
-    
-    return (props) => {
-        const { children, ...otherProps } = props || {};
-        console.log("Hello Anarchy!");
-        return (
-            <Component {...otherProps}>
-                 <div className = "item_bZY" id = "YYA-anarchy-item"> 
-                    <div className="item-content_nNz">
-                    <div className="label_RZX">Anarchy2</div>
-                        <div className="content_ZIz">
-                            <button id="YYA-Anarchy-Button" className="button_KVN">
-                                <img id="YYA-Anarchy-Image" className="icon_Ysc" src="coui://ui-mods/images/StandardAnarchy.svg"></img>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                {children}
-            </Component>
-        );
+export const AnarchyRowComponent = (moduleRegistry: ModuleRegistry) => (Component: any) => {
+    const toolMouseModule = moduleRegistry.registry.get("game-ui/game/components/tool-options/mouse-tool-options/mouse-tool-options.tsx")
+    const Section: any = toolMouseModule?.Section;
+    const theme = moduleRegistry.registry.get("game-ui/game/components/tool-options/tool-button/tool-button.module.scss")?.classes
+
+    return (props: any) => {
+        var result = Component()
+        result.props.children?.unshift(<Section title="Anarchy"><button className={theme.button} ><img className={theme.icon} src="coui://ui-mods/images/StandardAnarchy.svg" /></button></Section>)
+        return <>{result}</>;
     };
 }
