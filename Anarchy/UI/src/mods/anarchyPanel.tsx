@@ -1,7 +1,10 @@
 import { useModding } from "modding/modding-context";
 import anarchyCSS from './anarchy.module.scss';
-import { MouseEventHandler } from "react";
+import { MouseEventHandler, createElement } from "react";
 import { MouseEvent, useCallback } from "react";
+import { Number2 } from "common/math";
+// import { IconButton  } from "widgets/data-binding/widget-bindings";
+// import { LocElement, LocalizedString, locStrId } from "common/localization/localization-bindings";
 
 export const unselectedImageSource : string = "coui://ui-mods/images/StandardAnarchy.svg";
 export const selectedImageSource : string = "coui://ui-mods/images/ColoredAnarchy.svg";
@@ -19,24 +22,43 @@ export const AnarchyPanelComponent = () => {
     const showToolIcon$ = bindValue<boolean>('Anarchy', 'ShowToolIcon');
     const showToolIcon = useValue(showToolIcon$);
 
+    const position : Number2 = { x: 0.830, y: 0.732};
     const handleClick = useCallback ((ev: MouseEvent<HTMLButtonElement>) => {
         select(ev);
         trigger("Anarchy", "AnarchyToggled");
     }, [])
-    
-    
-    return ( 
-        <UI.Panel draggable className={anarchyCSS.anarchyPanel}>
-            <div className = "item_bZY" id = "YYA-anarchy-item"> 
-                <div className="item-content_nNz">
-                    <div className="label_RZX">Anarchy</div>
-                    <div className="content_ZIz">
-                        <button id="YYA-Anarchy-Button" className={anarchyEnabled ? "button_KVN selected" : "button_KVN"} onClick={handleClick}>
-                            <img id="YYA-Anarchy-Image" className="icon_Ysc" src={anarchyEnabled ? selectedImageSource : unselectedImageSource}></img>
-                        </button>
+
+    /*
+    const localizationElement : LocalizedString = {
+        id : "AnarchyButton",
+        value: "AnarchyButton",
+        args: null,
+    }
+
+    const unselectedbutton : IconButton = {
+        icon: "coui://ui-mods/images/StandardAnarchy.svg", 
+        selected: false, 
+        disabled: false,
+        tutorialTag: "AnarchyButton",
+        tooltip: localizationElement as LocElement,
+    };*/
+
+    if (showToolIcon) {
+        return ( 
+            <UI.Panel draggable className={anarchyCSS.anarchyPanel} initialPosition={position}>
+                <div className = "item_bZY" id = "YYA-anarchy-item"> 
+                    <div className="item-content_nNz">
+                        <div className="label_RZX">Anarchy</div>
+                        <div className="content_ZIz">
+                            <button id="YYA-Anarchy-Button" className={anarchyEnabled ? "button_KVN selected" : "button_KVN"} onClick={handleClick}>
+                                <img id="YYA-Anarchy-Image" className="icon_Ysc" src={anarchyEnabled ? selectedImageSource : unselectedImageSource}></img>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </UI.Panel>
-    );
+            </UI.Panel>
+        );
+    } else {
+        return (null);
+    }
 }
