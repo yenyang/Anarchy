@@ -25,7 +25,6 @@ namespace Anarchy.Systems
     /// </summary>
     public partial class AnarchyReactUISystem : UISystemBase
     {
-        private View m_UiView;
         private ToolSystem m_ToolSystem;
         private ILog m_Log;
         private AnarchySystem m_AnarchySystem;
@@ -68,7 +67,6 @@ namespace Anarchy.Systems
             m_Log = Mod.Instance.Log;
             m_Log.effectivenessLevel = Level.Info;
             m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
-            m_UiView = GameManager.instance.userInterface.view.View;
             m_AnarchySystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchySystem>();
             m_BulldozeToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<BulldozeToolSystem>();
             m_RenderingSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<RenderingSystem>();
@@ -89,11 +87,6 @@ namespace Anarchy.Systems
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            if (m_UiView == null)
-            {
-                return;
-            }
-
             if (m_ToolSystem.activePrefab != null && m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) && m_ToolSystem.activeTool != m_DefaultToolSystem)
             {
                 if (EntityManager.HasComponent<MarkerNetData>(prefabEntity) || m_ToolSystem.activePrefab is MarkerObjectPrefab)
