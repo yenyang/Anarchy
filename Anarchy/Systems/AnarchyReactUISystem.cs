@@ -63,6 +63,7 @@ namespace Anarchy.Systems
         /// <inheritdoc/>
         protected override void OnCreate()
         {
+            base.OnCreate();
             m_Log = Mod.Instance.Log;
             m_Log.effectivenessLevel = Level.Info;
             m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
@@ -79,9 +80,11 @@ namespace Anarchy.Systems
             m_BoundEventHandles = new ();
             m_NetToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<NetToolSystem>();
             m_Log.Info($"{nameof(AnarchyReactUISystem)}.{nameof(OnCreate)}");
-            AddBinding(m_AnarchyEnabled = new ValueBinding<bool>("Anarchy", "AnarchyEnabled", false));
+            m_AnarchyEnabled = new ValueBinding<bool>("Anarchy", "AnarchyEnabled", false);
+            m_Log.Info($"{nameof(AnarchyReactUISystem)}.{nameof(OnCreate)}2");
+            AddBinding(m_AnarchyEnabled);
+            m_Log.Info($"{nameof(AnarchyReactUISystem)}.{nameof(OnCreate)}3");
             AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", AnarchyToggled));
-            base.OnCreate();
         }
 
         /// <inheritdoc/>
