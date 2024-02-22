@@ -17,31 +17,26 @@ export const AnarchyPanelComponent = () => {
     const anarchyEnabled$ = bindValue<boolean>('Anarchy', 'AnarchyEnabled');
     const anarchyEnabled = useValue(anarchyEnabled$);
     const showToolIcon$ = bindValue<boolean>('Anarchy', 'ShowToolIcon');
-    const ShowToolIcon = useValue(showToolIcon$);
+    const showToolIcon = useValue(showToolIcon$);
 
     const handleClick = useCallback ((ev: MouseEvent<HTMLButtonElement>) => {
         select(ev);
         trigger("Anarchy", "AnarchyToggled");
     }, [])
     
-    if (ShowToolIcon) 
-    {
-        return (
-            <UI.Panel draggable className={anarchyCSS.anarchyPanel}>
-                <div className = "item_bZY" id = "YYA-anarchy-item"> 
-                    <div className="item-content_nNz">
-                        <div className="label_RZX">Anarchy</div>
-                        <div className="content_ZIz">
-                            <button id="YYA-Anarchy-Button" className={anarchyEnabled ? "button_KVN selected" : "button_KVN"} onClick={handleClick}>
-                                <img id="YYA-Anarchy-Image" className="icon_Ysc" src={anarchyEnabled ? selectedImageSource : unselectedImageSource}></img>
-                            </button>
-                        </div>
+    
+    return ( 
+        <UI.Panel draggable className={anarchyCSS.anarchyPanel}>
+            <div className = "item_bZY" id = "YYA-anarchy-item"> 
+                <div className="item-content_nNz">
+                    <div className="label_RZX">Anarchy</div>
+                    <div className="content_ZIz">
+                        <button id="YYA-Anarchy-Button" className={anarchyEnabled ? "button_KVN selected" : "button_KVN"} onClick={handleClick}>
+                            <img id="YYA-Anarchy-Image" className="icon_Ysc" src={anarchyEnabled ? selectedImageSource : unselectedImageSource}></img>
+                        </button>
                     </div>
                 </div>
-            </UI.Panel>
-        );
-    } 
-    else {
-        return null;
-    }
+            </div>
+        </UI.Panel>
+    );
 }
