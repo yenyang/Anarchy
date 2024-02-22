@@ -80,10 +80,7 @@ namespace Anarchy.Systems
             m_BoundEventHandles = new ();
             m_NetToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<NetToolSystem>();
             m_Log.Info($"{nameof(AnarchyReactUISystem)}.{nameof(OnCreate)}");
-            m_AnarchyEnabled = new ValueBinding<bool>("Anarchy", "AnarchyEnabled", false);
-            m_Log.Info($"{nameof(AnarchyReactUISystem)}.{nameof(OnCreate)}2");
-            AddBinding(m_AnarchyEnabled);
-            m_Log.Info($"{nameof(AnarchyReactUISystem)}.{nameof(OnCreate)}3");
+            AddBinding(m_AnarchyEnabled = new ValueBinding<bool>("Anarchy", "AnarchyEnabled", m_AnarchySystem.AnarchyEnabled));
             AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", AnarchyToggled));
         }
 
@@ -151,6 +148,7 @@ namespace Anarchy.Systems
         private void AnarchyToggled()
         {
             m_AnarchySystem.AnarchyEnabled = !m_AnarchySystem.AnarchyEnabled;
+            m_AnarchyEnabled.Update(m_AnarchySystem.AnarchyEnabled);
             if (!m_AnarchySystem.AnarchyEnabled)
             {
                 m_DisableAnarchyWhenCompleted = false;

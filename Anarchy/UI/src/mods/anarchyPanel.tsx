@@ -8,6 +8,7 @@ export const selectedImageSource : string = "coui://ui-mods/images/ColoredAnarch
 
 export const select : MouseEventHandler<HTMLButtonElement> = (ev) => {
     ev.currentTarget.classList.contains("selected") ? ev.currentTarget.classList.remove("selected") : ev.currentTarget.classList.add("selected");
+    
 } 
 
 export const AnarchyPanelComponent = () => {
@@ -26,7 +27,7 @@ export const AnarchyPanelComponent = () => {
                 <div className="item-content_nNz">
                     <div className="label_RZX">Anarchy</div>
                     <div className="content_ZIz">
-                        <button id="YYA-Anarchy-Button" className={anarchyEnabled ? "button_KVN selected" : "button_KVN"}>
+                        <button id="YYA-Anarchy-Button" className={anarchyEnabled ? "button_KVN selected" : "button_KVN"} onClick={handleClick}>
                             <img id="YYA-Anarchy-Image" className="icon_Ysc" src={anarchyEnabled ? selectedImageSource : unselectedImageSource}></img>
                         </button>
                     </div>
