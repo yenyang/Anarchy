@@ -13,8 +13,8 @@ export const select : MouseEventHandler<HTMLButtonElement> = (ev) => {
 export const AnarchyPanelComponent = () => {
     const { UI } = useModding();
     const { api: { api: { useValue, bindValue, trigger } } } = useModding();
-    const anarchyToggled$ = bindValue<boolean>('Anarchy', 'AnarchyToggled');
-    const anarchyToggled = useValue(anarchyToggled$);
+    const anarchyEnabled$ = bindValue<boolean>('Anarchy', 'AnarchyEnabled');
+    const anarchyEnabled = useValue(anarchyEnabled$);
 
     const handleClick = useCallback ((ev: MouseEvent<HTMLButtonElement>) => {
         select(ev);
@@ -26,8 +26,8 @@ export const AnarchyPanelComponent = () => {
                 <div className="item-content_nNz">
                     <div className="label_RZX">Anarchy</div>
                     <div className="content_ZIz">
-                        <button id="YYA-Anarchy-Button" className={anarchyToggled ? "button_KVN selected" : "button_KVN"}>
-                            <img id="YYA-Anarchy-Image" className="icon_Ysc" src={anarchyToggled ? selectedImageSource : unselectedImageSource}></img>
+                        <button id="YYA-Anarchy-Button" className={anarchyEnabled ? "button_KVN selected" : "button_KVN"}>
+                            <img id="YYA-Anarchy-Image" className="icon_Ysc" src={anarchyEnabled ? selectedImageSource : unselectedImageSource}></img>
                         </button>
                     </div>
                 </div>

@@ -42,7 +42,7 @@ namespace Anarchy.Systems
         private bool m_LastShowMarkers = false;
         private ResetNetCompositionDataSystem m_ResetNetCompositionDataSystem;
         private bool m_RaycastingMarkers = false;
-        private ValueBinding<bool> m_AnarchyToggled;
+        private ValueBinding<bool> m_AnarchyEnabled;
 
         /// <summary>
         /// Gets a value indicating whether whether Anarchy is only on because of Anarchic Bulldozer setting.
@@ -57,7 +57,7 @@ namespace Anarchy.Systems
         /// </summary>
         public void ToggleAnarchyButton()
         {
-            m_AnarchyToggled.Update(m_AnarchySystem.AnarchyEnabled);
+            m_AnarchyEnabled.Update(m_AnarchySystem.AnarchyEnabled);
         }
 
         /// <inheritdoc/>
@@ -79,8 +79,8 @@ namespace Anarchy.Systems
             m_BoundEventHandles = new ();
             m_NetToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<NetToolSystem>();
             m_Log.Info($"{nameof(AnarchyReactUISystem)}.{nameof(OnCreate)}");
-            AddBinding(m_AnarchyToggled = new ValueBinding<bool>("Anarchy", "AnarchyToggled", m_AnarchySystem.AnarchyEnabled));
-            m_AnarchyToggled.Update(m_AnarchySystem.AnarchyEnabled);
+            AddBinding(m_AnarchyEnabled = new ValueBinding<bool>("Anarchy", "AnarchyEnabled", m_AnarchySystem.AnarchyEnabled));
+            m_AnarchyEnabled.Update(m_AnarchySystem.AnarchyEnabled);
             AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", (Action)AnarchyToggled));
             base.OnCreate();
         }
