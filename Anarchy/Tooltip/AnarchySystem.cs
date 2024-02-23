@@ -63,7 +63,6 @@ namespace Anarchy.Tooltip
         private ILog m_Log;
         private AnarchyReactUISystem m_AnarchyUISystem;
         private ResetNetCompositionDataSystem m_ResetNetCompositionDataSystem;
-        private bool m_AnarchyEnabled = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AnarchySystem"/> class.
@@ -75,7 +74,7 @@ namespace Anarchy.Tooltip
         /// <summary>
         /// Gets or sets a value indicating whether Anarchy is enabled.
         /// </summary>
-        public bool AnarchyEnabled { get => m_AnarchyEnabled; set => m_AnarchyEnabled = value; }
+        public bool AnarchyEnabled { get; set; } = false;
 
         /// <inheritdoc/>
         public override string toolID => "Anarchy Tool";
@@ -116,6 +115,7 @@ namespace Anarchy.Tooltip
             m_AnarchyUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyReactUISystem>();
             m_ResetNetCompositionDataSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ResetNetCompositionDataSystem>();
             m_Log.Info($"{nameof(AnarchySystem)} System Created.");
+            AnarchyEnabled = false;
             InputAction hotKey = new ("Anarchy");
             hotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/ctrl").With("Button", "<Keyboard>/a");
             hotKey.performed += this.OnKeyPressed;
