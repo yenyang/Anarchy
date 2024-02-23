@@ -1,21 +1,29 @@
 import { useModding } from "modding/modding-context";
-import { ModuleRegistryExtend } from "modding/types";
+import { ModuleRegistry } from "modding/types";
 import { Children } from "react";
 
-export const vanillaChirerImageSource : string = "Media/Game/Icons/Chirper.svg";
+export const vanillaChirperImageSource : string = "Media/Game/Icons/Chirper.svg";
 export const flamingChirperImageSource : string = "coui://ui-mods/images/AnarchyChirper.svg";
 
-export const ChirperModComponent : ModuleRegistryExtend = (Component) => {
-    return (props) => {
+export const ChirperModComponent = (moduleRegistry: ModuleRegistry) => (Component: any) => {
+    const rightMenuModule = moduleRegistry.registry.get("game-ui/game/components/right-menu/right-menu.tsx");
+    
+    return (props : any) => {
         const { children, ...otherProps} = props || {};
         const { UI } = useModding();
         const { api: { api: { useValue, bindValue, trigger } } } = useModding();
         const anarchyEnabled$ = bindValue<boolean>('Anarchy', 'AnarchyEnabled');
         const anarchyEnabled = useValue(anarchyEnabled$);
-        
-        console.log("chirmperModcomponent");
-        console.log(Children.count(children));
-        
+        if (rightMenuModule && anarchyEnabled) {
+            console.log(rightMenuModule.chirper);
+            rightMenuModule.chirper = flamingChirperImageSource;
+            moduleRegistry.registry.set("game-ui/game/components/right-menu/right-menu.tsx", rightMenuModule);
+        } else if (rightMenuModule) {
+            console.log(rightMenuModule.chirper);
+            rightMenuModule.chirper = vanillaChirperImageSource;
+            moduleRegistry.registry.set("game-ui/game/components/right-menu/right-menu.tsx", rightMenuModule);
+        }
+       
         return (
             <Component {...otherProps}>
                 {children}
