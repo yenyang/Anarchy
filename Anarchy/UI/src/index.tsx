@@ -1,6 +1,6 @@
 import { ModRegistrar } from "modding/types";
 import { AnarchyRowComponent } from "mods/anarchyRow";
-import { ChirperModComponent } from "mods/chiperMod";
+import { ChirperModComponent } from "mods/chirperMod";
 
 const register: ModRegistrar = (moduleRegistry) => {
      console.log('mr', moduleRegistry);

@@ -1,27 +1,9 @@
 import { useModding } from "modding/modding-context";
 import { ModuleRegistry } from "modding/types";
 import { MouseEvent, useCallback } from "react";
-import { ModdingContext } from "modding/modding-context";
 
 export const unselectedImageSource : string = "coui://ui-mods/images/StandardAnarchy.svg";
 export const selectedImageSource : string = "coui://ui-mods/images/ColoredAnarchy.svg";
-
-export const activateFlamingChirper = () => {
-    // This is a hack and not encouraged.
-    var y = document.getElementsByTagName("img");
-    for (let i = 0; i < y.length; i++) {
-        if (y[i].src == "coui://GameUI/Media/Game/Icons/Chirper.svg" || y[i].src == "Media/Game/Icons/Chirper.svg") y[i].src = "coui://ui-mods/images/AnarchyChirper.svg";
-    }
-}
-
-export const resetChirper = () => {
-    // This is a hack and not encouraged.
-    var y = document.getElementsByTagName("img");
-    for (let i = 0; i < y.length; i++) {
-        if (y[i].src == "coui://ui-mods/images/AnarchyChirper.svg") y[i].src = "Media/Game/Icons/Chirper.svg";
-    }
-} 
-
 
 export const AnarchyRowComponent = (moduleRegistry: ModuleRegistry) => (Component: any) => {
     const toolMouseModule = moduleRegistry.registry.get("game-ui/game/components/tool-options/mouse-tool-options/mouse-tool-options.tsx");
