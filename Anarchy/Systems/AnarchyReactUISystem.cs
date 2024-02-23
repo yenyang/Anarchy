@@ -118,15 +118,6 @@ namespace Anarchy.Systems
                 return;
             }
 
-            if (m_AnarchySystem.IsToolAppropriate(m_ToolSystem.activeTool.toolID) && Mod.Instance.Settings.ToolIcon)
-            {
-                m_ShowToolIcon.Update(true);
-            }
-            else
-            {
-                m_ShowToolIcon.Update(false);
-            }
-
             base.OnUpdate();
         }
 
@@ -162,16 +153,20 @@ namespace Anarchy.Systems
 
         private void OnToolChanged(ToolBaseSystem tool)
         {
-            m_ShowToolIcon.Update(false);
-
             if (tool == null || tool.toolID == null)
             {
+                m_ShowToolIcon.Update(false);
                 return;
             }
 
             if (m_AnarchySystem.IsToolAppropriate(tool.toolID))
             {
                 Enabled = true;
+                m_ShowToolIcon.Update(true);
+            }
+            else
+            {
+                m_ShowToolIcon.Update(false);
             }
 
             if (tool != m_BulldozeToolSystem && m_DisableAnarchyWhenCompleted)

@@ -10,12 +10,9 @@ export const selectedImageSource : string = "coui://ui-mods/images/ColoredAnarch
 
 export const select : MouseEventHandler<HTMLButtonElement> = (ev) => {
     ev.currentTarget.classList.contains("selected") ? ev.currentTarget.classList.remove("selected") : ev.currentTarget.classList.add("selected");
-    
 } 
 
 export const AnarchyRowComponent : ModuleRegistryExtend = (Component) => {
-    
-
     return (props) => {
         const { children, ...otherProps} = props || {};
         const { UI } = useModding();
@@ -30,6 +27,7 @@ export const AnarchyRowComponent : ModuleRegistryExtend = (Component) => {
         }, [])
         const parentRef = useRef<HTMLDivElement>();
         const childRef = useRef<HTMLDivElement>();
+        
 
         useEffect(() => {
             if (parentRef.current) {
