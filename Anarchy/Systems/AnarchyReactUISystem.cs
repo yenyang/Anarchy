@@ -25,7 +25,6 @@ namespace Anarchy.Systems
     /// </summary>
     public partial class AnarchyReactUISystem : UISystemBase
     {
-        private View m_UiView;
         private ToolSystem m_ToolSystem;
         private ILog m_Log;
         private AnarchySystem m_AnarchySystem;
@@ -42,7 +41,8 @@ namespace Anarchy.Systems
         private bool m_LastShowMarkers = false;
         private ResetNetCompositionDataSystem m_ResetNetCompositionDataSystem;
         private bool m_RaycastingMarkers = false;
-        private ValueBinding<bool> m_AnarchyToggled;
+        private ValueBinding<bool> m_AnarchyEnabled;
+        private ValueBinding<bool> m_ShowToolIcon;
 
         /// <summary>
         /// Gets a value indicating whether whether Anarchy is only on because of Anarchic Bulldozer setting.
@@ -57,16 +57,16 @@ namespace Anarchy.Systems
         /// </summary>
         public void ToggleAnarchyButton()
         {
-            m_AnarchyToggled.Update(m_AnarchySystem.AnarchyEnabled);
+            m_AnarchyEnabled.Update(m_AnarchySystem.AnarchyEnabled);
         }
 
         /// <inheritdoc/>
         protected override void OnCreate()
         {
+            base.OnCreate();
             m_Log = Mod.Instance.Log;
             m_Log.effectivenessLevel = Level.Info;
             m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
-            m_UiView = GameManager.instance.userInterface.view.View;
             m_AnarchySystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchySystem>();
             m_BulldozeToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<BulldozeToolSystem>();
             m_RenderingSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<RenderingSystem>();
@@ -79,19 +79,14 @@ namespace Anarchy.Systems
             m_BoundEventHandles = new ();
             m_NetToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<NetToolSystem>();
             m_Log.Info($"{nameof(AnarchyReactUISystem)}.{nameof(OnCreate)}");
-            AddBinding(m_AnarchyToggled = new ValueBinding<bool>("Anarchy", "AnarchyToggled", m_AnarchySystem.AnarchyEnabled));
-            AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", (Action)AnarchyToggled));
-            base.OnCreate();
+            AddBinding(m_AnarchyEnabled = new ValueBinding<bool>("Anarchy", "AnarchyEnabled", m_AnarchySystem.AnarchyEnabled));
+            AddBinding(m_ShowToolIcon = new ValueBinding<bool>("Anarchy", "ShowToolIcon", false));
+            AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", AnarchyToggled));
         }
 
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            if (m_UiView == null)
-            {
-                return;
-            }
-
             if (m_ToolSystem.activePrefab != null && m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) && m_ToolSystem.activeTool != m_DefaultToolSystem)
             {
                 if (EntityManager.HasComponent<MarkerNetData>(prefabEntity) || m_ToolSystem.activePrefab is MarkerObjectPrefab)
@@ -148,6 +143,7 @@ namespace Anarchy.Systems
         private void AnarchyToggled()
         {
             m_AnarchySystem.AnarchyEnabled = !m_AnarchySystem.AnarchyEnabled;
+            m_AnarchyEnabled.Update(m_AnarchySystem.AnarchyEnabled);
             if (!m_AnarchySystem.AnarchyEnabled)
             {
                 m_DisableAnarchyWhenCompleted = false;
@@ -157,17 +153,20 @@ namespace Anarchy.Systems
 
         private void OnToolChanged(ToolBaseSystem tool)
         {
-            // This script creates the Anarchy object if it doesn't exist.
-            UIFileUtils.ExecuteScript(m_UiView, "if (yyAnarchy == null) var yyAnarchy = {};");
-
             if (tool == null || tool.toolID == null)
             {
+                m_ShowToolIcon.Update(false);
                 return;
             }
 
             if (m_AnarchySystem.IsToolAppropriate(tool.toolID))
             {
                 Enabled = true;
+                m_ShowToolIcon.Update(true);
+            }
+            else
+            {
+                m_ShowToolIcon.Update(false);
             }
 
             if (tool != m_BulldozeToolSystem && m_DisableAnarchyWhenCompleted)
