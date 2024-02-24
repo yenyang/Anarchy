@@ -7,15 +7,12 @@ namespace Anarchy.Systems
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using Anarchy.Tooltip;
-    using Anarchy.Utils;
     using cohtml.Net;
     using Colossal.Logging;
     using Colossal.UI.Binding;
     using Game.Prefabs;
     using Game.Rendering;
-    using Game.SceneFlow;
     using Game.Tools;
     using Game.UI;
     using Unity.Entities;
@@ -87,6 +84,8 @@ namespace Anarchy.Systems
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
+
+            // This section handles automatic enabling and disabling of Show Markers. It will need to be updated when Better Bulldozer is on PDX mods. It is onUpdate due to OnPrefabChanged not always triggering with DevUI AddObject Menu.
             if (m_ToolSystem.activePrefab != null && m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) && m_ToolSystem.activeTool != m_DefaultToolSystem)
             {
                 if (EntityManager.HasComponent<MarkerNetData>(prefabEntity) || m_ToolSystem.activePrefab is MarkerObjectPrefab)
@@ -119,21 +118,6 @@ namespace Anarchy.Systems
             }
 
             base.OnUpdate();
-        }
-
-        /// <summary>
-        /// Converts a C# bool to JS string.
-        /// </summary>
-        /// <param name="flag">a bool.</param>
-        /// <returns>"true" or "false".</returns>
-        private string BoolToString(bool flag)
-        {
-            if (flag)
-            {
-                return "true";
-            }
-
-            return "false";
         }
 
         /// <summary>

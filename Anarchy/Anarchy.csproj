@@ -17,14 +17,13 @@
 		
 		<!--The file where mod information which is required for publishing mod on PDX mods are stored-->
 		<PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
+		<AssemblyVersion>1.4.0</AssemblyVersion>
+		<FileVersion>1.4.0</FileVersion>
 	</PropertyGroup>
 	
 	<!--Imports must be after PropertyGroup block-->
 	<Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props" />
 	<Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.targets" />
-	<ItemGroup>
-	  <Compile Remove="Systems\AnarchyUISystem.cs" />
-	</ItemGroup>
 	<ItemGroup>
 	  <None Remove="StyleCop\stylecop.json" />
 	</ItemGroup>
@@ -137,7 +136,6 @@
 	<ItemGroup>
 		<None Include="$(ModPropsFile)" Link="Properties\Mod.props" />
 		<None Include="$(ModTargetsFile)" Link="Properties\Mod.targets" />
-		<None Include="Systems\AnarchyUISystem.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -198,4 +196,13 @@
 	  </Reference>
 	</ItemGroup>
 
+	<Target Name="CopyFiles" BeforeTargets="AfterBuild">
+		<ItemGroup>
+			<UIFiles Include="bin\UI\**\*.*" />
+		</ItemGroup>
+
+		<Exec Command="npm run build --prefix UI" />
+
+		<Copy SourceFiles="@(UIFiles)" DestinationFiles="@(UIFiles->'$(OutputPath)\%(RecursiveDir)%(Filename)%(Extension)')" />
+	</Target>
 </Project>

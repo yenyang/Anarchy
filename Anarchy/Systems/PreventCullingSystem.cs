@@ -2,6 +2,7 @@
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
+#define BURST
 namespace Anarchy.Systems
 {
     using Anarchy;
@@ -16,6 +17,7 @@ namespace Anarchy.Systems
     using Game.Rendering;
     using Game.Tools;
     using Game.Vehicles;
+    using Unity.Burst;
     using Unity.Burst.Intrinsics;
     using Unity.Collections;
     using Unity.Entities;
@@ -28,7 +30,6 @@ namespace Anarchy.Systems
     {
         private ILog m_Log;
         private EntityQuery m_CullingInfoQuery;
-        private TypeHandle __TypeHandle;
         private ToolOutputBarrier m_ToolOutputBarrier;
         private int m_FrameCount = 0;
         private ToolSystem m_ToolSystem;
@@ -100,13 +101,10 @@ namespace Anarchy.Systems
 
             RunNow = false;
 
-            __TypeHandle.__CullingInfo_RO_ComponentTypeHandle.Update(ref CheckedStateRef);
-            __TypeHandle.__Unity_Entities_Entity_TypeHandle.Update(ref CheckedStateRef);
-
-            PreventCullingJob preventCullingJob = new ()
+            PreventCullingJob preventCullingJob = new()
             {
-                m_CullingInfoType = __TypeHandle.__CullingInfo_RO_ComponentTypeHandle,
-                m_EntityType = __TypeHandle.__Unity_Entities_Entity_TypeHandle,
+                m_CullingInfoType = SystemAPI.GetComponentTypeHandle<CullingInfo>(),
+                m_EntityType = SystemAPI.GetEntityTypeHandle(),
                 buffer = m_ToolOutputBarrier.CreateCommandBuffer().AsParallelWriter(),
             };
             JobHandle jobHandle = preventCullingJob.ScheduleParallel(m_CullingInfoQuery, Dependency);
@@ -114,27 +112,9 @@ namespace Anarchy.Systems
             Dependency = jobHandle;
         }
 
-        /// <inheritdoc/>
-        protected override void OnCreateForCompiler()
-        {
-            base.OnCreateForCompiler();
-            __TypeHandle.__AssignHandles(ref CheckedStateRef);
-        }
-
-        private struct TypeHandle
-        {
-            [ReadOnly]
-            public EntityTypeHandle __Unity_Entities_Entity_TypeHandle;
-            [ReadOnly]
-            public ComponentTypeHandle<CullingInfo> __CullingInfo_RO_ComponentTypeHandle;
-
-            public void __AssignHandles(ref SystemState state)
-            {
-                __Unity_Entities_Entity_TypeHandle = state.GetEntityTypeHandle();
-                __CullingInfo_RO_ComponentTypeHandle = state.GetComponentTypeHandle<CullingInfo>();
-            }
-        }
-
+#if BURST
+        [BurstCompile]
+#endif
         private struct PreventCullingJob : IJobChunk
         {
             [ReadOnly]

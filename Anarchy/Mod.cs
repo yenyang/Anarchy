@@ -130,6 +130,7 @@ namespace Anarchy
 
             // defaultLocale.ExportLocalizationCSV(ModInstallFolder, GameManager.instance.localizationManager.GetSupportedLocales());
             var file = Path.Combine(ModInstallFolder, "l10n", $"l10n.csv");
+            Log.Debug($"{nameof(Mod)}.{nameof(LoadLocales)} {file}");
             if (File.Exists(file))
             {
                 var fileLines = File.ReadAllLines(file).Select(x => x.Split('\t'));

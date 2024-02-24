@@ -2,8 +2,8 @@ import { useModding } from "modding/modding-context";
 import { ModuleRegistry } from "modding/types";
 import { MouseEvent, useCallback } from "react";
 
-export const unselectedImageSource : string = "coui://ui-mods/images/StandardAnarchy.svg";
-export const selectedImageSource : string = "coui://ui-mods/images/ColoredAnarchy.svg";
+export const unselectedImageSource : string = "coui://uil/Standard/Anarchy.svg";
+export const selectedImageSource : string = "coui://uil/Colored/Anarchy.svg";
 
 export const AnarchyRowComponent = (moduleRegistry: ModuleRegistry) => (Component: any) => {
     const toolMouseModule = moduleRegistry.registry.get("game-ui/game/components/tool-options/mouse-tool-options/mouse-tool-options.tsx");

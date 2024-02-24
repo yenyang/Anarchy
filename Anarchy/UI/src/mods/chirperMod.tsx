@@ -2,7 +2,7 @@ import { useModding } from "modding/modding-context";
 import { ModuleRegistry } from "modding/types";
 
 export const vanillaChirperImageSource : string = "Media/Game/Icons/Chirper.svg";
-export const flamingChirperImageSource : string = "coui://ui-mods/images/AnarchyChirper.svg";
+export const flamingChirperImageSource : string = "coui://uil/Colored/AnarchyChirper.svg";
 
 export const activateFlamingChirper = () => {
     // This is a hack and not encouraged.
