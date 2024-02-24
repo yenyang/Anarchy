@@ -50,6 +50,7 @@ namespace Anarchy
                 {
                     if (GameManager.instance.modManager.TryGetExecutableAsset(Instance, out var asset))
                     {
+                        Instance.Log.Debug(asset.subPath);
                         m_modInstallFolder = asset.path;
                         Instance.Log.Info($"{nameof(Mod)}.{nameof(ModInstallFolder)} Current mod asset at {asset.path}");
                     }
