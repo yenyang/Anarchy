@@ -13,6 +13,7 @@ namespace Anarchy
     using Colossal.IO.AssetDatabase;
     using Colossal.Localization;
     using Colossal.Logging;
+    using Colossal.PSI.Environment;
     using Game;
     using Game.Modding;
     using Game.SceneFlow;
@@ -21,7 +22,7 @@ namespace Anarchy
     /// <summary>
     /// Mod entry point.
     /// </summary>
-    public class Mod : IMod
+    public class AnarchyMod : IMod
     {
         /// <summary>
         /// Gets the install folder for the mod.
@@ -33,7 +34,7 @@ namespace Anarchy
         /// <summary>
         /// Gets the static reference to the mod instance.
         /// </summary>
-        public static Mod Instance
+        public static AnarchyMod Instance
         {
             get;
             private set;
@@ -48,16 +49,9 @@ namespace Anarchy
             {
                 if (m_modInstallFolder is null)
                 {
-                    if (GameManager.instance.modManager.TryGetExecutableAsset(Instance, out var asset))
-                    {
-                        Instance.Log.Debug(asset.subPath);
-                        m_modInstallFolder = asset.path;
-                        Instance.Log.Info($"{nameof(Mod)}.{nameof(ModInstallFolder)} Current mod asset at {asset.path}");
-                    }
-                    else
-                    {
-                        Instance.Log.Warn($"{nameof(Mod)}.{nameof(ModInstallFolder)} Could not find Executable asset path!");
-                    }
+                    var thisFullName = Instance.GetType().Assembly.FullName;
+                    ExecutableAsset thisInfo = AssetDatabase.global.GetAsset(SearchFilter<ExecutableAsset>.ByCondition(x => x.definition?.FullName == thisFullName)) ?? throw new Exception("This mod info was not found!!!!");
+                    m_modInstallFolder = Path.GetDirectoryName(thisInfo.GetMeta().path);
                 }
 
                 return m_modInstallFolder;
@@ -87,18 +81,20 @@ namespace Anarchy
 #else
             Log.effectivenessLevel = Level.Info;
 #endif
-            Log.Info($"{nameof(Mod)}.{nameof(OnLoad)} Handling settings");
+            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} ModInstallFolder = " + ModInstallFolder);
+            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Initializing settings");
             Settings = new (this);
+            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Loading localization");
+            LoadLocales();
+            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Registering settings");
             Settings.RegisterInOptionsUI();
+            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Loading settings");
             AssetDatabase.global.LoadSettings("AnarchyMod", Settings, new AnarchyModSettings(this));
             Settings.Contra = false;
-            Log.Info($"{nameof(Mod)}.{nameof(OnLoad)} ModInstallFolder = " + ModInstallFolder);
-            Log.Info($"{nameof(Mod)}.{nameof(OnLoad)} Loading localization");
-            LoadLocales();
-            Log.Info($"{nameof(Mod)}.{nameof(OnLoad)} Injecting Harmony Patches.");
+            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Injecting Harmony Patches.");
             m_Harmony = new Harmony("Mods_Yenyang_Anarchy");
             m_Harmony.PatchAll();
-            Log.Info($"{nameof(Mod)}.{nameof(OnLoad)} Injecting systems.");
+            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Injecting systems.");
             updateSystem.UpdateAfter<AnarchyTooltipSystem>(SystemUpdatePhase.UITooltip);
             updateSystem.UpdateAt<AnarchySystem>(SystemUpdatePhase.ToolUpdate);
             updateSystem.UpdateBefore<DisableToolErrorsSystem>(SystemUpdatePhase.ModificationEnd);
@@ -110,7 +106,7 @@ namespace Anarchy
             updateSystem.UpdateAt<PreventCullingSystem>(SystemUpdatePhase.ToolUpdate);
             updateSystem.UpdateBefore<ModifyNetCompositionDataSystem>(SystemUpdatePhase.Modification4);
             updateSystem.UpdateAfter<ResetNetCompositionDataSystem>(SystemUpdatePhase.ModificationEnd);
-            Log.Info($"{nameof(Mod)}.{nameof(OnLoad)} Completed.");
+            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Completed.");
         }
 
         /// <inheritdoc/>
@@ -129,9 +125,9 @@ namespace Anarchy
         {
             LocaleEN defaultLocale = new LocaleEN(Settings);
 
-            // defaultLocale.ExportLocalizationCSV(ModInstallFolder, GameManager.instance.localizationManager.GetSupportedLocales());
+            defaultLocale.ExportLocalizationCSV(ModInstallFolder, GameManager.instance.localizationManager.GetSupportedLocales());
             var file = Path.Combine(ModInstallFolder, "l10n", $"l10n.csv");
-            Log.Debug($"{nameof(Mod)}.{nameof(LoadLocales)} {file}");
+            Log.Debug($"{nameof(AnarchyMod)}.{nameof(LoadLocales)} {file}");
             if (File.Exists(file))
             {
                 var fileLines = File.ReadAllLines(file).Select(x => x.Split('\t'));
@@ -154,13 +150,13 @@ namespace Anarchy
                     }
                     catch (Exception ex)
                     {
-                        Log.Warn($"{nameof(Mod)}.{nameof(LoadLocales)} Encountered exception {ex} while trying to localize {lang}.");
+                        Log.Warn($"{nameof(AnarchyMod)}.{nameof(LoadLocales)} Encountered exception {ex} while trying to localize {lang}.");
                     }
                 }
             }
             else
             {
-                Log.Warn($"{nameof(Mod)}.{nameof(LoadLocales)} couldn't find localization file and loaded default for every language.");
+                Log.Warn($"{nameof(AnarchyMod)}.{nameof(LoadLocales)} couldn't find localization file and loaded default for every language.");
                 foreach (var lang in GameManager.instance.localizationManager.GetSupportedLocales())
                 {
                     GameManager.instance.localizationManager.AddSource(lang, defaultLocale);

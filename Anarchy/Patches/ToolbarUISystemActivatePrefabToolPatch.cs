@@ -27,7 +27,7 @@ namespace Anarchy.Patches
             ToolSystem toolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
             PrefabSystem prefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
 
-            if (assetEntity != Entity.Null && !prefabSystem.EntityManager.HasEnabledComponent<Locked>(assetEntity) && Mod.Instance.Settings.AllowPlacingMultipleUniqueBuildings)
+            if (assetEntity != Entity.Null && !prefabSystem.EntityManager.HasEnabledComponent<Locked>(assetEntity) && AnarchyMod.Instance.Settings.AllowPlacingMultipleUniqueBuildings)
             {
                 if (prefabSystem.TryGetPrefab(assetEntity, out PrefabBase prefab))
                 {

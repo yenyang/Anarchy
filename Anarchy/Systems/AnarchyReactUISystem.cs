@@ -61,7 +61,7 @@ namespace Anarchy.Systems
         protected override void OnCreate()
         {
             base.OnCreate();
-            m_Log = Mod.Instance.Log;
+            m_Log = AnarchyMod.Instance.Log;
             m_Log.effectivenessLevel = Level.Info;
             m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
             m_AnarchySystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchySystem>();
@@ -161,7 +161,7 @@ namespace Anarchy.Systems
             }
 
             // Implements Anarchic Bulldozer when bulldoze tool is activated from inappropriate tool.
-            if (Mod.Instance.Settings.AnarchicBulldozer && m_AnarchySystem.AnarchyEnabled == false && tool == m_BulldozeToolSystem)
+            if (AnarchyMod.Instance.Settings.AnarchicBulldozer && m_AnarchySystem.AnarchyEnabled == false && tool == m_BulldozeToolSystem)
             {
                 m_AnarchySystem.AnarchyEnabled = true;
                 m_DisableAnarchyWhenCompleted = true;

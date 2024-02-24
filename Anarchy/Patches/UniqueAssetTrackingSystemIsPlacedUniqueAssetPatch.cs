@@ -21,7 +21,7 @@ namespace Anarchy.Patches
         /// <param name="__result">Result from original method.</param>
         public static void Postfix(Entity entity, ref bool __result)
         {
-            if (Mod.Instance.Settings.AllowPlacingMultipleUniqueBuildings)
+            if (AnarchyMod.Instance.Settings.AllowPlacingMultipleUniqueBuildings)
             {
                 __result = false;
             }

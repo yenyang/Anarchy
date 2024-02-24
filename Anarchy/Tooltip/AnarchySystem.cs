@@ -112,7 +112,7 @@ namespace Anarchy.Tooltip
         /// <inheritdoc/>
         protected override void OnCreate()
         {
-            m_Log = Mod.Instance.Log;
+            m_Log = AnarchyMod.Instance.Log;
             m_AnarchyUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyReactUISystem>();
             m_ResetNetCompositionDataSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ResetNetCompositionDataSystem>();
             m_Log.Info($"{nameof(AnarchySystem)} System Created.");

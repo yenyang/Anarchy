@@ -50,7 +50,7 @@ namespace Anarchy.Systems
         /// <inheritdoc/>
         protected override void OnCreate()
         {
-            m_Log = Mod.Instance.Log;
+            m_Log = AnarchyMod.Instance.Log;
             m_Log.Info($"{nameof(RemoveOverridenSystem)} Created.");
             m_AnarchySystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchySystem>();
             m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
