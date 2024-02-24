@@ -27,7 +27,9 @@ export const ChirperModComponent = (moduleRegistry: ModuleRegistry) => (Componen
         const { api: { api: { useValue, bindValue, trigger } } } = useModding();
         const anarchyEnabled$ = bindValue<boolean>('Anarchy', 'AnarchyEnabled');
         const anarchyEnabled = useValue(anarchyEnabled$);
-        if (anarchyEnabled) {
+        const flamingChirperOption$ = bindValue<boolean>('Anarchy', 'FlamingChirperOption');
+        const FlamingChirperOption = useValue(flamingChirperOption$);
+        if (anarchyEnabled && FlamingChirperOption) {
             activateFlamingChirper();
         } else {
             resetChirper();

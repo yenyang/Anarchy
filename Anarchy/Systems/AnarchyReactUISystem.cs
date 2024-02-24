@@ -40,6 +40,7 @@ namespace Anarchy.Systems
         private bool m_RaycastingMarkers = false;
         private ValueBinding<bool> m_AnarchyEnabled;
         private ValueBinding<bool> m_ShowToolIcon;
+        private ValueBinding<bool> m_FlamingChirperOption;
 
         /// <summary>
         /// Gets a value indicating whether whether Anarchy is only on because of Anarchic Bulldozer setting.
@@ -47,6 +48,20 @@ namespace Anarchy.Systems
         public bool DisableAnarchyWhenCompleted
         {
             get { return m_DisableAnarchyWhenCompleted; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the flaming chirper option binding is on/off.
+        /// </summary>
+        public bool FlamingChirperOption { get => m_FlamingChirperOption.value; }
+
+        /// <summary>
+        /// Sets the flaming chirper option binding to value.
+        /// </summary>
+        /// <param name="value">True for option enabled. false if not.</param>
+        public void SetFlamingChirperOption(bool value)
+        {
+            m_FlamingChirperOption.Update(value);
         }
 
         /// <summary>
@@ -79,12 +94,12 @@ namespace Anarchy.Systems
             AddBinding(m_AnarchyEnabled = new ValueBinding<bool>("Anarchy", "AnarchyEnabled", m_AnarchySystem.AnarchyEnabled));
             AddBinding(m_ShowToolIcon = new ValueBinding<bool>("Anarchy", "ShowToolIcon", false));
             AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", AnarchyToggled));
+            AddBinding(m_FlamingChirperOption = new ValueBinding<bool>("Anarchy", "FlamingChirperOption", AnarchyMod.Instance.Settings.FlamingChirper));
         }
 
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-
             // This section handles automatic enabling and disabling of Show Markers. It will need to be updated when Better Bulldozer is on PDX mods. It is onUpdate due to OnPrefabChanged not always triggering with DevUI AddObject Menu.
             if (m_ToolSystem.activePrefab != null && m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) && m_ToolSystem.activeTool != m_DefaultToolSystem)
             {
