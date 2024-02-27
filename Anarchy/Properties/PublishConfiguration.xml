@@ -114,8 +114,8 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="0.1" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog Value="" />
-  <!--ChangeLog>
-	</ChangeLog-->
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
+  <ExternalLink Type="discord" Url="https://discord.com/invite/DgH7rDKZ6r" />
+  <ExternalLink Type="github" Url="https://github.com/yenyang/Anarchy" />
 </Publish>
