@@ -68,10 +68,6 @@
 		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Colossal.UI.Binding.dll</HintPath>
 		  <Private>False</Private>
 		</Reference>
-		<Reference Include="ExtraLandscapingTools">
-		  <HintPath>..\..\..\..\AppData\Roaming\r2modmanPlus-local\CitiesSkylines2\profiles\Default\BepInEx\plugins\TritonSupreme-ExtraLandscapingTools\ExtraLandscapingTools.dll</HintPath>
-		  <Private>False</Private>
-		</Reference>
 		<Reference Include="Game">
 			<Private>False</Private>
 		</Reference>
