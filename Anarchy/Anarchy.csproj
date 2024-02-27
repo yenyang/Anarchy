@@ -25,7 +25,6 @@
 	<Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props" />
 	<Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.targets" />
 	<ItemGroup>
-	  <None Remove="README.md" />
 	  <None Remove="StyleCop\stylecop.json" />
 	</ItemGroup>
 	<ItemGroup>

@@ -1,4 +1,3 @@
-# Anarchy
 Anarchy disables error checks for tools in a way that the errors are not shown at all.
 
 This mod allows you to place vegetation and props (with DevUI 'Add Object' menu) overlapping or inside the boundaries of other objects and close together.
