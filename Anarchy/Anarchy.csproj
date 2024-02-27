@@ -25,6 +25,7 @@
 	<Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props" />
 	<Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.targets" />
 	<ItemGroup>
+	  <None Remove="README.md" />
 	  <None Remove="StyleCop\stylecop.json" />
 	</ItemGroup>
 	<ItemGroup>
@@ -147,7 +148,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Lib.Harmony" Version="2.2.2" />
+	  <PackageReference Include="Lib.Harmony" Version="2.3.0" />
 	  <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -204,5 +205,10 @@
 		<Exec Command="npm run build --prefix UI" />
 
 		<Copy SourceFiles="@(UIFiles)" DestinationFiles="@(UIFiles->'$(OutputPath)\%(RecursiveDir)%(Filename)%(Extension)')" />
+	</Target>
+
+	<!--Publishing generation files-->
+	<Target Name="SetupAttributes" BeforeTargets="BeforeBuild">
+		<XmlPoke XmlInputPath="$(PublishConfigurationPath)" Value="$([System.IO.File]::ReadAllText($(ProjectDir)/LongDescription.md)))" Query="//LongDescription" />
 	</Target>
 </Project>
