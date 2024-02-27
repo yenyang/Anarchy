@@ -1,10 +1,6 @@
-# Anarchy
 Anarchy disables error checks for tools in a way that the errors are not shown at all.
-
 This mod allows you to place vegetation and props (with DevUI 'Add Object' menu) overlapping or inside the boundaries of other objects and close together.
-
 For consistency within the community, please do not use the term Anarchy to mean something else for CSL2.
-
 Sully has prepared an Amazing! demo video about detailing with Anarchy on Youtube.
 
 ## Dependencies
@@ -87,10 +83,10 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 
 ## Credits 
 * yenyang - Mod Author
-* Chameleon TBN - Testing, Feedback, Icons, & Logo
+* Chameleon TBN - Testing, Feedback, Icons, and Logo
 * Sully - Testing, Feedback, and Promotional Material.
-* Algernon - Help with UI, Cooperative Development & Code Sharing
+* Algernon - Help with UI, Cooperative Development and Code Sharing
 * Bad Peanut - Image Credit for Flaming Chirper
-* T.D.W., Klyte45, krzychu124, & Quboid - Cooperative Development & Code Sharing
+* T.D.W., Klyte45, krzychu124, and Quboid - Cooperative Development and Code Sharing
 * Localization: Nyoko, Dome, and Citadino (Spanish), Hendrix (German), RilkeXS (Chinese Simplified), Luis Fernando de Paula (Portuguese), Maxi (Italian), Tanat (Korean), and Quoifleur (French), 
 * Dante, starrysum - Testing, Feedback
