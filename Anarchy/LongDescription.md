@@ -1,12 +1,4 @@
-<Publish>
-  <!--Id must be set in order to update existed mod. it is not required for publishing mod for the first time-->
-  <ModId Value="" />
-  <!--Name of the mod to display to players-->
-  <DisplayName Value="Anarchy" />
-  <!--Short description of the mod-->
-  <ShortDescription Value="Disables Error Checks and does not show errors. Place vegetation and props overlapping or inside the boundaries of other objects and close together." />
-  <!--Long description of the mod. Single line or multi line. Supports minimal markdown subset-->
-  <LongDescription>Anarchy disables error checks for tools in a way that the errors are not shown at all.
+Anarchy disables error checks for tools in a way that the errors are not shown at all.
 This mod allows you to place vegetation and props (with DevUI 'Add Object' menu) overlapping or inside the boundaries of other objects and close together.
 For consistency within the community, please do not use the term Anarchy to mean something else for CSL2.
 Sully has prepared an Amazing! demo video about detailing with Anarchy on Youtube.
@@ -73,7 +65,7 @@ Pro tip: Use the brush mode to remove trees and standalone props. If you unselec
 ## Invisible Paths, Roads, and Markers
 The mod will automatically toggle the DevUI setting to "Show Markers" when drawing or plopping invisible paths, roads, object markers, etc.
 
-You can toggle DevUI Setting to "Show Markers" yourself using DevUI -&gt; Gameplay -&gt; Show Markers. There is also a toggle in Extra Landscaping Tools 2.0 or later while drawing surfaces.
+You can toggle DevUI Setting to "Show Markers" yourself using DevUI -> Gameplay -> Show Markers. There is also a toggle in Extra Landscaping Tools 2.0 or later while drawing surfaces.
 
 ABSOLUTELY, NEVER, attach an invisible path/road to an invisible paths/roads in growable/zoned buildings!!! Several triggers that will occur later will crash your game. You can attach an invisible path or road to an invisible paths/roads in ploppable building, but if you later want to apply one of the various building upgdrades you will need to remove the attached invisible networks first.
 
@@ -97,25 +89,4 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * Bad Peanut - Image Credit for Flaming Chirper
 * T.D.W., Klyte45, krzychu124, and Quboid - Cooperative Development and Code Sharing
 * Localization: Nyoko, Dome, and Citadino (Spanish), Hendrix (German), RilkeXS (Chinese Simplified), Luis Fernando de Paula (Portuguese), Maxi (Partial Italian), karmel68 (Polish), Tanat (Korean), and Quoifleur (French), 
-* Dante, starrysum - Testing, Feedback)</LongDescription>
-  <!--Thumbnail-->
-  <Thumbnail Value="Properties/Thumbnail.png" />
-  <!--Screenshot, can be set multiple-->
-  <Screenshot Value="" />
-  <!--Tag, can be set multiple-->
-  <Tag Value="Code Mod" />
-  <!--Link to the forum post where the mod can be discussed-->
-  <ForumLink Value="" />
-  <!--Version of the mod-->
-  <ModVersion Value="1.4.0" />
-  <!--Recommended version of the base game to use the mod-->
-  <GameVersion Value="1.0.*" />
-  <!--Dependency for the mod, can be set multiple-->
-  <Dependency Id="74417" DisplayName="Unified Icon Library" Version="0.1" />
-  <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog Value="" />
-  <!--ChangeLog>
-	</ChangeLog-->
-  <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
-  <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
-</Publish>
+* Dante, starrysum - Testing, Feedback

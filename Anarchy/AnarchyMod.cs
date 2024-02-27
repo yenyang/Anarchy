@@ -13,7 +13,6 @@ namespace Anarchy
     using Colossal.IO.AssetDatabase;
     using Colossal.Localization;
     using Colossal.Logging;
-    using Colossal.PSI.Environment;
     using Game;
     using Game.Modding;
     using Game.SceneFlow;
