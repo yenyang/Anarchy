@@ -88,5 +88,5 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * Algernon - Help with UI, Cooperative Development and Code Sharing
 * Bad Peanut - Image Credit for Flaming Chirper
 * T.D.W., Klyte45, krzychu124, and Quboid - Cooperative Development and Code Sharing
-* Localization: Nyoko, Dome, and Citadino (Spanish), Hendrix (German), RilkeXS (Chinese Simplified), Luis Fernando de Paula (Portuguese), Maxi (Italian), Tanat (Korean), and Quoifleur (French), 
+* Localization: Nyoko, Dome, and Citadino (Spanish), Hendrix (German), RilkeXS (Chinese Simplified), Luis Fernando de Paula (Portuguese), Maxi (Partial Italian), karmel68 (Polish), Tanat (Korean), and Quoifleur (French), 
 * Dante, starrysum - Testing, Feedback
