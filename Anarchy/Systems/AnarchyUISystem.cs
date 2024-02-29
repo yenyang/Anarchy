@@ -5,21 +5,60 @@
 namespace Anarchy.Systems
 {
     using System;
-    using Anarchy.Tooltip;
+    using System.Collections.Generic;
     using Colossal.Logging;
     using Colossal.UI.Binding;
     using Game.Tools;
     using Game.UI;
     using Unity.Entities;
+    using UnityEngine.InputSystem;
 
     /// <summary>
     /// UI system for Anarchy.
     /// </summary>
     public partial class AnarchyUISystem : UISystemBase
     {
+        /// <summary>
+        /// A list of tools ids that Anarchy is applicable to.
+        /// </summary>
+        private readonly List<string> ToolIDs = new ()
+        {
+            { "Object Tool" },
+            { "Net Tool" },
+            { "Area Tool" },
+            { "Bulldoze Tool" },
+            { "Terrain Tool" },
+            { "Upgrade Tool" },
+            { "Line Tool" },
+        };
+
+        /// <summary>
+        /// A list of error types that Anarchy will disable.
+        /// </summary>
+        private readonly List<ErrorType> AllowableErrorTypes = new ()
+        {
+            { ErrorType.OverlapExisting },
+            { ErrorType.InvalidShape },
+            { ErrorType.LongDistance },
+            { ErrorType.TightCurve },
+            { ErrorType.AlreadyUpgraded },
+            { ErrorType.InWater },
+            { ErrorType.NoWater },
+            { ErrorType.ExceedsCityLimits },
+            { ErrorType.NotOnShoreline },
+            { ErrorType.AlreadyExists },
+            { ErrorType.ShortDistance },
+            { ErrorType.LowElevation },
+            { ErrorType.SmallArea },
+            { ErrorType.SteepSlope },
+            { ErrorType.NotOnBorder },
+            { ErrorType.NoGroundWater },
+            { ErrorType.OnFire },
+            { ErrorType.ExceedsLotLimits },
+        };
+
         private ToolSystem m_ToolSystem;
         private ILog m_Log;
-        private AnarchySystem m_AnarchySystem;
         private bool m_DisableAnarchyWhenCompleted;
         private string m_LastTool;
         private BulldozeToolSystem m_BulldozeToolSystem;
@@ -50,12 +89,20 @@ namespace Anarchy.Systems
         }
 
         /// <summary>
-        /// So Anarchy System can toggle the button selection with Keybind.
+        /// Checks the list of appropriate tools and returns true if Anarchy is appliable.
         /// </summary>
-        public void ToggleAnarchyButton()
+        /// <param name="toolID">A string representing a tool id.</param>
+        /// <returns>True if anarchy is applicable to that toolID. False if not.</returns>
+        public bool IsToolAppropriate(string toolID) => ToolIDs.Contains(toolID);
+
+        /// <summary>
+        /// Checks the list of error types that Anarchy disables.
+        /// </summary>
+        /// <param name="errorType">An Error type enum.</param>
+        /// <returns>True if that error type should be disabled by anarchy. False if not.</returns>
+        public bool IsErrorTypeAllowed(ErrorType errorType)
         {
-            // This updates the Anarchy Enabled binding to its inverse.
-            m_AnarchyEnabled.Update(!m_AnarchyEnabled.value);
+            return AllowableErrorTypes.Contains(errorType);
         }
 
         /// <inheritdoc/>
@@ -64,13 +111,16 @@ namespace Anarchy.Systems
             base.OnCreate();
             m_Log = AnarchyMod.Instance.Log;
             m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
-            m_AnarchySystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchySystem>();
             m_BulldozeToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<BulldozeToolSystem>();
             m_NetToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<NetToolSystem>();
             m_ResetNetCompositionDataSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ResetNetCompositionDataSystem>();
             ToolSystem toolSystem = m_ToolSystem; // I don't know why vanilla game did this.
             m_ToolSystem.EventToolChanged = (Action<ToolBaseSystem>)Delegate.Combine(toolSystem.EventToolChanged, new Action<ToolBaseSystem>(OnToolChanged));
             m_Log.Info($"{nameof(AnarchyUISystem)}.{nameof(OnCreate)}");
+            InputAction hotKey = new ("Anarchy");
+            hotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/ctrl").With("Button", "<Keyboard>/a");
+            hotKey.performed += OnKeyPressed;
+            hotKey.Enable();
 
             // This binding communicates whether Anarchy toggle is enabled or disabled.
             AddBinding(m_AnarchyEnabled = new ValueBinding<bool>("Anarchy", "AnarchyEnabled", false));
@@ -109,7 +159,7 @@ namespace Anarchy.Systems
                 return;
             }
 
-            if (m_AnarchySystem.IsToolAppropriate(tool.toolID) && AnarchyMod.Instance.Settings.ToolIcon)
+            if (IsToolAppropriate(tool.toolID) && AnarchyMod.Instance.Settings.ToolIcon)
             {
                 // This updates the Show Tool Icon binding to show the tool icon.
                 m_ShowToolIcon.Update(true);
@@ -143,6 +193,17 @@ namespace Anarchy.Systems
             }
 
             m_LastTool = tool.toolID;
+        }
+
+        private void OnKeyPressed(InputAction.CallbackContext context)
+        {
+            if (m_ToolSystem.activeTool.toolID != null)
+            {
+                if (ToolIDs.Contains(m_ToolSystem.activeTool.toolID))
+                {
+                    AnarchyToggled();
+                }
+            }
         }
     }
 }

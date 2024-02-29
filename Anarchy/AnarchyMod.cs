@@ -9,7 +9,6 @@ namespace Anarchy
     using System.Linq;
     using Anarchy.Settings;
     using Anarchy.Systems;
-    using Anarchy.Tooltip;
     using Colossal.IO.AssetDatabase;
     using Colossal.Localization;
     using Colossal.Logging;
@@ -95,7 +94,6 @@ namespace Anarchy
             m_Harmony.PatchAll();
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Injecting systems.");
             updateSystem.UpdateAfter<AnarchyTooltipSystem>(SystemUpdatePhase.UITooltip);
-            updateSystem.UpdateAt<AnarchySystem>(SystemUpdatePhase.ToolUpdate);
             updateSystem.UpdateBefore<DisableToolErrorsSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAfter<EnableToolErrorsSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<AnarchyUISystem>(SystemUpdatePhase.UIUpdate);

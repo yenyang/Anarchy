@@ -7,7 +7,6 @@ namespace Anarchy.Systems
 {
     using Anarchy;
     using Anarchy.Components;
-    using Anarchy.Tooltip;
     using Colossal.Entities;
     using Colossal.Logging;
     using Colossal.Mathematics;

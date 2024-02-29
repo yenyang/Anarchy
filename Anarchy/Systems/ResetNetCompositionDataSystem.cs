@@ -7,7 +7,6 @@ namespace Anarchy.Systems
 {
     using Anarchy;
     using Anarchy.Components;
-    using Anarchy.Tooltip;
     using Colossal.Entities;
     using Colossal.Logging;
     using Game;
@@ -23,7 +22,6 @@ namespace Anarchy.Systems
     {
         private ToolSystem m_ToolSystem;
         private EntityQuery m_NetCompositionDataQuery;
-        private AnarchySystem m_AnarchySystem;
         private ILog m_Log;
         private NetToolSystem m_NetToolSystem;
         private PrefabSystem m_PrefabSystem;

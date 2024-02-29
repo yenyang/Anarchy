@@ -6,7 +6,6 @@ namespace Anarchy.Systems
 {
     using System.Collections.Generic;
     using Anarchy;
-    using Anarchy.Tooltip;
     using Colossal.Logging;
     using Game;
     using Game.Buildings;
