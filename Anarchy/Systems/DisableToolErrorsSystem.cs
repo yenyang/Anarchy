@@ -37,7 +37,7 @@ namespace Anarchy.Systems
         /// <inheritdoc/>
         protected override void OnCreate()
         {
-            m_Log = AnarchyMod.Instance.Logger;
+            m_Log = AnarchyMod.Instance.Log;
             m_AnarchySystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchySystem>();
             m_EnableToolErrorsSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<EnableToolErrorsSystem>();
             m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
@@ -71,7 +71,7 @@ namespace Anarchy.Systems
                 m_ToolSystem.ignoreErrors = false;
             }
 
-            if (AnarchyMod.Settings.AllowPlacingMultipleUniqueBuildings)
+            if (AnarchyMod.Instance.Settings.AllowPlacingMultipleUniqueBuildings)
             {
                 PrefabID prefabID = new ("NotificationIconPrefab", "Already Exists");
                 if (m_PrefabSystem.TryGetPrefab(prefabID, out PrefabBase prefabBase))

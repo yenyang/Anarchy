@@ -29,7 +29,7 @@ namespace Anarchy.Utils
             var memInf = GetMemberInfo(obj, memberName);
             if (memInf == null)
             {
-                AnarchyMod.Instance.Logger.Error(new System.Exception("memberName"), $"{nameof(ReflectionExtensions)} {nameof(GetMemberInfo)} Couldn't find member name! ");
+                AnarchyMod.Instance.Log.Error(new System.Exception("memberName"), $"{nameof(ReflectionExtensions)} {nameof(GetMemberInfo)} Couldn't find member name! ");
             }
 
             if (memInf is PropertyInfo)
@@ -58,7 +58,7 @@ namespace Anarchy.Utils
             var memInf = GetMemberInfo(obj, memberName);
             if (memInf == null)
             {
-                AnarchyMod.Instance.Logger.Error(new System.Exception("memberName"), $"{nameof(ReflectionExtensions)} {nameof(GetMemberInfo)} Couldn't find member name! ");
+                AnarchyMod.Instance.Log.Error(new System.Exception("memberName"), $"{nameof(ReflectionExtensions)} {nameof(GetMemberInfo)} Couldn't find member name! ");
             }
 
             var oldValue = obj.GetMemberValue(memberName);

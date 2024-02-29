@@ -21,7 +21,7 @@ namespace Anarchy.Patches
         /// <returns>True so that the original method runs.</returns>
         public static bool Prefix()
         {
-            if (AnarchyMod.Settings.AllowPlacingMultipleUniqueBuildings)
+            if (AnarchyMod.Instance.Settings.AllowPlacingMultipleUniqueBuildings)
             {
                 ToolbarUISystem toolbarUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolbarUISystem>();
                 toolbarUISystem.SetMemberValue("m_UniqueAssetStatusChanged", false);

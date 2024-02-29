@@ -40,7 +40,7 @@ namespace Anarchy.Systems
         /// <inheritdoc/>
         protected override void OnCreate()
         {
-            m_Log = AnarchyMod.Instance.Logger;
+            m_Log = AnarchyMod.Instance.Log;
             m_AnarchySystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchySystem>();
             m_Log.Info($"{nameof(EnableToolErrorsSystem)} Created.");
             Enabled = false;

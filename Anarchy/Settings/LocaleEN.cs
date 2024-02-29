@@ -114,7 +114,7 @@ namespace Anarchy.Settings
                 }
                 catch (Exception e)
                 {
-                    AnarchyMod.Instance.Logger.Warn($"{typeof(LocaleEN)}.{nameof(ExportLocalizationCSV)} Encountered Exception {e} while trying to export localization csv.");
+                    AnarchyMod.Instance.Log.Warn($"{typeof(LocaleEN)}.{nameof(ExportLocalizationCSV)} Encountered Exception {e} while trying to export localization csv.");
                     return false;
                 }
             }

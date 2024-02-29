@@ -1,4 +1,4 @@
-﻿// <copyright file="ToolbarUISystemActivatePrefabTool.cs" company="Yenyang's Mods. MIT License">
+﻿// <copyright file="ToolbarUISystemActivatePrefabToolPatch.cs" company="Yenyang's Mods. MIT License">
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
@@ -27,7 +27,7 @@ namespace Anarchy.Patches
             ToolSystem toolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
             PrefabSystem prefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
 
-            if (assetEntity != Entity.Null && !prefabSystem.EntityManager.HasEnabledComponent<Locked>(assetEntity) && AnarchyMod.Settings.AllowPlacingMultipleUniqueBuildings)
+            if (assetEntity != Entity.Null && !prefabSystem.EntityManager.HasEnabledComponent<Locked>(assetEntity) && AnarchyMod.Instance.Settings.AllowPlacingMultipleUniqueBuildings)
             {
                 if (prefabSystem.TryGetPrefab(assetEntity, out PrefabBase prefab))
                 {

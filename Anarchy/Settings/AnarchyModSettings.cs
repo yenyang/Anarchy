@@ -121,5 +121,16 @@ namespace Anarchy.Settings
             AllowPlacingMultipleUniqueBuildings = false;
             MinimumClearanceBelowElevatedNetworks = 0f;
         }
+
+        /// <inheritdoc/>
+        public override void Apply()
+        {
+            base.Apply();
+            AnarchyReactUISystem anarchyReactUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyReactUISystem>();
+            if (anarchyReactUISystem.FlamingChirperOption != FlamingChirper)
+            {
+                anarchyReactUISystem.SetFlamingChirperOption(FlamingChirper);
+            }
+        }
     }
 }

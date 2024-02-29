@@ -2,9 +2,11 @@
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
-#define DEBUG
 namespace Anarchy
 {
+    using System;
+    using System.IO;
+    using System.Linq;
     using Anarchy.Settings;
     using Anarchy.Systems;
     using Anarchy.Tooltip;
@@ -14,9 +16,7 @@ namespace Anarchy
     using Game;
     using Game.Modding;
     using Game.SceneFlow;
-    using System;
-    using System.IO;
-    using System.Linq;
+    using HarmonyLib;
 
     /// <summary>
     /// Mod entry point.
@@ -28,10 +28,7 @@ namespace Anarchy
         /// </summary>
         private static string m_modInstallFolder;
 
-        /// <summary>
-        ///  Gets or sets the static version of the Anarchy Mod Settings.
-        /// </summary>
-        public static AnarchyModSettings Settings { get; set; }
+        private Harmony m_Harmony;
 
         /// <summary>
         /// Gets the static reference to the mod instance.
@@ -51,7 +48,9 @@ namespace Anarchy
             {
                 if (m_modInstallFolder is null)
                 {
-                    m_modInstallFolder = Path.GetDirectoryName(typeof(AnarchyPlugin).Assembly.Location);
+                    var thisFullName = Instance.GetType().Assembly.FullName;
+                    ExecutableAsset thisInfo = AssetDatabase.global.GetAsset(SearchFilter<ExecutableAsset>.ByCondition(x => x.definition?.FullName == thisFullName)) ?? throw new Exception("This mod info was not found!!!!");
+                    m_modInstallFolder = Path.GetDirectoryName(thisInfo.GetMeta().path);
                 }
 
                 return m_modInstallFolder;
@@ -59,56 +58,75 @@ namespace Anarchy
         }
 
         /// <summary>
+        /// Gets or sets the mods settings.
+        /// </summary>
+        internal AnarchyModSettings Settings { get; set; }
+
+        /// <summary>
         /// Gets ILog for mod.
         /// </summary>
-        internal ILog Logger { get; private set; }
+        internal ILog Log { get; private set; }
 
         /// <inheritdoc/>
-        public void OnLoad()
+        public void OnLoad(UpdateSystem updateSystem)
         {
             Instance = this;
-            Logger = LogManager.GetLogger("Mods_Yenyang_Anarchy", false);
-            Logger.effectivenessLevel = Level.Info;
-            Logger.Info("Loading. . .");
-        }
-
-        /// <inheritdoc/>
-        public void OnCreateWorld(UpdateSystem updateSystem)
-        {
-            Logger.effectivenessLevel = Level.Info;
-            Logger.Info("Initializing Settings.");
+            Log = LogManager.GetLogger("Mods_Yenyang_Anarchy").SetShowsErrorsInUI(false);
+            Log.Info(nameof(OnLoad));
+#if DEBUG
+            Log.effectivenessLevel = Level.Debug;
+#elif VERBOSE
+            Log.effectivenessLevel = Level.Verbose;
+#else
+            Log.effectivenessLevel = Level.Info;
+#endif
+            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} ModInstallFolder = " + ModInstallFolder);
+            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Initializing settings");
             Settings = new (this);
-            Settings.RegisterInOptionsUI();
-            AssetDatabase.global.LoadSettings(nameof(AnarchyMod), Settings, new AnarchyModSettings(this));
-            Settings.Contra = false;
-            Logger.Info("Handling create world");
-            Logger.Info("ModInstallFolder = " + ModInstallFolder);
+            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Loading localization");
             LoadLocales();
+            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Registering settings");
+            Settings.RegisterInOptionsUI();
+            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Loading settings");
+            AssetDatabase.global.LoadSettings("AnarchyMod", Settings, new AnarchyModSettings(this));
+            Settings.Contra = false;
+            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Injecting Harmony Patches.");
+            m_Harmony = new Harmony("Mods_Yenyang_Anarchy");
+            m_Harmony.PatchAll();
+            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Injecting systems.");
             updateSystem.UpdateAfter<AnarchyTooltipSystem>(SystemUpdatePhase.UITooltip);
             updateSystem.UpdateAt<AnarchySystem>(SystemUpdatePhase.ToolUpdate);
             updateSystem.UpdateBefore<DisableToolErrorsSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAfter<EnableToolErrorsSystem>(SystemUpdatePhase.ModificationEnd);
-            updateSystem.UpdateAt<AnarchyUISystem>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateAt<AnarchyReactUISystem>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateBefore<AnarchyPlopSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateBefore<PreventOverrideSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateBefore<RemoveOverridenSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<PreventCullingSystem>(SystemUpdatePhase.ToolUpdate);
             updateSystem.UpdateBefore<ModifyNetCompositionDataSystem>(SystemUpdatePhase.Modification4);
             updateSystem.UpdateAfter<ResetNetCompositionDataSystem>(SystemUpdatePhase.ModificationEnd);
+            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Completed.");
         }
 
         /// <inheritdoc/>
         public void OnDispose()
         {
-            Logger.Info("Disposing..");
+            Log.Info(nameof(OnDispose));
+            m_Harmony.UnpatchAll();
+            if (Settings != null)
+            {
+                Settings.UnregisterInOptionsUI();
+                Settings = null;
+            }
         }
 
         private void LoadLocales()
         {
             LocaleEN defaultLocale = new LocaleEN(Settings);
 
-            // defaultLocale.ExportLocalizationCSV(ModInstallFolder, GameManager.instance.localizationManager.GetSupportedLocales());
-            var file = Path.Combine(ModInstallFolder, $"l10n.csv");
+            defaultLocale.ExportLocalizationCSV(ModInstallFolder, GameManager.instance.localizationManager.GetSupportedLocales());
+            var file = Path.Combine(ModInstallFolder, "l10n", $"l10n.csv");
+            Log.Debug($"{nameof(AnarchyMod)}.{nameof(LoadLocales)} {file}");
             if (File.Exists(file))
             {
                 var fileLines = File.ReadAllLines(file).Select(x => x.Split('\t'));
@@ -131,19 +149,18 @@ namespace Anarchy
                     }
                     catch (Exception ex)
                     {
-                        Logger.Warn($"{nameof(AnarchyMod)}.{nameof(LoadLocales)} Encountered exception {ex} while trying to localize {lang}.");
+                        Log.Warn($"{nameof(AnarchyMod)}.{nameof(LoadLocales)} Encountered exception {ex} while trying to localize {lang}.");
                     }
                 }
             }
             else
             {
-                Logger.Warn($"{nameof(AnarchyMod)}.{nameof(LoadLocales)} couldn't find localization file and loaded default for every language.");
+                Log.Warn($"{nameof(AnarchyMod)}.{nameof(LoadLocales)} couldn't find localization file and loaded default for every language.");
                 foreach (var lang in GameManager.instance.localizationManager.GetSupportedLocales())
                 {
                     GameManager.instance.localizationManager.AddSource(lang, defaultLocale);
                 }
             }
         }
-
     }
 }
