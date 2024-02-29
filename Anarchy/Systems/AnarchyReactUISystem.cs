@@ -33,11 +33,8 @@ namespace Anarchy.Systems
         private string m_LastTool;
         private List<BoundEventHandle> m_BoundEventHandles;
         private BulldozeToolSystem m_BulldozeToolSystem;
-        private bool m_PrefabIsMarker = false;
         private NetToolSystem m_NetToolSystem;
-        private bool m_LastShowMarkers = false;
         private ResetNetCompositionDataSystem m_ResetNetCompositionDataSystem;
-        private bool m_RaycastingMarkers = false;
         private ValueBinding<bool> m_AnarchyEnabled;
         private ValueBinding<bool> m_ShowToolIcon;
         private ValueBinding<bool> m_FlamingChirperOption;
@@ -100,38 +97,6 @@ namespace Anarchy.Systems
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            // This section handles automatic enabling and disabling of Show Markers. It will need to be updated when Better Bulldozer is on PDX mods. It is onUpdate due to OnPrefabChanged not always triggering with DevUI AddObject Menu.
-            if (m_ToolSystem.activePrefab != null && m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) && m_ToolSystem.activeTool != m_DefaultToolSystem)
-            {
-                if (EntityManager.HasComponent<MarkerNetData>(prefabEntity) || m_ToolSystem.activePrefab is MarkerObjectPrefab)
-                {
-                    if (!m_PrefabIsMarker && (m_LastTool != m_BulldozeToolSystem.toolID || !m_RaycastingMarkers))
-                    {
-                        m_LastShowMarkers = m_RenderingSystem.markersVisible;
-                        m_Log.Debug($"{nameof(AnarchyReactUISystem)}.{nameof(OnUpdate)} m_LastShowMarkers = {m_LastShowMarkers}");
-                    }
-
-                    m_RenderingSystem.markersVisible = true;
-                    m_PrefabIsMarker = true;
-                }
-                else if (m_PrefabIsMarker)
-                {
-                    m_PrefabIsMarker = false;
-                    m_RenderingSystem.markersVisible = m_LastShowMarkers;
-                }
-            }
-            else if (m_PrefabIsMarker)
-            {
-                m_PrefabIsMarker = false;
-                m_RenderingSystem.markersVisible = m_LastShowMarkers;
-            }
-
-            if (m_ToolSystem.activeTool.toolID == null)
-            {
-                Enabled = false;
-                return;
-            }
-
             base.OnUpdate();
         }
 

@@ -62,13 +62,6 @@ You can also manually trigger a prop refresh using a button in the options menu.
 
 Pro tip: Use the brush mode to remove trees and standalone props. If you unselect the brush snapping option for "Remove only matching type", and right click you can remove them within a radius and it only targets standalone props and trees.
 
-## Invisible Paths, Roads, and Markers
-The mod will automatically toggle the DevUI setting to "Show Markers" when drawing or plopping invisible paths, roads, object markers, etc.
-
-You can toggle DevUI Setting to "Show Markers" yourself using DevUI -> Gameplay -> Show Markers. There is also a toggle in Extra Landscaping Tools 2.0 or later while drawing surfaces.
-
-ABSOLUTELY, NEVER, attach an invisible path/road to an invisible paths/roads in growable/zoned buildings!!! Several triggers that will occur later will crash your game. You can attach an invisible path or road to an invisible paths/roads in ploppable building, but if you later want to apply one of the various building upgdrades you will need to remove the attached invisible networks first.
-
 ## Disclaimer
 This mod does NOT allow you to do everything including:
 * If the vanilla net tool would remove an existing network, it will still do that.

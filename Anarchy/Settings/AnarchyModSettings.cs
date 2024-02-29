@@ -47,6 +47,10 @@ namespace Anarchy.Settings
         public bool ToolIcon { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to prevent override in editor.
+        public bool PreventOverrideInEditor { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether to prevent prop culling.
         /// </summary>
         public bool PreventAccidentalPropCulling { get; set; }
@@ -120,6 +124,7 @@ namespace Anarchy.Settings
             PropRefreshFrequency = 30;
             AllowPlacingMultipleUniqueBuildings = false;
             MinimumClearanceBelowElevatedNetworks = 0f;
+            PreventOverrideInEditor = false;
         }
 
         /// <inheritdoc/>
