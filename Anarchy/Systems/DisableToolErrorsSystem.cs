@@ -23,6 +23,7 @@ namespace Anarchy.Systems
         private ToolSystem m_ToolSystem;
         private EntityQuery m_ToolErrorPrefabQuery;
         private AnarchySystem m_AnarchySystem;
+        private AnarchyReactUISystem m_AnarchyUISystem;
         private EnableToolErrorsSystem m_EnableToolErrorsSystem;
         private ILog m_Log;
         private PrefabSystem m_PrefabSystem;
@@ -42,6 +43,7 @@ namespace Anarchy.Systems
             m_EnableToolErrorsSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<EnableToolErrorsSystem>();
             m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
             m_PrefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
+            m_AnarchyUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyReactUISystem>();
             m_Log.Info($"{nameof(DisableToolErrorsSystem)} Created.");
             m_ToolErrorPrefabQuery = GetEntityQuery(new EntityQueryDesc[]
             {
@@ -66,7 +68,7 @@ namespace Anarchy.Systems
                 return;
             }
 
-            if (!m_AnarchySystem.AnarchyEnabled && m_ToolSystem.ignoreErrors && m_AnarchySystem.IsToolAppropriate(m_ToolSystem.activeTool.toolID))
+            if (!m_AnarchyUISystem.AnarchyEnabled && m_ToolSystem.ignoreErrors && m_AnarchySystem.IsToolAppropriate(m_ToolSystem.activeTool.toolID))
             {
                 m_ToolSystem.ignoreErrors = false;
             }
@@ -88,7 +90,7 @@ namespace Anarchy.Systems
                 }
             }
 
-            if (!m_AnarchySystem.AnarchyEnabled || !m_AnarchySystem.IsToolAppropriate(m_ToolSystem.activeTool.toolID))
+            if (!m_AnarchyUISystem.AnarchyEnabled || !m_AnarchySystem.IsToolAppropriate(m_ToolSystem.activeTool.toolID))
             {
                 return;
             }

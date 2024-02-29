@@ -33,7 +33,7 @@ namespace Anarchy.Systems
             { "Line Tool" },
         };
 
-        private AnarchySystem m_AnarchySystem;
+        private AnarchyReactUISystem m_AnarchyUISystem;
         private ILog m_Log;
         private ToolSystem m_ToolSystem;
         private NetToolSystem m_NetToolSystem;
@@ -56,7 +56,7 @@ namespace Anarchy.Systems
             m_Log = AnarchyMod.Instance.Log;
             m_Log.effectivenessLevel = Level.Info;
             m_Log.Info($"{nameof(AnarchyPlopSystem)} Created.");
-            m_AnarchySystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchySystem>();
+            m_AnarchyUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyReactUISystem>();
             m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
             m_NetToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<NetToolSystem>();
             m_ObjectToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ObjectToolSystem>();
@@ -180,7 +180,7 @@ namespace Anarchy.Systems
                 }
             }
 
-            if (m_AnarchySystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID) && !m_NetToolSystem.TrySetPrefab(m_ToolSystem.activePrefab))
+            if (m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID) && !m_NetToolSystem.TrySetPrefab(m_ToolSystem.activePrefab))
             {
                 EntityManager.RemoveComponent(m_CreatedQuery, ComponentType.ReadWrite<Overridden>());
                 EntityManager.RemoveComponent(m_OwnedAndOverridenQuery, ComponentType.ReadWrite<Overridden>());

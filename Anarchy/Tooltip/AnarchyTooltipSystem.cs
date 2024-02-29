@@ -5,6 +5,7 @@
 namespace Anarchy.Tooltip
 {
     using Anarchy;
+    using Anarchy.Systems;
     using Colossal.Logging;
     using Game.Tools;
     using Game.UI.Tooltip;
@@ -16,6 +17,7 @@ namespace Anarchy.Tooltip
     {
         private StringTooltip m_Tooltip;
         private ToolSystem m_ToolSystem;
+        private AnarchyReactUISystem m_AnarchyUISystem;
         private AnarchySystem m_AnarchySystem;
         private ILog m_Log;
 
@@ -32,6 +34,7 @@ namespace Anarchy.Tooltip
             base.OnCreate();
             m_Log = AnarchyMod.Instance.Log;
             m_AnarchySystem = World.GetOrCreateSystemManaged<AnarchySystem>();
+            m_AnarchyUISystem = World.GetOrCreateSystemManaged<AnarchyReactUISystem>();
             m_Tooltip = new StringTooltip()
             {
                 icon = "coui://uil/Colored/Anarchy.svg",
@@ -45,7 +48,7 @@ namespace Anarchy.Tooltip
         {
             if (m_ToolSystem.activeTool.toolID != null && AnarchyMod.Instance.Settings.ShowTooltip)
             {
-                if (m_AnarchySystem.IsToolAppropriate(m_ToolSystem.activeTool.toolID) && m_AnarchySystem.AnarchyEnabled)
+                if (m_AnarchySystem.IsToolAppropriate(m_ToolSystem.activeTool.toolID) && m_AnarchyUISystem.AnarchyEnabled)
                 {
                     AddMouseTooltip(m_Tooltip);
                 }

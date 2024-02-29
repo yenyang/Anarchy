@@ -13,7 +13,6 @@ namespace Anarchy.Tooltip
     using Game.Prefabs;
     using Game.Tools;
     using Unity.Entities;
-    using Unity.Jobs;
     using UnityEngine.InputSystem;
 
     /// <summary>
@@ -63,7 +62,6 @@ namespace Anarchy.Tooltip
         private ILog m_Log;
         private AnarchyReactUISystem m_AnarchyUISystem;
         private ResetNetCompositionDataSystem m_ResetNetCompositionDataSystem;
-        private bool m_AnarchyEnabled = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AnarchySystem"/> class.
@@ -71,11 +69,6 @@ namespace Anarchy.Tooltip
         public AnarchySystem()
         {
         }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether Anarchy is enabled.
-        /// </summary>
-        public bool AnarchyEnabled { get => m_AnarchyEnabled; set => m_AnarchyEnabled = value; }
 
         /// <inheritdoc/>
         public override string toolID => "Anarchy Tool";
@@ -124,12 +117,6 @@ namespace Anarchy.Tooltip
         }
 
         /// <inheritdoc/>
-        protected override JobHandle OnUpdate(JobHandle inputDeps)
-        {
-            return inputDeps;
-        }
-
-        /// <inheritdoc/>
         protected override void OnGamePreload(Purpose purpose, GameMode mode)
         {
             m_Log.Info($"{nameof(AnarchySystem)} System OnGamePreload.");
@@ -148,9 +135,8 @@ namespace Anarchy.Tooltip
             {
                 if (ToolIDs.Contains(this.m_ToolSystem.activeTool.toolID))
                 {
-                    AnarchyEnabled = !AnarchyEnabled;
                     m_AnarchyUISystem.ToggleAnarchyButton();
-                    if (AnarchyEnabled)
+                    if (m_AnarchyUISystem.AnarchyEnabled)
                     {
                         m_Log.Debug("Anarchy Enabled.");
                     }
