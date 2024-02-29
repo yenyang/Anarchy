@@ -17,7 +17,7 @@ namespace Anarchy.Tooltip
     {
         private StringTooltip m_Tooltip;
         private ToolSystem m_ToolSystem;
-        private AnarchyReactUISystem m_AnarchyUISystem;
+        private AnarchyUISystem m_AnarchyUISystem;
         private AnarchySystem m_AnarchySystem;
         private ILog m_Log;
 
@@ -34,7 +34,7 @@ namespace Anarchy.Tooltip
             base.OnCreate();
             m_Log = AnarchyMod.Instance.Log;
             m_AnarchySystem = World.GetOrCreateSystemManaged<AnarchySystem>();
-            m_AnarchyUISystem = World.GetOrCreateSystemManaged<AnarchyReactUISystem>();
+            m_AnarchyUISystem = World.GetOrCreateSystemManaged<AnarchyUISystem>();
             m_Tooltip = new StringTooltip()
             {
                 icon = "coui://uil/Colored/Anarchy.svg",

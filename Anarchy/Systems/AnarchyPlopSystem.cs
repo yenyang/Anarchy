@@ -33,7 +33,7 @@ namespace Anarchy.Systems
             { "Line Tool" },
         };
 
-        private AnarchyReactUISystem m_AnarchyUISystem;
+        private AnarchyUISystem m_AnarchyUISystem;
         private ILog m_Log;
         private ToolSystem m_ToolSystem;
         private NetToolSystem m_NetToolSystem;
@@ -56,7 +56,7 @@ namespace Anarchy.Systems
             m_Log = AnarchyMod.Instance.Log;
             m_Log.effectivenessLevel = Level.Info;
             m_Log.Info($"{nameof(AnarchyPlopSystem)} Created.");
-            m_AnarchyUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyReactUISystem>();
+            m_AnarchyUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyUISystem>();
             m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
             m_NetToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<NetToolSystem>();
             m_ObjectToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ObjectToolSystem>();

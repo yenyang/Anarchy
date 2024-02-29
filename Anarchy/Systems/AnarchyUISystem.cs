@@ -1,4 +1,4 @@
-﻿// <copyright file="AnarchyReactUISystem.cs" company="Yenyang's Mods. MIT License">
+﻿// <copyright file="AnarchyUISystem.cs" company="Yenyang's Mods. MIT License">
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
@@ -13,9 +13,9 @@ namespace Anarchy.Systems
     using Unity.Entities;
 
     /// <summary>
-    /// UI system for Object Tool while using tree prefabs.
+    /// UI system for Anarchy.
     /// </summary>
-    public partial class AnarchyReactUISystem : UISystemBase
+    public partial class AnarchyUISystem : UISystemBase
     {
         private ToolSystem m_ToolSystem;
         private ILog m_Log;
@@ -70,7 +70,7 @@ namespace Anarchy.Systems
             m_ResetNetCompositionDataSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ResetNetCompositionDataSystem>();
             ToolSystem toolSystem = m_ToolSystem; // I don't know why vanilla game did this.
             m_ToolSystem.EventToolChanged = (Action<ToolBaseSystem>)Delegate.Combine(toolSystem.EventToolChanged, new Action<ToolBaseSystem>(OnToolChanged));
-            m_Log.Info($"{nameof(AnarchyReactUISystem)}.{nameof(OnCreate)}");
+            m_Log.Info($"{nameof(AnarchyUISystem)}.{nameof(OnCreate)}");
 
             // This binding communicates whether Anarchy toggle is enabled or disabled.
             AddBinding(m_AnarchyEnabled = new ValueBinding<bool>("Anarchy", "AnarchyEnabled", false));
@@ -81,7 +81,7 @@ namespace Anarchy.Systems
             // This binding listens for whether the Anarchy tool icon has been toggled.
             AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", AnarchyToggled));
 
-            // This binding communicated whether the option for using Flaming chirper is enabled.
+            // This binding communicates whether the option for using Flaming chirper is enabled.
             AddBinding(m_FlamingChirperOption = new ValueBinding<bool>("Anarchy", "FlamingChirperOption", AnarchyMod.Instance.Settings.FlamingChirper));
         }
 
@@ -128,7 +128,7 @@ namespace Anarchy.Systems
                 m_AnarchyEnabled.Update(!m_AnarchyEnabled.value);
             }
 
-            // Implements Anarchic Bulldozer when bulldoze tool is activated from inappropriate tool.
+            // Implements Anarchic Bulldozer when bulldoze tool is activated.
             if (AnarchyMod.Instance.Settings.AnarchicBulldozer && m_AnarchyEnabled.value == false && tool == m_BulldozeToolSystem)
             {
                 m_DisableAnarchyWhenCompleted = true;
@@ -144,6 +144,5 @@ namespace Anarchy.Systems
 
             m_LastTool = tool.toolID;
         }
-
     }
 }

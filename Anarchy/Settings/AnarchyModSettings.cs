@@ -131,7 +131,7 @@ namespace Anarchy.Settings
         public override void Apply()
         {
             base.Apply();
-            AnarchyReactUISystem anarchyReactUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyReactUISystem>();
+            AnarchyUISystem anarchyReactUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyUISystem>();
             if (anarchyReactUISystem.FlamingChirperOption != FlamingChirper)
             {
                 anarchyReactUISystem.SetFlamingChirperOption(FlamingChirper);

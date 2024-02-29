@@ -98,7 +98,7 @@ namespace Anarchy
             updateSystem.UpdateAt<AnarchySystem>(SystemUpdatePhase.ToolUpdate);
             updateSystem.UpdateBefore<DisableToolErrorsSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAfter<EnableToolErrorsSystem>(SystemUpdatePhase.ModificationEnd);
-            updateSystem.UpdateAt<AnarchyReactUISystem>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateAt<AnarchyUISystem>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateBefore<AnarchyPlopSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateBefore<PreventOverrideSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateBefore<RemoveOverridenSystem>(SystemUpdatePhase.ModificationEnd);

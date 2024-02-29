@@ -26,7 +26,7 @@ namespace Anarchy.Systems
     {
         private ToolSystem m_ToolSystem;
         private EntityQuery m_NetCompositionDataQuery;
-        private AnarchyReactUISystem m_AnarchyUISystem;
+        private AnarchyUISystem m_AnarchyUISystem;
         private ILog m_Log;
         private NetToolSystem m_NetToolSystem;
         private ResetNetCompositionDataSystem m_ResetNetCompositionDataSystem;
@@ -45,7 +45,7 @@ namespace Anarchy.Systems
         protected override void OnCreate()
         {
             m_Log = AnarchyMod.Instance.Log;
-            m_AnarchyUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyReactUISystem>();
+            m_AnarchyUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyUISystem>();
             m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
             m_NetToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<NetToolSystem>();
             m_PrefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
