@@ -122,7 +122,7 @@ namespace Anarchy
         {
             LocaleEN defaultLocale = new LocaleEN(Settings);
 
-            defaultLocale.ExportLocalizationCSV(ModInstallFolder, GameManager.instance.localizationManager.GetSupportedLocales());
+            // defaultLocale.ExportLocalizationCSV(ModInstallFolder, GameManager.instance.localizationManager.GetSupportedLocales());
             var file = Path.Combine(ModInstallFolder, "l10n", $"l10n.csv");
             Log.Debug($"{nameof(AnarchyMod)}.{nameof(LoadLocales)} {file}");
             if (File.Exists(file))

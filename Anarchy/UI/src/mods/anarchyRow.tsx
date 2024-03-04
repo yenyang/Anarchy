@@ -31,28 +31,23 @@ export const AnarchyRowComponent = (moduleRegistry: ModuleRegistry) => (Componen
         const handleClick = useCallback ((ev: MouseEvent<HTMLButtonElement>) => {
             // This triggers an event on C# side and C# designates the method to implement.
             trigger("Anarchy", "AnarchyToggled");
-        }, [])
-        
-        // This will return original component and children if there is nothing to insert.
-        if (!showToolIcon) {
-            return (
-                <Component {...otherProps}>
-                    {children}
-                </Component>
+        }, []);
+
+        var result = Component();
+        if (showToolIcon) {
+            result.props.children?.unshift(
+                /* 
+                Add a new section before other tool options sections with translated title based of this localization key. Localization key defined in C#.
+                Add a new Tool button into that section. Selected is based on Anarchy Enabled binding. 
+                Tooltip is translated based on localization key. OnSelect run callback fucntion here to trigger event. 
+                Anarchy specific image source changes bases on Anarchy Enabled binding. 
+                */
+                <Section title={engine.translate("YY_ANARCHY.Anarchy")}>
+                    <ToolButton className = {theme.button} selected = {anarchyEnabled} tooltip = {engine.translate("YY_ANARCHY_DESCRIPTION.AnarchyButton")} onSelect={handleClick} src={anarchyEnabled ? selectedImageSource : unselectedImageSource}></ToolButton>
+                </Section>
             );
         }
-        
-        var result = Component();
-        result.props.children?.unshift(
-            /* 
-            Add a new section before other tool options sections with translated title based of this localization key. Localization key defined in C#.
-            Add a new Tool button into that section. Selected is based on Anarchy Enabled binding. 
-            Tooltip is translated based on localization key. OnSelect run callback fucntion here to trigger event. 
-            Anarchy specific image source changes bases on Anarchy Enabled binding. 
-            */
-            <Section title={engine.translate("YY_ANARCHY.Anarchy")}>
-                <ToolButton className = {theme.button} selected = {anarchyEnabled} tooltip = {engine.translate("YY_ANARCHY_DESCRIPTION.AnarchyButton")} onSelect={handleClick} src={anarchyEnabled ? selectedImageSource : unselectedImageSource}></ToolButton>
-            </Section>)
-        return <>{result}</>;
+
+        return result;
     };
 }
