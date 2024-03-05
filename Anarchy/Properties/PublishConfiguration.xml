@@ -89,7 +89,7 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * Algernon - Help with UI, Cooperative Development and Code Sharing
 * Bad Peanut - Image Credit for Flaming Chirper
 * T.D.W., Klyte45, krzychu124, and Quboid - Cooperative Development and Code Sharing
-* Localization: Nyoko, Dome, and Citadino (Spanish), Hendrix (German), RilkeXS (Chinese Simplified), Luis Fernando de Paula (Portuguese), Maxi (Partial Italian), karmel68 (Polish), Tanat (Korean), and Quoifleur (French), 
+* Localization: Nyoko, Citadino, Dome, and Eryalito (Spanish), Hendrix (German), RilkeXS (Chinese Simplified), Luis Fernando de Paula (Portuguese), Maxi (Partial Italian), karmel68 (Polish), Tanat (Korean), and Quoifleur (French), 
 * Dante, starrysum - Testing, Feedback</LongDescription>
   <!--Thumbnail-->
   <Thumbnail Value="Properties/Thumbnail.png" />
@@ -109,7 +109,9 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <ChangeLog>## Patch V1.4.1
 * Removed automatically showing markers. Will be in Better Bulldozer mod.
 * Added setting for Preventing Override in Editor.
-* Commented out ui console log of registry.</ChangeLog>
+* Commented out ui console log of registry.
+* Fixed incompatibility with other tool option panel UI mods.
+* Additional translations.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.com/invite/DgH7rDKZ6r" />
