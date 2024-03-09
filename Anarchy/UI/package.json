@@ -8,7 +8,8 @@
     "build": "webpack",
     "dev": "webpack --watch",
     "update": "npx create-csii-ui-mod update",
-    "delete": "npx create-csii-ui-mod delete"
+    "delete": "npx create-csii-ui-mod delete",
+    "clean": "npx create-csii-ui-mod clean"
   },
   "exclude": [
     "node_modules",

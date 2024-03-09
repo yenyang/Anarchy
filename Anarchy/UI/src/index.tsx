@@ -1,11 +1,13 @@
-import { ModRegistrar } from "modding/types";
-import { AnarchyRowComponent } from "mods/anarchyRow";
-import { ChirperModComponent } from "mods/chirperMod";
+import { ModRegistrar } from "cs2/modding";
+import { AnarchyRowComponent } from "mods/anarchySection/anarchySection";
+import { VanillaComponentResolver } from "mods/VanillaComponentResolver/VanillaComponentResolver";
+import mod from "../mod.json";
 
 const register: ModRegistrar = (moduleRegistry) => {
      // console.log('mr', moduleRegistry);
-     moduleRegistry.extend("game-ui/game/components/tool-options/mouse-tool-options/mouse-tool-options.tsx", 'MouseToolOptions', AnarchyRowComponent(moduleRegistry));
-     moduleRegistry.extend("game-ui/game/components/right-menu/right-menu.tsx", "RightMenu", ChirperModComponent(moduleRegistry))
+     VanillaComponentResolver.setRegistry(moduleRegistry);
+     moduleRegistry.extend("game-ui/game/components/tool-options/mouse-tool-options/mouse-tool-options.tsx", 'MouseToolOptions', AnarchyRowComponent);
+     console.log(mod.id + " UI module registrations completed.");
 }
 
 export default register;

@@ -10,6 +10,10 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": "src",
     "skipLibCheck": true,
-    "typeRoots": ["./types"]
+    "typeRoots": ["./types"],
+    "resolveJsonModule": true,
+    "paths": {
+      "mod.json": ["../mod.json"]
+    }
   },
-}
+} 

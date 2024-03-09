@@ -4,3 +4,4 @@
 * Commented out ui console log of registry.
 * Fixed incompatibility with other tool option panel UI mods.
 * Additional translations.
+* Update for v1.0.21
