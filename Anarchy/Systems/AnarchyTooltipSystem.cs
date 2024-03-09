@@ -7,6 +7,7 @@ namespace Anarchy.Systems
     using Anarchy;
     using Colossal.Logging;
     using Game.Tools;
+    using Game.UI.Localization;
     using Game.UI.Tooltip;
 
     /// <summary>
@@ -34,7 +35,7 @@ namespace Anarchy.Systems
             m_AnarchyUISystem = World.GetOrCreateSystemManaged<AnarchyUISystem>();
             m_Tooltip = new StringTooltip()
             {
-                icon = "coui://uil/Colored/Anarchy.svg",
+                value = LocalizedString.IdWithFallback("Ⓐ", "Ⓐ"),
             };
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_Log.Info($"{nameof(AnarchyTooltipSystem)} Created.");

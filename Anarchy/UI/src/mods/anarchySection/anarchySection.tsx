@@ -30,7 +30,6 @@ export const AnarchyRowComponent: ModuleRegistryExtend = (Component : any) => {
         // This defines aspects of the components.
         const {children, ...otherProps} = props || {};
 
-        
         var result : JSX.Element = Component();
         // If show icon add new section with title, and one button. 
         if (showToolIcon) {

@@ -38,7 +38,7 @@ namespace Anarchy.Settings
         public bool ShowTooltip { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to have chirper be on fire.
+        /// Gets or sets a value indicating whether to have chirper be on fire. This is currently hidden as it is not implemented and hidding it doesn't break people's existing settings.
         /// </summary>
         public bool FlamingChirper { get; set; }
 
