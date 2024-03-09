@@ -15,7 +15,7 @@ export function handleClick() {
     trigger(mod.id, "AnarchyToggled");
 }
 
-export const AnarchyRowComponent: ModuleRegistryExtend = (Component) => {
+export const AnarchyRowComponent: ModuleRegistryExtend = (Component : any) => {
     // do not put anything here
     return (props) => {
         // These get the value of the bindings.
@@ -30,31 +30,31 @@ export const AnarchyRowComponent: ModuleRegistryExtend = (Component) => {
         // This defines aspects of the components.
         const {children, ...otherProps} = props || {};
 
+        
+        var result : JSX.Element = Component();
         // If show icon add new section with title, and one button. 
-        // Anarchy specific: button source depends on enabled or disabled.
-        // Selected is from binding.
-        // translated tooltip from above.
-        // on select call function that triggers C# event.
-        return (
-            <>
-                { showToolIcon ? 
-                    <VanillaComponentResolver.instance.Section title={anarchySectionTitle}>
-                        <VanillaComponentResolver.instance.ToolButton
-                            src={anarchyEnabled ? anarchyEnabledSrc : anarchyDisabledSrc}
-                            selected = {anarchyEnabled}
-                            multiSelect = {false}
-                            disabled = {false}
-                            tooltip = {tooltipText}
-                            className = {VanillaComponentResolver.instance.toolButtonTheme.button}
-                            onSelect={handleClick}
-                        />
-                    </VanillaComponentResolver.instance.Section> 
-                    : <></> 
-                }
-                <Component {...otherProps}>
-                    {children}
-                </Component> 
-            </>
-        );
+        if (showToolIcon) {
+            result.props.children?.unshift(
+                /* 
+                Add a new section before other tool options sections with translated title based of this localization key. Localization key defined in C#.
+                Add a new Tool button into that section. Selected is based on Anarchy Enabled binding. 
+                Tooltip is translated based on localization key. OnSelect run callback fucntion here to trigger event. 
+                Anarchy specific image source changes bases on Anarchy Enabled binding. 
+                */
+                <VanillaComponentResolver.instance.Section title={anarchySectionTitle}>
+                    <VanillaComponentResolver.instance.ToolButton
+                        src={anarchyEnabled ? anarchyEnabledSrc : anarchyDisabledSrc}
+                        selected = {anarchyEnabled}
+                        multiSelect = {false}
+                        disabled = {false}
+                        tooltip = {tooltipText}
+                        className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                        onSelect={handleClick}
+                    />
+                </VanillaComponentResolver.instance.Section> 
+            );
+        }
+
+        return result;
     };
 }
