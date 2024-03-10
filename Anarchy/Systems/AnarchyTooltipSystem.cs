@@ -4,12 +4,12 @@
 
 namespace Anarchy.Systems
 {
+    using System;
     using Anarchy;
     using Colossal.Logging;
     using Game.Tools;
     using Game.UI.Localization;
     using Game.UI.Tooltip;
-    using System;
 
     /// <summary>
     /// Applies a circle A tooltip when Anarchy is active.
