@@ -3,9 +3,6 @@ This mod allows you to place vegetation and props (with DevUI 'Add Object' menu)
 For consistency within the community, please do not use the term Anarchy to mean something else for CSL2.
 Sully has prepared an Amazing! demo video about detailing with Anarchy on Youtube.
 
-## Dependencies
-Unified Icon Library
-
 ## Detailed Descrption
 The mod also has: 
 * Optional Tool icon
@@ -78,8 +75,8 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * yenyang - Mod Author
 * Chameleon TBN - Testing, Feedback, Icons, and Logo
 * Sully - Testing, Feedback, and Promotional Material.
-* Algernon - Help with UI, Cooperative Development and Code Sharing
+* Klyte45, Algernon - Help with UI, Cooperative Development and Code Sharing
 * Bad Peanut - Image Credit for Flaming Chirper
-* T.D.W., Klyte45, krzychu124, and Quboid - Cooperative Development and Code Sharing
+* T.D.W., krzychu124, and Quboid - Cooperative Development and Code Sharing
 * Localization: Nyoko, Citadino, Dome, and Eryalito (Spanish), Hendrix (German), RilkeXS (Chinese Simplified), Luis Fernando de Paula (Portuguese), Maxi (Partial Italian), karmel68 (Polish), Tanat (Korean), and Quoifleur (French), 
 * Dante, starrysum - Testing, Feedback
