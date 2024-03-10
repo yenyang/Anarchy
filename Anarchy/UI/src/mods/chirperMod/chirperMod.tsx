@@ -13,8 +13,10 @@ export const ChirperModComponent = () => {
     const anarchyEnabled : boolean = useValue(anarchyEnabled$);
     const flamingChirperOption : boolean = useValue(flamingChirperOption$);
     
+    // This takes the two bools from the bindings and condenses it down to a single bool for both being true.
     const showFlamingChirper : boolean = anarchyEnabled && flamingChirperOption;
 
+    // This either returns an empty JSX component or the flaming chirper image. Sass is used to determine absolute position, size, and to set z-index. Setting pointer events to none was precautionary. 
     return (
         <>
             {showFlamingChirper && (

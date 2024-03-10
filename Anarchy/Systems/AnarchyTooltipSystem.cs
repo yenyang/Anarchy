@@ -9,6 +9,7 @@ namespace Anarchy.Systems
     using Game.Tools;
     using Game.UI.Localization;
     using Game.UI.Tooltip;
+    using System;
 
     /// <summary>
     /// Applies a circle A tooltip when Anarchy is active.
@@ -36,8 +37,6 @@ namespace Anarchy.Systems
             m_Tooltip = new StringTooltip()
             {
                 icon = "coui://ui-mods/images/ColoredAnarchy.svg",
-
-                // value = LocalizedString.IdWithFallback("Ⓐ", "Ⓐ"),
             };
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_Log.Info($"{nameof(AnarchyTooltipSystem)} Created.");
@@ -50,7 +49,18 @@ namespace Anarchy.Systems
             {
                 if (m_AnarchyUISystem.IsToolAppropriate(m_ToolSystem.activeTool.toolID) && m_AnarchyUISystem.AnarchyEnabled)
                 {
-                    AddMouseTooltip(m_Tooltip);
+                    try
+                    {
+                        AddMouseTooltip(m_Tooltip);
+                    }
+                    catch (Exception e)
+                    {
+                        m_Log.Warn($"{nameof(AnarchyTooltipSystem)}.{nameof(OnUpdate)} Encountered Error {e} Using backup tooltip.");
+                        m_Tooltip = new StringTooltip()
+                        {
+                            value = LocalizedString.IdWithFallback("Ⓐ", "Ⓐ"),
+                        };
+                    }
                 }
             }
         }
