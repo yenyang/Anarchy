@@ -35,7 +35,9 @@ namespace Anarchy.Systems
             m_AnarchyUISystem = World.GetOrCreateSystemManaged<AnarchyUISystem>();
             m_Tooltip = new StringTooltip()
             {
-                value = LocalizedString.IdWithFallback("Ⓐ", "Ⓐ"),
+                icon = "coui://ui-mods/images/ColoredAnarchy.svg",
+
+                // value = LocalizedString.IdWithFallback("Ⓐ", "Ⓐ"),
             };
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_Log.Info($"{nameof(AnarchyTooltipSystem)} Created.");
