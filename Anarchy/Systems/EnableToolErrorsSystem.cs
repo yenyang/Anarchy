@@ -6,7 +6,6 @@ namespace Anarchy.Systems
 {
     using System.Collections.Generic;
     using Anarchy;
-    using Anarchy.Tooltip;
     using Colossal.Entities;
     using Colossal.Logging;
     using Game;
@@ -20,7 +19,7 @@ namespace Anarchy.Systems
     public partial class EnableToolErrorsSystem : GameSystemBase
     {
         private EntityQuery m_ToolErrorPrefabQuery;
-        private AnarchySystem m_AnarchySystem;
+        private AnarchyUISystem m_AnarchyUISystem;
         private ILog m_Log;
         private List<Game.Tools.ErrorType> m_DoNotReEnableForEditor = new ()
         {
@@ -41,8 +40,8 @@ namespace Anarchy.Systems
         protected override void OnCreate()
         {
             m_Log = AnarchyMod.Instance.Log;
-            m_AnarchySystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchySystem>();
             m_Log.Info($"{nameof(EnableToolErrorsSystem)} Created.");
+            m_AnarchyUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyUISystem>();
             Enabled = false;
             m_ToolErrorPrefabQuery = GetEntityQuery(new EntityQueryDesc[]
             {
@@ -67,7 +66,7 @@ namespace Anarchy.Systems
             {
                 if (EntityManager.TryGetComponent<ToolErrorData>(currentEntity, out ToolErrorData toolErrorData))
                 {
-                    if (m_AnarchySystem.IsErrorTypeAllowed(toolErrorData.m_Error))
+                    if (m_AnarchyUISystem.IsErrorTypeAllowed(toolErrorData.m_Error))
                     {
                         if (toolErrorData.m_Error != Game.Tools.ErrorType.ExceedsLotLimits)
                         {

@@ -38,13 +38,17 @@ namespace Anarchy.Settings
         public bool ShowTooltip { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to have chirper be on fire.
+        /// Gets or sets a value indicating whether to have chirper be on fire. This is currently hidden as it is not implemented and hidding it doesn't break people's existing settings.
         /// </summary>
         public bool FlamingChirper { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to use the tool icon.
         public bool ToolIcon { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to prevent override in editor.
+        public bool PreventOverrideInEditor { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to prevent prop culling.
@@ -120,13 +124,14 @@ namespace Anarchy.Settings
             PropRefreshFrequency = 30;
             AllowPlacingMultipleUniqueBuildings = false;
             MinimumClearanceBelowElevatedNetworks = 0f;
+            PreventOverrideInEditor = false;
         }
 
         /// <inheritdoc/>
         public override void Apply()
         {
             base.Apply();
-            AnarchyReactUISystem anarchyReactUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyReactUISystem>();
+            AnarchyUISystem anarchyReactUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyUISystem>();
             if (anarchyReactUISystem.FlamingChirperOption != FlamingChirper)
             {
                 anarchyReactUISystem.SetFlamingChirperOption(FlamingChirper);

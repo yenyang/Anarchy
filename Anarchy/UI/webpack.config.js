@@ -33,7 +33,13 @@ module.exports = {
   externals: {
     react: "React",
     "react-dom": "ReactDOM",
-    "modding/modding-context": "ModdingContext",
+    "cs2/modding": "cs2/modding",
+    "cs2/api": "cs2/api",
+    "cs2/bindings": "cs2/bindings",
+    "cs2/l10n": "cs2/l10n",
+    "cs2/ui": "cs2/ui",
+    "cs2/utils": "cs2/utils",
+    "cohtml/cohtml": "cohtml/cohtml",
   },
   module: {
     rules: [

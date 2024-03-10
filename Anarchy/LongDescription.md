@@ -3,9 +3,6 @@ This mod allows you to place vegetation and props (with DevUI 'Add Object' menu)
 For consistency within the community, please do not use the term Anarchy to mean something else for CSL2.
 Sully has prepared an Amazing! demo video about detailing with Anarchy on Youtube.
 
-## Dependencies
-Unified Icon Library
-
 ## Detailed Descrption
 The mod also has: 
 * Optional Tool icon
@@ -62,13 +59,6 @@ You can also manually trigger a prop refresh using a button in the options menu.
 
 Pro tip: Use the brush mode to remove trees and standalone props. If you unselect the brush snapping option for "Remove only matching type", and right click you can remove them within a radius and it only targets standalone props and trees.
 
-## Invisible Paths, Roads, and Markers
-The mod will automatically toggle the DevUI setting to "Show Markers" when drawing or plopping invisible paths, roads, object markers, etc.
-
-You can toggle DevUI Setting to "Show Markers" yourself using DevUI -> Gameplay -> Show Markers. There is also a toggle in Extra Landscaping Tools 2.0 or later while drawing surfaces.
-
-ABSOLUTELY, NEVER, attach an invisible path/road to an invisible paths/roads in growable/zoned buildings!!! Several triggers that will occur later will crash your game. You can attach an invisible path or road to an invisible paths/roads in ploppable building, but if you later want to apply one of the various building upgdrades you will need to remove the attached invisible networks first.
-
 ## Disclaimer
 This mod does NOT allow you to do everything including:
 * If the vanilla net tool would remove an existing network, it will still do that.
@@ -85,8 +75,8 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * yenyang - Mod Author
 * Chameleon TBN - Testing, Feedback, Icons, and Logo
 * Sully - Testing, Feedback, and Promotional Material.
-* Algernon - Help with UI, Cooperative Development and Code Sharing
+* Klyte45, Algernon - Help with UI, Cooperative Development and Code Sharing
 * Bad Peanut - Image Credit for Flaming Chirper
-* T.D.W., Klyte45, krzychu124, and Quboid - Cooperative Development and Code Sharing
-* Localization: Nyoko, Dome, and Citadino (Spanish), Hendrix (German), RilkeXS (Chinese Simplified), Luis Fernando de Paula (Portuguese), Maxi (Partial Italian), karmel68 (Polish), Tanat (Korean), and Quoifleur (French), 
+* T.D.W., krzychu124, and Quboid - Cooperative Development and Code Sharing
+* Localization: Nyoko, Citadino, Dome, and Eryalito (Spanish), Hendrix (German), RilkeXS (Chinese Simplified), Luis Fernando de Paula (Portuguese), Maxi (Partial Italian), karmel68 (Polish), Tanat (Korean), and Quoifleur (French), 
 * Dante, starrysum - Testing, Feedback

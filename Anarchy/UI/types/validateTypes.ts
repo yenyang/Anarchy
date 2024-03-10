@@ -1,4 +1,4 @@
-import { ModRegistrar } from "modding/types";
+import { ModRegistrar } from "cs2/modding";
 
 async function validateExportTypes() {
     // only default export is processed by the UI, any named exports will be ignored.

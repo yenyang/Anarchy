@@ -2,11 +2,13 @@
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
-namespace Anarchy.Tooltip
+namespace Anarchy.Systems
 {
+    using System;
     using Anarchy;
     using Colossal.Logging;
     using Game.Tools;
+    using Game.UI.Localization;
     using Game.UI.Tooltip;
 
     /// <summary>
@@ -16,7 +18,7 @@ namespace Anarchy.Tooltip
     {
         private StringTooltip m_Tooltip;
         private ToolSystem m_ToolSystem;
-        private AnarchySystem m_AnarchySystem;
+        private AnarchyUISystem m_AnarchyUISystem;
         private ILog m_Log;
 
         /// <summary>
@@ -31,10 +33,10 @@ namespace Anarchy.Tooltip
         {
             base.OnCreate();
             m_Log = AnarchyMod.Instance.Log;
-            m_AnarchySystem = World.GetOrCreateSystemManaged<AnarchySystem>();
+            m_AnarchyUISystem = World.GetOrCreateSystemManaged<AnarchyUISystem>();
             m_Tooltip = new StringTooltip()
             {
-                icon = "coui://uil/Colored/Anarchy.svg",
+                icon = "coui://ui-mods/images/ColoredAnarchy.svg",
             };
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_Log.Info($"{nameof(AnarchyTooltipSystem)} Created.");
@@ -45,9 +47,20 @@ namespace Anarchy.Tooltip
         {
             if (m_ToolSystem.activeTool.toolID != null && AnarchyMod.Instance.Settings.ShowTooltip)
             {
-                if (m_AnarchySystem.IsToolAppropriate(m_ToolSystem.activeTool.toolID) && m_AnarchySystem.AnarchyEnabled)
+                if (m_AnarchyUISystem.IsToolAppropriate(m_ToolSystem.activeTool.toolID) && m_AnarchyUISystem.AnarchyEnabled)
                 {
-                    AddMouseTooltip(m_Tooltip);
+                    try
+                    {
+                        AddMouseTooltip(m_Tooltip);
+                    }
+                    catch (Exception e)
+                    {
+                        m_Log.Warn($"{nameof(AnarchyTooltipSystem)}.{nameof(OnUpdate)} Encountered Error {e} Using backup tooltip.");
+                        m_Tooltip = new StringTooltip()
+                        {
+                            value = LocalizedString.IdWithFallback("Ⓐ", "Ⓐ"),
+                        };
+                    }
                 }
             }
         }

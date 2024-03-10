@@ -6,7 +6,6 @@ namespace Anarchy.Systems
 {
     using System.Collections.Generic;
     using Anarchy;
-    using Anarchy.Tooltip;
     using Colossal.Logging;
     using Game;
     using Game.Buildings;
@@ -32,7 +31,7 @@ namespace Anarchy.Systems
             { "Default Tool" },
         };
 
-        private AnarchySystem m_AnarchySystem;
+        private AnarchyUISystem m_AnarchyUISystem;
         private ILog m_Log;
         private ToolSystem m_ToolSystem;
         private NetToolSystem m_NetToolSystem;
@@ -52,7 +51,7 @@ namespace Anarchy.Systems
         {
             m_Log = AnarchyMod.Instance.Log;
             m_Log.Info($"{nameof(RemoveOverridenSystem)} Created.");
-            m_AnarchySystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchySystem>();
+            m_AnarchyUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyUISystem>();
             m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
             m_NetToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<NetToolSystem>();
             m_ObjectToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ObjectToolSystem>();
@@ -79,7 +78,7 @@ namespace Anarchy.Systems
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            if (m_ToolSystem.activeTool.toolID == null || m_ToolSystem.actionMode.IsEditor())
+            if (m_ToolSystem.activeTool.toolID == null || (m_ToolSystem.actionMode.IsEditor() && !AnarchyMod.Instance.Settings.PreventOverrideInEditor))
             {
                 return;
             }
@@ -98,7 +97,7 @@ namespace Anarchy.Systems
                 return;
             }
 
-            if (m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID) || (m_AppropriateToolsWithAnarchy.Contains(m_ToolSystem.activeTool.toolID) && m_AnarchySystem.AnarchyEnabled))
+            if (m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID) || (m_AppropriateToolsWithAnarchy.Contains(m_ToolSystem.activeTool.toolID) && m_AnarchyUISystem.AnarchyEnabled))
             {
                 EntityManager.RemoveComponent(m_OwnedAndOverridenQuery, ComponentType.ReadWrite<Overridden>());
             }

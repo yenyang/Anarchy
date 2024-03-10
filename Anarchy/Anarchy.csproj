@@ -17,8 +17,8 @@
 		
 		<!--The file where mod information which is required for publishing mod on PDX mods are stored-->
 		<PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
-		<AssemblyVersion>1.4.0</AssemblyVersion>
-		<FileVersion>1.4.0</FileVersion>
+		<AssemblyVersion>1.4.1</AssemblyVersion>
+		<FileVersion>1.4.1</FileVersion>
 	</PropertyGroup>
 	
 	<!--Imports must be after PropertyGroup block-->
@@ -138,12 +138,11 @@
 	  <Folder Include="Components\" />
 	  <Folder Include="l10n\" />
 	  <Folder Include="UI\" />
-	  <Folder Include="Tooltip\" />
 	  <Folder Include="Settings\" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Lib.Harmony.Thin" Version="2.3.0.1" />
+	  <PackageReference Include="Lib.Harmony" Version="2.2.2" />
 	  <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -203,6 +202,7 @@
 	</Target>
 
 	<Target Name="SetupAttributes" BeforeTargets="BeforeBuild">
-		<XmlPoke XmlInputPath="$(PublishConfigurationPath)" Value="$([System.IO.File]::ReadAllText($(ProjectDir)/LongDescription.md)))" Query="//LongDescription" />
+		<XmlPoke XmlInputPath="$(PublishConfigurationPath)" Value="$([System.IO.File]::ReadAllText($(ProjectDir)/LongDescription.md))" Query="//LongDescription" />
+		<XmlPoke XmlInputPath="$(PublishConfigurationPath)" Value="$([System.IO.File]::ReadAllText($(ProjectDir)/ChangeLog.md))" Query="//ChangeLog" />
 	</Target>
 </Project>
