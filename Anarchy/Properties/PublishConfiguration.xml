@@ -99,7 +99,7 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <!--Version of the mod-->
   <ModVersion Value="1.4.1" />
   <!--Recommended version of the base game to use the mod-->
-  <GameVersion Value="1.0.21*" />
+  <GameVersion Value="1.0.22*" />
   <!--Dependency for the mod, can be set multiple-->
   <Dependency Id="" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->

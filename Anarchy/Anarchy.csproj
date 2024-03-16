@@ -32,6 +32,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Folder Include="lang"/>
+		<Content Include="lang\**">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+	
+	<ItemGroup>
 		<Reference Include="cohtml.Net">
 		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\cohtml.Net.dll</HintPath>
 		  <Private>False</Private>
@@ -151,7 +158,7 @@
 
 	<ItemGroup>
 	  <None Update="l10n\l10n.csv">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </None>
 	</ItemGroup>
 
