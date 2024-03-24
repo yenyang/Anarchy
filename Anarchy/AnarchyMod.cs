@@ -15,6 +15,7 @@ namespace Anarchy
     using Game;
     using Game.Modding;
     using Game.SceneFlow;
+    using Game.Settings;
     using HarmonyLib;
 
     /// <summary>
@@ -153,11 +154,8 @@ namespace Anarchy
             }
             else
             {
-                Log.Warn($"{nameof(AnarchyMod)}.{nameof(LoadLocales)} couldn't find localization file and loaded default for every language.");
-                foreach (var lang in GameManager.instance.localizationManager.GetSupportedLocales())
-                {
-                    GameManager.instance.localizationManager.AddSource(lang, defaultLocale);
-                }
+                Log.Warn($"{nameof(AnarchyMod)}.{nameof(LoadLocales)} couldn't find localization file and loaded default english.");
+                GameManager.instance.localizationManager.AddSource("en-US", defaultLocale);
             }
         }
     }

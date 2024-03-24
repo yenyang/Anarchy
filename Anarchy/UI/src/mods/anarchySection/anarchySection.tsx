@@ -3,12 +3,16 @@ import {ModuleRegistryExtend} from "cs2/modding";
 import { bindValue, trigger, useValue } from "cs2/api";
 import { VanillaComponentResolver } from "../VanillaComponentResolver/VanillaComponentResolver";
 import mod from "../../../mod.json";
-import anarchyDisabledSrc from "./StandardAnarchy.svg";
-import anarchyEnabledSrc from "./ColoredAnarchy.svg";
 
 // These establishes the binding with C# side. Without C# side game ui will crash.
 export const anarchyEnabled$ = bindValue<boolean>(mod.id, 'AnarchyEnabled');
 export const showToolIcon$ = bindValue<boolean>(mod.id, 'ShowToolIcon');
+
+// These contain the coui paths to Unified Icon Library svg assets
+export const uilStandard =                          "coui://uil/Standard/";
+export const uilColored =                           "coui://uil/Colored/";
+export const anarchyEnabledSrc =      uilColored +  "Anarchy.svg";
+export const anarchyDisabledSrc =     uilStandard + "Anarchy.svg";
 
 export function handleClick() {
     // This triggers an event on C# side and C# designates the method to implement.

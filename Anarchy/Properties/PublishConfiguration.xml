@@ -11,6 +11,9 @@ This mod allows you to place vegetation and props (with DevUI 'Add Object' menu)
 For consistency within the community, please do not use the term Anarchy to mean something else for CSL2.
 Sully has prepared an Amazing! demo video about detailing with Anarchy on Youtube.
 
+## Dependencies
+Unified Icon Library
+
 ## Detailed Descrption
 The mod also has: 
 * Optional Tool icon
@@ -91,27 +94,25 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <!--Thumbnail-->
   <Thumbnail Value="Properties/Thumbnail.png" />
   <!--Screenshot, can be set multiple-->
-  <Screenshot Value="" />
+  <Screenshot Value="Properties/Previews/anarchyStreets.jpg" />
+  <Screenshot Value="Properties/Previews/anarchyStream.jpg" />
   <!--Tag, can be set multiple-->
   <Tag Value="Code Mod" />
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="" />
   <!--Version of the mod-->
-  <ModVersion Value="1.4.1" />
+  <ModVersion Value="1.4.2" />
   <!--Recommended version of the base game to use the mod-->
-  <GameVersion Value="1.0.21*" />
+  <GameVersion Value="1.*" />
   <!--Dependency for the mod, can be set multiple-->
-  <Dependency Id="" />
+  <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog>## Patch V1.4.1
-* Removed automatically showing markers. Will be in Better Bulldozer mod.
-* Added setting for Preventing Override in Editor.
-* Commented out ui console log of registry.
-* Fixed incompatibility with other tool option panel UI mods.
-* Additional translations.
-* Update for v1.0.21</ChangeLog>
+  <ChangeLog>## Patch V1.4.2
+* Reinstate Unified Icon Dependency
+* Only loads English localization if file not found.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
-  <ExternalLink Type="discord" Url="https://discord.com/invite/DgH7rDKZ6r" />
+  <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
   <ExternalLink Type="github" Url="https://github.com/yenyang/Anarchy" />
+  <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />
 </Publish>
