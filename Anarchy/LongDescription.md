@@ -6,7 +6,13 @@ Sully has prepared an Amazing! demo video about detailing with Anarchy on Youtub
 ## Dependencies
 Unified Icon Library
 
-## Detailed Descrption
+## Donations
+If you want to say thank you with a donation you can do so on Paypal.
+
+## Translations
+I am looking for volunteers to help translate the mod into the official languages. For those interested please find the project in the discord link. CSL2:CODEMODS -> mods-wip -> Anarchy: Translations.
+
+# Detailed Descrption
 The mod also has: 
 * Optional Tool icon
 * Keyboard shortcut (Ctrl+A)
