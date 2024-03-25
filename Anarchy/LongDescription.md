@@ -3,7 +3,16 @@ This mod allows you to place vegetation and props (with DevUI 'Add Object' menu)
 For consistency within the community, please do not use the term Anarchy to mean something else for CSL2.
 Sully has prepared an Amazing! demo video about detailing with Anarchy on Youtube.
 
-## Detailed Descrption
+## Dependencies
+Unified Icon Library
+
+## Donations
+If you want to say thank you with a donation you can do so on Paypal.
+
+## Translations
+I am looking for volunteers to help translate the mod into the official languages. For those interested please find the project in the discord link. CSL2:CODEMODS -> mods-wip -> Anarchy: Translations.
+
+# Detailed Descrption
 The mod also has: 
 * Optional Tool icon
 * Keyboard shortcut (Ctrl+A)

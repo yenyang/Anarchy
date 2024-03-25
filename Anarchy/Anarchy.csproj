@@ -17,8 +17,9 @@
 		
 		<!--The file where mod information which is required for publishing mod on PDX mods are stored-->
 		<PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
-		<AssemblyVersion>1.4.1</AssemblyVersion>
-		<FileVersion>1.4.1</FileVersion>
+		<AssemblyVersion>1.4.2</AssemblyVersion>
+		<FileVersion>1.4.2</FileVersion>
+		<Version>1.4.2</Version>
 	</PropertyGroup>
 	
 	<!--Imports must be after PropertyGroup block-->
@@ -137,6 +138,7 @@
 	<ItemGroup>
 	  <Folder Include="Components\" />
 	  <Folder Include="l10n\" />
+	  <Folder Include="Properties\Previews\" />
 	  <Folder Include="UI\" />
 	  <Folder Include="Settings\" />
 	</ItemGroup>
@@ -191,18 +193,21 @@
 	  </Reference>
 	</ItemGroup>
 
-	<Target Name="CopyFiles" BeforeTargets="AfterBuild">
-		<ItemGroup>
-			<UIFiles Include="bin\UI\**\*.*" />
-		</ItemGroup>
-
-		<Exec Command="npm run build --prefix UI" />
-
-		<Copy SourceFiles="@(UIFiles)" DestinationFiles="@(UIFiles->'$(OutputPath)\%(RecursiveDir)%(Filename)%(Extension)')" />
+	<Target Name="InstallUI" AfterTargets="AfterBuild">
+		<Exec Command="npm run build" WorkingDirectory="$(ProjectDir)/UI" />
 	</Target>
 
 	<Target Name="SetupAttributes" BeforeTargets="BeforeBuild">
 		<XmlPoke XmlInputPath="$(PublishConfigurationPath)" Value="$([System.IO.File]::ReadAllText($(ProjectDir)/LongDescription.md))" Query="//LongDescription" />
 		<XmlPoke XmlInputPath="$(PublishConfigurationPath)" Value="$([System.IO.File]::ReadAllText($(ProjectDir)/ChangeLog.md))" Query="//ChangeLog" />
+		<XmlPoke XmlInputPath="$(PublishConfigurationPath)" Value="$(Version)" Query="//ModVersion/@Value" />
+	</Target>
+
+	<Target Name="Cleanup" AfterTargets="AfterBuild">
+		<ItemGroup>
+			<CleanTargets Include="$(DeployDir)/$(ProjectName).xml" />
+			<CleanTargets Include="$(DeployDir)/*.pdb" />
+		</ItemGroup>
+		<Delete Files="@(CleanTargets)" />
 	</Target>
 </Project>
