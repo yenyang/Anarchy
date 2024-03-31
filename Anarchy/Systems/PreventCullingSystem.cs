@@ -73,7 +73,6 @@ namespace Anarchy.Systems
                     ComponentType.ReadOnly<Household>(),
                     ComponentType.ReadOnly<Vehicle>(),
                     ComponentType.ReadOnly<Event>(),
-                    ComponentType.ReadOnly<DoNotPreventCulling>(),
                 },
             });
             RequireForUpdate(m_CullingInfoQuery);

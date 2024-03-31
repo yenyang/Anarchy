@@ -10,7 +10,10 @@ namespace Anarchy.Components
     /// <summary>
     /// A component used to filter out prevent overriding of entitiy in future from queries.
     /// </summary>
-    public struct DoNotPreventCulling : IComponentData, IQueryTypeParameter, IEmptySerializable
+    public struct TransformRecord : IComponentData, IQueryTypeParameter, IEmptySerializable
     {
+        public 
+        
     }
+    
 }
