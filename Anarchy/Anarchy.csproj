@@ -138,7 +138,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Components\" />
 	  <Folder Include="l10n\" />
 	  <Folder Include="Properties\Previews\" />
 	  <Folder Include="Settings\" />

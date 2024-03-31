@@ -22,6 +22,7 @@ namespace Anarchy.Systems
     using Unity.Collections;
     using Unity.Entities;
     using Unity.Jobs;
+    using Unity.Mathematics;
 
     /// <summary>
     /// A system that prevents objects from being overriden that has a custom component.
@@ -72,6 +73,7 @@ namespace Anarchy.Systems
                     ComponentType.ReadOnly<Household>(),
                     ComponentType.ReadOnly<Vehicle>(),
                     ComponentType.ReadOnly<Event>(),
+                    ComponentType.ReadOnly<DoNotPreventCulling>(),
                 },
             });
             RequireForUpdate(m_CullingInfoQuery);
