@@ -196,30 +196,30 @@ namespace Anarchy.Systems
                         {
                             if (prefabBase is StaticObjectPrefab && EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData))
                             {
+                                // added for compatibility with EDT.
+                                if (m_ToolSystem.actionMode.IsGame() && EntityManager.TryGetComponent(entity, out Attached attachedComponent))
+                                {
+                                    if (EntityManager.TryGetBuffer(attachedComponent.m_Parent, isReadOnly: false, out DynamicBuffer<Game.Objects.SubObject> subObjectBuffer))
+                                    {
+                                        // Loop through all subobjecst started at last entry to try and quickly find created entity.
+                                        for (int i = subObjectBuffer.Length - 1; i >= 0; i--)
+                                        {
+                                            Game.Objects.SubObject subObject = subObjectBuffer[i];
+                                            if (subObject.m_SubObject == entity)
+                                            {
+                                                subObjectBuffer.RemoveAt(i);
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    EntityManager.RemoveComponent<Attached>(entity);
+                                }
+
                                 if ((objectGeometryData.m_Flags & GeometryFlags.Overridable) == GeometryFlags.Overridable)
                                 {
                                     m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)} Added PreventOverride to {prefabBase.name}");
                                     EntityManager.AddComponent<PreventOverride>(entity);
-
-                                    // added for compatibility with EDT.
-                                    if (m_ToolSystem.actionMode.IsGame() && EntityManager.TryGetComponent(entity, out Attached attachedComponent))
-                                    {
-                                        if (EntityManager.TryGetBuffer(attachedComponent.m_Parent, isReadOnly: false, out DynamicBuffer<Game.Objects.SubObject> subObjectBuffer))
-                                        {
-                                            // Loop through all subobjecst started at last entry to try and quickly find created entity.
-                                            for (int i = subObjectBuffer.Length - 1; i >= 0; i--)
-                                            {
-                                                Game.Objects.SubObject subObject = subObjectBuffer[i];
-                                                if (subObject.m_SubObject == entity)
-                                                {
-                                                    subObjectBuffer.RemoveAt(i);
-                                                    break;
-                                                }
-                                            }
-                                        }
-
-                                        EntityManager.RemoveComponent<Attached>(entity);
-                                    }
 
                                     continue;
                                 }
