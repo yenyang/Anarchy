@@ -214,8 +214,9 @@ namespace Anarchy.Systems
                                     continue;
                                 }
                             }
-                            else if (prefabBase is NetLanePrefab || prefabBase is NetLaneGeometryPrefab)
+                            else if (prefabBase is NetLanePrefab || prefabBase is NetLaneGeometryPrefab || true)
                             {
+                                m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)} prefabBase is {prefabBase.name} prefabBase is NetLanePrefab {prefabBase is NetLanePrefab} prefabBase is NetLaneGeometryPrefab {prefabBase is NetLaneGeometryPrefab}");
                                 if (EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<Game.Net.SubLane> subLaneBuffer))
                                 {
                                     // Loop through all subobjecst started at last entry to try and quickly find created entity.
