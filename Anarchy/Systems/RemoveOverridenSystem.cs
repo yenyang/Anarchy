@@ -9,9 +9,13 @@ namespace Anarchy.Systems
     using Colossal.Logging;
     using Game;
     using Game.Buildings;
+    using Game.Citizens;
     using Game.Common;
+    using Game.Creatures;
+    using Game.Objects;
     using Game.Prefabs;
     using Game.Tools;
+    using Game.Vehicles;
     using Unity.Entities;
 
     /// <summary>
@@ -23,6 +27,7 @@ namespace Anarchy.Systems
         {
             { "Object Tool" },
             { "Line Tool" },
+            { "Net Tool" },
         };
 
         private readonly List<string> m_AppropriateTools = new List<string>()
@@ -69,6 +74,13 @@ namespace Anarchy.Systems
                     ComponentType.ReadOnly<Temp>(),
                     ComponentType.ReadOnly<Building>(),
                     ComponentType.ReadOnly<Game.Objects.Crane>(),
+                    ComponentType.ReadOnly<Animal>(),
+                    ComponentType.ReadOnly<Game.Creatures.Pet>(),
+                    ComponentType.ReadOnly<Creature>(),
+                    ComponentType.ReadOnly<Moving>(),
+                    ComponentType.ReadOnly<Household>(),
+                    ComponentType.ReadOnly<Vehicle>(),
+                    ComponentType.ReadOnly<Event>(),
                },
             });
             RequireForUpdate(m_OwnedAndOverridenQuery);
@@ -83,16 +95,7 @@ namespace Anarchy.Systems
                 return;
             }
 
-            if (m_ToolSystem.activePrefab != null)
-            {
-                Entity prefabEntity = m_PrefabSystem.GetEntity(m_ToolSystem.activePrefab);
-                if (EntityManager.HasComponent<BuildingData>(prefabEntity))
-                {
-                    return;
-                }
-            }
-
-            if (m_NetToolSystem.TrySetPrefab(m_ToolSystem.activePrefab))
+            if (m_NetToolSystem.TrySetPrefab(m_ToolSystem.activePrefab) && m_ToolSystem.activePrefab is not NetLaneGeometryPrefab && m_ToolSystem.activePrefab is not NetLanePrefab)
             {
                 return;
             }
