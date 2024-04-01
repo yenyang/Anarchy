@@ -31,6 +31,7 @@ namespace Anarchy.Systems
         {
             { "Object Tool" },
             { "Line Tool" },
+            { "Net Tool" },
         };
 
         private AnarchyUISystem m_AnarchyUISystem;
