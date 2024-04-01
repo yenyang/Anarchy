@@ -67,14 +67,17 @@ namespace Anarchy.Systems
                 {
                     ComponentType.ReadOnly<Created>(),
                     ComponentType.ReadOnly<Updated>(),
+                },
+                Any = new ComponentType[]
+                {
                     ComponentType.ReadOnly<Static>(),
                     ComponentType.ReadOnly<Object>(),
+                    ComponentType.ReadOnly<Game.Tools.EditorContainer>(),
                 },
                 None = new ComponentType[]
                 {
                     ComponentType.ReadOnly<Temp>(),
                     ComponentType.ReadOnly<Owner>(),
-                    ComponentType.ReadOnly<Building>(),
                     ComponentType.ReadOnly<Animal>(),
                     ComponentType.ReadOnly<Game.Creatures.Pet>(),
                     ComponentType.ReadOnly<Creature>(),
@@ -90,7 +93,6 @@ namespace Anarchy.Systems
                 {
                     ComponentType.ReadOnly<Updated>(),
                     ComponentType.ReadOnly<Owner>(),
-                    ComponentType.ReadOnly<Static>(),
                     ComponentType.ReadOnly<Overridden>(),
                 },
                 None = new ComponentType[]
@@ -158,29 +160,12 @@ namespace Anarchy.Systems
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            if (m_ToolSystem.activeTool.toolID == null || (m_ToolSystem.actionMode.IsEditor() && !AnarchyMod.Instance.Settings.PreventOverrideInEditor))
+            if (m_ToolSystem.activeTool.toolID == null || (m_ToolSystem.actionMode.IsEditor() && !AnarchyMod.Instance.Settings.PreventOverrideInEditor) || m_ToolSystem.activePrefab == null)
             {
                 return;
             }
 
-            if (m_ToolSystem.activePrefab != null)
-            {
-                Entity prefabEntity = m_PrefabSystem.GetEntity(m_ToolSystem.activePrefab);
-                if (EntityManager.HasComponent<BuildingData>(prefabEntity))
-                {
-                    return;
-                }
-
-                if (EntityManager.TryGetComponent(prefabEntity, out ObjectGeometryData objectGeometryData))
-                {
-                    if ((objectGeometryData.m_Flags & GeometryFlags.Overridable) != GeometryFlags.Overridable)
-                    {
-                        m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)} Active prefab is not overridable.");
-                    }
-                }
-            }
-
-            if (m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID) && !m_NetToolSystem.TrySetPrefab(m_ToolSystem.activePrefab))
+            if (m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID) && (!m_NetToolSystem.TrySetPrefab(m_ToolSystem.activePrefab) || m_ToolSystem.activePrefab is NetLaneGeometryPrefab || m_ToolSystem.activePrefab is NetLanePrefab))
             {
                 EntityManager.RemoveComponent(m_CreatedQuery, ComponentType.ReadWrite<Overridden>());
                 EntityManager.RemoveComponent(m_OwnedAndOverridenQuery, ComponentType.ReadWrite<Overridden>());
