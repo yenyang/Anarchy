@@ -5,6 +5,7 @@
 namespace Anarchy.Systems
 {
     using System.Collections.Generic;
+    using System.ComponentModel;
     using Anarchy;
     using Anarchy.Components;
     using Colossal.Entities;
@@ -135,7 +136,7 @@ namespace Anarchy.Systems
                 {
                     if (m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase) && EntityManager.HasComponent<Static>(entity) && !EntityManager.HasComponent<Building>(entity) && !EntityManager.HasComponent<Owner>(entity) && !EntityManager.HasComponent<Crane>(entity))
                     {
-                        if (prefabBase is StaticObjectPrefab && EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData) )
+                        if (prefabBase is StaticObjectPrefab && EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData))
                         {
                             if ((objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable)
                             {
@@ -143,7 +144,7 @@ namespace Anarchy.Systems
                             }
                         }
                     }
-                    else if (m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase) && (prefabBase is NetLanePrefab || prefabBase is NetLaneGeometryPrefab)) 
+                    else if (m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase) && (prefabBase is NetLanePrefab || prefabBase is NetLaneGeometryPrefab))
                     {
                         continue;
                     }
@@ -184,7 +185,7 @@ namespace Anarchy.Systems
                     {
                         if (m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase))
                         {
-                            if (prefabBase is StaticObjectPrefab && EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData))
+                            if (prefabBase is StaticObjectPrefab && EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData) && prefabBase is not BuildingPrefab)
                             {
                                 // added for compatibility with EDT.
                                 if (m_ToolSystem.actionMode.IsGame() && EntityManager.TryGetComponent(entity, out Attached attachedComponent))
@@ -203,7 +204,7 @@ namespace Anarchy.Systems
                                         }
                                     }
 
-                                    EntityManager.RemoveComponent<Attached>(entity);
+                                    // EntityManager.RemoveComponent<Attached>(entity);
                                 }
 
                                 if ((objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable)
@@ -214,20 +215,16 @@ namespace Anarchy.Systems
                                     continue;
                                 }
                             }
-                            else if (prefabBase is NetLanePrefab || prefabBase is NetLaneGeometryPrefab || true)
+                            else if (m_ToolSystem.actionMode.IsGame() && prefabBase.GetPrefabID().ToString() == "NetPrefab:Lane Editor Container" && EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<Game.Net.SubLane> subLaneBuffer))
                             {
-                                m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)} prefabBase is {prefabBase.name} prefabBase is NetLanePrefab {prefabBase is NetLanePrefab} prefabBase is NetLaneGeometryPrefab {prefabBase is NetLaneGeometryPrefab}");
-                                if (EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<Game.Net.SubLane> subLaneBuffer))
+                                // Loop through all subobjecst started at last entry to try and quickly find created entity.
+                                for (int i = 0; i < subLaneBuffer.Length; i++)
                                 {
-                                    // Loop through all subobjecst started at last entry to try and quickly find created entity.
-                                    for (int i = 0; i < subLaneBuffer.Length; i++)
-                                    {
-                                        Game.Net.SubLane subLane = subLaneBuffer[i];
-                                        m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)} Added PreventOverride to {prefabBase.name}");
-                                        EntityManager.AddComponent(subLane.m_SubLane, ComponentType.ReadOnly<PreventOverride>());
-                                        m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)} Added DoNotForceUpdate to {prefabBase.name}");
-                                        EntityManager.AddComponent(subLane.m_SubLane, ComponentType.ReadOnly<DoNotForceUpdate>());
-                                    }
+                                    Game.Net.SubLane subLane = subLaneBuffer[i];
+                                    m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)} Added PreventOverride to {prefabBase.name}");
+                                    EntityManager.AddComponent(subLane.m_SubLane, ComponentType.ReadOnly<PreventOverride>());
+                                    m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)} Added DoNotForceUpdate to {prefabBase.name}");
+                                    EntityManager.AddComponent(subLane.m_SubLane, ComponentType.ReadOnly<DoNotForceUpdate>());
                                 }
                             }
                         }
