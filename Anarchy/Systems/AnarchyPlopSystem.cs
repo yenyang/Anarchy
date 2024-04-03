@@ -204,7 +204,7 @@ namespace Anarchy.Systems
                                         }
                                     }
 
-                                    // EntityManager.RemoveComponent<Attached>(entity);
+                                    EntityManager.RemoveComponent<Attached>(entity);
                                 }
 
                                 if ((objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable)
