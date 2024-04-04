@@ -84,7 +84,7 @@ namespace Anarchy
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Initializing settings");
             Settings = new (this);
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Loading localization");
-            LoadLocales();
+            // LoadLocales();
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Registering settings");
             Settings.RegisterInOptionsUI();
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Loading settings");
