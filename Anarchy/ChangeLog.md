@@ -1,3 +1,3 @@
-﻿## Patch V1.4.2
-* Reinstate Unified Icon Dependency
-* Only loads English localization if file not found.
+﻿## Patch V1.4.3
+* Fixed incorrect tooltip icon path
+* Updated localization.

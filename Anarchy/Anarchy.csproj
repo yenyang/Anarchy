@@ -17,9 +17,9 @@
 		
 		<!--The file where mod information which is required for publishing mod on PDX mods are stored-->
 		<PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
-		<AssemblyVersion>1.4.2</AssemblyVersion>
-		<FileVersion>1.4.2</FileVersion>
-		<Version>1.4.2</Version>
+		<AssemblyVersion>1.4.3</AssemblyVersion>
+		<FileVersion>1.4.3</FileVersion>
+		<Version>1.4.3</Version>
 	</PropertyGroup>
 	
 	<!--Imports must be after PropertyGroup block-->

@@ -19,7 +19,8 @@ If you want to say thank you with a donation you can do so on Paypal.
 
 ## Translations
 I am looking for volunteers to help translate the mod into the official languages. For those interested please find the project in the discord link. CSL2:CODEMODS -&gt; mods-wip -&gt; Anarchy: Translations.
-
+Full or Partial Localization: Spanish, German, Chinese Simplified, Brazilian Portuguese, Italian, Polish, Korean, and French. See credits for list of translators.
+  
 # Detailed Descrption
 The mod also has: 
 * Optional Tool icon
@@ -95,7 +96,7 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * Klyte45, Algernon - Help with UI, Cooperative Development and Code Sharing
 * Bad Peanut - Image Credit for Flaming Chirper
 * T.D.W., krzychu124, and Quboid - Cooperative Development and Code Sharing
-* Localization: Nyoko, Citadino, Dome, and Eryalito (Spanish), Hendrix (German), RilkeXS (Chinese Simplified), Luis Fernando de Paula (Portuguese), Maxi (Partial Italian), karmel68 (Polish), Tanat (Korean), and Quoifleur (French), 
+* Localization: Nyoko, Citadino, Dome, and Eryalito (Spanish), Hendrix (German), RilkeXS (Chinese Simplified), Luis Fernando de Paula (Portuguese), Maxi (Partial Italian), karmel68 (Polish), Tanat and TwotoolusFLY_LSh.st (Korean), and Quoifleur and Karg (French). 
 * Dante, starrysum - Testing, Feedback</LongDescription>
   <!--Thumbnail-->
   <Thumbnail Value="Properties/Thumbnail.png" />
@@ -108,15 +109,15 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="" />
   <!--Version of the mod-->
-  <ModVersion Value="1.4.2" />
+  <ModVersion Value="1.4.3" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.1.*" />
   <!--Dependency for the mod, can be set multiple-->
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog>## Patch V1.4.2
-* Reinstate Unified Icon Dependency
-* Only loads English localization if file not found.</ChangeLog>
+  <ChangeLog>## Patch V1.4.3
+* Fixed incorrect tooltip icon path
+* Updated localization.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
