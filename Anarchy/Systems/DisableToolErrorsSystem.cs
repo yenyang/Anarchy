@@ -37,10 +37,10 @@ namespace Anarchy.Systems
         protected override void OnCreate()
         {
             m_Log = AnarchyMod.Instance.Log;
-            m_EnableToolErrorsSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<EnableToolErrorsSystem>();
-            m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
-            m_PrefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
-            m_AnarchyUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyUISystem>();
+            m_EnableToolErrorsSystem = World.GetOrCreateSystemManaged<EnableToolErrorsSystem>();
+            m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
+            m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
+            m_AnarchyUISystem = World.GetOrCreateSystemManaged<AnarchyUISystem>();
             m_Log.Info($"{nameof(DisableToolErrorsSystem)} Created.");
             m_ToolErrorPrefabQuery = GetEntityQuery(new EntityQueryDesc[]
             {

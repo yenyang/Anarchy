@@ -41,7 +41,7 @@ namespace Anarchy.Systems
         {
             m_Log = AnarchyMod.Instance.Log;
             m_Log.Info($"{nameof(EnableToolErrorsSystem)} Created.");
-            m_AnarchyUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyUISystem>();
+            m_AnarchyUISystem = World.GetOrCreateSystemManaged<AnarchyUISystem>();
             Enabled = false;
             m_ToolErrorPrefabQuery = GetEntityQuery(new EntityQueryDesc[]
             {

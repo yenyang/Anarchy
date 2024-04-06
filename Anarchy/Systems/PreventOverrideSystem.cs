@@ -33,7 +33,7 @@ namespace Anarchy.Systems
         {
             m_Log = AnarchyMod.Instance.Log;
             m_Log.Info($"{nameof(PreventOverrideSystem)} Created.");
-            m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
+            m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_NeedToPreventOverrideQuery = GetEntityQuery(new EntityQueryDesc
             {
                 All = new ComponentType[]

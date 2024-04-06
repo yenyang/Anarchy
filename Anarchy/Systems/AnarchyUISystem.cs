@@ -67,6 +67,9 @@ namespace Anarchy.Systems
         private ValueBinding<bool> m_AnarchyEnabled;
         private ValueBinding<bool> m_ShowToolIcon;
         private ValueBinding<bool> m_FlamingChirperOption;
+        private ObjectToolSystem m_ObjectToolSystem;
+        private bool m_IsBrushing;
+        private bool m_BeforeBrushingAnarchyEnabled;
 
         /// <summary>
         /// Gets a value indicating whether the flaming chirper option binding is on/off.
@@ -110,12 +113,12 @@ namespace Anarchy.Systems
         {
             base.OnCreate();
             m_Log = AnarchyMod.Instance.Log;
-            m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
-            m_BulldozeToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<BulldozeToolSystem>();
-            m_NetToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<NetToolSystem>();
-            m_ResetNetCompositionDataSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ResetNetCompositionDataSystem>();
-            ToolSystem toolSystem = m_ToolSystem; // I don't know why vanilla game did this.
-            m_ToolSystem.EventToolChanged = (Action<ToolBaseSystem>)Delegate.Combine(toolSystem.EventToolChanged, new Action<ToolBaseSystem>(OnToolChanged));
+            m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
+            m_BulldozeToolSystem = World.GetOrCreateSystemManaged<BulldozeToolSystem>();
+            m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
+            m_ResetNetCompositionDataSystem = World.GetOrCreateSystemManaged<ResetNetCompositionDataSystem>();
+            m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
+            m_ToolSystem.EventToolChanged += OnToolChanged;
             m_Log.Info($"{nameof(AnarchyUISystem)}.{nameof(OnCreate)}");
             InputAction hotKey = new ("Anarchy");
             hotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/ctrl").With("Button", "<Keyboard>/a");
@@ -133,6 +136,24 @@ namespace Anarchy.Systems
 
             // This binding communicates whether the option for using Flaming chirper is enabled.
             AddBinding(m_FlamingChirperOption = new ValueBinding<bool>("Anarchy", "FlamingChirperOption", AnarchyMod.Instance.Settings.FlamingChirper));
+        }
+
+        /// <inheritdoc/>
+        protected override void OnUpdate()
+        {
+            base.OnUpdate();
+            if (AnarchyMod.Instance.Settings.DisableAnarchyWhileBrushing && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Brush && !m_IsBrushing )
+            {
+                m_IsBrushing = true;
+                m_BeforeBrushingAnarchyEnabled = m_AnarchyEnabled.value;
+                m_AnarchyEnabled.Update(false);
+            }
+
+            if ((m_IsBrushing && m_ToolSystem.activeTool != m_ObjectToolSystem) || (m_IsBrushing && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode != ObjectToolSystem.Mode.Brush))
+            {
+                m_AnarchyEnabled.Update(m_BeforeBrushingAnarchyEnabled);
+                m_IsBrushing = false;
+            }
         }
 
         /// <summary>
