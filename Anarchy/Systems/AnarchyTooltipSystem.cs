@@ -36,6 +36,7 @@ namespace Anarchy.Systems
             m_AnarchyUISystem = World.GetOrCreateSystemManaged<AnarchyUISystem>();
             m_Tooltip = new StringTooltip()
             {
+                path = "anarchyIconTooltip",
                 icon = "coui://uil/Colored/Anarchy.svg",
             };
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
@@ -58,6 +59,7 @@ namespace Anarchy.Systems
                         m_Log.Warn($"{nameof(AnarchyTooltipSystem)}.{nameof(OnUpdate)} Encountered Error {e} Using backup tooltip.");
                         m_Tooltip = new StringTooltip()
                         {
+                            path = "anarchyFallbackStringTooltip",
                             value = LocalizedString.IdWithFallback("Ⓐ", "Ⓐ"),
                         };
                     }

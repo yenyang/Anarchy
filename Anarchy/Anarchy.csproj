@@ -159,12 +159,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="l10n\l10n.csv">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </None>
-	</ItemGroup>
-
-	<ItemGroup>
 	  <Reference Update="System.Drawing">
 	    <Private>False</Private>
 	  </Reference>
@@ -217,4 +211,10 @@
 		</ItemGroup>
 		<Delete Files="@(CleanTargets)" />
 	</Target>
+
+	<ItemGroup>
+		<Content Include="lang\**">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 </Project>

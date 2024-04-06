@@ -3,7 +3,17 @@
 	height: 40rem;
     position: absolute;
     right: 3rem;
-    bottom: 170.5rem;
+    bottom: 171rem;
+    z-index: 999;
+    pointer-events: none;
+}
+
+.flamingChirperIconNoRadio {
+	width: 40rem;
+	height: 40rem;
+    position: absolute;
+    right: 3rem;
+    bottom: 140rem;
     z-index: 999;
     pointer-events: none;
 }

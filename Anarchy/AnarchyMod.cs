@@ -84,7 +84,7 @@ namespace Anarchy
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Initializing settings");
             Settings = new (this);
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Loading localization");
-            // LoadLocales();
+            GameManager.instance.localizationManager.AddSource("en-US", new LocaleEN(Settings));
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Registering settings");
             Settings.RegisterInOptionsUI();
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Loading settings");
@@ -116,46 +116,6 @@ namespace Anarchy
             {
                 Settings.UnregisterInOptionsUI();
                 Settings = null;
-            }
-        }
-
-        private void LoadLocales()
-        {
-            LocaleEN defaultLocale = new LocaleEN(Settings);
-
-            // defaultLocale.ExportLocalizationCSV(ModInstallFolder, GameManager.instance.localizationManager.GetSupportedLocales());
-            var file = Path.Combine(ModInstallFolder, "l10n", $"l10n.csv");
-            Log.Debug($"{nameof(AnarchyMod)}.{nameof(LoadLocales)} {file}");
-            if (File.Exists(file))
-            {
-                var fileLines = File.ReadAllLines(file).Select(x => x.Split('\t'));
-                var enColumn = Array.IndexOf(fileLines.First(), "en-US");
-                var enMemoryFile = new MemorySource(fileLines.Skip(1).ToDictionary(x => x[0], x => x.ElementAtOrDefault(enColumn)));
-                foreach (var lang in GameManager.instance.localizationManager.GetSupportedLocales())
-                {
-                    try
-                    {
-                        GameManager.instance.localizationManager.AddSource(lang, enMemoryFile);
-                        if (lang != "en-US")
-                        {
-                            var valueColumn = Array.IndexOf(fileLines.First(), lang);
-                            if (valueColumn > 0)
-                            {
-                                var i18nFile = new MemorySource(fileLines.Skip(1).ToDictionary(x => x[0], x => x.ElementAtOrDefault(valueColumn)));
-                                GameManager.instance.localizationManager.AddSource(lang, i18nFile);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Warn($"{nameof(AnarchyMod)}.{nameof(LoadLocales)} Encountered exception {ex} while trying to localize {lang}.");
-                    }
-                }
-            }
-            else
-            {
-                Log.Warn($"{nameof(AnarchyMod)}.{nameof(LoadLocales)} couldn't find localization file and loaded default english.");
-                GameManager.instance.localizationManager.AddSource("en-US", defaultLocale);
             }
         }
     }
