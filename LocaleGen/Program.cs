@@ -10,17 +10,21 @@ namespace Anarchy.LocaleGen
     {
         static void Main(string[] args)
         {
-            /*
+            
             var setting = new AnarchyModSettings(new AnarchyMod());
             var locale = new LocaleEN(setting);
             var e = new Dictionary<string, string>(
                 locale.ReadEntries(new List<IDictionaryEntryError>(), new Dictionary<string, int>()));
-            Console.WriteLine(JsonSerializer.Serialize(e, new JsonSerializerOptions()
+            var str = JsonSerializer.Serialize(e, new JsonSerializerOptions()
             {
                 WriteIndented = true,
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            }));*/
+            });
 
+            File.WriteAllText("C:\\Users\\TJ\\source\\repos\\Anarchy\\Anarchy\\UI\\src\\lang\\en-US.json", str);
+
+
+            /*
             var file = "C:\\Users\\TJ\\source\\repos\\Anarchy\\Anarchy\\l10n\\l10n.csv";
             if (File.Exists(file))
             {
@@ -46,8 +50,7 @@ namespace Anarchy.LocaleGen
                     }
                 }
             }
+            */
         }
-
-        
     }
 }

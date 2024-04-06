@@ -121,7 +121,7 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * Fixed tooltip related issues.
 * Updated localization. Added I18n Everywhere dependency.
 * Fixed Flaming chirper with disabled radio.
-* Added option to automatically disable anarchy while brushing objects.</ChangeLog>
+* Added option to automatically disable anarchy toggle while brushing objects.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
