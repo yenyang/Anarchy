@@ -47,7 +47,13 @@ namespace Anarchy.Settings
         public bool ToolIcon { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to disable anarchy while brushing.
+        /// </summary>
+        public bool DisableAnarchyWhileBrushing { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether to prevent override in editor.
+        /// </summary>
         public bool PreventOverrideInEditor { get; set; }
 
         /// <summary>
@@ -125,6 +131,7 @@ namespace Anarchy.Settings
             AllowPlacingMultipleUniqueBuildings = false;
             MinimumClearanceBelowElevatedNetworks = 0f;
             PreventOverrideInEditor = false;
+            DisableAnarchyWhileBrushing = false;
         }
 
         /// <inheritdoc/>

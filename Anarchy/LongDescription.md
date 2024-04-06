@@ -1,17 +1,19 @@
 Anarchy disables error checks for tools in a way that the errors are not shown at all.
-This mod allows you to place vegetation and props (with DevUI 'Add Object' menu) overlapping or inside the boundaries of other objects and close together.
+This mod allows you to place vegetation and props (using DevUI 'Add Object' menu or other mods) overlapping or inside the boundaries of other objects and close together.
 For consistency within the community, please do not use the term Anarchy to mean something else for CSL2.
 Sully has prepared an Amazing! demo video about detailing with Anarchy on Youtube.
 
 ## Dependencies
 Unified Icon Library
+I18n Everywhere (Soft dependency required for loading languages other than English.)
 
 ## Donations
 If you want to say thank you with a donation you can do so on Paypal.
 
 ## Translations
 I am looking for volunteers to help translate the mod into the official languages. For those interested please find the project in the discord link. CSL2:CODEMODS -> mods-wip -> Anarchy: Translations.
-
+Full or Partial Localization: Spanish, German, Chinese Simplified, Brazilian Portuguese, Italian, Polish, Korean, Russian, and French. See credits for list of translators.
+  
 # Detailed Descrption
 The mod also has: 
 * Optional Tool icon
@@ -21,9 +23,10 @@ The mod also has:
 * Optional mouse tooltip
 * Opt-In Option to allow multiple copies of unique buildings using toolbar menu. Effects of multiple buildings stack!
 * Option to set minimum clearance below elevated networks even while Anarchy is active in case you don't remove the zoning under a low bridge. It would be better just to remove the zoning.
+* Opt-In Option to automatically disable Anarchy toggle while brushing objects such as trees.
 
 Currently it applies to these tools:
-* Object Tool
+* Object Tool (Option to automatically disable Anarchy toggle while brushing objects.)
 * Net Tool (While using the net tool Anarchy will now let you violate the clearance of other networks. I don't recommend having zoning under low bridges.)
 * Area Tool (Can exceed limits for specialized industry areas)
 * Bulldoze Tool (Option to default Anarchy to ON when activated)
@@ -32,6 +35,7 @@ Currently it applies to these tools:
 * Line Tool by Algernon
 
 You can activate anarchy with the keyboard shortcut "Ctrl+A" or with the optional tool icon that only appears while using the above tools.
+Note for azerty users the shortcut is CTRL+Q.
 
 You can tell anarchy is active using optional Flaming Chirper, the tool icon, or a tooltip.
 
@@ -58,7 +62,7 @@ The following errors will not occur while Anarchy is enabled:
 If you find an error that you think should be added or if you find a tool that this should also be included, please let me know. 
 
 ## Props and Trees
-Placing standalone props is an unsupported feature of the game. You need DevUI to access the 'Add Object' menu via the home button to place standalone props.
+Placing standalone props is an unsupported feature of the game. You need DevUI to access the 'Add Object' menu via the home button to place standalone props. Other mods may make it easier to find and place props.
 
 With Anarchy enabled, you can place props and trees overlapping or inside the boundaries of buildings, nets, areas, other trees, other props, etc. Props and trees placed with Anarchy enabled cannot be overriden later (even if later Anarchy is disabled), but can be removed with bulldozer or brush.
 
@@ -86,6 +90,6 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * Sully - Testing, Feedback, and Promotional Material.
 * Klyte45, Algernon - Help with UI, Cooperative Development and Code Sharing
 * Bad Peanut - Image Credit for Flaming Chirper
-* T.D.W., krzychu124, and Quboid - Cooperative Development and Code Sharing
-* Localization: Nyoko, Citadino, Dome, and Eryalito (Spanish), Hendrix (German), RilkeXS (Chinese Simplified), Luis Fernando de Paula (Portuguese), Maxi (Partial Italian), karmel68 (Polish), Tanat (Korean), and Quoifleur (French), 
+* T.D.W., krzychu124, Triton Supreme, and Quboid - Cooperative Development and Code Sharing
+* Localization: Nyoko, Citadino, Dome, and Eryalito (Spanish), Hendrix (German), RilkeXS (Chinese Simplified), Luis Fernando de Paula and felipecollucci (Portuguese), Maxi (Partial Italian), karmel68 (Polish), Tanat and TwotoolusFLY_LSh.st (Korean), OWSEEX (Russian) and Quoifleur and Karg (French). 
 * Dante, starrysum - Testing, Feedback

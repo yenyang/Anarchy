@@ -53,6 +53,8 @@ namespace Anarchy.Settings
                 { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.MinimumClearanceBelowElevatedNetworks)), "With the net tool and Anarchy enabled you can violate the clearance of other networks. Zoning under low bridges can spawn buildings while doing this. This setting gives you some control over the minimum space below a low bridge. It would be better to just remove the zoning." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.PreventOverrideInEditor)), "Prevent Override In Editor" },
                 { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.PreventOverrideInEditor)), "In the editor, with Anarchy and this option enabled, you can place vegetation and props overlapping or inside the boundaries of other objects and close together. The map may require Anarchy as a dependency. When users draw roads through these objects they will not be overriden." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.DisableAnarchyWhileBrushing)), "Disable Anarchy Toggle While Brushing Objects" },
+                { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.DisableAnarchyWhileBrushing)), "Automatically disables the anarchy toggle while brushing objects such as trees. Toggle reverts back to previous state after you stop brushing objects." },
                 { "YY_ANARCHY.Anarchy", "Anarchy" },
                 { "YY_ANARCHY.AnarchyButton", "Anarchy" },
                 { "YY_ANARCHY_DESCRIPTION.AnarchyButton", "Disables error checks for tools and does not display errors. When applicable, you can place vegetation and props (with DevUI 'Add Object' menu) overlapping or inside the boundaries of other objects and close together." },
@@ -69,59 +71,6 @@ namespace Anarchy.Settings
         /// <inheritdoc/>
         public void Unload()
         {
-        }
-
-        /// <summary>
-        /// Exports a localization CSV template with this files dictionary as default entries.
-        /// </summary>
-        /// <param name="folderPath">the path of where the file should be created.</param>
-        /// <param name="langCodes">the language codes to be included in the template file.</param>
-        /// <returns>True if the file is created. False if not.</returns>
-        public bool ExportLocalizationCSV(string folderPath, string[] langCodes)
-        {
-            System.IO.Directory.CreateDirectory(folderPath);
-            string localizationFilePath = Path.Combine(folderPath, $"l10n.csv");
-            if (!File.Exists(localizationFilePath))
-            {
-                try
-                {
-                    using (StreamWriter streamWriter = new(File.Create(localizationFilePath)))
-                    {
-                        StringBuilder topLine = new StringBuilder();
-                        topLine.Append("key\t");
-                        foreach (string langCode in langCodes)
-                        {
-                            topLine.Append(langCode);
-                            topLine.Append("\t");
-                        }
-
-                        streamWriter.WriteLine(topLine.ToString());
-
-                        foreach (KeyValuePair<string, string> kvp in m_Localization)
-                        {
-                            StringBuilder currentLine = new StringBuilder();
-                            currentLine.Append(kvp.Key);
-                            currentLine.Append("\t");
-                            foreach (string langCode in langCodes)
-                            {
-                                currentLine.Append(kvp.Value);
-                                currentLine.Append("\t");
-                            }
-
-                            streamWriter.WriteLine(currentLine.ToString());
-                        }
-
-                        return true;
-                    }
-                }
-                catch (Exception e)
-                {
-                    AnarchyMod.Instance.Log.Warn($"{typeof(LocaleEN)}.{nameof(ExportLocalizationCSV)} Encountered Exception {e} while trying to export localization csv.");
-                    return false;
-                }
-            }
-
-            return false;
         }
     }
 }

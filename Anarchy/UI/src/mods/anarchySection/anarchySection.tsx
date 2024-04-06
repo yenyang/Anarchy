@@ -20,7 +20,7 @@ export function handleClick() {
 }
 
 export const AnarchyRowComponent: ModuleRegistryExtend = (Component : any) => {
-    // do not put anything here
+    // I believe you should not put anything here.
     return (props) => {
         // These get the value of the bindings.
         const anarchyEnabled : boolean = useValue(anarchyEnabled$);
@@ -34,7 +34,9 @@ export const AnarchyRowComponent: ModuleRegistryExtend = (Component : any) => {
         // This defines aspects of the components.
         const {children, ...otherProps} = props || {};
 
+        // This gets the original component that we may alter and return.
         var result : JSX.Element = Component();
+        // It is important that we coordinate how to handle the tool options panel because it is possibile to create a mod that works for your mod but prevents others from doing the same thing.
         // If show icon add new section with title, and one button. 
         if (showToolIcon) {
             result.props.children?.unshift(
@@ -48,8 +50,8 @@ export const AnarchyRowComponent: ModuleRegistryExtend = (Component : any) => {
                     <VanillaComponentResolver.instance.ToolButton
                         src={anarchyEnabled ? anarchyEnabledSrc : anarchyDisabledSrc}
                         selected = {anarchyEnabled}
-                        multiSelect = {false}
-                        disabled = {false}
+                        multiSelect = {false}   // I haven't tested any other value here
+                        disabled = {false}      // I haven't tested any other value here
                         tooltip = {tooltipText}
                         className = {VanillaComponentResolver.instance.toolButtonTheme.button}
                         onSelect={handleClick}

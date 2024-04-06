@@ -8,23 +8,17 @@
 		<!--The folder where Game.dll is located. Set it only if the game is not installed in the default location, otherwise keep it empty-->
 		<CustomManagedPath></CustomManagedPath>
 		
-		<!--Path to the text file where PDX account data is stored which is required to publish the mod-->
-		<!--Keep it outside of project in order to not commit it or share accidentally-->
-		<!--The file should contain 2 lines:-->
-		<!--Your.PDX@Account.login-->
-		<!--Your-PDX-Account-Pa$$word-->
-		<PDXAccountDataPath>$(USERPROFILE)\pdx\pdx_account.txt</PDXAccountDataPath>
-		
 		<!--The file where mod information which is required for publishing mod on PDX mods are stored-->
 		<PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
-		<AssemblyVersion>1.4.2</AssemblyVersion>
-		<FileVersion>1.4.2</FileVersion>
-		<Version>1.4.2</Version>
+		<AssemblyVersion>1.4.3</AssemblyVersion>
+		<FileVersion>1.4.3</FileVersion>
+		<Version>1.4.3</Version>
 	</PropertyGroup>
-	
+	<Import Project="Keys.props"/>
 	<!--Imports must be after PropertyGroup block-->
 	<Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props" />
 	<Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.targets" />
+	
 	<ItemGroup>
 	  <None Remove="StyleCop\stylecop.json" />
 	</ItemGroup>
@@ -32,6 +26,14 @@
 	  <AdditionalFiles Include="StyleCop\stylecop.json" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<Folder Include="lang" />
+		<Content Include="lang\**">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="UI\src\lang\en-US.json" />
+	</ItemGroup>
+	
 	<ItemGroup>
 		<Reference Include="cohtml.Net">
 		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\cohtml.Net.dll</HintPath>
@@ -139,7 +141,6 @@
 	  <Folder Include="Components\" />
 	  <Folder Include="l10n\" />
 	  <Folder Include="Properties\Previews\" />
-	  <Folder Include="UI\" />
 	  <Folder Include="Settings\" />
 	</ItemGroup>
 
@@ -149,12 +150,6 @@
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Update="l10n\l10n.csv">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -210,4 +205,10 @@
 		</ItemGroup>
 		<Delete Files="@(CleanTargets)" />
 	</Target>
+
+	<ItemGroup>
+		<Content Include="lang\**">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 </Project>

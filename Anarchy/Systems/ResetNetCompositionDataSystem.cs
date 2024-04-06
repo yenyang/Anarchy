@@ -37,8 +37,8 @@ namespace Anarchy.Systems
         protected override void OnCreate()
         {
             m_Log = AnarchyMod.Instance.Log;
-            m_NetToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<NetToolSystem>();
-            m_PrefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
+            m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
+            m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_Log.Info($"{nameof(ResetNetCompositionDataSystem)} Created.");
             m_NetCompositionDataQuery = GetEntityQuery(new EntityQueryDesc[]
             {

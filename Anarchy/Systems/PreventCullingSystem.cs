@@ -51,8 +51,8 @@ namespace Anarchy.Systems
         {
             m_Log = AnarchyMod.Instance.Log;
             m_Log.Info($"{nameof(PreventCullingSystem)} Created.");
-            m_ToolOutputBarrier = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolOutputBarrier>();
-            m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
+            m_ToolOutputBarrier = World.GetOrCreateSystemManaged<ToolOutputBarrier>();
+            m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_CullingInfoQuery = GetEntityQuery(new EntityQueryDesc
             {
                 All = new ComponentType[]
