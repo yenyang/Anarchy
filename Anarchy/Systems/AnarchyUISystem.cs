@@ -142,14 +142,14 @@ namespace Anarchy.Systems
         protected override void OnUpdate()
         {
             base.OnUpdate();
-            if (AnarchyMod.Instance.Settings.DisableAnarchyWhileBrushing && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Brush && !m_IsBrushing )
+            if (AnarchyMod.Instance.Settings.DisableAnarchyWhileBrushing && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush && !m_IsBrushing)
             {
                 m_IsBrushing = true;
                 m_BeforeBrushingAnarchyEnabled = m_AnarchyEnabled.value;
                 m_AnarchyEnabled.Update(false);
             }
 
-            if ((m_IsBrushing && m_ToolSystem.activeTool != m_ObjectToolSystem) || (m_IsBrushing && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode != ObjectToolSystem.Mode.Brush))
+            if ((m_IsBrushing && m_ToolSystem.activeTool != m_ObjectToolSystem) || (m_IsBrushing && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode != ObjectToolSystem.Mode.Brush))
             {
                 m_AnarchyEnabled.Update(m_BeforeBrushingAnarchyEnabled);
                 m_IsBrushing = false;
@@ -168,6 +168,7 @@ namespace Anarchy.Systems
             {
                 m_DisableAnarchyWhenCompleted = false;
                 m_ResetNetCompositionDataSystem.Enabled = true;
+                m_IsBrushing = false;
             }
         }
 
