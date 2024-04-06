@@ -1,3 +1,4 @@
 ﻿## Patch V1.4.3
-* Fixed incorrect tooltip icon path
-* Updated localization.
+* Fixed tooltip related issues.
+* Updated localization. Added I18n Everywhere dependency.
+* 

@@ -14,8 +14,7 @@
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventAccidentalPropCulling]": "Prevenir a eliminação acidental de Props",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventAccidentalPropCulling]": "Isto irá disparar uma atualização gráfica rotineiramente para as Props colocadas com Anarquia, de modo a evitar a eliminação dos Props acidentalmente. Isso afeta o desempenho.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PropRefreshFrequency]": "Frequência de atualização Prop",
-  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PropRefreshFrequency]": null,
-  "값이 높을수록 성능은 향상되지만 소품이 실제로 존재하는데도 화면에 표시되지 않는 시간이 길어질 수 있습니다.": null,
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PropRefreshFrequency]": "Este é o número de quadros entre atualizações gráficas para props colocadas com Anarquia para evitar a eliminação acidental. Números mais altos terão melhor desempenho, mas um tempo mais longo as props podem estar faltando.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.RefreshProps]": "Atualizar Props",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.RefreshProps]": "Se as props colocadas com Anarquia foram acidentalmente eliminadas, você pode pressionar este botão para trazê-las agora. Isso não afeta negativamente o desempenho.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.AllowPlacingMultipleUniqueBuildings]": "Permitir Colocar Múltiplos Edifícios Únicos",
@@ -26,6 +25,5 @@
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.MinimumClearanceBelowElevatedNetworks]": "Espaço mínimo abaixo das Redes Elevadas",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.MinimumClearanceBelowElevatedNetworks]": "Quando a ferramenta de Anarquia está habilitada a criação automática de áreas de construção será afetada, podendo gerar resultados indesejados, como por exemplo, áreas de construção abaixo de pontes. Essa configuração dá a você controle sobre o espaço mínimo abaixo de uma ponte. Recomendamos verificar as áreas de construção se necessário.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventOverrideInEditor]": "Impedir Substituição no Editor",
-  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventOverrideInEditor]": null,
-  "La carte pourrait avoir besoin du mode 'Anarchy' pour fonctionner. Si vous dessiner une route à travers un objet, l'objet ne sera pas supprimer et apparaitra au travers de la route.": ""
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventOverrideInEditor]": "No editor, com Anarchy e esta opção habilitada você poderá colocar vegetação e props sobrepostos ou dentro das fronteiras de objetos próximos. O mapa pode exigir Anarquia como uma dependência. Quando os usuários desenharem estradas através desses objetos, eles não serão substituídos."
 }

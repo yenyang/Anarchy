@@ -14,10 +14,9 @@
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventAccidentalPropCulling]": "防止摆件和植被意外消失",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventAccidentalPropCulling]": "此功能会定时刷新使用无碰撞功能放置的摆件和植被，以防止其意外消失。注意，此功能会影响性能（摆件与植被越多，性能影响越大）。",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PropRefreshFrequency]": "摆件刷新频率",
-  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PropRefreshFrequency]": null,
-  "값이 높을수록 성능은 향상되지만 소품이 실제로 존재하는데도 화면에 표시되지 않는 시간이 길어질 수 있습니다.": null,
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PropRefreshFrequency]": "这是使用无碰撞功能放置的摆件和植被的图形刷新率，以防止摆件和植被意外消失。刷新率越高，性能越好，但摆件和植被消失的时间可能会更长。",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.RefreshProps]": "手动刷新摆件",
-  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.RefreshProps]": "如果无政府放置的道具被意外掉帧，您可以按此按钮将它们恢复。这不会对性能产生负面影响。",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.RefreshProps]": "如果使用无碰撞功能放置的摆件和植被意外消失（如查看隐形路径时），您可以点击此按钮将它们恢复。此功能不会对游戏性能产生负面影响。",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.AllowPlacingMultipleUniqueBuildings]": "允许重复放置标志性建筑物",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.AllowPlacingMultipleUniqueBuildings]": "无论是否启用无碰撞功能，此选项允许您重复放置标志性建筑物。注意：这些标志性建筑物的效果会叠加！",
   "YY_ANARCHY.Anarchy": "无碰撞",
@@ -26,6 +25,5 @@
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.MinimumClearanceBelowElevatedNetworks]": "高架网络（道路、电线等）下方的最小拆除高度",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.MinimumClearanceBelowElevatedNetworks]": "启用无碰撞功能后，您可以忽略道路最小高度差的限制。如果您在过于低矮的桥下规划功能区，那么建筑物有可能会穿过桥面生长出来。该设置可以控制桥与地面的最小高度差，当然，最好是不要在桥下规划功能区。",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventOverrideInEditor]": "防止在编辑器中覆盖",
-  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventOverrideInEditor]": null,
-  "La carte pourrait avoir besoin du mode 'Anarchy' pour fonctionner. Si vous dessiner une route à travers un objet, l'objet ne sera pas supprimer et apparaitra au travers de la route.": null
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventOverrideInEditor]": "在编辑器中，启用 Anarchy 模组和此选项后，您可以将植被和摆件与其他物体重叠放置。因此，该地图可能需要 Anarchy 模组作为前置模组（以避免问题）。当玩家在建设道路时穿过了这些植被与摆件，它们会保留，不会被道路覆盖。"
 }

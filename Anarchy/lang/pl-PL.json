@@ -14,8 +14,7 @@
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventAccidentalPropCulling]": "Zapobiegaj przypadkowemu ukrywaniu rekwizytów",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventAccidentalPropCulling]": "Ta opcja spowoduje rutynowe odświeżenie graficzne rekwizytów umieszczonych za pomocą Anarchii, aby zapobiec przypadkowemu ukryciu rekwizytów umieszczonych na innych rekwizytach. Wpływa na wydajność.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PropRefreshFrequency]": "Częstotliwość odświeżania rekwizytów",
-  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PropRefreshFrequency]": null,
-  "값이 높을수록 성능은 향상되지만 소품이 실제로 존재하는데도 화면에 표시되지 않는 시간이 길어질 수 있습니다.": null,
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PropRefreshFrequency]": "Ta opcja zmienia liczbę klatek pomiędzy odświeżeniami graficznymi rekwizytów umieszczonych za pomocą Anarchii, aby zapobiec przypadkowemu ukryciu. Im więcej, tym lepsza wydajność, ale powoduje dłuższy czas, w którym może brakować rekwizytów.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.RefreshProps]": "Odśwież rekwizyty",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.RefreshProps]": "Jeśli rekwizyty umieszczone za pomocą Anarchii zostały przypadkowo ukryte, możesz nacisnąć ten przycisk, aby je teraz przywrócić. Nie wpływa negatywnie na wydajność.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.AllowPlacingMultipleUniqueBuildings]": "Zezwalaj na wielokrotne umieszczanie charakterystycznych budynków",
@@ -26,6 +25,5 @@
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.MinimumClearanceBelowElevatedNetworks]": "Minimalny prześwit pod sieciami podwyższonymi",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.MinimumClearanceBelowElevatedNetworks]": "Po włączeniu narzędzia budowy dróg i Anarchii możesz zignorować minimalny prześwit pomiędzy sieciami. Jeśli umieścisz strefy pod niskimi wiaduktami, budynki mogą się pojawiać. To ustawienie zapewnia pewną kontrolę nad minimalnym prześwitem pomiędzy niskim wiaduktem a podłożem. Najlepiej usunąć wszelkie strefy znajdujące się pod spodem.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventOverrideInEditor]": "Zapobiegaj nadpisywaniu w edytorze",
-  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventOverrideInEditor]": null,
-  "La carte pourrait avoir besoin du mode 'Anarchy' pour fonctionner. Si vous dessiner une route à travers un objet, l'objet ne sera pas supprimer et apparaitra au travers de la route.": "In the editor, with Anarchy and this option enabled, you can place vegetation and props overlapping or inside the boundaries of other objects and close together. The map may require Anarchy as a dependency. When users draw roads through these objects they will not be overriden."
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventOverrideInEditor]": "W edytorze, przy włączonej anarchii i tej opcji, roślinność i rekwizyty mogą być umieszczane na sobie lub wewnątrz granic innych obiektów i blisko siebie. Mapa może wymagać Anarchy jako zależność. Gdy gracze tworzą drogi przez te obiekty, to nie zostaną nadpisane."
 }

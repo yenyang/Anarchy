@@ -14,8 +14,7 @@
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventAccidentalPropCulling]": "실수로 소품 삭제 방지",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventAccidentalPropCulling]": "Anarchy 플러그인으로 배치된 소품 중 일부가 실수로 삭제되는 것을 방지하기 위해 정기적으로 그래픽 갱신을 트리거합니다. 이 과정은 성능에 영향을 미칠 수 있습니다.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PropRefreshFrequency]": "소품 새로 고침 빈도",
-  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PropRefreshFrequency]": "Anarchy 플러그인으로 배치된 소품의 그래픽 갱신 간격을 프레임 수로 지정한 값입니다. 이 값은 실수로 소품이 삭제되는 것을 방지하기 위한 목적으로 사용됩니다.",
-  "값이 높을수록 성능은 향상되지만 소품이 실제로 존재하는데도 화면에 표시되지 않는 시간이 길어질 수 있습니다.": null,
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PropRefreshFrequency]": "Anarchy 플러그인으로 배치된 소품의 그래픽 갱신 간격을 프레임 수로 지정한 값입니다. 이 값은 실수로 소품이 삭제되는 것을 방지하기 위한 목적으로 사용됩니다.값이 높을수록 성능은 향상되지만 소품이 실제로 존재하는데도 화면에 표시되지 않는 시간이 길어질 수 있습니다.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.RefreshProps]": "소품 새로 고침",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.RefreshProps]": "Anarchy 플러그인으로 배치된 소품이 실수로 삭제되었을 경우 이 버튼을 누르면 복구할 수 있습니다. 이 기능은 성능에 부정적인 영향을 미치지 않습니다.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.AllowPlacingMultipleUniqueBuildings]": "여러 개의 고유 건물 배치 허용",
@@ -26,6 +25,5 @@
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.MinimumClearanceBelowElevatedNetworks]": "고가 네트워크 아래 최소 여유 공간",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.MinimumClearanceBelowElevatedNetworks]": "Anarchy 기능이 활성화된 상태에서 네트워크 도구를 사용하면 다른 네트워크의 최소 여유 공간을 위반할 수 있습니다. 낮은 다리 지름 아래 구역 지정을 하면 이러한 위반 상태에서 건물이 생성될 수도 있습니다. 이 설정은 낮은 다리 지름 아래 최소 공간을 어느 정도 제어할 수 있게 해줍니다. 하지만 구역 지정을 완전히 제거하는 것이 더 좋은 방법일 수 있습니다.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventOverrideInEditor]": "에디터에서 덮어쓰기 방지",
-  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventOverrideInEditor]": null,
-  "La carte pourrait avoir besoin du mode 'Anarchy' pour fonctionner. Si vous dessiner une route à travers un objet, l'objet ne sera pas supprimer et apparaitra au travers de la route.": "在编辑器中，启用 Anarchy 模组和此选项后，您可以将植被和摆件与其他物体重叠放置。因此，该地图可能需要 Anarchy 模组作为前置模组（以避免问题）。当玩家在建设道路时穿过了这些植被与摆件，它们会保留，不会被道路覆盖。"
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventOverrideInEditor]": "에디터에서 Anarchy와 이 옵션을 활성화하면 식물과 소품을 다른 개체의 경계 내에 겹치거나 가깝게 배치할 수 있습니다. 지도에서 Anarchy가 요구될 수 있습니다. 사용자가 이러한 객체 위에 도로를 그릴 때 해당 객체는 덮어씌워지지 않아 사라지지 않습니다."
 }

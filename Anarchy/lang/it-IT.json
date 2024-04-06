@@ -15,7 +15,6 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventAccidentalPropCulling]": "Attiverà una routine di aggiornamento grafico per gli elementi piazzati con Anarchy che sono stati rimossi per evitare l'eliminazione accidentale degli elementi. Influisce sulle prestazioni.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PropRefreshFrequency]": "Frequenza Di Aggiornamento Elementi",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PropRefreshFrequency]": "This is the number of frames between graphical refreshes to props placed with Anarchy to prevent accidental culling. Higher numbers will have better performance, but longer possible time that props may be missing.",
-  "값이 높을수록 성능은 향상되지만 소품이 실제로 존재하는데도 화면에 표시되지 않는 시간이 길어질 수 있습니다.": "This is the number of frames between graphical refreshes to props placed with Anarchy to prevent accidental culling. Higher numbers will have better performance, but longer possible time that props may be missing.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.RefreshProps]": "Refresh Props",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.RefreshProps]": "If props placed with Anarchy have been accidently culled, you can press this button to bring them back now. This doesn't negatively effect performance.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.AllowPlacingMultipleUniqueBuildings]": "Allow Placing Multiple Unique Buildings",
@@ -26,6 +25,5 @@
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.MinimumClearanceBelowElevatedNetworks]": "Minimum Clearance Below Elevated Networks",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.MinimumClearanceBelowElevatedNetworks]": "With the net tool and Anarchy enabled you can violate the clearance of other networks. Zoning under low bridges can spawn buildings while doing this. This setting gives you some control over the minimum space below a low bridge. It would be better to just remove the zoning.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventOverrideInEditor]": "Prevent Override In Editor",
-  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventOverrideInEditor]": null,
-  "La carte pourrait avoir besoin du mode 'Anarchy' pour fonctionner. Si vous dessiner une route à travers un objet, l'objet ne sera pas supprimer et apparaitra au travers de la route.": "In the editor, with Anarchy and this option enabled, you can place vegetation and props overlapping or inside the boundaries of other objects and close together. The map may require Anarchy as a dependency. When users draw roads through these objects they will not be overriden."
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventOverrideInEditor]": "In the editor, with Anarchy and this option enabled, you can place vegetation and props overlapping or inside the boundaries of other objects and close together. The map may require Anarchy as a dependency. When users draw roads through these objects they will not be overriden."
 }
