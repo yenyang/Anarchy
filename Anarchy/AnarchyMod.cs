@@ -14,6 +14,7 @@ namespace Anarchy
     using Colossal.Logging;
     using Game;
     using Game.Modding;
+    using Game.Objects;
     using Game.SceneFlow;
     using Game.Settings;
     using HarmonyLib;
@@ -104,6 +105,7 @@ namespace Anarchy
             updateSystem.UpdateAt<PreventCullingSystem>(SystemUpdatePhase.ToolUpdate);
             updateSystem.UpdateBefore<ModifyNetCompositionDataSystem>(SystemUpdatePhase.Modification4);
             updateSystem.UpdateAfter<ResetNetCompositionDataSystem>(SystemUpdatePhase.ModificationEnd);
+            updateSystem.UpdateAt<ResetOverriddenSystem>(SystemUpdatePhase.ModificationEnd);
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Completed.");
         }
 
