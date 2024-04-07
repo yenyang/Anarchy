@@ -204,6 +204,13 @@ namespace Anarchy.Systems
                                         }
                                     }
 
+                                    if (EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform))
+                                    {
+                                        EntityManager.AddComponent<TransformRecord>(entity);
+                                        TransformRecord transformRecord = new () { m_Position = originalTransform.m_Position, m_Rotation = originalTransform.m_Rotation };
+                                        EntityManager.AddComponentData(entity, transformRecord);
+                                    }
+
                                     EntityManager.RemoveComponent<Attached>(entity);
                                 }
 
@@ -217,7 +224,7 @@ namespace Anarchy.Systems
                             }
                             else if (m_ToolSystem.actionMode.IsGame() && prefabBase.GetPrefabID().ToString() == "NetPrefab:Lane Editor Container" && EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<Game.Net.SubLane> subLaneBuffer))
                             {
-                                // Loop through all subobjecst started at last entry to try and quickly find created entity.
+                                // Loop through all subobjects started at last entry to try and quickly find created entity.
                                 for (int i = 0; i < subLaneBuffer.Length; i++)
                                 {
                                     Game.Net.SubLane subLane = subLaneBuffer[i];
