@@ -13,7 +13,7 @@ namespace Anarchy.Components
     /// <summary>
     /// A component used to record where an object was placed so that it doesn't drop by accident.
     /// </summary>
-    public struct TransformAndCullingBoundsRecord : IComponentData, IQueryTypeParameter, IEmptySerializable
+    public struct TransformRecord : IComponentData, IQueryTypeParameter, IEmptySerializable
     {
         /// <summary>
         /// The position record from original transform.
@@ -24,11 +24,6 @@ namespace Anarchy.Components
         /// The rotation record from orginal transform.
         /// </summary>
         public quaternion m_Rotation;
-
-        /// <summary>
-        /// This records bounds of culling info.
-        /// </summary>
-        public Bounds3 m_Bounds;
 
         /// <summary>
         /// Evaluates equualitiy between a transform record and a transform.

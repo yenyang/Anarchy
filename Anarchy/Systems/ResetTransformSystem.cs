@@ -45,9 +45,8 @@ namespace Anarchy.Systems
                 All = new ComponentType[]
                {
                     ComponentType.ReadOnly<Updated>(),
-                    ComponentType.ReadOnly<TransformAndCullingBoundsRecord>(),
+                    ComponentType.ReadOnly<TransformRecord>(),
                     ComponentType.ReadWrite<Game.Objects.Transform>(),
-                    ComponentType.ReadWrite<CullingInfo>(),
                },
                 None = new ComponentType[]
                 {
@@ -69,7 +68,7 @@ namespace Anarchy.Systems
             NativeArray<Entity> entities = m_TransformRecordQuery.ToEntityArray(Allocator.Temp);
             foreach (Entity entity in entities)
             {
-                if (!EntityManager.TryGetComponent(entity, out TransformAndCullingBoundsRecord transformRecord) || !EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform) || !EntityManager.TryGetComponent(entity, out CullingInfo cullingInfo))
+                if (!EntityManager.TryGetComponent(entity, out TransformRecord transformRecord) || !EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform))
                 {
                     continue;
                 }
@@ -82,9 +81,7 @@ namespace Anarchy.Systems
 
                 originalTransform.m_Position = transformRecord.m_Position;
                 originalTransform.m_Rotation = transformRecord.m_Rotation;
-                cullingInfo.m_Bounds = transformRecord.m_Bounds;
                 EntityManager.SetComponentData(entity, originalTransform);
-                EntityManager.SetComponentData(entity, cullingInfo);
                 if (EntityManager.HasComponent<UpdateNextFrame>(entity))
                 {
                     EntityManager.RemoveComponent<UpdateNextFrame>(entity);

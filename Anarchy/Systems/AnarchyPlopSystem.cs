@@ -205,10 +205,10 @@ namespace Anarchy.Systems
                                         }
                                     }
 
-                                    if (EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform) && EntityManager.TryGetComponent(entity, out CullingInfo cullingInfo))
+                                    if (EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform))
                                     {
-                                        EntityManager.AddComponent<TransformAndCullingBoundsRecord>(entity);
-                                        TransformAndCullingBoundsRecord transformRecord = new () { m_Position = originalTransform.m_Position, m_Rotation = originalTransform.m_Rotation, m_Bounds = cullingInfo.m_Bounds };
+                                        EntityManager.AddComponent<TransformRecord>(entity);
+                                        TransformRecord transformRecord = new () { m_Position = originalTransform.m_Position, m_Rotation = originalTransform.m_Rotation };
                                         EntityManager.AddComponentData(entity, transformRecord);
                                     }
 

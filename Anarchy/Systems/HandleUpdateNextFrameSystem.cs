@@ -37,9 +37,8 @@ namespace Anarchy.Systems
                 All = new ComponentType[]
                {
                     ComponentType.ReadOnly<UpdateNextFrame>(),
-                    ComponentType.ReadOnly<TransformAndCullingBoundsRecord>(),
+                    ComponentType.ReadOnly<TransformRecord>(),
                     ComponentType.ReadWrite<Game.Objects.Transform>(),
-                    ComponentType.ReadWrite<CullingInfo>(),
                },
                 None = new ComponentType[]
                {
