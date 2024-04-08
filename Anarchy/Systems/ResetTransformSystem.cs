@@ -76,6 +76,7 @@ namespace Anarchy.Systems
 
                 if (transformRecord.Equals(originalTransform))
                 {
+                    EntityManager.RemoveComponent<UpdateNextFrame>(entity);
                     continue;
                 }
 
@@ -84,7 +85,14 @@ namespace Anarchy.Systems
                 cullingInfo.m_Bounds = transformRecord.m_Bounds;
                 EntityManager.SetComponentData(entity, originalTransform);
                 EntityManager.SetComponentData(entity, cullingInfo);
-
+                if (EntityManager.HasComponent<UpdateNextFrame>(entity))
+                {
+                    EntityManager.RemoveComponent<UpdateNextFrame>(entity);
+                }
+                else
+                {
+                    EntityManager.AddComponent<UpdateNextFrame>(entity);
+                }
             }
 
         }

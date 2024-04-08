@@ -107,6 +107,7 @@ namespace Anarchy
             updateSystem.UpdateAfter<ResetNetCompositionDataSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateBefore<ResetTransformSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateBefore<CheckTransformSystem>(SystemUpdatePhase.Modification1);
+            updateSystem.UpdateBefore<HandleUpdateNextFrameSystem>(SystemUpdatePhase.Modification1);
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Completed.");
         }
 
