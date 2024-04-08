@@ -11,6 +11,7 @@ namespace Anarchy.Systems
     using Colossal.Serialization.Entities;
     using Game;
     using Game.Common;
+    using Game.Rendering;
     using Game.Tools;
     using System.Collections.Generic;
     using System.Reflection;
@@ -22,12 +23,9 @@ namespace Anarchy.Systems
     /// </summary>
     public partial class ResetTransformSystem : GameSystemBase
     {
-        private const string MoveItToolID = "MoveItTool";
         private ILog m_Log;
         private EntityQuery m_TransformRecordQuery;
         private ToolSystem m_ToolSystem;
-        private ToolBaseSystem m_MoveItTool;
-       
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResetTransformSystem"/> class.
@@ -47,8 +45,9 @@ namespace Anarchy.Systems
                 All = new ComponentType[]
                {
                     ComponentType.ReadOnly<Updated>(),
-                    ComponentType.ReadOnly<TransformRecord>(),
-                    ComponentType.ReadOnly<Game.Objects.Transform>(),
+                    ComponentType.ReadOnly<TransformAndCullingBoundsRecord>(),
+                    ComponentType.ReadWrite<Game.Objects.Transform>(),
+                    ComponentType.ReadWrite<CullingInfo>(),
                },
                 None = new ComponentType[]
                 {
@@ -59,29 +58,6 @@ namespace Anarchy.Systems
             base.OnCreate();
         }
 
-        /*
-        /// <inheritdoc/>
-        protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
-        {
-            base.OnGameLoadingComplete(purpose, mode);
-
-            if (World.GetOrCreateSystemManaged<ToolSystem>().tools.Find(x => x.toolID.Equals(MoveItToolID)) is ToolBaseSystem moveItTool)
-            {
-                // Found it
-                m_Log.Info($"{nameof(ResetTransformSystem)}.{nameof(OnGameLoadingComplete)} found Move It.");
-                PropertyInfo moveItSelectedEntities = moveItTool.GetType().GetProperty("SelectedEntities");
-                if (moveItSelectedEntities is not null)
-                {
-                    m_MoveItTool = moveItTool;
-                    m_Log.Info($"{nameof(ResetTransformSystem)}.{nameof(OnGameLoadingComplete)} saved moveItTool");
-                }
-            }
-            else
-            {
-                m_Log.Info($"{nameof(ResetTransformSystem)}.{nameof(OnGameLoadingComplete)} move it tool not found");
-            }
-        }*/
-
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
@@ -89,22 +65,11 @@ namespace Anarchy.Systems
             {
                 return;
             }
-            /*
-            HashSet<Entity> moveItToolSelectedEntities = new HashSet<Entity>();
-            if (m_ToolSystem.activeTool.toolID == MoveItToolID && m_MoveItTool is not null)
-            {
-                PropertyInfo moveItSelectedEntities = m_MoveItTool.GetType().GetProperty("SelectedEntities");
-                if (moveItSelectedEntities is not null)
-                {
-                    moveItToolSelectedEntities = (HashSet<Entity>)moveItSelectedEntities.GetValue(m_MoveItTool);
-                    m_Log.Debug($"{nameof(ResetTransformSystem)}.{nameof(OnUpdate)} saved moveItTool selected entities");
-                }
-            }*/
 
             NativeArray<Entity> entities = m_TransformRecordQuery.ToEntityArray(Allocator.Temp);
             foreach (Entity entity in entities)
             {
-                if (!EntityManager.TryGetComponent(entity, out TransformRecord transformRecord) || !EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform))
+                if (!EntityManager.TryGetComponent(entity, out TransformAndCullingBoundsRecord transformRecord) || !EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform) || !EntityManager.TryGetComponent(entity, out CullingInfo cullingInfo))
                 {
                     continue;
                 }
@@ -116,8 +81,9 @@ namespace Anarchy.Systems
 
                 originalTransform.m_Position = transformRecord.m_Position;
                 originalTransform.m_Rotation = transformRecord.m_Rotation;
+                cullingInfo.m_Bounds = transformRecord.m_Bounds;
                 EntityManager.SetComponentData(entity, originalTransform);
-
+                EntityManager.SetComponentData(entity, cullingInfo);
 
             }
 

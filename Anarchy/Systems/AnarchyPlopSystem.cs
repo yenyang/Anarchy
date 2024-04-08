@@ -18,6 +18,7 @@ namespace Anarchy.Systems
     using Game.Net;
     using Game.Objects;
     using Game.Prefabs;
+    using Game.Rendering;
     using Game.SceneFlow;
     using Game.Tools;
     using Game.Vehicles;
@@ -204,10 +205,10 @@ namespace Anarchy.Systems
                                         }
                                     }
 
-                                    if (EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform))
+                                    if (EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform) && EntityManager.TryGetComponent(entity, out CullingInfo cullingInfo))
                                     {
-                                        EntityManager.AddComponent<TransformRecord>(entity);
-                                        TransformRecord transformRecord = new () { m_Position = originalTransform.m_Position, m_Rotation = originalTransform.m_Rotation };
+                                        EntityManager.AddComponent<TransformAndCullingBoundsRecord>(entity);
+                                        TransformAndCullingBoundsRecord transformRecord = new () { m_Position = originalTransform.m_Position, m_Rotation = originalTransform.m_Rotation, m_Bounds = cullingInfo.m_Bounds };
                                         EntityManager.AddComponentData(entity, transformRecord);
                                     }
 

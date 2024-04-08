@@ -4,6 +4,7 @@
 
 namespace Anarchy.Components
 {
+    using Colossal.Mathematics;
     using Colossal.Serialization.Entities;
     using Game.Objects;
     using Unity.Entities;
@@ -12,7 +13,7 @@ namespace Anarchy.Components
     /// <summary>
     /// A component used to record where an object was placed so that it doesn't drop by accident.
     /// </summary>
-    public struct TransformRecord : IComponentData, IQueryTypeParameter, IEmptySerializable
+    public struct TransformAndCullingBoundsRecord : IComponentData, IQueryTypeParameter, IEmptySerializable
     {
         /// <summary>
         /// The position record from original transform.
@@ -25,15 +26,9 @@ namespace Anarchy.Components
         public quaternion m_Rotation;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TransformRecord"/> struct.
+        /// This records bounds of culling info.
         /// </summary>
-        /// <param name="position">From the original transform position.</param>
-        /// <param name="rotation">From the original transform rotation.</param>
-        public TransformRecord(float3 position, quaternion rotation)
-        {
-            m_Position = position;
-            m_Rotation = rotation;
-        }
+        public Bounds3 m_Bounds;
 
         /// <summary>
         /// Evaluates equualitiy between a transform record and a transform.

@@ -13,6 +13,7 @@ namespace Anarchy.Systems
     using Colossal.Serialization.Entities;
     using Game;
     using Game.Common;
+    using Game.Rendering;
     using Game.Tools;
     using Unity.Collections;
     using Unity.Entities;
@@ -47,8 +48,9 @@ namespace Anarchy.Systems
                 All = new ComponentType[]
                {
                     ComponentType.ReadOnly<Updated>(),
-                    ComponentType.ReadOnly<TransformRecord>(),
+                    ComponentType.ReadWrite<TransformAndCullingBoundsRecord>(),
                     ComponentType.ReadOnly<Game.Objects.Transform>(),
+                    ComponentType.ReadOnly<CullingInfo>(),
                },
                 None = new ComponentType[]
                 {
@@ -103,7 +105,7 @@ namespace Anarchy.Systems
             NativeArray<Entity> entities = m_TransformRecordQuery.ToEntityArray(Allocator.Temp);
             foreach (Entity entity in entities)
             {
-                if (!EntityManager.TryGetComponent(entity, out TransformRecord transformRecord) || !EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform))
+                if (!EntityManager.TryGetComponent(entity, out TransformAndCullingBoundsRecord transformRecord) || !EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform) || !EntityManager.TryGetComponent(entity, out CullingInfo cullingInfo))
                 {
                     continue;
                 }
@@ -117,6 +119,7 @@ namespace Anarchy.Systems
                 {
                     transformRecord.m_Position = originalTransform.m_Position;
                     transformRecord.m_Rotation = originalTransform.m_Rotation;
+                    transformRecord.m_Bounds = cullingInfo.m_Bounds;
                     EntityManager.SetComponentData(entity, transformRecord);
                 }
 
