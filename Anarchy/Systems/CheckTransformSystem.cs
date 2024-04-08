@@ -1,9 +1,11 @@
-﻿// <copyright file="ResetTransformSystem.cs" company="Yenyang's Mods. MIT License">
+﻿// <copyright file="CheckTransformSystem.cs" company="Yenyang's Mods. MIT License">
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
 namespace Anarchy.Systems
 {
+    using System.Collections.Generic;
+    using System.Reflection;
     using Anarchy;
     using Anarchy.Components;
     using Colossal.Entities;
@@ -12,27 +14,25 @@ namespace Anarchy.Systems
     using Game;
     using Game.Common;
     using Game.Tools;
-    using System.Collections.Generic;
-    using System.Reflection;
     using Unity.Collections;
     using Unity.Entities;
 
     /// <summary>
     /// A system that prevents objects from being overriden that has a custom component.
     /// </summary>
-    public partial class ResetTransformSystem : GameSystemBase
+    public partial class CheckTransformSystem : GameSystemBase
     {
         private const string MoveItToolID = "MoveItTool";
         private ILog m_Log;
         private EntityQuery m_TransformRecordQuery;
         private ToolSystem m_ToolSystem;
         private ToolBaseSystem m_MoveItTool;
-       
+
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ResetTransformSystem"/> class.
+        /// Initializes a new instance of the <see cref="CheckTransformSystem"/> class.
         /// </summary>
-        public ResetTransformSystem()
+        public CheckTransformSystem()
         {
         }
 
@@ -40,7 +40,7 @@ namespace Anarchy.Systems
         protected override void OnCreate()
         {
             m_Log = AnarchyMod.Instance.Log;
-            m_Log.Info($"{nameof(ResetTransformSystem)} Created.");
+            m_Log.Info($"{nameof(CheckTransformSystem)} Created.");
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_TransformRecordQuery = GetEntityQuery(new EntityQueryDesc
             {
@@ -59,7 +59,6 @@ namespace Anarchy.Systems
             base.OnCreate();
         }
 
-        /*
         /// <inheritdoc/>
         protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
         {
@@ -80,7 +79,7 @@ namespace Anarchy.Systems
             {
                 m_Log.Info($"{nameof(ResetTransformSystem)}.{nameof(OnGameLoadingComplete)} move it tool not found");
             }
-        }*/
+        }
 
         /// <inheritdoc/>
         protected override void OnUpdate()
@@ -89,7 +88,7 @@ namespace Anarchy.Systems
             {
                 return;
             }
-            /*
+
             HashSet<Entity> moveItToolSelectedEntities = new HashSet<Entity>();
             if (m_ToolSystem.activeTool.toolID == MoveItToolID && m_MoveItTool is not null)
             {
@@ -97,9 +96,9 @@ namespace Anarchy.Systems
                 if (moveItSelectedEntities is not null)
                 {
                     moveItToolSelectedEntities = (HashSet<Entity>)moveItSelectedEntities.GetValue(m_MoveItTool);
-                    m_Log.Debug($"{nameof(ResetTransformSystem)}.{nameof(OnUpdate)} saved moveItTool selected entities");
+                    m_Log.Debug($"{nameof(CheckTransformSystem)}.{nameof(OnUpdate)} saved moveItTool selected entities");
                 }
-            }*/
+            }
 
             NativeArray<Entity> entities = m_TransformRecordQuery.ToEntityArray(Allocator.Temp);
             foreach (Entity entity in entities)
@@ -114,9 +113,12 @@ namespace Anarchy.Systems
                     continue;
                 }
 
-                originalTransform.m_Position = transformRecord.m_Position;
-                originalTransform.m_Rotation = transformRecord.m_Rotation;
-                EntityManager.SetComponentData(entity, originalTransform);
+                if (m_ToolSystem.selected == entity || moveItToolSelectedEntities.Contains(entity))
+                {
+                    transformRecord.m_Position = originalTransform.m_Position;
+                    transformRecord.m_Rotation = originalTransform.m_Rotation;
+                    EntityManager.SetComponentData(entity, transformRecord);
+                }
 
 
             }
