@@ -4,7 +4,6 @@
 
 namespace Anarchy.Components
 {
-    using Colossal.Mathematics;
     using Colossal.Serialization.Entities;
     using Game.Objects;
     using Unity.Entities;
@@ -13,7 +12,7 @@ namespace Anarchy.Components
     /// <summary>
     /// A component used to record where an object was placed so that it doesn't drop by accident.
     /// </summary>
-    public struct TransformRecord : IComponentData, IQueryTypeParameter, IEmptySerializable
+    public struct TransformRecord : IComponentData, IQueryTypeParameter, ISerializable
     {
         /// <summary>
         /// The position record from original transform.
