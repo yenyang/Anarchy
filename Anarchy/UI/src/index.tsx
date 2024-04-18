@@ -2,6 +2,7 @@ import { ModRegistrar } from "cs2/modding";
 import { AnarchyRowComponent } from "mods/anarchySection/anarchySection";
 import { VanillaComponentResolver } from "mods/VanillaComponentResolver/VanillaComponentResolver";
 import { ChirperModComponent } from "mods/chirperMod/chirperMod";
+import { SelectedInfoPanelTogglesComponent } from "mods/SelectedInfoPanelTogglesComponent/selectedInfoPanelTogglesComponent";
 import mod from "../mod.json";
 
 const register: ModRegistrar = (moduleRegistry) => {
@@ -16,6 +17,8 @@ const register: ModRegistrar = (moduleRegistry) => {
 
      // This appends the right bottom floating menu with a chirper image that is just floating above the vanilla chirper image. Hopefully noone moves it.
      moduleRegistry.append('GameBottomRight', ChirperModComponent);
+
+     moduleRegistry.extend("game-ui/game/components/selected-info-panel/selected-info-sections/selected-info-sections.tsx", 'selectedInfoSectionComponents', SelectedInfoPanelTogglesComponent)
 
      // This is just to verify using UI console that all the component registriations was completed.
      console.log(mod.id + " UI module registrations completed.");

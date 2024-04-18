@@ -5,7 +5,6 @@
 namespace Anarchy.Systems
 {
     using System.Collections.Generic;
-    using System.ComponentModel;
     using Anarchy;
     using Anarchy.Components;
     using Colossal.Entities;
@@ -15,12 +14,10 @@ namespace Anarchy.Systems
     using Game.Citizens;
     using Game.Common;
     using Game.Creatures;
-    using Game.Net;
     using Game.Objects;
     using Game.Prefabs;
-    using Game.Rendering;
-    using Game.SceneFlow;
     using Game.Tools;
+    using Game.UI.InGame;
     using Game.Vehicles;
     using Unity.Collections;
     using Unity.Entities;

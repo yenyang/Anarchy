@@ -5,16 +5,16 @@ import { VanillaComponentResolver } from "../VanillaComponentResolver/VanillaCom
 import mod from "../../../mod.json";
 
 // These establishes the binding with C# side. Without C# side game ui will crash.
-export const anarchyEnabled$ = bindValue<boolean>(mod.id, 'AnarchyEnabled');
-export const showToolIcon$ = bindValue<boolean>(mod.id, 'ShowToolIcon');
+const anarchyEnabled$ = bindValue<boolean>(mod.id, 'AnarchyEnabled');
+const showToolIcon$ = bindValue<boolean>(mod.id, 'ShowToolIcon');
 
 // These contain the coui paths to Unified Icon Library svg assets
-export const uilStandard =                          "coui://uil/Standard/";
-export const uilColored =                           "coui://uil/Colored/";
-export const anarchyEnabledSrc =      uilColored +  "Anarchy.svg";
-export const anarchyDisabledSrc =     uilStandard + "Anarchy.svg";
+const uilStandard =                          "coui://uil/Standard/";
+const uilColored =                           "coui://uil/Colored/";
+const anarchyEnabledSrc =      uilColored +  "Anarchy.svg";
+const anarchyDisabledSrc =     uilStandard + "Anarchy.svg";
 
-export function handleClick() {
+function handleClick() {
     // This triggers an event on C# side and C# designates the method to implement.
     trigger(mod.id, "AnarchyToggled");
 }

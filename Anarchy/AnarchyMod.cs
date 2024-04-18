@@ -25,6 +25,11 @@ namespace Anarchy
     public class AnarchyMod : IMod
     {
         /// <summary>
+        /// An id used for bindings between UI and C#.
+        /// </summary>
+        public static readonly string Id = "Anarchy";
+
+        /// <summary>
         /// Gets the install folder for the mod.
         /// </summary>
         private static string m_modInstallFolder;
@@ -108,6 +113,7 @@ namespace Anarchy
             updateSystem.UpdateBefore<ResetTransformSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateBefore<CheckTransformSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateBefore<HandleUpdateNextFrameSystem>(SystemUpdatePhase.Modification1);
+            updateSystem.UpdateAt<SelectedInfoPanelTogglesSystem>(SystemUpdatePhase.UIUpdate);
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Completed.");
         }
 

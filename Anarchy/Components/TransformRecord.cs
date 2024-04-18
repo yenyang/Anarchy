@@ -38,7 +38,7 @@ namespace Anarchy.Components
 
             return false;
         }
-
+        
         /// <summary>
         /// Serializes the transform record.
         /// </summary>
