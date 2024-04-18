@@ -27,5 +27,11 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.DisableAnarchyWhileBrushing]": "Automatically disables the anarchy toggle while brushing objects such as trees. Toggle reverts back to previous state after you stop brushing objects.",
   "YY_ANARCHY.Anarchy": "Anarchy",
   "YY_ANARCHY.AnarchyButton": "Anarchy",
-  "YY_ANARCHY_DESCRIPTION.AnarchyButton": "Disables error checks for tools and does not display errors. When applicable, you can place vegetation and props (with DevUI 'Add Object' menu) overlapping or inside the boundaries of other objects and close together."
+  "YY_ANARCHY_DESCRIPTION.AnarchyButton": "Disables error checks for tools and does not display errors. When applicable, you can place vegetation and props (with DevUI 'Add Object' menu) overlapping or inside the boundaries of other objects and close together.",
+  "Anarchy.TOOLTIP_DESCRIPTION[PreventOverrideButton]": "Allows placement of vegetation and props overlapping or inside the boundaries of other objects and close together.",
+  "Anarchy.TOOLTIP_TITLE[PreventOverrideButton]": "Prevent Override",
+  "Anarchy.TOOLTIP_DESCRIPTION[TransformRecordButton]": "Allows placement of elevated vegetation and props overlapping or inside the boundaries of other objects and close together and prevents them from falling when the object they are overlapping with updates.",
+  "Anarchy.TOOLTIP_TITLE[TransformRecordButton]": "Prevent Dropping",
+  "Anarchy.TOOLTIP_DESCRIPTION[AnarchyModComponets]": "Use these toggles to manually add or remove components of the Anarchy mod for the selected object.",
+  "Anarchy.TOOLTIP_TITLE[AnarchyModComponets]": "Anarchy Mod Components"
 }

@@ -8,13 +8,9 @@ namespace Anarchy.Systems
     using Anarchy.Components;
     using Colossal.Entities;
     using Colossal.Logging;
-    using Colossal.Serialization.Entities;
     using Game;
     using Game.Common;
-    using Game.Rendering;
     using Game.Tools;
-    using System.Collections.Generic;
-    using System.Reflection;
     using Unity.Collections;
     using Unity.Entities;
 

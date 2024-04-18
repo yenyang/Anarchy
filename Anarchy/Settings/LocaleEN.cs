@@ -9,6 +9,7 @@ namespace Anarchy.Settings
     using System.IO;
     using System.Text;
     using Colossal;
+    using Colossal.IO.AssetDatabase.Internal;
 
     /// <summary>
     /// Localization for Anarchy Mod in English.
@@ -58,9 +59,24 @@ namespace Anarchy.Settings
                 { "YY_ANARCHY.Anarchy", "Anarchy" },
                 { "YY_ANARCHY.AnarchyButton", "Anarchy" },
                 { "YY_ANARCHY_DESCRIPTION.AnarchyButton", "Disables error checks for tools and does not display errors. When applicable, you can place vegetation and props (with DevUI 'Add Object' menu) overlapping or inside the boundaries of other objects and close together." },
+                { TooltipDescriptionKey("PreventOverrideButton"), "Allows placement of vegetation and props overlapping or inside the boundaries of other objects and close together." },
+                { TooltipTitleKey("PreventOverrideButton"), "Prevent Override" },
+                { TooltipDescriptionKey("TransformRecordButton"), "Allows placement of elevated vegetation and props overlapping or inside the boundaries of other objects and close together and prevents them from falling when the object they are overlapping with updates." },
+                { TooltipTitleKey("TransformRecordButton"), "Prevent Dropping" },
+                { TooltipTitleKey("AnarchyModComponets"), "Anarchy Mod Components" },
             };
         }
 
+
+        private string TooltipDescriptionKey(string key)
+        {
+            return $"{AnarchyMod.Id}.TOOLTIP_DESCRIPTION[{key}]";
+        }
+
+        private string TooltipTitleKey(string key)
+        {
+            return $"{AnarchyMod.Id}.TOOLTIP_TITLE[{key}]";
+        }
 
         /// <inheritdoc/>
         public IEnumerable<KeyValuePair<string, string>> ReadEntries(IList<IDictionaryEntryError> errors, Dictionary<string, int> indexCounts)

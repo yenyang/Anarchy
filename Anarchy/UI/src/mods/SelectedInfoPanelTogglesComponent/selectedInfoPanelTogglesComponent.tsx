@@ -4,6 +4,7 @@ import { bindValue, trigger, useValue } from "cs2/api";
 import { useLocalization } from "cs2/l10n";
 import { VanillaComponentResolver } from "mods/VanillaComponentResolver/VanillaComponentResolver";
 import mod from "../../../mod.json";
+import locale from "../../lang/en-US.json";
 
 interface InfoSectionComponent {
 	group: string;
@@ -16,8 +17,10 @@ const uilStandard =                          "coui://uil/Standard/";
 const uilColored =                           "coui://uil/Colored/";
 const anarchyEnabledSrc =      uilColored +  "Anarchy.svg";
 const anarchyDisabledSrc =     uilStandard + "Anarchy.svg";
+const transformRecordSrc =      uilStandard + "NoHeightLimit.svg";
 
 const hasPreventOverride$ = bindValue<boolean>(mod.id, 'HasPreventOverride');
+const hasTransformRecord$ = bindValue<boolean>(mod.id, 'HasTransformRecord');
 
 const InfoSectionTheme: Theme | any = getModule(
 	"game-ui/game/components/selected-info-panel/shared-components/info-section/info-section.module.scss",
@@ -39,9 +42,9 @@ const InfoRow: any = getModule(
     "InfoRow"
 )
 
-function handleClick() {
+function handleClick(eventName : string) {
     // This triggers an event on C# side and C# designates the method to implement.
-    trigger(mod.id, "AnarchyToggled");
+    trigger(mod.id, eventName);
 }
 
 const FocusDisabled$: FocusKey = getModule(
@@ -49,17 +52,36 @@ const FocusDisabled$: FocusKey = getModule(
 	"FOCUS_DISABLED"
 );
 
+const descriptionToolTipStyle = getModule("game-ui/common/tooltip/description-tooltip/description-tooltip.module.scss", "classes");
+    
+
+// This is working, but it's possible a better solution is possible.
+function descriptionTooltip(tooltipTitle: string | null, tooltipDescription: string | null) : JSX.Element {
+    return (
+        <>
+            <div className={descriptionToolTipStyle.title}>{tooltipTitle}</div>
+            <div className={descriptionToolTipStyle.content}>{tooltipDescription}</div>
+        </>
+    );
+}
+
 export const SelectedInfoPanelTogglesComponent = (componentList: any): any => {
     // I believe you should not put anything here.
 	componentList["Anarchy.Systems.SelectedInfoPanelTogglesSystem"] = (e: InfoSectionComponent) => {
         // These get the value of the bindings.
         const hasPreventOverride : boolean = useValue(hasPreventOverride$);
+        const hasTransformRecord : boolean = useValue(hasTransformRecord$);
         // translation handling. Translates using locale keys that are defined in C# or fallback string here.
         const { translate } = useLocalization();
-        const anarchySectionTitle = translate("YY_ANARCHY.Anarchy", "Anarchy");
-        const tooltipText = translate("YY_ANARCHY_DESCRIPTION.AnarchyButton", "Disables error checks for tools and does not display errors. When applicable, you can place vegetation and props (with DevUI 'Add Object' menu) overlapping or inside the boundaries of other objects and close together.");
-        
-        return 	<InfoSection focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED} tooltip={"Anarchy"} disableFocus={true} className={InfoSectionTheme.infoSection}>
+        const anarchySectionTitle = translate("YY_ANARCHY.Anarchy", locale["YY_ANARCHY.Anarchy"]);
+        const preventOverrideTooltipKey = translate("Anarchy.TOOLTIP_TITLE[PreventOverrideButton]" ,locale["Anarchy.TOOLTIP_TITLE[PreventOverrideButton]"]);
+        const preventOverrideTooltipDescription = translate("Anarchy.TOOLTIP_DESCRIPTION[PreventOverrideButton]" ,locale["Anarchy.TOOLTIP_DESCRIPTION[PreventOverrideButton]"]);
+        const transformRecordTooltipKey = translate("Anarchy.TOOLTIP_TITLE[TransformRecordButton]" ,locale["Anarchy.TOOLTIP_TITLE[TransformRecordButton]"]);
+        const transformRecordTooltipDescription = translate("Anarchy.TOOLTIP_DESCRIPTION[TransformRecordButton]" ,locale["Anarchy.TOOLTIP_DESCRIPTION[TransformRecordButton]"]);
+        const anarchyModComponentsTooltipKey = translate("Anarchy.TOOLTIP_TITLE[AnarchyModComponets]" ,locale["Anarchy.TOOLTIP_TITLE[AnarchyModComponets]"]);
+
+
+        return 	<InfoSection focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED} disableFocus={true} className={InfoSectionTheme.infoSection}>
                         <InfoRow 
                             left={anarchySectionTitle}
                             right=
@@ -70,13 +92,22 @@ export const SelectedInfoPanelTogglesComponent = (componentList: any): any => {
                                         selected = {hasPreventOverride}
                                         multiSelect = {false}   // I haven't tested any other value here
                                         disabled = {false}      // I haven't tested any other value here
-                                        tooltip = {tooltipText}
+                                        tooltip = {descriptionTooltip(preventOverrideTooltipKey, preventOverrideTooltipDescription)}
                                         className = {VanillaComponentResolver.instance.toolButtonTheme.button}
-                                        onSelect={handleClick}
+                                        onSelect={() => handleClick("PreventOverrideButtonToggled")}
+                                    />
+                                    <VanillaComponentResolver.instance.ToolButton
+                                        src={transformRecordSrc}
+                                        selected = {hasTransformRecord}
+                                        multiSelect = {false}   // I haven't tested any other value here
+                                        disabled = {false}      // I haven't tested any other value here
+                                        tooltip = {descriptionTooltip(transformRecordTooltipKey, transformRecordTooltipDescription)}
+                                        className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                                        onSelect={() => handleClick("TransformRecordButtonToggled")}
                                     />
                                 </>
                             }
-                            tooltip={"Anarchy"}
+                            tooltip={anarchyModComponentsTooltipKey}
                             uppercase={true}
                             disableFocus={true}
                             subRow={false}

@@ -1,6 +1,6 @@
 import { Theme, UniqueFocusKey } from "cs2/bindings";
 import { ModuleRegistry } from "cs2/modding";
-import { HTMLAttributes } from "react";
+import { HTMLAttributes, ReactNode } from "react";
 
 // These are specific to the types of components that this mod uses.
 // In the UI developer tools at http://localhost:9444/ go to Sources -> Index.js. Pretty print if it is formatted in a single line.
@@ -12,7 +12,7 @@ type PropsToolButton = {
     selected : boolean
     multiSelect : boolean
     disabled?: boolean
-    tooltip?: string | null
+    tooltip?: string | ReactNode | null
     selectSound?: any
     uiTag?: string
     className?: string

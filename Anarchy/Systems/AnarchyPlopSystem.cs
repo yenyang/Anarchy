@@ -202,14 +202,20 @@ namespace Anarchy.Systems
                                         }
                                     }
 
-                                    if (EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform))
+                                    EntityManager.RemoveComponent<Attached>(entity);
+                                }
+
+                                // added for compatibility with EDT.
+                                if (m_ToolSystem.actionMode.IsGame())
+                                {
+                                    m_ObjectToolSystem.GetAvailableSnapMask(out Snap onMask, out Snap offMask);
+
+                                    if ((onMask & Snap.ObjectSurface) == Snap.ObjectSurface && EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform))
                                     {
                                         EntityManager.AddComponent<TransformRecord>(entity);
                                         TransformRecord transformRecord = new () { m_Position = originalTransform.m_Position, m_Rotation = originalTransform.m_Rotation };
                                         EntityManager.AddComponentData(entity, transformRecord);
                                     }
-
-                                    EntityManager.RemoveComponent<Attached>(entity);
                                 }
 
                                 if ((objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable)
