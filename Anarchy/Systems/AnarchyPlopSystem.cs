@@ -215,6 +215,21 @@ namespace Anarchy.Systems
                                         EntityManager.AddComponent<TransformRecord>(entity);
                                         TransformRecord transformRecord = new () { m_Position = originalTransform.m_Position, m_Rotation = originalTransform.m_Rotation };
                                         EntityManager.AddComponentData(entity, transformRecord);
+                                        /*
+                                        if (EntityManager.TryGetBuffer(entity, isReadOnly: false, out DynamicBuffer<Game.Objects.SubObject> subObjectBuffer))
+                                        {
+                                            // Loop through all subobjects and add transform records to those too.
+                                            for (int i = subObjectBuffer.Length - 1; i >= 0; i--)
+                                            {
+                                                Game.Objects.SubObject subObject = subObjectBuffer[i];
+                                                if (EntityManager.TryGetComponent(subObject.m_SubObject, out Game.Objects.Transform originalSubTransform))
+                                                {
+                                                    EntityManager.AddComponent<TransformRecord>(subObject.m_SubObject);
+                                                    TransformRecord subTransformRecord = new () { m_Position = originalSubTransform.m_Position, m_Rotation = originalSubTransform.m_Rotation };
+                                                    EntityManager.AddComponentData(entity, subTransformRecord);
+                                                }
+                                            }
+                                        }*/
                                     }
                                 }
 
