@@ -210,7 +210,7 @@ namespace Anarchy.Systems
                                 {
                                     m_ObjectToolSystem.GetAvailableSnapMask(out Snap onMask, out Snap offMask);
 
-                                    if ((onMask & Snap.ObjectSurface) == Snap.ObjectSurface && EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform))
+                                    if ((onMask & Snap.ObjectSurface) == Snap.ObjectSurface && EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform) && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create)
                                     {
                                         EntityManager.AddComponent<TransformRecord>(entity);
                                         TransformRecord transformRecord = new () { m_Position = originalTransform.m_Position, m_Rotation = originalTransform.m_Rotation };

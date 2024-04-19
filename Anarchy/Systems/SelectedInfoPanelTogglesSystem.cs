@@ -9,6 +9,7 @@ namespace Anarchy.Systems
     using Colossal.Logging;
     using Colossal.UI.Binding;
     using Game;
+    using Game.Common;
     using Game.Prefabs;
     using Game.Tools;
     using Unity.Entities;
@@ -118,7 +119,7 @@ namespace Anarchy.Systems
         private bool ScreenSelectedEntity()
         {
             PrefabBase prefabBase = null;
-            if (EntityManager.TryGetComponent(selectedEntity, out PrefabRef prefabRef))
+            if (EntityManager.TryGetComponent(selectedEntity, out PrefabRef prefabRef) && !EntityManager.HasComponent<Owner>(selectedEntity))
             {
                 if (m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase))
                 {
