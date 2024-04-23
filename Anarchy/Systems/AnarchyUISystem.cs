@@ -149,18 +149,20 @@ namespace Anarchy.Systems
             elevationUpHotKey.performed += OnElevationUpKeyPressed;
             elevationUpHotKey.Enable();
 
-
             InputAction elevationDownHotKey = new ($"{AnarchyMod.Id}.ElevationDown");
             elevationDownHotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/shift").With("Button", "<Keyboard>/s");
             elevationDownHotKey.performed += OnElevationDownKeyPressed;
             elevationDownHotKey.Enable();
 
-
             InputAction elevationResetHotKey = new ($"{AnarchyMod.Id}.ElevationReset");
-            elevationResetHotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/shift").With("Button", "<Keyboard>/f");
+            elevationResetHotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/shift").With("Button", "<Keyboard>/r");
             elevationResetHotKey.performed += OnElevationResetKeyPressed;
             elevationResetHotKey.Enable();
 
+            InputAction elevationStepHotKey = new($"{AnarchyMod.Id}.ElevationStep");
+            elevationStepHotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/shift").With("Button", "<Keyboard>/f");
+            elevationStepHotKey.performed += OnElevationStepKeyPressed;
+            elevationStepHotKey.Enable();
 
             // This binding communicates values between UI and C#
             AddBinding(m_AnarchyEnabled = new ValueBinding<bool>("Anarchy", "AnarchyEnabled", false));
@@ -324,6 +326,17 @@ namespace Anarchy.Systems
                 if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
                 {
                     m_ElevationValue.UpdateCallback(0f);
+                }
+            }
+        }
+
+        private void OnElevationStepKeyPressed(InputAction.CallbackContext context)
+        {
+            if (m_ToolSystem.activeTool.toolID != null)
+            {
+                if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
+                {
+                    ElevationStepPressed();
                 }
             }
         }

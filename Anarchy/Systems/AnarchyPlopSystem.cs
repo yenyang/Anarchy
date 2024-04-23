@@ -207,35 +207,23 @@ namespace Anarchy.Systems
                                     }
 
                                     EntityManager.RemoveComponent<Attached>(entity);
+                                    if (EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform) && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create && !EntityManager.HasComponent<TransformRecord>(entity))
+                                    {
+                                        EntityManager.AddComponent<TransformRecord>(entity);
+                                        TransformRecord transformRecord = new () { m_Position = originalTransform.m_Position, m_Rotation = originalTransform.m_Rotation };
+                                        EntityManager.SetComponentData(entity, transformRecord);
+                                    }
                                 }
 
                                 // added for compatibility with EDT.
                                 if (m_ToolSystem.actionMode.IsGame())
                                 {
-                                    m_ObjectToolSystem.GetAvailableSnapMask(out Snap onMask, out Snap offMask);
-
-                                    if (EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform)
-                                        && (((onMask & Snap.ObjectSurface) == Snap.ObjectSurface && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create)
-                                        || (m_AnarchyUISystem.LockElevation && (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool"))))
+                                    if (EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform) && !EntityManager.HasComponent<TransformRecord>(entity) &&
+                                        m_AnarchyUISystem.LockElevation && (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool"))
                                     {
                                         EntityManager.AddComponent<TransformRecord>(entity);
                                         TransformRecord transformRecord = new () { m_Position = originalTransform.m_Position, m_Rotation = originalTransform.m_Rotation };
-                                        EntityManager.AddComponentData(entity, transformRecord);
-                                        /*
-                                        if (EntityManager.TryGetBuffer(entity, isReadOnly: false, out DynamicBuffer<Game.Objects.SubObject> subObjectBuffer))
-                                        {
-                                            // Loop through all subobjects and add transform records to those too.
-                                            for (int i = subObjectBuffer.Length - 1; i >= 0; i--)
-                                            {
-                                                Game.Objects.SubObject subObject = subObjectBuffer[i];
-                                                if (EntityManager.TryGetComponent(subObject.m_SubObject, out Game.Objects.Transform originalSubTransform))
-                                                {
-                                                    EntityManager.AddComponent<TransformRecord>(subObject.m_SubObject);
-                                                    TransformRecord subTransformRecord = new () { m_Position = originalSubTransform.m_Position, m_Rotation = originalSubTransform.m_Rotation };
-                                                    EntityManager.AddComponentData(entity, subTransformRecord);
-                                                }
-                                            }
-                                        }*/
+                                        EntityManager.SetComponentData(entity, transformRecord);
                                     }
                                 }
 
