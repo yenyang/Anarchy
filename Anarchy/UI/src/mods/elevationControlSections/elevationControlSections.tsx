@@ -12,6 +12,7 @@ import locale from "../../lang/en-US.json"
 const couiStandard =                         "coui://uil/Standard/";
 const arrowDownSrc =         couiStandard +  "ArrowDownThickStroke.svg";
 const arrowUpSrc =           couiStandard +  "ArrowUpThickStroke.svg";
+const resetSrc =            couiStandard + "Reset.svg";
 
 // These establishes the binding with C# side. Without C# side game ui will crash.
 const ElevationValue$ =     bindValue<number> (mod.id, 'ElevationValue');
@@ -20,7 +21,7 @@ const ElevationScale$ =     bindValue<number> (mod.id, 'ElevationScale');
 const LockElevation$ =     bindValue<boolean> (mod.id, 'LockElevation');
 
 // Stores the default values for the step arrays. Must be descending order.
-const defaultValues : number[] = [10, 1, 0.1, 0.01];
+const defaultValues : number[] = [10, 2.5, 1.0, 0.1];
 
 // This functions trigger an event on C# side and C# designates the method to implement.
 function handleClick(eventName: string) {
@@ -60,7 +61,8 @@ export const ElevationControlComponent: ModuleRegistryExtend = (Component : any)
         const elevationDownDescription = translate("Anarchy.TOOLTIP_DESCRIPTION[DecreaseElevation]" ,locale["Anarchy.TOOLTIP_DESCRIPTION[DecreaseElevation]"]);
         const elevationStepDescription = translate("Anarchy.TOOLTIP_DESCRIPTION[ElevationStep]" ,locale["Anarchy.TOOLTIP_DESCRIPTION[ElevationStep]"]);
         const elevationLockTitle = translate("Anarchy.TOOLTIP_TITLE[ElevationLock]" ,locale["Anarchy.TOOLTIP_TITLE[ElevationLock]"]);
-        const elevationLockDescriptin = translate("Anarchy.TOOLTIP_DESCRIPTION[ElevationLock]" ,locale["Anarchy.TOOLTIP_DESCRIPTION[ElevationLock]"]);
+        const elevationLockDescription = translate("Anarchy.TOOLTIP_DESCRIPTION[ElevationLock]" ,locale["Anarchy.TOOLTIP_DESCRIPTION[ElevationLock]"]);
+        const resetElevationDescription = translate( "Anarchy.TOOLTIP_DESCRIPTION[ResetElevation]",locale["Anarchy.TOOLTIP_DESCRIPTION[ResetElevation]"]);
 
         var result = Component();
         
@@ -75,6 +77,13 @@ export const ElevationControlComponent: ModuleRegistryExtend = (Component : any)
                 */
                 <>
                     <VanillaComponentResolver.instance.Section title={elevationSectionTitle}>
+                        <VanillaComponentResolver.instance.ToolButton 
+                                className={VanillaComponentResolver.instance.toolButtonTheme.button} 
+                                tooltip={resetElevationDescription} 
+                                onSelect={() => handleClick("ResetElevationToggled")} 
+                                src={resetSrc}
+                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                        ></VanillaComponentResolver.instance.ToolButton>
                         <VanillaComponentResolver.instance.ToolButton 
                             className={VanillaComponentResolver.instance.mouseToolOptionsTheme.startButton} 
                             tooltip={elevationDownDescription} 
@@ -94,7 +103,7 @@ export const ElevationControlComponent: ModuleRegistryExtend = (Component : any)
                         <VanillaComponentResolver.instance.ToolButton 
                             className={VanillaComponentResolver.instance.toolButtonTheme.button} 
                             selected = {LockElevation}
-                            tooltip={descriptionTooltip(elevationLockTitle, elevationLockDescriptin)} 
+                            tooltip={descriptionTooltip(elevationLockTitle, elevationLockDescription)} 
                             onSelect={() => handleClick("LockElevationToggled")} 
                             src={elevationLockSrc}
                             focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}

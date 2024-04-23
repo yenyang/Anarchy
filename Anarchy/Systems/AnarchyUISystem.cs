@@ -72,6 +72,7 @@ namespace Anarchy.Systems
         private ValueBindingHelper<float> m_ElevationValue;
         private ValueBindingHelper<float> m_ElevationStep;
         private ValueBindingHelper<int> m_ElevationScale;
+        private ObjectDefinitionSystem m_ObjectDefinitionSystem;
         private ValueBindingHelper<bool> m_LockElevation;
         private ObjectToolSystem m_ObjectToolSystem;
         private bool m_IsBrushing;
@@ -134,6 +135,7 @@ namespace Anarchy.Systems
             m_BulldozeToolSystem = World.GetOrCreateSystemManaged<BulldozeToolSystem>();
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_ResetNetCompositionDataSystem = World.GetOrCreateSystemManaged<ResetNetCompositionDataSystem>();
+            m_ObjectDefinitionSystem = World.GetOrCreateSystemManaged<ObjectDefinitionSystem>();
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_ToolSystem.EventToolChanged += OnToolChanged;
             m_Log.Info($"{nameof(AnarchyUISystem)}.{nameof(OnCreate)}");
@@ -141,6 +143,24 @@ namespace Anarchy.Systems
             hotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/ctrl").With("Button", "<Keyboard>/a");
             hotKey.performed += OnKeyPressed;
             hotKey.Enable();
+
+            InputAction elevationUpHotKey = new ($"{AnarchyMod.Id}.ElevationUp");
+            elevationUpHotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/shift").With("Button", "<Keyboard>/w");
+            elevationUpHotKey.performed += OnElevationUpKeyPressed;
+            elevationUpHotKey.Enable();
+
+
+            InputAction elevationDownHotKey = new ($"{AnarchyMod.Id}.ElevationDown");
+            elevationDownHotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/shift").With("Button", "<Keyboard>/s");
+            elevationDownHotKey.performed += OnElevationDownKeyPressed;
+            elevationDownHotKey.Enable();
+
+
+            InputAction elevationResetHotKey = new ($"{AnarchyMod.Id}.ElevationReset");
+            elevationResetHotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/shift").With("Button", "<Keyboard>/f");
+            elevationResetHotKey.performed += OnElevationResetKeyPressed;
+            elevationResetHotKey.Enable();
+
 
             // This binding communicates values between UI and C#
             AddBinding(m_AnarchyEnabled = new ValueBinding<bool>("Anarchy", "AnarchyEnabled", false));
@@ -157,12 +177,12 @@ namespace Anarchy.Systems
             CreateTrigger("DecreaseElevation", () => m_ElevationValue.Value -= m_ElevationStep.Value);
             CreateTrigger("LockElevationToggled", () => m_LockElevation.Value = !m_LockElevation.Value);
             CreateTrigger("ElevationStep", ElevationStepPressed);
+            CreateTrigger("ResetElevationToggled", () => m_ElevationValue.Value = 0f);
         }
 
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            base.OnUpdate();
             if (AnarchyMod.Instance.Settings.DisableAnarchyWhileBrushing && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush && !m_IsBrushing)
             {
                 m_IsBrushing = true;
@@ -199,6 +219,8 @@ namespace Anarchy.Systems
                     m_ElevationValue.Value = 0;
                 }
             }
+
+            base.OnUpdate();
         }
 
         /// <summary>
@@ -273,8 +295,7 @@ namespace Anarchy.Systems
             }
         }
 
-        /*
-        private void OnPageUpKeyPressed(InputAction.CallbackContext context)
+        private void OnElevationUpKeyPressed(InputAction.CallbackContext context)
         {
             if (m_ToolSystem.activeTool.toolID != null)
             {
@@ -285,7 +306,7 @@ namespace Anarchy.Systems
             }
         }
 
-        private void OnPageDownKeyPressed(InputAction.CallbackContext context)
+        private void OnElevationDownKeyPressed(InputAction.CallbackContext context)
         {
             if (m_ToolSystem.activeTool.toolID != null)
             {
@@ -296,7 +317,7 @@ namespace Anarchy.Systems
             }
         }
 
-        private void OnEndKeyPressed(InputAction.CallbackContext context)
+        private void OnElevationResetKeyPressed(InputAction.CallbackContext context)
         {
             if (m_ToolSystem.activeTool.toolID != null)
             {
@@ -305,15 +326,26 @@ namespace Anarchy.Systems
                     m_ElevationValue.UpdateCallback(0f);
                 }
             }
-        }*/
+        }
 
         private void ElevationStepPressed()
         {
             float tempValue = m_ElevationStep.Value;
-            tempValue /= 10f;
-            if (tempValue < 0.005f)
+            if (Mathf.Approximately(tempValue, 10f))
             {
-                tempValue = 10.0f;
+                tempValue = 2.5f;
+            }
+            else if (Mathf.Approximately(tempValue, 2.5f))
+            {
+                tempValue = 1.0f;
+            }
+            else if (Mathf.Approximately(tempValue, 1.0f))
+            {
+                tempValue = 0.1f;
+            }
+            else
+            {
+                tempValue = 10f;
             }
 
             m_ElevationStep.Value = tempValue;

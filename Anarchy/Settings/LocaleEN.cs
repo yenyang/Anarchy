@@ -71,6 +71,7 @@ namespace Anarchy.Settings
                 { TooltipDescriptionKey("ElevationStep"),  "Changes the rate in which the elevation changes." },
                 { TooltipTitleKey("ElevationLock"),         "Elevation Lock" },
                 { TooltipDescriptionKey("ElevationLock"),  "Prevents game systems from changing elevation. You can still change position with mods." },
+                { TooltipDescriptionKey("ResetElevation"),  "Resets Elevation to 0." },
             };
         }
 

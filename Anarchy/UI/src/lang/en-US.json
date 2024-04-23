@@ -38,5 +38,7 @@
   "Anarchy.TOOLTIP_DESCRIPTION[DecreaseElevation]": "Decreases the elevation relative to the terrain surface.",
   "Anarchy.TOOLTIP_DESCRIPTION[ElevationStep]": "Changes the rate in which the elevation changes.",
   "Anarchy.TOOLTIP_TITLE[ElevationLock]": "Elevation Lock",
-  "Anarchy.TOOLTIP_DESCRIPTION[ElevationLock]": "Prevents game systems from changing elevation. You can still change position with mods."
+  "Anarchy.TOOLTIP_DESCRIPTION[ElevationLock]": "Prevents game systems from changing elevation. You can still change position with mods.",
+  "Anarchy.TOOLTIP_TITLE[ResetElevation]": "Reset Elevation",
+  "Anarchy.TOOLTIP_DESCRIPTION[ResetElevation]": "Resets Elevation to 0."
 }

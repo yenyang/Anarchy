@@ -12,6 +12,7 @@ namespace Anarchy.Systems
     using Game.Tools;
     using Unity.Collections;
     using Unity.Entities;
+    using UnityEngine;
 
     /// <summary>
     /// Overrides vertical position of creation definition.
@@ -50,7 +51,7 @@ namespace Anarchy.Systems
         {
             m_ObjectDefinitionQuery = SystemAPI.QueryBuilder()
                 .WithAllRW<Game.Tools.ObjectDefinition>()
-                .WithAll<CreationDefinition, Updated>()
+                .WithAll<CreationDefinition>()
                 .WithNone<Deleted, Overridden>()
                 .Build();
 
@@ -83,7 +84,7 @@ namespace Anarchy.Systems
 
                 if (prefabBase is not BuildingPrefab)
                 {
-                    currentObjectDefinition.m_Elevation = m_AnarchyUISystem.ElevationDelta;
+                    currentObjectDefinition.m_Elevation = Mathf.Max(m_AnarchyUISystem.ElevationDelta, 0);
                     currentObjectDefinition.m_Position.y += m_AnarchyUISystem.ElevationDelta;
                     EntityManager.SetComponentData(entity, currentObjectDefinition);
                 }
