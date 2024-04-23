@@ -4,19 +4,21 @@
 
 namespace Anarchy.Systems
 {
-    using System;
     using System.Collections.Generic;
+    using Anarchy.Utils;
     using Colossal.Logging;
     using Colossal.UI.Binding;
+    using Game.Prefabs;
+    using Game.Simulation;
     using Game.Tools;
-    using Game.UI;
     using Unity.Entities;
+    using UnityEngine;
     using UnityEngine.InputSystem;
 
     /// <summary>
     /// UI system for Anarchy.
     /// </summary>
-    public partial class AnarchyUISystem : UISystemBase
+    public partial class AnarchyUISystem : ExtendedUISystemBase
     {
         /// <summary>
         /// A list of tools ids that Anarchy is applicable to.
@@ -67,9 +69,14 @@ namespace Anarchy.Systems
         private ValueBinding<bool> m_AnarchyEnabled;
         private ValueBinding<bool> m_ShowToolIcon;
         private ValueBinding<bool> m_FlamingChirperOption;
+        private ValueBindingHelper<float> m_ElevationValue;
+        private ValueBindingHelper<float> m_ElevationStep;
+        private ValueBindingHelper<int> m_ElevationScale;
+        private ValueBindingHelper<bool> m_LockElevation;
         private ObjectToolSystem m_ObjectToolSystem;
         private bool m_IsBrushing;
         private bool m_BeforeBrushingAnarchyEnabled;
+        private int m_ButtonCooldown = 0;
 
         /// <summary>
         /// Gets a value indicating whether the flaming chirper option binding is on/off.
@@ -80,6 +87,16 @@ namespace Anarchy.Systems
         /// Gets a value indicating whether the flaming chirper option binding is on/off.
         /// </summary>
         public bool AnarchyEnabled { get => m_AnarchyEnabled.value; }
+
+        /// <summary>
+        /// Gets a value indicating the elevation delta.
+        /// </summary>
+        public float ElevationDelta { get => m_ElevationValue.Value; }
+
+        /// <summary>
+        /// Gets a value indicating whether the elevation should be locked.
+        /// </summary>
+        public bool LockElevation { get => m_LockElevation.Value; }
 
         /// <summary>
         /// Sets the flaming chirper option binding to value.
@@ -125,17 +142,21 @@ namespace Anarchy.Systems
             hotKey.performed += OnKeyPressed;
             hotKey.Enable();
 
-            // This binding communicates whether Anarchy toggle is enabled or disabled.
+            // This binding communicates values between UI and C#
             AddBinding(m_AnarchyEnabled = new ValueBinding<bool>("Anarchy", "AnarchyEnabled", false));
-
-            // This binding communicates whether to show the Anarchy tool icon.
             AddBinding(m_ShowToolIcon = new ValueBinding<bool>("Anarchy", "ShowToolIcon", false));
-
-            // This binding listens for whether the Anarchy tool icon has been toggled.
-            AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", AnarchyToggled));
-
-            // This binding communicates whether the option for using Flaming chirper is enabled.
             AddBinding(m_FlamingChirperOption = new ValueBinding<bool>("Anarchy", "FlamingChirperOption", AnarchyMod.Instance.Settings.FlamingChirper));
+            m_ElevationValue = CreateBinding("ElevationValue", 0f);
+            m_ElevationStep = CreateBinding("ElevationStep", 10f);
+            m_ElevationScale = CreateBinding("ElevationScale", 1);
+            m_LockElevation = CreateBinding("LockElevation", false);
+
+            // This binding listens for events triggered by the UI.
+            AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", AnarchyToggled));
+            CreateTrigger("IncreaseElevation", () => m_ElevationValue.Value += m_ElevationStep.Value);
+            CreateTrigger("DecreaseElevation", () => m_ElevationValue.Value -= m_ElevationStep.Value);
+            CreateTrigger("LockElevationToggled", () => m_LockElevation.Value = !m_LockElevation.Value);
+            CreateTrigger("ElevationStep", ElevationStepPressed);
         }
 
         /// <inheritdoc/>
@@ -153,6 +174,30 @@ namespace Anarchy.Systems
             {
                 m_AnarchyEnabled.Update(m_BeforeBrushingAnarchyEnabled);
                 m_IsBrushing = false;
+            }
+
+            if (m_ButtonCooldown > 0)
+            {
+                m_ButtonCooldown--;
+            }
+
+            if (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool")
+            {
+                if (Keyboard.current.pageUpKey.isPressed)
+                {
+                    m_ButtonCooldown = 5;
+                    m_ElevationValue.Value += m_ElevationStep.Value;
+                }
+                else if (Keyboard.current.pageDownKey.isPressed)
+                {
+                    m_ButtonCooldown = 5;
+                    m_ElevationValue.Value -= m_ElevationStep.Value;
+                }
+                else if (Keyboard.current.endKey.isPressed)
+                {
+                    m_ButtonCooldown = 5;
+                    m_ElevationValue.Value = 0;
+                }
             }
         }
 
@@ -227,5 +272,52 @@ namespace Anarchy.Systems
                 }
             }
         }
+
+        /*
+        private void OnPageUpKeyPressed(InputAction.CallbackContext context)
+        {
+            if (m_ToolSystem.activeTool.toolID != null)
+            {
+                if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
+                {
+                    m_ElevationValue.UpdateCallback(m_ElevationValue.Value + m_ElevationStep.Value);
+                }
+            }
+        }
+
+        private void OnPageDownKeyPressed(InputAction.CallbackContext context)
+        {
+            if (m_ToolSystem.activeTool.toolID != null)
+            {
+                if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
+                {
+                    m_ElevationValue.UpdateCallback(m_ElevationValue.Value - m_ElevationStep.Value);
+                }
+            }
+        }
+
+        private void OnEndKeyPressed(InputAction.CallbackContext context)
+        {
+            if (m_ToolSystem.activeTool.toolID != null)
+            {
+                if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
+                {
+                    m_ElevationValue.UpdateCallback(0f);
+                }
+            }
+        }*/
+
+        private void ElevationStepPressed()
+        {
+            float tempValue = m_ElevationStep.Value;
+            tempValue /= 10f;
+            if (tempValue < 0.005f)
+            {
+                tempValue = 10.0f;
+            }
+
+            m_ElevationStep.Value = tempValue;
+        }
+
     }
 }

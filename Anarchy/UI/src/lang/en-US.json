@@ -32,6 +32,11 @@
   "Anarchy.TOOLTIP_TITLE[PreventOverrideButton]": "Prevent Override",
   "Anarchy.TOOLTIP_DESCRIPTION[TransformRecordButton]": "Allows placement of elevated vegetation and props overlapping or inside the boundaries of other objects and close together and prevents them from falling when the object they are overlapping with updates.",
   "Anarchy.TOOLTIP_TITLE[TransformRecordButton]": "Prevent Dropping",
-  "Anarchy.TOOLTIP_DESCRIPTION[AnarchyModComponets]": "Use these toggles to manually add or remove components of the Anarchy mod for the selected object.",
-  "Anarchy.TOOLTIP_TITLE[AnarchyModComponets]": "Anarchy Mod Components"
+  "Anarchy.TOOLTIP_TITLE[AnarchyModComponets]": "Anarchy Mod Components",
+  "Anarchy.SECTION_TITLE[Elevation]": "Elevation",
+  "Anarchy.TOOLTIP_DESCRIPTION[IncreaseElevation]": "Increases the elevation relative to the terrain surface.",
+  "Anarchy.TOOLTIP_DESCRIPTION[DecreaseElevation]": "Decreases the elevation relative to the terrain surface.",
+  "Anarchy.TOOLTIP_DESCRIPTION[ElevationStep]": "Changes the rate in which the elevation changes.",
+  "Anarchy.TOOLTIP_TITLE[ElevationLock]": "Elevation Lock",
+  "Anarchy.TOOLTIP_DESCRIPTION[ElevationLock]": "Prevents game systems from changing elevation. You can still change position with mods."
 }

@@ -10,6 +10,7 @@ namespace Anarchy.Settings
     using System.Text;
     using Colossal;
     using Colossal.IO.AssetDatabase.Internal;
+    using Colossal.PSI.Common;
 
     /// <summary>
     /// Localization for Anarchy Mod in English.
@@ -64,6 +65,12 @@ namespace Anarchy.Settings
                 { TooltipDescriptionKey("TransformRecordButton"), "Allows placement of elevated vegetation and props overlapping or inside the boundaries of other objects and close together and prevents them from falling when the object they are overlapping with updates." },
                 { TooltipTitleKey("TransformRecordButton"), "Prevent Dropping" },
                 { TooltipTitleKey("AnarchyModComponets"), "Anarchy Mod Components" },
+                { SectionLabel("Elevation"), "Elevation" },
+                { TooltipDescriptionKey("IncreaseElevation"), "Increases the elevation relative to the terrain surface." },
+                { TooltipDescriptionKey("DecreaseElevation"), "Decreases the elevation relative to the terrain surface." },
+                { TooltipDescriptionKey("ElevationStep"),  "Changes the rate in which the elevation changes." },
+                { TooltipTitleKey("ElevationLock"),         "Elevation Lock" },
+                { TooltipDescriptionKey("ElevationLock"),  "Prevents game systems from changing elevation. You can still change position with mods." },
             };
         }
 
@@ -76,6 +83,11 @@ namespace Anarchy.Settings
         private string TooltipTitleKey(string key)
         {
             return $"{AnarchyMod.Id}.TOOLTIP_TITLE[{key}]";
+        }
+
+        private string SectionLabel(string key)
+        {
+            return $"{AnarchyMod.Id}.SECTION_TITLE[{key}]";
         }
 
         /// <inheritdoc/>

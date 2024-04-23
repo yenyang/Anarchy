@@ -5,6 +5,7 @@ import { useLocalization } from "cs2/l10n";
 import { VanillaComponentResolver } from "mods/VanillaComponentResolver/VanillaComponentResolver";
 import mod from "../../../mod.json";
 import locale from "../../lang/en-US.json";
+import heightLockSrc from "../elevationControlSections/ArrowsHeightLocked.svg"
 
 interface InfoSectionComponent {
 	group: string;
@@ -76,9 +77,10 @@ export const SelectedInfoPanelTogglesComponent = (componentList: any): any => {
         const anarchySectionTitle = translate("YY_ANARCHY.Anarchy", locale["YY_ANARCHY.Anarchy"]);
         const preventOverrideTooltipKey = translate("Anarchy.TOOLTIP_TITLE[PreventOverrideButton]" ,locale["Anarchy.TOOLTIP_TITLE[PreventOverrideButton]"]);
         const preventOverrideTooltipDescription = translate("Anarchy.TOOLTIP_DESCRIPTION[PreventOverrideButton]" ,locale["Anarchy.TOOLTIP_DESCRIPTION[PreventOverrideButton]"]);
-        const transformRecordTooltipKey = translate("Anarchy.TOOLTIP_TITLE[TransformRecordButton]" ,locale["Anarchy.TOOLTIP_TITLE[TransformRecordButton]"]);
-        const transformRecordTooltipDescription = translate("Anarchy.TOOLTIP_DESCRIPTION[TransformRecordButton]" ,locale["Anarchy.TOOLTIP_DESCRIPTION[TransformRecordButton]"]);
+        const transformRecordTooltipKey = translate("Anarchy.TOOLTIP_TITLE[ElevationLock]" ,locale["Anarchy.TOOLTIP_TITLE[ElevationLock]"]);
+        const transformRecordTooltipDescription = translate("Anarchy.TOOLTIP_DESCRIPTION[ElevationLock]" ,locale["Anarchy.TOOLTIP_DESCRIPTION[ElevationLock]"]);
         const anarchyModComponentsTooltipKey = translate("Anarchy.TOOLTIP_TITLE[AnarchyModComponets]" ,locale["Anarchy.TOOLTIP_TITLE[AnarchyModComponets]"]);
+        const elevationSectionTitle = translate("Anarchy.SECTION_TITLE[Elevation]" ,locale["Anarchy.SECTION_TITLE[Elevation]"]);
 
 
         return 	<InfoSection focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED} disableFocus={true} className={InfoSectionTheme.infoSection}>
@@ -86,26 +88,35 @@ export const SelectedInfoPanelTogglesComponent = (componentList: any): any => {
                             left={anarchySectionTitle}
                             right=
                             {
-                                <>
-                                    <VanillaComponentResolver.instance.ToolButton
-                                        src={hasPreventOverride ? anarchyEnabledSrc : anarchyDisabledSrc}
-                                        selected = {hasPreventOverride}
-                                        multiSelect = {false}   // I haven't tested any other value here
-                                        disabled = {false}      // I haven't tested any other value here
-                                        tooltip = {descriptionTooltip(preventOverrideTooltipKey, preventOverrideTooltipDescription)}
-                                        className = {VanillaComponentResolver.instance.toolButtonTheme.button}
-                                        onSelect={() => handleClick("PreventOverrideButtonToggled")}
-                                    />
-                                    <VanillaComponentResolver.instance.ToolButton
-                                        src={transformRecordSrc}
-                                        selected = {hasTransformRecord}
-                                        multiSelect = {false}   // I haven't tested any other value here
-                                        disabled = {false}      // I haven't tested any other value here
-                                        tooltip = {descriptionTooltip(transformRecordTooltipKey, transformRecordTooltipDescription)}
-                                        className = {VanillaComponentResolver.instance.toolButtonTheme.button}
-                                        onSelect={() => handleClick("TransformRecordButtonToggled")}
-                                    />
-                                </>
+                                <VanillaComponentResolver.instance.ToolButton
+                                    src={hasPreventOverride ? anarchyEnabledSrc : anarchyDisabledSrc}
+                                    selected = {hasPreventOverride}
+                                    multiSelect = {false}   // I haven't tested any other value here
+                                    disabled = {false}      // I haven't tested any other value here
+                                    tooltip = {descriptionTooltip(preventOverrideTooltipKey, preventOverrideTooltipDescription)}
+                                    className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                                    onSelect={() => handleClick("PreventOverrideButtonToggled")}
+                                />
+                            }
+                            tooltip={anarchyModComponentsTooltipKey}
+                            uppercase={true}
+                            disableFocus={true}
+                            subRow={false}
+                            className={InfoRowTheme.infoRow}
+                        ></InfoRow>
+                        <InfoRow 
+                            left={elevationSectionTitle}
+                            right=
+                            {
+                                <VanillaComponentResolver.instance.ToolButton
+                                    src={heightLockSrc}
+                                    selected = {hasTransformRecord}
+                                    multiSelect = {false}   // I haven't tested any other value here
+                                    disabled = {false}      // I haven't tested any other value here
+                                    tooltip = {descriptionTooltip(transformRecordTooltipKey, transformRecordTooltipDescription)}
+                                    className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                                    onSelect={() => handleClick("TransformRecordButtonToggled")}
+                                />
                             }
                             tooltip={anarchyModComponentsTooltipKey}
                             uppercase={true}

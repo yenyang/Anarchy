@@ -169,12 +169,16 @@ namespace Anarchy.Systems
                 return;
             }
 
-            if (m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID) && (!m_NetToolSystem.TrySetPrefab(m_ToolSystem.activePrefab) || m_ToolSystem.activePrefab is NetLaneGeometryPrefab || m_ToolSystem.activePrefab is NetLanePrefab))
+
+            if (!m_NetToolSystem.TrySetPrefab(m_ToolSystem.activePrefab) || m_ToolSystem.activePrefab is NetLaneGeometryPrefab || m_ToolSystem.activePrefab is NetLanePrefab)
             {
                 NativeArray<Entity> createdEntities = m_CreatedQuery.ToEntityArray(Allocator.Temp);
                 m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)}");
-                EntityManager.RemoveComponent(m_CreatedQuery, ComponentType.ReadWrite<Overridden>());
-                EntityManager.RemoveComponent(m_OwnedAndOverridenQuery, ComponentType.ReadWrite<Overridden>());
+                if (m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID))
+                {
+                    EntityManager.RemoveComponent(m_CreatedQuery, ComponentType.ReadWrite<Overridden>());
+                    EntityManager.RemoveComponent(m_OwnedAndOverridenQuery, ComponentType.ReadWrite<Overridden>());
+                }
 
                 foreach (Entity entity in createdEntities)
                 {
@@ -210,7 +214,9 @@ namespace Anarchy.Systems
                                 {
                                     m_ObjectToolSystem.GetAvailableSnapMask(out Snap onMask, out Snap offMask);
 
-                                    if ((onMask & Snap.ObjectSurface) == Snap.ObjectSurface && EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform) && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create)
+                                    if (EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform)
+                                        && (((onMask & Snap.ObjectSurface) == Snap.ObjectSurface && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create)
+                                        || (m_AnarchyUISystem.LockElevation && (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool"))))
                                     {
                                         EntityManager.AddComponent<TransformRecord>(entity);
                                         TransformRecord transformRecord = new () { m_Position = originalTransform.m_Position, m_Rotation = originalTransform.m_Rotation };
@@ -233,7 +239,7 @@ namespace Anarchy.Systems
                                     }
                                 }
 
-                                if ((objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable)
+                                if ((objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable && m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID))
                                 {
                                     m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)} Added PreventOverride to {prefabBase.name}");
                                     EntityManager.AddComponent<PreventOverride>(entity);
@@ -241,7 +247,7 @@ namespace Anarchy.Systems
                                     continue;
                                 }
                             }
-                            else if (m_ToolSystem.actionMode.IsGame() && prefabBase.GetPrefabID().ToString() == "NetPrefab:Lane Editor Container" && EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<Game.Net.SubLane> subLaneBuffer))
+                            else if (m_ToolSystem.actionMode.IsGame() && prefabBase.GetPrefabID().ToString() == "NetPrefab:Lane Editor Container" && EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<Game.Net.SubLane> subLaneBuffer) && m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID))
                             {
                                 // Loop through all subobjects started at last entry to try and quickly find created entity.
                                 for (int i = 0; i < subLaneBuffer.Length; i++)

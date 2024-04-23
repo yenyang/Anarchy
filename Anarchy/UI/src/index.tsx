@@ -4,6 +4,7 @@ import { VanillaComponentResolver } from "mods/VanillaComponentResolver/VanillaC
 import { ChirperModComponent } from "mods/chirperMod/chirperMod";
 import { SelectedInfoPanelTogglesComponent } from "mods/SelectedInfoPanelTogglesComponent/selectedInfoPanelTogglesComponent";
 import mod from "../mod.json";
+import { ElevationControlComponent } from "mods/elevationControlSections/elevationControlSections";
 
 const register: ModRegistrar = (moduleRegistry) => {
      // To find modules in the registry un comment the next line and go to the console on localhost:9444. You must have -uiDeveloperMode launch option enabled.
@@ -14,6 +15,8 @@ const register: ModRegistrar = (moduleRegistry) => {
 
      // This extends mouse tooltip options with Anarchy section and toggle. It may or may not work with gamepads.
      moduleRegistry.extend("game-ui/game/components/tool-options/mouse-tool-options/mouse-tool-options.tsx", 'MouseToolOptions', AnarchyRowComponent);
+
+     moduleRegistry.extend("game-ui/game/components/tool-options/mouse-tool-options/mouse-tool-options.tsx", 'MouseToolOptions', ElevationControlComponent);
 
      // This appends the right bottom floating menu with a chirper image that is just floating above the vanilla chirper image. Hopefully noone moves it.
      moduleRegistry.append('GameBottomRight', ChirperModComponent);

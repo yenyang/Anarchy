@@ -6,17 +6,13 @@ namespace Anarchy
 {
     using System;
     using System.IO;
-    using System.Linq;
     using Anarchy.Settings;
     using Anarchy.Systems;
     using Colossal.IO.AssetDatabase;
-    using Colossal.Localization;
     using Colossal.Logging;
     using Game;
     using Game.Modding;
-    using Game.Objects;
     using Game.SceneFlow;
-    using Game.Settings;
     using HarmonyLib;
 
     /// <summary>
@@ -114,6 +110,7 @@ namespace Anarchy
             updateSystem.UpdateAt<CheckTransformSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateBefore<HandleUpdateNextFrameSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateAt<SelectedInfoPanelTogglesSystem>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateBefore<ObjectDefinitionSystem>(SystemUpdatePhase.Modification1);
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Completed.");
         }
 
