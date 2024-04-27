@@ -25,6 +25,7 @@ namespace Anarchy.Systems
         private AnarchyUISystem m_AnarchyUISystem;
         private EntityQuery m_ObjectDefinitionQuery;
         private ILog m_Log;
+        private ElevateTempObjectSystem m_ElevateTempObjectSystem;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ElevateObjectDefinitionSystem"/> class.
@@ -40,6 +41,7 @@ namespace Anarchy.Systems
             m_Log = AnarchyMod.Instance.Log;
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
+            m_ElevateTempObjectSystem = World.GetOrCreateSystemManaged<ElevateTempObjectSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_AnarchyUISystem = World.CreateSystemManaged<AnarchyUISystem>();
             m_Log.Info($"[{nameof(ElevateObjectDefinitionSystem)}] {nameof(OnCreate)}");
@@ -91,6 +93,8 @@ namespace Anarchy.Systems
             }
 
             entities.Dispose();
+
+            m_ElevateTempObjectSystem.Enabled = false;
         }
 
     }

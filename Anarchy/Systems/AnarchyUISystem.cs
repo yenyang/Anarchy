@@ -200,30 +200,6 @@ namespace Anarchy.Systems
                 m_IsBrushing = false;
             }
 
-            if (m_ButtonCooldown > 0)
-            {
-                m_ButtonCooldown--;
-            }
-
-            if (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool")
-            {
-                if (Keyboard.current.pageUpKey.isPressed)
-                {
-                    m_ButtonCooldown = 5;
-                    m_ElevationValue.Value += m_ElevationStep.Value;
-                }
-                else if (Keyboard.current.pageDownKey.isPressed)
-                {
-                    m_ButtonCooldown = 5;
-                    m_ElevationValue.Value -= m_ElevationStep.Value;
-                }
-                else if (Keyboard.current.endKey.isPressed)
-                {
-                    m_ButtonCooldown = 5;
-                    m_ElevationValue.Value = 0;
-                }
-            }
-
             base.OnUpdate();
         }
 

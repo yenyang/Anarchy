@@ -8,8 +8,6 @@ namespace Anarchy.Systems
     using Colossal.Logging;
     using Game;
     using Game.Common;
-    using Game.Net;
-    using Game.Objects;
     using Game.Prefabs;
     using Game.Simulation;
     using Game.Tools;
@@ -27,6 +25,7 @@ namespace Anarchy.Systems
         private AnarchyUISystem m_AnarchyUISystem;
         private TerrainSystem m_TerrainSystem;
         private EntityQuery m_TempObjectQuery;
+        private ModificationBarrier1 m_ModificationBarrier;
         private RaycastSystem m_RaycastSystem;
         private ILog m_Log;
         private float m_ElevationChange = 0f;
@@ -52,6 +51,7 @@ namespace Anarchy.Systems
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_RaycastSystem = World.GetOrCreateSystemManaged<RaycastSystem>();
+            m_ModificationBarrier = World.GetOrCreateSystemManaged<ModificationBarrier1>();
             m_TerrainSystem = World.GetOrCreateSystemManaged<TerrainSystem>();
             m_AnarchyUISystem = World.CreateSystemManaged<AnarchyUISystem>();
             m_Log.Info($"[{nameof(ElevateTempObjectSystem)}] {nameof(OnCreate)}");
@@ -65,7 +65,7 @@ namespace Anarchy.Systems
             m_TempObjectQuery = SystemAPI.QueryBuilder()
                 .WithAllRW<Game.Objects.Transform>()
                 .WithAll<Temp, Game.Objects.Object, Game.Objects.Static, PrefabRef>()
-                .WithNone<Deleted, Overridden>()
+                .WithNone<Deleted, Overridden, Updated>()
                 .Build();
 
             RequireForUpdate(m_TempObjectQuery);
@@ -77,6 +77,7 @@ namespace Anarchy.Systems
 
 
             NativeArray<Entity> entities = m_TempObjectQuery.ToEntityArray(Allocator.Temp);
+            EntityCommandBuffer buffer = m_ModificationBarrier.CreateCommandBuffer();
 
             foreach (Entity entity in entities)
             {
@@ -95,7 +96,7 @@ namespace Anarchy.Systems
                 if (prefabBase is not BuildingPrefab)
                 {
                     currentTransform.m_Position.y += m_ElevationChange;
-                    EntityManager.SetComponentData(entity, currentTransform);
+                    buffer.SetComponent(entity, currentTransform);
 
                     TerrainHeightData terrainHeightData = m_TerrainSystem.GetHeightData();
                     float terrainHeight = TerrainUtils.SampleHeight(ref terrainHeightData, currentTransform.m_Position);
@@ -106,20 +107,20 @@ namespace Anarchy.Systems
                             m_Elevation = m_ElevationChange,
                             m_Flags = 0,
                         };
-                        EntityManager.AddComponent<Game.Objects.Elevation>(entity);
-                        EntityManager.SetComponentData(entity, elevation);
+                        buffer.AddComponent<Game.Objects.Elevation>(entity);
+                        buffer.SetComponent(entity, elevation);
                     }
                     else if (EntityManager.TryGetComponent<Game.Objects.Elevation>(entity, out Game.Objects.Elevation currentElevation) && currentTransform.m_Position.y > terrainHeight)
                     {
                         currentElevation.m_Elevation += m_ElevationChange;
-                        EntityManager.SetComponentData(entity, currentElevation);
+                        buffer.SetComponent(entity, currentElevation);
                     }
                     else if (currentTransform.m_Position.y <= terrainHeight && EntityManager.HasComponent<Game.Objects.Elevation>(entity))
                     {
-                        EntityManager.RemoveComponent<Game.Objects.Elevation>(entity);
+                        buffer.RemoveComponent<Game.Objects.Elevation>(entity);
                     }
 
-                    EntityManager.AddComponent<Updated>(entity);
+                    buffer.AddComponent<Updated>(entity);
                 }
 
                 Enabled = false;

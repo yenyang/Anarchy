@@ -111,7 +111,7 @@ namespace Anarchy
             updateSystem.UpdateBefore<HandleUpdateNextFrameSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateAt<SelectedInfoPanelTogglesSystem>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateBefore<ElevateObjectDefinitionSystem>(SystemUpdatePhase.Modification1);
-            updateSystem.UpdateAfter<ElevateTempObjectSystem>(SystemUpdatePhase.Modification2);
+            updateSystem.UpdateAt<ElevateTempObjectSystem>(SystemUpdatePhase.Modification1);
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Completed.");
         }
 
