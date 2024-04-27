@@ -17,7 +17,7 @@ namespace Anarchy.Systems
     /// <summary>
     /// Overrides vertical position of creation definition.
     /// </summary>
-    public partial class ObjectDefinitionSystem : GameSystemBase
+    public partial class ElevateObjectDefinitionSystem : GameSystemBase
     {
         private ToolSystem m_ToolSystem;
         private ObjectToolSystem m_ObjectToolSystem;
@@ -27,9 +27,9 @@ namespace Anarchy.Systems
         private ILog m_Log;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ObjectDefinitionSystem"/> class.
+        /// Initializes a new instance of the <see cref="ElevateObjectDefinitionSystem"/> class.
         /// </summary>
-        public ObjectDefinitionSystem()
+        public ElevateObjectDefinitionSystem()
         {
         }
 
@@ -42,7 +42,7 @@ namespace Anarchy.Systems
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_AnarchyUISystem = World.CreateSystemManaged<AnarchyUISystem>();
-            m_Log.Info($"[{nameof(ObjectDefinitionSystem)}] {nameof(OnCreate)}");
+            m_Log.Info($"[{nameof(ElevateObjectDefinitionSystem)}] {nameof(OnCreate)}");
         }
 
 
@@ -51,7 +51,7 @@ namespace Anarchy.Systems
         {
             m_ObjectDefinitionQuery = SystemAPI.QueryBuilder()
                 .WithAllRW<Game.Tools.ObjectDefinition>()
-                .WithAll<CreationDefinition>()
+                .WithAll<CreationDefinition, Updated>()
                 .WithNone<Deleted, Overridden>()
                 .Build();
 

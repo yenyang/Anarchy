@@ -72,8 +72,9 @@ namespace Anarchy.Systems
         private ValueBindingHelper<float> m_ElevationValue;
         private ValueBindingHelper<float> m_ElevationStep;
         private ValueBindingHelper<int> m_ElevationScale;
-        private ObjectDefinitionSystem m_ObjectDefinitionSystem;
+        private ElevateObjectDefinitionSystem m_ObjectDefinitionSystem;
         private ValueBindingHelper<bool> m_LockElevation;
+        private ElevateTempObjectSystem m_ElevateTempObjectSystem;
         private ObjectToolSystem m_ObjectToolSystem;
         private bool m_IsBrushing;
         private bool m_BeforeBrushingAnarchyEnabled;
@@ -135,7 +136,8 @@ namespace Anarchy.Systems
             m_BulldozeToolSystem = World.GetOrCreateSystemManaged<BulldozeToolSystem>();
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_ResetNetCompositionDataSystem = World.GetOrCreateSystemManaged<ResetNetCompositionDataSystem>();
-            m_ObjectDefinitionSystem = World.GetOrCreateSystemManaged<ObjectDefinitionSystem>();
+            m_ObjectDefinitionSystem = World.GetOrCreateSystemManaged<ElevateObjectDefinitionSystem>();
+            m_ElevateTempObjectSystem = World.GetOrCreateSystemManaged<ElevateTempObjectSystem>();
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_ToolSystem.EventToolChanged += OnToolChanged;
             m_Log.Info($"{nameof(AnarchyUISystem)}.{nameof(OnCreate)}");
@@ -175,8 +177,8 @@ namespace Anarchy.Systems
 
             // This binding listens for events triggered by the UI.
             AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", AnarchyToggled));
-            CreateTrigger("IncreaseElevation", () => m_ElevationValue.Value += m_ElevationStep.Value);
-            CreateTrigger("DecreaseElevation", () => m_ElevationValue.Value -= m_ElevationStep.Value);
+            CreateTrigger("IncreaseElevation", () => ChangeElevation(m_ElevationValue.Value + m_ElevationStep.Value, m_ElevationStep.Value));
+            CreateTrigger("DecreaseElevation", () => ChangeElevation(m_ElevationValue.Value - m_ElevationStep.Value, -1f * m_ElevationStep.Value));
             CreateTrigger("LockElevationToggled", () => m_LockElevation.Value = !m_LockElevation.Value);
             CreateTrigger("ElevationStep", ElevationStepPressed);
             CreateTrigger("ResetElevationToggled", () => m_ElevationValue.Value = 0f);
@@ -303,7 +305,7 @@ namespace Anarchy.Systems
             {
                 if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
                 {
-                    m_ElevationValue.UpdateCallback(m_ElevationValue.Value + m_ElevationStep.Value);
+                    ChangeElevation(m_ElevationValue.Value + m_ElevationStep.Value, m_ElevationStep.Value);
                 }
             }
         }
@@ -314,7 +316,7 @@ namespace Anarchy.Systems
             {
                 if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
                 {
-                    m_ElevationValue.UpdateCallback(m_ElevationValue.Value - m_ElevationStep.Value);
+                    ChangeElevation(m_ElevationValue.Value - m_ElevationStep.Value, -1f * m_ElevationStep.Value);
                 }
             }
         }
@@ -325,7 +327,7 @@ namespace Anarchy.Systems
             {
                 if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
                 {
-                    m_ElevationValue.UpdateCallback(0f);
+                    ChangeElevation(0f, m_ElevationValue.Value * -1f);
                 }
             }
         }
@@ -339,6 +341,13 @@ namespace Anarchy.Systems
                     ElevationStepPressed();
                 }
             }
+        }
+
+        private void ChangeElevation(float value, float difference)
+        {
+            m_ElevationValue.UpdateCallback(value);
+            m_ElevateTempObjectSystem.ElevationChange = difference;
+            m_ElevateTempObjectSystem.Enabled = true;
         }
 
         private void ElevationStepPressed()
