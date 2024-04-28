@@ -15,7 +15,7 @@ namespace Anarchy.Systems
     using Unity.Entities;
 
     /// <summary>
-    /// Overrides vertical position of creation definition.
+    /// Overrides vertical position of temp objects.
     /// </summary>
     public partial class ElevateTempObjectSystem : GameSystemBase
     {

@@ -162,25 +162,22 @@ namespace Anarchy.Systems
             hotKey.performed += OnKeyPressed;
             hotKey.Enable();
 
-            InputAction elevationUpHotKey = new ($"{AnarchyMod.Id}.ElevationUp");
-            elevationUpHotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/shift").With("Button", "<Keyboard>/w");
-            elevationUpHotKey.performed += OnElevationUpKeyPressed;
-            elevationUpHotKey.Enable();
-
-            InputAction elevationDownHotKey = new ($"{AnarchyMod.Id}.ElevationDown");
-            elevationDownHotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/shift").With("Button", "<Keyboard>/s");
-            elevationDownHotKey.performed += OnElevationDownKeyPressed;
-            elevationDownHotKey.Enable();
-
             InputAction elevationResetHotKey = new ($"{AnarchyMod.Id}.ElevationReset");
             elevationResetHotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/shift").With("Button", "<Keyboard>/r");
             elevationResetHotKey.performed += OnElevationResetKeyPressed;
             elevationResetHotKey.Enable();
 
-            InputAction elevationStepHotKey = new($"{AnarchyMod.Id}.ElevationStep");
-            elevationStepHotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/shift").With("Button", "<Keyboard>/f");
+            InputAction elevationStepHotKey = new ($"{AnarchyMod.Id}.ElevationStep");
+            elevationStepHotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/shift").With("Button", "<Keyboard>/e");
             elevationStepHotKey.performed += OnElevationStepKeyPressed;
             elevationStepHotKey.Enable();
+
+            InputAction elevationControl = new ($"{AnarchyMod.Id}.ElevationControl");
+            elevationControl.AddCompositeBinding("1DAxis")
+                .With("Positive", "<Keyboard>/upArrow")
+                .With("Negative", "<Keyboard>/downArrow");
+            elevationControl.performed += OnElevationControl;
+            elevationControl.Enable();
 
             // This binding communicates values between UI and C#
             AddBinding(m_AnarchyEnabled = new ValueBinding<bool>("Anarchy", "AnarchyEnabled", false));
@@ -216,20 +213,6 @@ namespace Anarchy.Systems
             {
                 m_AnarchyEnabled.Update(m_BeforeBrushingAnarchyEnabled);
                 m_IsBrushing = false;
-            }
-
-            if (m_ButtonCooldown <= 0)
-            {
-                if (Keyboard.current.upArrowKey.isPressed)
-                {
-                    m_ButtonCooldown = 5;
-                    ChangeElevation(m_ElevationValue.Value + m_ElevationStep.Value, m_ElevationStep.Value);
-                    m_Log.Debug("up key pressed.");
-                }
-            }
-            else
-            {
-                m_ButtonCooldown--;
             }
 
             base.OnUpdate();
@@ -328,35 +311,13 @@ namespace Anarchy.Systems
             }
         }
 
-        private void OnElevationUpKeyPressed(InputAction.CallbackContext context)
-        {
-            if (m_ToolSystem.activeTool.toolID != null)
-            {
-                if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
-                {
-                    ChangeElevation(m_ElevationValue.Value + m_ElevationStep.Value, m_ElevationStep.Value);
-                }
-            }
-        }
-
-        private void OnElevationDownKeyPressed(InputAction.CallbackContext context)
-        {
-            if (m_ToolSystem.activeTool.toolID != null)
-            {
-                if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
-                {
-                    ChangeElevation(m_ElevationValue.Value - m_ElevationStep.Value, -1f * m_ElevationStep.Value);
-                }
-            }
-        }
-
         private void OnElevationResetKeyPressed(InputAction.CallbackContext context)
         {
             if (m_ToolSystem.activeTool.toolID != null)
             {
                 if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
                 {
-                    ChangeElevation(0f, m_ElevationValue.Value * -1f);
+                    ChangeElevation(m_ElevationValue.Value, m_ElevationValue.Value * -1f);
                 }
             }
         }
@@ -372,9 +333,20 @@ namespace Anarchy.Systems
             }
         }
 
+        private void OnElevationControl(InputAction.CallbackContext context)
+        {
+            if (m_ToolSystem.activeTool.toolID != null)
+            {
+                if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
+                {
+                    ChangeElevation(m_ElevationValue.Value, m_ElevationStep.Value * context.ReadValue<float>());
+                }
+            }
+        }
+
         private void ChangeElevation(float value, float difference)
         {
-            m_ElevationValue.UpdateCallback(value);
+            m_ElevationValue.UpdateCallback(value + difference);
             m_ElevateTempObjectSystem.ElevationChange = difference;
             m_ElevateTempObjectSystem.Enabled = true;
         }
