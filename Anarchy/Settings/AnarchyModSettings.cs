@@ -47,6 +47,11 @@ namespace Anarchy.Settings
         public bool ToolIcon { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to show Elevation tool option.
+        [SettingsUISetter(typeof(AnarchyModSettings), nameof(SetShowElevationToolOption))]
+        public bool ShowElevationToolOption { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether to disable anarchy while brushing.
         /// </summary>
         public bool DisableAnarchyWhileBrushing { get; set; }
@@ -132,6 +137,17 @@ namespace Anarchy.Settings
             MinimumClearanceBelowElevatedNetworks = 0f;
             PreventOverrideInEditor = false;
             DisableAnarchyWhileBrushing = false;
+            ShowElevationToolOption = true;
+        }
+
+        /// <summary>
+        /// Triggers method in Anarchy UI System when ShowElevationToolOption is toggled.
+        /// </summary>
+        /// <param name="value">The value being set to.</param>
+        public void SetShowElevationToolOption(bool value)
+        {
+            AnarchyUISystem anarchyUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyUISystem>();
+            anarchyUISystem.SetShowElevationSettingsOption(value);
         }
 
         /// <inheritdoc/>

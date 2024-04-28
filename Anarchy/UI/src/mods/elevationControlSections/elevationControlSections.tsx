@@ -19,6 +19,8 @@ const ElevationValue$ =     bindValue<number> (mod.id, 'ElevationValue');
 const ElevationStep$ =      bindValue<number> (mod.id, 'ElevationStep');
 const ElevationScale$ =     bindValue<number> (mod.id, 'ElevationScale');
 const LockElevation$ =     bindValue<boolean> (mod.id, 'LockElevation');
+const IsBuilding$ =         bindValue<boolean>(mod.id, 'IsBuilding');
+const ShowElevationOption$ = bindValue<boolean>(mod.id, 'ShowElevationSettingsOption');
 
 // Stores the default values for the step arrays. Must be descending order.
 const defaultValues : number[] = [10, 2.5, 1.0, 0.1];
@@ -48,11 +50,14 @@ export const ElevationControlComponent: ModuleRegistryExtend = (Component : any)
 
         // These get the value of the bindings.
         const toolId = useValue(tool.activeTool$).id;
-        const toolAppropriate = (toolId == tool.OBJECT_TOOL || toolId == "Line Tool")
+        const toolAppropriate = (toolId == tool.OBJECT_TOOL || toolId == "Line Tool");
+
         const ElevationValue = useValue(ElevationValue$);
         const ElevationStep = useValue(ElevationStep$);
         const ElevationScale = useValue(ElevationScale$);
         const LockElevation = useValue(LockElevation$);
+        const IsBuilding = useValue(IsBuilding$);
+        const ShowElevationOption = useValue(ShowElevationOption$);
 
         // translation handling. Translates using locale keys that are defined in C# or fallback string here.
         const { translate } = useLocalization();
@@ -66,7 +71,7 @@ export const ElevationControlComponent: ModuleRegistryExtend = (Component : any)
 
         var result = Component();
         
-        if (toolAppropriate) 
+        if (toolAppropriate && !IsBuilding && ShowElevationOption) 
         {
             result.props.children?.push
             (

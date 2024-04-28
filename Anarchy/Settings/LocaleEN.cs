@@ -57,6 +57,8 @@ namespace Anarchy.Settings
                 { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.PreventOverrideInEditor)), "In the editor, with Anarchy and this option enabled, you can place vegetation and props overlapping or inside the boundaries of other objects and close together. The map may require Anarchy as a dependency. When users draw roads through these objects they will not be overriden." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.DisableAnarchyWhileBrushing)), "Disable Anarchy Toggle While Brushing Objects" },
                 { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.DisableAnarchyWhileBrushing)), "Automatically disables the anarchy toggle while brushing objects such as trees. Toggle reverts back to previous state after you stop brushing objects." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.ShowElevationToolOption)), "Show Elevation Option for Objects" },
+                { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.ShowElevationToolOption)), "Allows trees, plants, and props to be placed at different vertical elevations with Object Tool or Line Tool. Also shows a button during placement for locking elevation. Keybinds are: " },
                 { "YY_ANARCHY.Anarchy", "Anarchy" },
                 { "YY_ANARCHY.AnarchyButton", "Anarchy" },
                 { "YY_ANARCHY_DESCRIPTION.AnarchyButton", "Disables error checks for tools and does not display errors. When applicable, you can place vegetation and props (with DevUI 'Add Object' menu) overlapping or inside the boundaries of other objects and close together." },

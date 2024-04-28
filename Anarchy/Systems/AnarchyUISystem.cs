@@ -6,6 +6,7 @@ namespace Anarchy.Systems
 {
     using System.Collections.Generic;
     using Anarchy.Utils;
+    using Colossal.IO.AssetDatabase;
     using Colossal.Logging;
     using Colossal.UI.Binding;
     using Game.Prefabs;
@@ -72,6 +73,8 @@ namespace Anarchy.Systems
         private ValueBindingHelper<float> m_ElevationValue;
         private ValueBindingHelper<float> m_ElevationStep;
         private ValueBindingHelper<int> m_ElevationScale;
+        private ValueBindingHelper<bool> m_IsBuildingPrefab;
+        private ValueBindingHelper<bool> m_ShowElevationSettingsOption;
         private ElevateObjectDefinitionSystem m_ObjectDefinitionSystem;
         private ValueBindingHelper<bool> m_LockElevation;
         private ElevateTempObjectSystem m_ElevateTempObjectSystem;
@@ -111,6 +114,18 @@ namespace Anarchy.Systems
         }
 
         /// <summary>
+        /// Sets the Show Elevation Settings option binding to value.
+        /// </summary>
+        /// <param name="value">True for option enabled. false if not.</param>
+        public void SetShowElevationSettingsOption(bool value)
+        {
+            m_ShowElevationSettingsOption.Value = value;
+            m_ObjectDefinitionSystem.Enabled = value;
+            m_ElevateTempObjectSystem.Enabled = false;
+            m_ElevationValue.Value = 0f;
+        }
+
+        /// <summary>
         /// Checks the list of appropriate tools and returns true if Anarchy is appliable.
         /// </summary>
         /// <param name="toolID">A string representing a tool id.</param>
@@ -140,6 +155,7 @@ namespace Anarchy.Systems
             m_ElevateTempObjectSystem = World.GetOrCreateSystemManaged<ElevateTempObjectSystem>();
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_ToolSystem.EventToolChanged += OnToolChanged;
+            m_ToolSystem.EventPrefabChanged += OnPrefabChanged;
             m_Log.Info($"{nameof(AnarchyUISystem)}.{nameof(OnCreate)}");
             InputAction hotKey = new ("Anarchy");
             hotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/ctrl").With("Button", "<Keyboard>/a");
@@ -174,6 +190,8 @@ namespace Anarchy.Systems
             m_ElevationStep = CreateBinding("ElevationStep", 10f);
             m_ElevationScale = CreateBinding("ElevationScale", 1);
             m_LockElevation = CreateBinding("LockElevation", false);
+            m_IsBuildingPrefab = CreateBinding("IsBuilding", false);
+            m_ShowElevationSettingsOption = CreateBinding("ShowElevationSettingsOption", AnarchyMod.Instance.Settings.ShowElevationToolOption);
 
             // This binding listens for events triggered by the UI.
             AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", AnarchyToggled));
@@ -198,6 +216,20 @@ namespace Anarchy.Systems
             {
                 m_AnarchyEnabled.Update(m_BeforeBrushingAnarchyEnabled);
                 m_IsBrushing = false;
+            }
+
+            if (m_ButtonCooldown <= 0)
+            {
+                if (Keyboard.current.upArrowKey.isPressed)
+                {
+                    m_ButtonCooldown = 5;
+                    ChangeElevation(m_ElevationValue.Value + m_ElevationStep.Value, m_ElevationStep.Value);
+                    m_Log.Debug("up key pressed.");
+                }
+            }
+            else
+            {
+                m_ButtonCooldown--;
             }
 
             base.OnUpdate();
@@ -261,7 +293,28 @@ namespace Anarchy.Systems
                 m_ResetNetCompositionDataSystem.Enabled = true;
             }
 
+            if (m_ToolSystem.activePrefab is BuildingPrefab && m_IsBuildingPrefab.Value == false)
+            {
+                m_IsBuildingPrefab.Value = true;
+            }
+            else if (m_IsBuildingPrefab.Value == true && m_ToolSystem.activePrefab is not BuildingPrefab)
+            {
+                m_IsBuildingPrefab.Value = false;
+            }
+
             m_LastTool = tool.toolID;
+        }
+
+        private void OnPrefabChanged(PrefabBase prefabBase)
+        {
+            if (prefabBase is BuildingPrefab && m_IsBuildingPrefab.Value == false)
+            {
+                m_IsBuildingPrefab.Value = true;
+            }
+            else if (m_IsBuildingPrefab.Value == true && prefabBase is not BuildingPrefab)
+            {
+                m_IsBuildingPrefab.Value = false;
+            }
         }
 
         private void OnKeyPressed(InputAction.CallbackContext context)
