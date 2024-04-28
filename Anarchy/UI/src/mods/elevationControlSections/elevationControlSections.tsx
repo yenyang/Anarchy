@@ -61,7 +61,7 @@ export const ElevationControlComponent: ModuleRegistryExtend = (Component : any)
 
         // translation handling. Translates using locale keys that are defined in C# or fallback string here.
         const { translate } = useLocalization();
-        const elevationSectionTitle = translate("Anarchy.SECTION_TITLE[Elevation]" ,locale["Anarchy.SECTION_TITLE[Elevation]"]);
+        const elevationSectionTitle = translate("Toolbar.ELEVATION_TITLE" , "Elevation");
         const elevationUpDescription = translate("Anarchy.TOOLTIP_DESCRIPTION[IncreaseElevation]" ,locale["Anarchy.TOOLTIP_DESCRIPTION[IncreaseElevation]"]);
         const elevationDownDescription = translate("Anarchy.TOOLTIP_DESCRIPTION[DecreaseElevation]" ,locale["Anarchy.TOOLTIP_DESCRIPTION[DecreaseElevation]"]);
         const elevationStepDescription = translate("Anarchy.TOOLTIP_DESCRIPTION[ElevationStep]" ,locale["Anarchy.TOOLTIP_DESCRIPTION[ElevationStep]"]);

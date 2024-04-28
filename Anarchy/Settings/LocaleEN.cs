@@ -58,7 +58,7 @@ namespace Anarchy.Settings
                 { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.DisableAnarchyWhileBrushing)), "Disable Anarchy Toggle While Brushing Objects" },
                 { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.DisableAnarchyWhileBrushing)), "Automatically disables the anarchy toggle while brushing objects such as trees. Toggle reverts back to previous state after you stop brushing objects." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.ShowElevationToolOption)), "Show Elevation Option for Objects" },
-                { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.ShowElevationToolOption)), "Allows trees, plants, and props to be placed at different vertical elevations with Object Tool or Line Tool. Also shows a button during placement for locking elevation. Keybinds are: " },
+                { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.ShowElevationToolOption)), "Allows trees, plants, and props to be placed at different vertical elevations with Object Tool or Line Tool. Also shows a button during placement for locking elevation. Keybinds are: Up Arrow -> Elevation Up | Down Arrow -> Elevation Down | Shift + R -> Reset to 0 | Shift + E -> change Elevation step" },
                 { "YY_ANARCHY.Anarchy", "Anarchy" },
                 { "YY_ANARCHY.AnarchyButton", "Anarchy" },
                 { "YY_ANARCHY_DESCRIPTION.AnarchyButton", "Disables error checks for tools and does not display errors. When applicable, you can place vegetation and props (with DevUI 'Add Object' menu) overlapping or inside the boundaries of other objects and close together." },
@@ -67,13 +67,12 @@ namespace Anarchy.Settings
                 { TooltipDescriptionKey("TransformRecordButton"), "Allows placement of elevated vegetation and props overlapping or inside the boundaries of other objects and close together and prevents them from falling when the object they are overlapping with updates." },
                 { TooltipTitleKey("TransformRecordButton"), "Prevent Dropping" },
                 { TooltipTitleKey("AnarchyModComponets"), "Anarchy Mod Components" },
-                { SectionLabel("Elevation"), "Elevation" },
-                { TooltipDescriptionKey("IncreaseElevation"), "Increases the elevation relative to the terrain surface." },
-                { TooltipDescriptionKey("DecreaseElevation"), "Decreases the elevation relative to the terrain surface." },
-                { TooltipDescriptionKey("ElevationStep"),  "Changes the rate in which the elevation changes." },
+                { TooltipDescriptionKey("IncreaseElevation"), "Increases the elevation relative to the placement surface. Keybind: Up Arrow." },
+                { TooltipDescriptionKey("DecreaseElevation"), "Decreases the elevation relative to the placement surface. Keybind: Down Arrow." },
+                { TooltipDescriptionKey("ElevationStep"),  "Changes the rate in which the elevation changes. Keybind: Shift + E." },
                 { TooltipTitleKey("ElevationLock"),         "Elevation Lock" },
                 { TooltipDescriptionKey("ElevationLock"),  "Prevents game systems from changing elevation. You can still change position with mods." },
-                { TooltipDescriptionKey("ResetElevation"),  "Resets Elevation to 0." },
+                { TooltipDescriptionKey("ResetElevation"),  "Resets Elevation to 0. Keybind: Shift + R." },
             };
         }
 

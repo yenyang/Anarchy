@@ -25,6 +25,8 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventOverrideInEditor]": "In the editor, with Anarchy and this option enabled, you can place vegetation and props overlapping or inside the boundaries of other objects and close together. The map may require Anarchy as a dependency. When users draw roads through these objects they will not be overriden.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.DisableAnarchyWhileBrushing]": "Disable Anarchy Toggle While Brushing Objects",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.DisableAnarchyWhileBrushing]": "Automatically disables the anarchy toggle while brushing objects such as trees. Toggle reverts back to previous state after you stop brushing objects.",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ShowElevationToolOption]": "Show Elevation Option for Objects",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ShowElevationToolOption]": "Allows trees, plants, and props to be placed at different vertical elevations with Object Tool or Line Tool. Also shows a button during placement for locking elevation. Keybinds are: Up Arrow -> Elevation Up | Down Arrow -> Elevation Down | Shift + R -> Reset to 0 | Shift + E -> change Elevation step",
   "YY_ANARCHY.Anarchy": "Anarchy",
   "YY_ANARCHY.AnarchyButton": "Anarchy",
   "YY_ANARCHY_DESCRIPTION.AnarchyButton": "Disables error checks for tools and does not display errors. When applicable, you can place vegetation and props (with DevUI 'Add Object' menu) overlapping or inside the boundaries of other objects and close together.",
@@ -33,12 +35,10 @@
   "Anarchy.TOOLTIP_DESCRIPTION[TransformRecordButton]": "Allows placement of elevated vegetation and props overlapping or inside the boundaries of other objects and close together and prevents them from falling when the object they are overlapping with updates.",
   "Anarchy.TOOLTIP_TITLE[TransformRecordButton]": "Prevent Dropping",
   "Anarchy.TOOLTIP_TITLE[AnarchyModComponets]": "Anarchy Mod Components",
-  "Anarchy.SECTION_TITLE[Elevation]": "Elevation",
-  "Anarchy.TOOLTIP_DESCRIPTION[IncreaseElevation]": "Increases the elevation relative to the terrain surface.",
-  "Anarchy.TOOLTIP_DESCRIPTION[DecreaseElevation]": "Decreases the elevation relative to the terrain surface.",
-  "Anarchy.TOOLTIP_DESCRIPTION[ElevationStep]": "Changes the rate in which the elevation changes.",
+  "Anarchy.TOOLTIP_DESCRIPTION[IncreaseElevation]": "Increases the elevation relative to the placement surface. Keybind: Up Arrow.",
+  "Anarchy.TOOLTIP_DESCRIPTION[DecreaseElevation]": "Decreases the elevation relative to the placement surface. Keybind: Down Arrow.",
+  "Anarchy.TOOLTIP_DESCRIPTION[ElevationStep]": "Changes the rate in which the elevation changes. Keybind: Shift + E.",
   "Anarchy.TOOLTIP_TITLE[ElevationLock]": "Elevation Lock",
   "Anarchy.TOOLTIP_DESCRIPTION[ElevationLock]": "Prevents game systems from changing elevation. You can still change position with mods.",
-  "Anarchy.TOOLTIP_TITLE[ResetElevation]": "Reset Elevation",
-  "Anarchy.TOOLTIP_DESCRIPTION[ResetElevation]": "Resets Elevation to 0."
+  "Anarchy.TOOLTIP_DESCRIPTION[ResetElevation]": "Resets Elevation to 0. Keybind: Shift + R."
 }

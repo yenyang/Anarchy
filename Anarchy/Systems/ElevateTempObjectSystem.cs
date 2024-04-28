@@ -100,7 +100,7 @@ namespace Anarchy.Systems
 
                     TerrainHeightData terrainHeightData = m_TerrainSystem.GetHeightData();
                     float terrainHeight = TerrainUtils.SampleHeight(ref terrainHeightData, currentTransform.m_Position);
-                    if (!EntityManager.HasComponent<Game.Objects.Elevation>(entity) && currentTransform.m_Position.y > terrainHeight)
+                    if (!EntityManager.HasComponent<Game.Objects.Elevation>(entity) && currentTransform.m_Position.y > terrainHeight && m_ElevationChange > 0f)
                     {
                         Game.Objects.Elevation elevation = new Game.Objects.Elevation()
                         {
@@ -110,12 +110,12 @@ namespace Anarchy.Systems
                         buffer.AddComponent<Game.Objects.Elevation>(entity);
                         buffer.SetComponent(entity, elevation);
                     }
-                    else if (EntityManager.TryGetComponent<Game.Objects.Elevation>(entity, out Game.Objects.Elevation currentElevation) && currentTransform.m_Position.y > terrainHeight)
+                    else if (EntityManager.TryGetComponent<Game.Objects.Elevation>(entity, out Game.Objects.Elevation currentElevation) && currentTransform.m_Position.y > terrainHeight && currentElevation.m_Elevation + m_ElevationChange > 0f)
                     {
                         currentElevation.m_Elevation += m_ElevationChange;
                         buffer.SetComponent(entity, currentElevation);
                     }
-                    else if (currentTransform.m_Position.y <= terrainHeight && EntityManager.HasComponent<Game.Objects.Elevation>(entity))
+                    else if ((currentElevation.m_Elevation + m_ElevationChange <= 0f || currentTransform.m_Position.y <= terrainHeight) && EntityManager.HasComponent<Game.Objects.Elevation>(entity))
                     {
                         buffer.RemoveComponent<Game.Objects.Elevation>(entity);
                     }
