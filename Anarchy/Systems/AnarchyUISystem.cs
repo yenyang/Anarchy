@@ -192,11 +192,11 @@ namespace Anarchy.Systems
 
             // This binding listens for events triggered by the UI.
             AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", AnarchyToggled));
-            CreateTrigger("IncreaseElevation", () => ChangeElevation(m_ElevationValue.Value + m_ElevationStep.Value, m_ElevationStep.Value));
-            CreateTrigger("DecreaseElevation", () => ChangeElevation(m_ElevationValue.Value - m_ElevationStep.Value, -1f * m_ElevationStep.Value));
+            CreateTrigger("IncreaseElevation", () => ChangeElevation(m_ElevationValue.Value, m_ElevationStep.Value));
+            CreateTrigger("DecreaseElevation", () => ChangeElevation(m_ElevationValue.Value, -1f * m_ElevationStep.Value));
             CreateTrigger("LockElevationToggled", () => m_LockElevation.Value = !m_LockElevation.Value);
             CreateTrigger("ElevationStep", ElevationStepPressed);
-            CreateTrigger("ResetElevationToggled", () => m_ElevationValue.Value = 0f);
+            CreateTrigger("ResetElevationToggled", () => ChangeElevation(0f, -1f * m_ElevationValue.Value));
         }
 
         /// <inheritdoc/>
