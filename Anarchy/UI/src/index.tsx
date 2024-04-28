@@ -5,6 +5,7 @@ import { ChirperModComponent } from "mods/chirperMod/chirperMod";
 import { SelectedInfoPanelTogglesComponent } from "mods/SelectedInfoPanelTogglesComponent/selectedInfoPanelTogglesComponent";
 import mod from "../mod.json";
 import { ElevationControlComponent } from "mods/elevationControlSections/elevationControlSections";
+import { ToolOptionsVisibility } from "mods/ToolOptionsVisible/toolOptionsVisible";
 
 const register: ModRegistrar = (moduleRegistry) => {
      // To find modules in the registry un comment the next line and go to the console on localhost:9444. You must have -uiDeveloperMode launch option enabled.
@@ -21,10 +22,16 @@ const register: ModRegistrar = (moduleRegistry) => {
      // This appends the right bottom floating menu with a chirper image that is just floating above the vanilla chirper image. Hopefully noone moves it.
      moduleRegistry.append('GameBottomRight', ChirperModComponent);
 
-     moduleRegistry.extend("game-ui/game/components/selected-info-panel/selected-info-sections/selected-info-sections.tsx", 'selectedInfoSectionComponents', SelectedInfoPanelTogglesComponent)
+     moduleRegistry.extend("game-ui/game/components/selected-info-panel/selected-info-sections/selected-info-sections.tsx", 'selectedInfoSectionComponents', SelectedInfoPanelTogglesComponent);
+
+     moduleRegistry.extend("game-ui/game/components/tool-options/tool-options-panel.tsx", 'useToolOptionsVisible', ToolOptionsVisibility);
+
 
      // This is just to verify using UI console that all the component registriations was completed.
      console.log(mod.id + " UI module registrations completed.");
 }
+
+
+
 
 export default register;
