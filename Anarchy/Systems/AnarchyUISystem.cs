@@ -196,7 +196,7 @@ namespace Anarchy.Systems
             CreateTrigger("DecreaseElevation", () => ChangeElevation(m_ElevationValue.Value, -1f * m_ElevationStep.Value));
             CreateTrigger("LockElevationToggled", () => m_LockElevation.Value = !m_LockElevation.Value);
             CreateTrigger("ElevationStep", ElevationStepPressed);
-            CreateTrigger("ResetElevationToggled", () => ChangeElevation(0f, -1f * m_ElevationValue.Value));
+            CreateTrigger("ResetElevationToggled", () => ChangeElevation(m_ElevationValue.Value, -1f * m_ElevationValue.Value));
         }
 
         /// <inheritdoc/>
