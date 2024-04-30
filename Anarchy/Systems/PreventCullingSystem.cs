@@ -74,7 +74,6 @@ namespace Anarchy.Systems
                     ComponentType.ReadOnly<Vehicle>(),
                     ComponentType.ReadOnly<Event>(),
                     ComponentType.ReadOnly<Game.Objects.NetObject>(),
-                    ComponentType.ReadOnly<Game.Objects.SubObject>(),
                 },
             });
             RequireForUpdate(m_CullingInfoQuery);
