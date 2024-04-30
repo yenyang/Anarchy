@@ -85,6 +85,7 @@ namespace Anarchy.Systems
                     ComponentType.ReadOnly<Household>(),
                     ComponentType.ReadOnly<Vehicle>(),
                     ComponentType.ReadOnly<Event>(),
+                    ComponentType.ReadOnly<Game.Objects.NetObject>(),
                 },
             });
             m_OwnedAndOverridenQuery = GetEntityQuery(new EntityQueryDesc
@@ -107,6 +108,7 @@ namespace Anarchy.Systems
                     ComponentType.ReadOnly<Household>(),
                     ComponentType.ReadOnly<Vehicle>(),
                     ComponentType.ReadOnly<Event>(),
+                    ComponentType.ReadOnly<Game.Objects.NetObject>(),
                 },
             });
             m_PreventOverrideQuery = GetEntityQuery(new EntityQueryDesc
