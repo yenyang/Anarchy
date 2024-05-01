@@ -70,11 +70,15 @@ namespace Anarchy.Systems
 
             RequireForUpdate(m_TempObjectQuery);
 
-            if (m_ToolSystem.activeTool != m_ObjectToolSystem && m_ToolSystem.activeTool.toolID != "Line Tool")
+            if ((m_ToolSystem.activeTool != m_ObjectToolSystem && m_ToolSystem.activeTool.toolID != "Line Tool") || !AnarchyMod.Instance.Settings.ShowElevationToolOption)
             {
                 return;
             }
 
+            if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode != ObjectToolSystem.Mode.Create)
+            {
+                return;
+            }
 
             NativeArray<Entity> entities = m_TempObjectQuery.ToEntityArray(Allocator.Temp);
             EntityCommandBuffer buffer = m_ModificationBarrier.CreateCommandBuffer();

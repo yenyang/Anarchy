@@ -5,7 +5,6 @@ import { useLocalization } from "cs2/l10n";
 import { VanillaComponentResolver } from "mods/VanillaComponentResolver/VanillaComponentResolver";
 import mod from "../../../mod.json";
 import locale from "../../lang/en-US.json";
-import heightLockSrc from "../elevationControlSections/ArrowsHeightLocked.svg"
 
 interface InfoSectionComponent {
 	group: string;
@@ -18,7 +17,7 @@ const uilStandard =                          "coui://uil/Standard/";
 const uilColored =                           "coui://uil/Colored/";
 const anarchyEnabledSrc =      uilColored +  "Anarchy.svg";
 const anarchyDisabledSrc =     uilStandard + "Anarchy.svg";
-const transformRecordSrc =      uilStandard + "NoHeightLimit.svg";
+const heightLockSrc = uilStandard + "ArrowsHeightLocked.svg";
 
 const hasPreventOverride$ = bindValue<boolean>(mod.id, 'HasPreventOverride');
 const hasTransformRecord$ = bindValue<boolean>(mod.id, 'HasTransformRecord');

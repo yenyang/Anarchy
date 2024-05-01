@@ -5,7 +5,6 @@ import mod from "../../../mod.json";
 import { VanillaComponentResolver } from "../VanillaComponentResolver/VanillaComponentResolver";
 import { useLocalization } from "cs2/l10n";
 import { getModule } from "cs2/modding";
-import elevationLockSrc from "./ArrowsHeightLocked.svg"
 import locale from "../../lang/en-US.json"
 
 // These contain the coui paths to Unified Icon Library svg assets
@@ -13,6 +12,7 @@ const couiStandard =                         "coui://uil/Standard/";
 const arrowDownSrc =         couiStandard +  "ArrowDownThickStroke.svg";
 const arrowUpSrc =           couiStandard +  "ArrowUpThickStroke.svg";
 const resetSrc =            couiStandard + "Reset.svg";
+const heightLockSrc = couiStandard + "ArrowsHeightLocked.svg";
 
 // These establishes the binding with C# side. Without C# side game ui will crash.
 const ElevationValue$ =     bindValue<number> (mod.id, 'ElevationValue');
@@ -21,6 +21,7 @@ const ElevationScale$ =     bindValue<number> (mod.id, 'ElevationScale');
 const LockElevation$ =     bindValue<boolean> (mod.id, 'LockElevation');
 const IsBuilding$ =         bindValue<boolean>(mod.id, 'IsBuilding');
 const ShowElevationOption$ = bindValue<boolean>(mod.id, 'ShowElevationSettingsOption');
+const ObjectToolCreateMode$ = bindValue<boolean>(mod.id, 'ObjectToolCreateMode');
 
 // Stores the default values for the step arrays. Must be descending order.
 const defaultValues : number[] = [10, 2.5, 1.0, 0.1];
@@ -50,7 +51,7 @@ export const ElevationControlComponent: ModuleRegistryExtend = (Component : any)
 
         // These get the value of the bindings.
         const toolId = useValue(tool.activeTool$).id;
-        const toolAppropriate = (toolId == tool.OBJECT_TOOL || toolId == "Line Tool");
+        var toolAppropriate = (toolId == tool.OBJECT_TOOL || toolId == "Line Tool");
 
         const ElevationValue = useValue(ElevationValue$);
         const ElevationStep = useValue(ElevationStep$);
@@ -58,6 +59,12 @@ export const ElevationControlComponent: ModuleRegistryExtend = (Component : any)
         const LockElevation = useValue(LockElevation$);
         const IsBuilding = useValue(IsBuilding$);
         const ShowElevationOption = useValue(ShowElevationOption$);
+        const ObjectToolCreateMode = useValue(ObjectToolCreateMode$);
+
+        if (toolId == tool.OBJECT_TOOL && !ObjectToolCreateMode) 
+        {
+            toolAppropriate = false;
+        }
 
         // translation handling. Translates using locale keys that are defined in C# or fallback string here.
         const { translate } = useLocalization();
@@ -110,7 +117,7 @@ export const ElevationControlComponent: ModuleRegistryExtend = (Component : any)
                             selected = {LockElevation}
                             tooltip={descriptionTooltip(elevationLockTitle, elevationLockDescription)} 
                             onSelect={() => handleClick("LockElevationToggled")} 
-                            src={elevationLockSrc}
+                            src={heightLockSrc}
                             focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
                         ></VanillaComponentResolver.instance.ToolButton>
                     </VanillaComponentResolver.instance.Section>             

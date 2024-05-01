@@ -75,6 +75,7 @@ namespace Anarchy.Systems
         private ValueBindingHelper<int> m_ElevationScale;
         private ValueBindingHelper<bool> m_IsBuildingPrefab;
         private ValueBindingHelper<bool> m_ShowElevationSettingsOption;
+        private ValueBindingHelper<bool> m_PloppingWithObjectTool;
         private ElevateObjectDefinitionSystem m_ObjectDefinitionSystem;
         private ValueBindingHelper<bool> m_LockElevation;
         private ElevateTempObjectSystem m_ElevateTempObjectSystem;
@@ -82,6 +83,7 @@ namespace Anarchy.Systems
         private bool m_IsBrushing;
         private bool m_BeforeBrushingAnarchyEnabled;
         private int m_ButtonCooldown = 0;
+        private PrefabBase m_PreviousPrefab;
 
         /// <summary>
         /// Gets a value indicating whether the flaming chirper option binding is on/off.
@@ -189,6 +191,7 @@ namespace Anarchy.Systems
             m_LockElevation = CreateBinding("LockElevation", false);
             m_IsBuildingPrefab = CreateBinding("IsBuilding", false);
             m_ShowElevationSettingsOption = CreateBinding("ShowElevationSettingsOption", AnarchyMod.Instance.Settings.ShowElevationToolOption);
+            m_PloppingWithObjectTool = CreateBinding("ObjectToolCreateMode", m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create);
 
             // This binding listens for events triggered by the UI.
             AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", AnarchyToggled));
@@ -213,6 +216,11 @@ namespace Anarchy.Systems
             {
                 m_AnarchyEnabled.Update(m_BeforeBrushingAnarchyEnabled);
                 m_IsBrushing = false;
+            }
+
+            if (m_PloppingWithObjectTool.Value != (m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create))
+            {
+                m_PloppingWithObjectTool.Value = m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create;
             }
 
             base.OnUpdate();
@@ -285,6 +293,15 @@ namespace Anarchy.Systems
                 m_IsBuildingPrefab.Value = false;
             }
 
+            if (tool.toolID != null && AnarchyMod.Instance.Settings.ResetElevationWhenChangingPrefab)
+            {
+                if ((tool == m_ObjectToolSystem || tool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab && m_ToolSystem.activePrefab != m_PreviousPrefab)
+                {
+                    ChangeElevation(m_ElevationValue.Value, m_ElevationValue.Value * -1f);
+                    m_PreviousPrefab = m_ToolSystem.activePrefab;
+                }
+            }
+
             m_LastTool = tool.toolID;
         }
 
@@ -297,6 +314,15 @@ namespace Anarchy.Systems
             else if (m_IsBuildingPrefab.Value == true && prefabBase is not BuildingPrefab)
             {
                 m_IsBuildingPrefab.Value = false;
+            }
+
+            if (m_ToolSystem.activeTool.toolID != null && AnarchyMod.Instance.Settings.ResetElevationWhenChangingPrefab)
+            {
+                if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab && prefabBase != m_PreviousPrefab)
+                {
+                    ChangeElevation(m_ElevationValue.Value, m_ElevationValue.Value * -1f);
+                    m_PreviousPrefab = prefabBase;
+                }
             }
         }
 
@@ -346,9 +372,12 @@ namespace Anarchy.Systems
 
         private void ChangeElevation(float value, float difference)
         {
-            m_ElevationValue.UpdateCallback(value + difference);
-            m_ElevateTempObjectSystem.ElevationChange = difference;
-            m_ElevateTempObjectSystem.Enabled = true;
+            if (AnarchyMod.Instance.Settings.ShowElevationToolOption)
+            {
+                m_ElevationValue.UpdateCallback(value + difference);
+                m_ElevateTempObjectSystem.ElevationChange = difference;
+                m_ElevateTempObjectSystem.Enabled = true;
+            }
         }
 
         private void ElevationStepPressed()

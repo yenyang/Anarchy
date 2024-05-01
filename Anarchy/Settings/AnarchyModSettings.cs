@@ -7,16 +7,42 @@ namespace Anarchy.Settings
     using Anarchy.Systems;
     using Colossal.IO.AssetDatabase;
     using Game.Modding;
+    using Game.SceneFlow;
     using Game.Settings;
     using Game.UI;
     using Unity.Entities;
+    using static Game.Prefabs.CompositionFlags;
 
     /// <summary>
     /// The mod settings for the Anarchy Mod.
     /// </summary>
     [FileLocation("Mods_Yenyang_Anarchy")]
+    [SettingsUITabOrder(General, UI)]
+    [SettingsUISection(UI, General)]
+    [SettingsUIGroupOrder(Stable, Reset)]
     public class AnarchyModSettings : ModSetting
     {
+        /// <summary>
+        /// This is for UI Settings.
+        /// </summary>
+        public const string UI = "UI";
+
+        /// <summary>
+        /// This is for general settings.
+        /// </summary>
+        public const string General = "General";
+
+        /// <summary>
+        /// This is for settings that are stable.
+        /// </summary>
+        public const string Stable = "Stable";
+
+        /// <summary>
+        /// This is for reseting settings button group.
+        /// </summary>
+        public const string Reset = "Reset";
+
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AnarchyModSettings"/> class.
         /// </summary>
@@ -30,45 +56,62 @@ namespace Anarchy.Settings
         /// <summary>
         /// Gets or sets a value indicating whether Anarchy should always be enabled when using Bulldozer tool.
         /// </summary>
+        [SettingsUISection(UI, Stable)]
         public bool AnarchicBulldozer { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show the tooltip.
         /// </summary>
+        [SettingsUISection(UI, Stable)]
         public bool ShowTooltip { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to have chirper be on fire. This is currently hidden as it is not implemented and hidding it doesn't break people's existing settings.
         /// </summary>
+        [SettingsUISection(UI, Stable)]
+        [SettingsUISetter(typeof(AnarchyModSettings), nameof(SetFlamingChirper))]
         public bool FlamingChirper { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to use the tool icon.
+        [SettingsUISection(UI, Stable)]
         public bool ToolIcon { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show Elevation tool option.
+        [SettingsUISection(UI, Stable)]
         [SettingsUISetter(typeof(AnarchyModSettings), nameof(SetShowElevationToolOption))]
         public bool ShowElevationToolOption { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to reset elevation when changing prefab.
+        [SettingsUISection(UI, Stable)]
+        [SettingsUIHideByCondition(typeof(AnarchyModSettings), nameof(IsElevationToolOptionNotShown))]
+        public bool ResetElevationWhenChangingPrefab { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether to disable anarchy while brushing.
         /// </summary>
+        [SettingsUISection(UI, Stable)]
         public bool DisableAnarchyWhileBrushing { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to prevent override in editor.
+        /// Gets or sets a value indicating the minimum clearance below elevated network.
         /// </summary>
-        public bool PreventOverrideInEditor { get; set; }
+        [SettingsUISection(General, Stable)]
+        [SettingsUISlider(min = 0f, max = 1.75f, step = 0.25f, scalarMultiplier = 1, unit = Unit.kFloatTwoFractions)]
+        public float MinimumClearanceBelowElevatedNetworks { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to prevent prop culling.
         /// </summary>
+        [SettingsUISection(General, Stable)]
         public bool PreventAccidentalPropCulling { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the frequency to update props.
         /// </summary>
+        [SettingsUISection(General, Stable)]
         [SettingsUISlider(min = 1, max = 600, step = 1, scalarMultiplier = 1, unit = Unit.kInteger)]
         [SettingsUIHideByCondition(typeof(AnarchyModSettings), nameof(IsCullingNotBeingPrevented))]
         public int PropRefreshFrequency { get; set; }
@@ -76,6 +119,7 @@ namespace Anarchy.Settings
         /// <summary>
         /// Sets a value indicating whether: to update props now.
         /// </summary>
+        [SettingsUISection(General, Stable)]
         [SettingsUIButton]
         public bool RefreshProps
         {
@@ -88,13 +132,15 @@ namespace Anarchy.Settings
 
         /// <summary>
         /// Gets or sets a value indicating whether to use allow placing multiple unique buildings.
+        /// </summary>
+        [SettingsUISection(General, Stable)]
         public bool AllowPlacingMultipleUniqueBuildings { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating the minimum clearance below elevated network.
+        /// Gets or sets a value indicating whether to prevent override in editor.
         /// </summary>
-        [SettingsUISlider(min = 0f, max = 1.75f, step = 0.25f, scalarMultiplier = 1, unit = Unit.kFloatTwoFractions)]
-        public float MinimumClearanceBelowElevatedNetworks { get; set; }
+        [SettingsUISection(General, Stable)]
+        public bool PreventOverrideInEditor { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether: Used to force saving of Modsettings if settings would result in empty Json.
@@ -107,12 +153,39 @@ namespace Anarchy.Settings
         /// </summary>
         [SettingsUIButton]
         [SettingsUIConfirmation]
-        public bool ResetModSettings
+        [SettingsUISection(General, Reset)]
+        public bool ResetGeneralModSettings
         {
             set
             {
-                SetDefaults();
-                Contra = false;
+                PreventAccidentalPropCulling = true;
+                PropRefreshFrequency = 30;
+                AllowPlacingMultipleUniqueBuildings = false;
+                MinimumClearanceBelowElevatedNetworks = 0f;
+                PreventOverrideInEditor = false;
+                ApplyAndSave();
+            }
+        }
+
+        /// <summary>
+        /// Sets a value indicating whether: a button for Resetting the settings for the Mod.
+        /// </summary>
+        [SettingsUIButton]
+        [SettingsUIConfirmation]
+        [SettingsUISection(UI, Reset)]
+        public bool ResetUIModSettings
+        {
+            set
+            {
+                AnarchicBulldozer = true;
+                ShowTooltip = false;
+                FlamingChirper = true;
+                SetFlamingChirper(true);
+                ToolIcon = true;
+                DisableAnarchyWhileBrushing = false;
+                ShowElevationToolOption = true;
+                SetShowElevationToolOption(true);
+                ResetElevationWhenChangingPrefab = true;
                 ApplyAndSave();
             }
         }
@@ -122,6 +195,12 @@ namespace Anarchy.Settings
         /// </summary>
         /// <returns>Opposite of PreventAccidentalPropCulling.</returns>
         public bool IsCullingNotBeingPrevented() => !PreventAccidentalPropCulling;
+
+        /// <summary>
+        /// Checks if prevent accidental prop culling is off or on.
+        /// </summary>
+        /// <returns>Opposite of PreventAccidentalPropCulling.</returns>
+        public bool IsElevationToolOptionNotShown() => !ShowElevationToolOption;
 
         /// <inheritdoc/>
         public override void SetDefaults()
@@ -138,7 +217,9 @@ namespace Anarchy.Settings
             PreventOverrideInEditor = false;
             DisableAnarchyWhileBrushing = false;
             ShowElevationToolOption = true;
+            ResetElevationWhenChangingPrefab = true;
         }
+
 
         /// <summary>
         /// Triggers method in Anarchy UI System when ShowElevationToolOption is toggled.
@@ -150,15 +231,14 @@ namespace Anarchy.Settings
             anarchyUISystem.SetShowElevationSettingsOption(value);
         }
 
-        /// <inheritdoc/>
-        public override void Apply()
+        /// <summary>
+        /// Triggers method in Anarchy UI System for setting flaming chirper.
+        /// </summary>
+        /// <param name="value">The value being set to.</param>
+        public void SetFlamingChirper(bool value)
         {
-            base.Apply();
             AnarchyUISystem anarchyReactUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyUISystem>();
-            if (anarchyReactUISystem.FlamingChirperOption != FlamingChirper)
-            {
-                anarchyReactUISystem.SetFlamingChirperOption(FlamingChirper);
-            }
+            anarchyReactUISystem.SetFlamingChirperOption(value);
         }
     }
 }
