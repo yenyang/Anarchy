@@ -39,8 +39,6 @@
   "YY_ANARCHY_DESCRIPTION.AnarchyButton": "Disables error checks for tools and does not display errors. When applicable, you can place vegetation and props (with DevUI 'Add Object' menu) overlapping or inside the boundaries of other objects and close together.",
   "Anarchy.TOOLTIP_DESCRIPTION[PreventOverrideButton]": "Allows placement of vegetation and props overlapping or inside the boundaries of other objects and close together.",
   "Anarchy.TOOLTIP_TITLE[PreventOverrideButton]": "Prevent Override",
-  "Anarchy.TOOLTIP_DESCRIPTION[TransformRecordButton]": "Allows placement of elevated vegetation and props overlapping or inside the boundaries of other objects and close together and prevents them from falling when the object they are overlapping with updates.",
-  "Anarchy.TOOLTIP_TITLE[TransformRecordButton]": "Prevent Dropping",
   "Anarchy.TOOLTIP_TITLE[AnarchyModComponets]": "Anarchy Mod Components",
   "Anarchy.TOOLTIP_DESCRIPTION[IncreaseElevation]": "Increases the elevation relative to the placement surface. Keybind: Up Arrow.",
   "Anarchy.TOOLTIP_DESCRIPTION[DecreaseElevation]": "Decreases the elevation relative to the placement surface. Keybind: Down Arrow.",
