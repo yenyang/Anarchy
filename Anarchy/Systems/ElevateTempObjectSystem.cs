@@ -28,6 +28,7 @@ namespace Anarchy.Systems
         private ModificationBarrier1 m_ModificationBarrier;
         private RaycastSystem m_RaycastSystem;
         private ILog m_Log;
+        private float m_LastElevationChange = 0f;
         private float m_ElevationChange = 0f;
 
         /// <summary>
@@ -80,8 +81,16 @@ namespace Anarchy.Systems
                 return;
             }
 
+
+            if (m_LastElevationChange == m_ElevationChange)
+            {
+                Enabled = false;
+                return;
+            }
+
             NativeArray<Entity> entities = m_TempObjectQuery.ToEntityArray(Allocator.Temp);
             EntityCommandBuffer buffer = m_ModificationBarrier.CreateCommandBuffer();
+
 
             foreach (Entity entity in entities)
             {
@@ -94,8 +103,6 @@ namespace Anarchy.Systems
                 {
                     continue;
                 }
-
-
 
                 if (prefabBase is not BuildingPrefab)
                 {
@@ -126,6 +133,8 @@ namespace Anarchy.Systems
 
                     buffer.AddComponent<Updated>(entity);
                 }
+
+                m_LastElevationChange = m_ElevationChange;
 
                 Enabled = false;
             }
