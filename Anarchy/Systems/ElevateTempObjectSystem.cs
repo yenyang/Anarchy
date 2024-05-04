@@ -28,20 +28,12 @@ namespace Anarchy.Systems
         private ModificationBarrier1 m_ModificationBarrier;
         private RaycastSystem m_RaycastSystem;
         private ILog m_Log;
-        private float m_LastElevationChange = 0f;
         private float m_ElevationChange = 0f;
 
         /// <summary>
         /// Sets the elevation change for the system;
         /// </summary>
         public float ElevationChange { set { m_ElevationChange = value; } }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ElevateTempObjectSystem"/> class.
-        /// </summary>
-        public ElevateTempObjectSystem()
-        {
-        }
 
         /// <inheritdoc/>
         protected override void OnCreate()
@@ -78,13 +70,6 @@ namespace Anarchy.Systems
 
             if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode != ObjectToolSystem.Mode.Create)
             {
-                return;
-            }
-
-
-            if (m_LastElevationChange == m_ElevationChange)
-            {
-                Enabled = false;
                 return;
             }
 
@@ -134,13 +119,10 @@ namespace Anarchy.Systems
                     buffer.AddComponent<Updated>(entity);
                 }
 
-                m_LastElevationChange = m_ElevationChange;
-
                 Enabled = false;
             }
 
             entities.Dispose();
         }
-
     }
 }
