@@ -31,7 +31,7 @@ namespace Anarchy.Systems
         private float m_ElevationChange = 0f;
 
         /// <summary>
-        /// Sets the elevation change for the system;
+        /// Sets the elevation change for the system.
         /// </summary>
         public float ElevationChange { set { m_ElevationChange = value; } }
 
