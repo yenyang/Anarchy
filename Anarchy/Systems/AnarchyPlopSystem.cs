@@ -85,7 +85,6 @@ namespace Anarchy.Systems
                     ComponentType.ReadOnly<Household>(),
                     ComponentType.ReadOnly<Vehicle>(),
                     ComponentType.ReadOnly<Event>(),
-                    ComponentType.ReadOnly<Game.Objects.NetObject>(),
                 },
             });
             m_OwnedAndOverridenQuery = GetEntityQuery(new EntityQueryDesc
@@ -192,7 +191,13 @@ namespace Anarchy.Systems
                             if (prefabBase is StaticObjectPrefab && EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData) && prefabBase is not BuildingPrefab)
                             {
                                 // added for compatibility with EDT.
-                                if (m_ToolSystem.actionMode.IsGame() && EntityManager.TryGetComponent(entity, out Attached attachedComponent))
+                                bool isRoundABout = false;
+                                if (EntityManager.TryGetComponent(prefabRef.m_Prefab, out PlaceableObjectData placeableObjectData) && (placeableObjectData.m_Flags & PlacementFlags.RoadNode) == PlacementFlags.RoadNode)
+                                {
+                                    isRoundABout = true;
+                                }
+
+                                if (m_ToolSystem.actionMode.IsGame() && EntityManager.TryGetComponent(entity, out Attached attachedComponent) && !isRoundABout)
                                 {
                                     if (EntityManager.TryGetBuffer(attachedComponent.m_Parent, isReadOnly: false, out DynamicBuffer<Game.Objects.SubObject> subObjectBuffer))
                                     {

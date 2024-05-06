@@ -86,7 +86,6 @@ namespace Anarchy.Systems
                     ComponentType.ReadOnly<Household>(),
                     ComponentType.ReadOnly<Vehicle>(),
                     ComponentType.ReadOnly<Event>(),
-                    ComponentType.ReadOnly<Game.Objects.NetObject>(),
                     ComponentType.ReadOnly<Deleted>(),
                 },
             });
