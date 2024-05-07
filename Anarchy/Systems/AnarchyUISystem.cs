@@ -328,13 +328,7 @@ namespace Anarchy.Systems
 
         private void OnKeyPressed(InputAction.CallbackContext context)
         {
-            if (m_ToolSystem.activeTool.toolID != null)
-            {
-                if (ToolIDs.Contains(m_ToolSystem.activeTool.toolID))
-                {
-                    AnarchyToggled();
-                }
-            }
+             AnarchyToggled();
         }
 
         private void OnElevationResetKeyPressed(InputAction.CallbackContext context)
