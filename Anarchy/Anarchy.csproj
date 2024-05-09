@@ -137,7 +137,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Properties\Previews\" />
 	  <Folder Include="Settings\" />
 	</ItemGroup>
 

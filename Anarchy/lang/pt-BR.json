@@ -8,9 +8,6 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ShowTooltip]": "Com esta opção habilitada um botão com Ⓐ será exibido quando a Anarquia estiver ativa para as ferramentas apropriadas.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ToolIcon]": "Ícone da ferramenta",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ToolIcon]": "Com esta opção ativada uma linha de ícone com um único botão para a Anarquia aparecerá quando usar as ferramentas apropriadas.",
-  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetModSettings]": "Redefinir Configurações de Anarquia",
-  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetModSettings]": "Após a confirmação, isso irá redefinir as configurações do mod Anarquia.",
-  "Options.WARNING[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetModSettings]": "Redefinir Configurações de Anarquia?",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventAccidentalPropCulling]": "Prevenir a eliminação acidental de Props",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventAccidentalPropCulling]": "Isto irá disparar uma atualização gráfica rotineiramente para as Props colocadas com Anarquia, de modo a evitar a eliminação dos Props acidentalmente. Isso afeta o desempenho.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PropRefreshFrequency]": "Frequência de atualização Prop",
@@ -19,11 +16,13 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.RefreshProps]": "Se as props colocadas com Anarquia foram acidentalmente eliminadas, você pode pressionar este botão para trazê-las agora. Isso não afeta negativamente o desempenho.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.AllowPlacingMultipleUniqueBuildings]": "Permitir Colocar Múltiplos Edifícios Únicos",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.AllowPlacingMultipleUniqueBuildings]": "Isso permite que você coloque várias cópias de edifícios únicos usando o menu UI normal com ou sem a Anarquia ativada. Os efeitos destes edifícios acumulam!",
-  "YY_ANARCHY.Anarchy": "Anarquia",
-  "YY_ANARCHY.AnarchyButton": "Anarquia",
-  "YY_ANARCHY_DESCRIPTION.AnarchyButton": "Desativa as verificações de erros de ferramentas e não exibe erros. Quando aplicável, você pode colocar vegetação e props (com menu DevUI 'Adicionar Objeto') sobrepondo ou dentro dos limites de outros objetos e próximos uns dos outros.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.MinimumClearanceBelowElevatedNetworks]": "Espaço mínimo abaixo das Redes Elevadas",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.MinimumClearanceBelowElevatedNetworks]": "Quando a ferramenta de Anarquia está habilitada a criação automática de áreas de construção será afetada, podendo gerar resultados indesejados, como por exemplo, áreas de construção abaixo de pontes. Essa configuração dá a você controle sobre o espaço mínimo abaixo de uma ponte. Recomendamos verificar as áreas de construção se necessário.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventOverrideInEditor]": "Impedir Substituição no Editor",
-  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventOverrideInEditor]": "No editor, com Anarchy e esta opção habilitada você poderá colocar vegetação e props sobrepostos ou dentro das fronteiras de objetos próximos. O mapa pode exigir Anarquia como uma dependência. Quando os usuários desenharem estradas através desses objetos, eles não serão substituídos."
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventOverrideInEditor]": "No editor, com Anarchy e esta opção habilitada você poderá colocar vegetação e props sobrepostos ou dentro das fronteiras de objetos próximos. O mapa pode exigir Anarquia como uma dependência. Quando os usuários desenharem estradas através desses objetos, eles não serão substituídos.",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.DisableAnarchyWhileBrushing]": "Desabilitar o Anarchy quando ativar a ferramenta de pincel",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.DisableAnarchyWhileBrushing]": "Desativa automaticamente o Anarchy enquanto utiliza a ferramente de pincel para objetos como árvores.",
+  "YY_ANARCHY.Anarchy": "Anarquia",
+  "YY_ANARCHY.AnarchyButton": "Anarquia",
+  "YY_ANARCHY_DESCRIPTION.AnarchyButton": "Desativa as verificações de erros de ferramentas e não exibe erros. Quando aplicável, você pode colocar vegetação e props (com menu DevUI 'Adicionar Objeto') sobrepondo ou dentro dos limites de outros objetos e próximos uns dos outros."
 }
