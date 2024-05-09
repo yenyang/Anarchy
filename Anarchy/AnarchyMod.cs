@@ -6,16 +6,13 @@ namespace Anarchy
 {
     using System;
     using System.IO;
-    using System.Linq;
     using Anarchy.Settings;
     using Anarchy.Systems;
     using Colossal.IO.AssetDatabase;
-    using Colossal.Localization;
     using Colossal.Logging;
     using Game;
     using Game.Modding;
     using Game.SceneFlow;
-    using Game.Settings;
     using HarmonyLib;
 
     /// <summary>
@@ -23,6 +20,11 @@ namespace Anarchy
     /// </summary>
     public class AnarchyMod : IMod
     {
+        /// <summary>
+        /// An id used for bindings between UI and C#.
+        /// </summary>
+        public static readonly string Id = "Anarchy";
+
         /// <summary>
         /// Gets the install folder for the mod.
         /// </summary>
@@ -104,6 +106,12 @@ namespace Anarchy
             updateSystem.UpdateAt<PreventCullingSystem>(SystemUpdatePhase.ToolUpdate);
             updateSystem.UpdateBefore<ModifyNetCompositionDataSystem>(SystemUpdatePhase.Modification4);
             updateSystem.UpdateAfter<ResetNetCompositionDataSystem>(SystemUpdatePhase.ModificationEnd);
+            updateSystem.UpdateBefore<ResetTransformSystem>(SystemUpdatePhase.ModificationEnd);
+            updateSystem.UpdateAt<CheckTransformSystem>(SystemUpdatePhase.Modification1);
+            updateSystem.UpdateBefore<HandleUpdateNextFrameSystem>(SystemUpdatePhase.Modification1);
+            updateSystem.UpdateAt<SelectedInfoPanelTogglesSystem>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateBefore<ElevateObjectDefinitionSystem>(SystemUpdatePhase.Modification1);
+            updateSystem.UpdateAt<ElevateTempObjectSystem>(SystemUpdatePhase.Modification1);
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Completed.");
         }
 

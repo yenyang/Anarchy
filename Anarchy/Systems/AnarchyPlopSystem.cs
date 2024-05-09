@@ -17,6 +17,7 @@ namespace Anarchy.Systems
     using Game.Objects;
     using Game.Prefabs;
     using Game.Tools;
+    using Game.UI.InGame;
     using Game.Vehicles;
     using Unity.Collections;
     using Unity.Entities;
@@ -30,6 +31,7 @@ namespace Anarchy.Systems
         {
             { "Object Tool" },
             { "Line Tool" },
+            { "Net Tool" },
         };
 
         private AnarchyUISystem m_AnarchyUISystem;
@@ -53,7 +55,6 @@ namespace Anarchy.Systems
         protected override void OnCreate()
         {
             m_Log = AnarchyMod.Instance.Log;
-            m_Log.effectivenessLevel = Level.Info;
             m_Log.Info($"{nameof(AnarchyPlopSystem)} Created.");
             m_AnarchyUISystem = World.GetOrCreateSystemManaged<AnarchyUISystem>();
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
@@ -66,14 +67,17 @@ namespace Anarchy.Systems
                 {
                     ComponentType.ReadOnly<Created>(),
                     ComponentType.ReadOnly<Updated>(),
+                },
+                Any = new ComponentType[]
+                {
                     ComponentType.ReadOnly<Static>(),
                     ComponentType.ReadOnly<Object>(),
+                    ComponentType.ReadOnly<Game.Tools.EditorContainer>(),
                 },
                 None = new ComponentType[]
                 {
                     ComponentType.ReadOnly<Temp>(),
                     ComponentType.ReadOnly<Owner>(),
-                    ComponentType.ReadOnly<Building>(),
                     ComponentType.ReadOnly<Animal>(),
                     ComponentType.ReadOnly<Game.Creatures.Pet>(),
                     ComponentType.ReadOnly<Creature>(),
@@ -89,7 +93,6 @@ namespace Anarchy.Systems
                 {
                     ComponentType.ReadOnly<Updated>(),
                     ComponentType.ReadOnly<Owner>(),
-                    ComponentType.ReadOnly<Static>(),
                     ComponentType.ReadOnly<Overridden>(),
                 },
                 None = new ComponentType[]
@@ -104,6 +107,7 @@ namespace Anarchy.Systems
                     ComponentType.ReadOnly<Household>(),
                     ComponentType.ReadOnly<Vehicle>(),
                     ComponentType.ReadOnly<Event>(),
+                    ComponentType.ReadOnly<Game.Objects.NetObject>(),
                 },
             });
             m_PreventOverrideQuery = GetEntityQuery(new EntityQueryDesc
@@ -133,11 +137,15 @@ namespace Anarchy.Systems
                     {
                         if (prefabBase is StaticObjectPrefab && EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData))
                         {
-                            if ((objectGeometryData.m_Flags & GeometryFlags.Overridable) == GeometryFlags.Overridable)
+                            if ((objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable)
                             {
                                 continue;
                             }
                         }
+                    }
+                    else if (m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase) && (prefabBase is NetLanePrefab || prefabBase is NetLaneGeometryPrefab))
+                    {
+                        continue;
                     }
                 }
 
@@ -157,34 +165,21 @@ namespace Anarchy.Systems
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            if (m_ToolSystem.activeTool.toolID == null || (m_ToolSystem.actionMode.IsEditor() && !AnarchyMod.Instance.Settings.PreventOverrideInEditor))
+            if (m_ToolSystem.activeTool.toolID == null || (m_ToolSystem.actionMode.IsEditor() && !AnarchyMod.Instance.Settings.PreventOverrideInEditor) || m_ToolSystem.activePrefab == null)
             {
                 return;
             }
 
-            if (m_ToolSystem.activePrefab != null)
+
+            if (!m_NetToolSystem.TrySetPrefab(m_ToolSystem.activePrefab) || m_ToolSystem.activePrefab is NetLaneGeometryPrefab || m_ToolSystem.activePrefab is NetLanePrefab)
             {
-                Entity prefabEntity = m_PrefabSystem.GetEntity(m_ToolSystem.activePrefab);
-                if (EntityManager.HasComponent<BuildingData>(prefabEntity))
-                {
-                    return;
-                }
-
-                if (EntityManager.TryGetComponent(prefabEntity, out ObjectGeometryData objectGeometryData))
-                {
-                    if ((objectGeometryData.m_Flags & GeometryFlags.Overridable) != GeometryFlags.Overridable)
-                    {
-                        m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)} Active prefab is not overridable.");
-                    }
-                }
-            }
-
-            if (m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID) && !m_NetToolSystem.TrySetPrefab(m_ToolSystem.activePrefab))
-            {
-                EntityManager.RemoveComponent(m_CreatedQuery, ComponentType.ReadWrite<Overridden>());
-                EntityManager.RemoveComponent(m_OwnedAndOverridenQuery, ComponentType.ReadWrite<Overridden>());
-
                 NativeArray<Entity> createdEntities = m_CreatedQuery.ToEntityArray(Allocator.Temp);
+                m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)}");
+                if (m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID))
+                {
+                    EntityManager.RemoveComponent(m_CreatedQuery, ComponentType.ReadWrite<Overridden>());
+                    EntityManager.RemoveComponent(m_OwnedAndOverridenQuery, ComponentType.ReadWrite<Overridden>());
+                }
 
                 foreach (Entity entity in createdEntities)
                 {
@@ -193,13 +188,70 @@ namespace Anarchy.Systems
                     {
                         if (m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase))
                         {
-                            if (prefabBase is StaticObjectPrefab && EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData))
+                            if (prefabBase is StaticObjectPrefab && EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData) && prefabBase is not BuildingPrefab)
                             {
-                                if ((objectGeometryData.m_Flags & GeometryFlags.Overridable) == GeometryFlags.Overridable)
+                                // added for compatibility with EDT.
+                                bool isRoundABout = false;
+                                if (EntityManager.TryGetComponent(prefabRef.m_Prefab, out PlaceableObjectData placeableObjectData) && (placeableObjectData.m_Flags & PlacementFlags.RoadNode) == PlacementFlags.RoadNode)
+                                {
+                                    isRoundABout = true;
+                                }
+
+                                if (m_ToolSystem.actionMode.IsGame() && EntityManager.TryGetComponent(entity, out Attached attachedComponent) && !isRoundABout)
+                                {
+                                    if (EntityManager.TryGetBuffer(attachedComponent.m_Parent, isReadOnly: false, out DynamicBuffer<Game.Objects.SubObject> subObjectBuffer))
+                                    {
+                                        // Loop through all subobjecst started at last entry to try and quickly find created entity.
+                                        for (int i = subObjectBuffer.Length - 1; i >= 0; i--)
+                                        {
+                                            Game.Objects.SubObject subObject = subObjectBuffer[i];
+                                            if (subObject.m_SubObject == entity)
+                                            {
+                                                subObjectBuffer.RemoveAt(i);
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    EntityManager.RemoveComponent<Attached>(entity);
+                                    if (EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform) && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create && !EntityManager.HasComponent<TransformRecord>(entity))
+                                    {
+                                        EntityManager.AddComponent<TransformRecord>(entity);
+                                        TransformRecord transformRecord = new () { m_Position = originalTransform.m_Position, m_Rotation = originalTransform.m_Rotation };
+                                        EntityManager.SetComponentData(entity, transformRecord);
+                                    }
+                                }
+
+                                // added for compatibility with EDT.
+                                if (m_ToolSystem.actionMode.IsGame())
+                                {
+                                    if (EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform) && !EntityManager.HasComponent<TransformRecord>(entity) &&
+                                        m_AnarchyUISystem.LockElevation && (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool"))
+                                    {
+                                        EntityManager.AddComponent<TransformRecord>(entity);
+                                        TransformRecord transformRecord = new () { m_Position = originalTransform.m_Position, m_Rotation = originalTransform.m_Rotation };
+                                        EntityManager.SetComponentData(entity, transformRecord);
+                                    }
+                                }
+
+                                if ((objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable && m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID))
                                 {
                                     m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)} Added PreventOverride to {prefabBase.name}");
                                     EntityManager.AddComponent<PreventOverride>(entity);
+
                                     continue;
+                                }
+                            }
+                            else if (m_ToolSystem.actionMode.IsGame() && prefabBase.GetPrefabID().ToString() == "NetPrefab:Lane Editor Container" && EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<Game.Net.SubLane> subLaneBuffer) && m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID))
+                            {
+                                // Loop through all subobjects started at last entry to try and quickly find created entity.
+                                for (int i = 0; i < subLaneBuffer.Length; i++)
+                                {
+                                    Game.Net.SubLane subLane = subLaneBuffer[i];
+                                    m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)} Added PreventOverride to {prefabBase.name}");
+                                    EntityManager.AddComponent(subLane.m_SubLane, ComponentType.ReadOnly<PreventOverride>());
+                                    m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)} Added DoNotForceUpdate to {prefabBase.name}");
+                                    EntityManager.AddComponent(subLane.m_SubLane, ComponentType.ReadOnly<DoNotForceUpdate>());
                                 }
                             }
                         }

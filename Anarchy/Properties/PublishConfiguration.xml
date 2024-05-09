@@ -32,15 +32,18 @@ The mod also has:
 * Opt-In Option to allow multiple copies of unique buildings using toolbar menu. Effects of multiple buildings stack!
 * Option to set minimum clearance below elevated networks even while Anarchy is active in case you don't remove the zoning under a low bridge. It would be better just to remove the zoning.
 * Opt-In Option to automatically disable Anarchy toggle while brushing objects such as trees.
+* Set relative Elevation with Object tool and line tool for props, trees, and plants. (Options to disable and automatically reset elevation) keybinds: up arrow -&gt; elevation up, down arrow -&gt; elevation down, shift + r -&gt; reset elevation to 0, shift + e -&gt; change elevation step. 
+* Elevation lock to prevent game systems from changing position of props, trees, plants, and decals. You can still change position with mods.
+* Anarchy and Elevation lock can be added or removed after placement via the selected info panel.
 
 Currently it applies to these tools:
-* Object Tool (Option to automatically disable Anarchy toggle while brushing objects.)
+* Object Tool (Option to automatically disable Anarchy toggle while brushing objects. and Set relative elevation while plopping single item.)
 * Net Tool (While using the net tool Anarchy will now let you violate the clearance of other networks. I don't recommend having zoning under low bridges.)
 * Area Tool (Can exceed limits for specialized industry areas)
 * Bulldoze Tool (Option to default Anarchy to ON when activated)
 * Terrain Tool (Cross the line within playable area.)
 * Upgrade Tool
-* Line Tool by Algernon
+* Line Tool by Algernon (Set relative elevation).
 
 You can activate anarchy with the keyboard shortcut "Ctrl+A" or with the optional tool icon that only appears while using the above tools.
 Note for azerty users the shortcut is CTRL+Q.
@@ -75,7 +78,7 @@ Placing standalone props is an unsupported feature of the game. You need DevUI t
 With Anarchy enabled, you can place props and trees overlapping or inside the boundaries of buildings, nets, areas, other trees, other props, etc. Props and trees placed with Anarchy enabled cannot be overriden later (even if later Anarchy is disabled), but can be removed with bulldozer or brush.
 
 Props overlapping with buildings or nets may sometimes be culled by the game, and disappear until reloading or something interacts with or near them.
-The mod has an option to routinely refresh props that were culled so they don't disappear. This affects performance but you can adjust the frequency.
+The mod has an option to routinely refresh props that were culled so they don't disappear. This should not significantly impact performance anymore but you can still disable it or adjust the frequency.
 You can also manually trigger a prop refresh using a button in the options menu.
 
 Pro tip: Use the brush mode to remove trees and standalone props. If you unselect the brush snapping option for "Remove only matching type", and right click you can remove them within a radius and it only targets standalone props and trees.
@@ -84,7 +87,6 @@ Pro tip: Use the brush mode to remove trees and standalone props. If you unselec
 This mod does NOT allow you to do everything including:
 * If the vanilla net tool would remove an existing network, it will still do that.
 * Even if the mod disables the error check, the UI may still prevent you from doing something.
-* Does not give additional control for prop placement.
 * Not much testing is done on the effects of this mod on maps created using the unfinished editor.
 
 **Please save frequently, in multiple files, and learn to use responsibly.**
@@ -99,31 +101,37 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * Klyte45, Algernon - Help with UI, Cooperative Development and Code Sharing
 * Bad Peanut - Image Credit for Flaming Chirper
 * T.D.W., krzychu124, Triton Supreme, and Quboid - Cooperative Development and Code Sharing
-* Localization: Nyoko, Citadino, Dome, and Eryalito (Spanish), Hendrix (German), RilkeXS (Chinese Simplified), Luis Fernando de Paula and felipecollucci (Portuguese), Maxi (Partial Italian), karmel68 (Polish), Tanat and TwotoolusFLY_LSh.st (Korean), OWSEEX (Russian) and Quoifleur and Karg (French). 
-* Dante, starrysum - Testing, Feedback</LongDescription>
+* Localization: Nyoko, Citadino, Dome, and Eryalito (Spanish), Hendrix (German), RilkeXS (Chinese Simplified), Luis Fernando de Paula and felipecollucci (Portuguese), Maxi and raistlin46 (Partial Italian), karmel68 and Lisek (Polish), Tanat and TwotoolusFLY_LSh.st (Korean), OWSEEX (Russian) and Quoifleur, Karg, and Edou24 (French). 
+* Testing, Feedback - Dante, starrysum, HarbourMaster Jay, Dome, Tigon Ologdring, BruceyBoy, RaftermanNZ, Elektrotek, SpaceChad</LongDescription>
   <!--Thumbnail-->
   <Thumbnail Value="Properties/Thumbnail.png" />
   <!--Screenshot, can be set multiple-->
   <Screenshot Value="Properties/Previews/anarchyStreets.jpg" />
   <Screenshot Value="Properties/Previews/anarchyApartments.jpg" />
   <Screenshot Value="Properties/Previews/anarchyStream.jpg" />
+  <Screenshot Value="Properties/Previews/turboRoundAboutCurbs.jpg" />
   <!--Tag, can be set multiple-->
   <Tag Value="Code Mod" />
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/anarchy.1644970/" />
   <!--Version of the mod-->
-  <ModVersion Value="1.4.3" />
+  <ModVersion Value="1.5.0" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.1.*" />
   <!--Dependency for the mod, can be set multiple-->
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.2" />
   <Dependency Id="75426" DisplayName="I18n EveryWhere" Version="1.1.0" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog>## Patch V1.4.3
-* Fixed tooltip related issues.
-* Updated localization. Added I18n Everywhere dependency.
-* Fixed Flaming chirper with disabled radio.
-* Added Opt-In option to automatically disable anarchy toggle while brushing objects.</ChangeLog>
+  <ChangeLog>## Patch V1.5.0
+* Set relative Elevation with Object tool and line tool for props, trees, and plants. (Options to disable and automatically reset elevation) keybinds: up arrow -&gt; elevation up, down arrow -&gt; elevation down, shift + r -&gt; reset elevation to 0, shift + e -&gt; change elevation step.
+* Elevation lock to prevent game systems from changing position of props, trees, plants, and decals. You can still change position with mods.
+* Fixed Stuttering from Prevent Accidental Culling system with heavily detailed builds or those with Anarchy forests.
+* Anarchy and Elevation lock can be added or removed after placement via the selected info panel. (Thanks Dome for the idea)
+* Ctrl + A keyboard shortcut can toggle anarchy at any time. You will only be able to tell using flaming chirper.
+* Updated localization.
+* Support for EDT such as: 
+	* Anarchy enabled allows placement of NetLane Fences and Hedges close together and overlapping.
+	* Automatically adds Elevation Lock when using Snap to Object Surface snapping option.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
