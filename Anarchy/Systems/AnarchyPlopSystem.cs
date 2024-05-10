@@ -41,7 +41,7 @@ namespace Anarchy.Systems
         private ObjectToolSystem m_ObjectToolSystem;
         private PrefabSystem m_PrefabSystem;
         private EntityQuery m_CreatedQuery;
-        private EntityQuery m_PreventOverrideQuery;
+        private EntityQuery m_AnarchyComponentsQuery;
         private EntityQuery m_OwnedAndOverridenQuery;
 
         /// <summary>
@@ -85,6 +85,18 @@ namespace Anarchy.Systems
                     ComponentType.ReadOnly<Household>(),
                     ComponentType.ReadOnly<Vehicle>(),
                     ComponentType.ReadOnly<Event>(),
+                    ComponentType.ReadOnly<Game.Routes.TransportStop>(),
+                    ComponentType.ReadOnly<Game.Routes.TransportLine>(),
+                    ComponentType.ReadOnly<Game.Routes.TramStop>(),
+                    ComponentType.ReadOnly<Game.Routes.TrainStop>(),
+                    ComponentType.ReadOnly<Game.Routes.AirplaneStop>(),
+                    ComponentType.ReadOnly<Game.Routes.BusStop>(),
+                    ComponentType.ReadOnly<Game.Routes.ShipStop>(),
+                    ComponentType.ReadOnly<Game.Routes.TakeoffLocation>(),
+                    ComponentType.ReadOnly<Game.Routes.TaxiStand>(),
+                    ComponentType.ReadOnly<Game.Routes.Waypoint>(),
+                    ComponentType.ReadOnly<Game.Routes.MailBox>(),
+                    ComponentType.ReadOnly<Game.Routes.WaypointDefinition>(),
                 },
             });
             m_OwnedAndOverridenQuery = GetEntityQuery(new EntityQueryDesc
@@ -107,14 +119,14 @@ namespace Anarchy.Systems
                     ComponentType.ReadOnly<Household>(),
                     ComponentType.ReadOnly<Vehicle>(),
                     ComponentType.ReadOnly<Event>(),
-                    ComponentType.ReadOnly<Game.Objects.NetObject>(),
                 },
             });
-            m_PreventOverrideQuery = GetEntityQuery(new EntityQueryDesc
+            m_AnarchyComponentsQuery = GetEntityQuery(new EntityQueryDesc
             {
-                All = new ComponentType[]
+                Any = new ComponentType[]
                 {
                     ComponentType.ReadWrite<PreventOverride>(),
+                    ComponentType.ReadWrite<TransformRecord>(),
                 },
             });
 
@@ -125,9 +137,9 @@ namespace Anarchy.Systems
         /// <inheritdoc/>
         protected override void OnGameLoadingComplete(Colossal.Serialization.Entities.Purpose purpose, GameMode mode)
         {
-            NativeArray<Entity> entitiesWithComponent = m_PreventOverrideQuery.ToEntityArray(Allocator.Temp);
+            NativeArray<Entity> entitiesWithComponent = m_AnarchyComponentsQuery.ToEntityArray(Allocator.Temp);
 
-            // Cycle through all entities with Prevent Override component and look for any that shouldn't have been added. Remove component if it is not Overridable Static Object.
+            // Cycle through all entities with Prevent Override and transform record component and look for any that shouldn't have been added. Remove component if it is not Overridable Static Object.
             foreach (Entity entity in entitiesWithComponent)
             {
                 PrefabBase prefabBase = null;
@@ -154,7 +166,15 @@ namespace Anarchy.Systems
                     m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnGameLoadingComplete)} Removed PreventOverride from {prefabBase.name}");
                 }
 
-                EntityManager.RemoveComponent<PreventOverride>(entity);
+                if (EntityManager.HasComponent(entity, ComponentType.ReadOnly<PreventOverride>()))
+                {
+                    EntityManager.RemoveComponent<PreventOverride>(entity);
+                }
+
+                if (EntityManager.HasComponent(entity, ComponentType.ReadOnly<TransformRecord>()))
+                {
+                    EntityManager.AddComponent<Deleted>(entity);
+                }
             }
 
             entitiesWithComponent.Dispose();
@@ -188,7 +208,7 @@ namespace Anarchy.Systems
                     {
                         if (m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase))
                         {
-                            if (prefabBase is StaticObjectPrefab && EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData) && prefabBase is not BuildingPrefab)
+                            if (prefabBase is StaticObjectPrefab && EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData) && prefabBase is not BuildingPrefab && (objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable)
                             {
                                 // added for compatibility with EDT.
                                 bool isRoundABout = false;
@@ -234,7 +254,7 @@ namespace Anarchy.Systems
                                     }
                                 }
 
-                                if ((objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable && m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID))
+                                if (m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID))
                                 {
                                     m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)} Added PreventOverride to {prefabBase.name}");
                                     EntityManager.AddComponent<PreventOverride>(entity);
