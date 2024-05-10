@@ -171,7 +171,7 @@ namespace Anarchy.Systems
                     EntityManager.RemoveComponent<PreventOverride>(entity);
                 }
 
-                if (EntityManager.HasComponent(entity, ComponentType.ReadOnly<TransformRecord>()))
+                if (EntityManager.HasComponent(entity, ComponentType.ReadOnly<TransformRecord>()) && EntityManager.HasComponent<Game.Objects.NetObject>(entity))
                 {
                     EntityManager.AddComponent<Deleted>(entity);
                 }
@@ -208,7 +208,7 @@ namespace Anarchy.Systems
                     {
                         if (m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase))
                         {
-                            if (prefabBase is StaticObjectPrefab && EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData) && prefabBase is not BuildingPrefab && (objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable)
+                            if (prefabBase is StaticObjectPrefab && EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData) && prefabBase is not BuildingPrefab && ((objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable || !EntityManager.HasComponent<Game.Objects.NetObject>(entity)))
                             {
                                 // added for compatibility with EDT.
                                 bool isRoundABout = false;
@@ -254,7 +254,7 @@ namespace Anarchy.Systems
                                     }
                                 }
 
-                                if (m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID))
+                                if (m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID) && (objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable)
                                 {
                                     m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)} Added PreventOverride to {prefabBase.name}");
                                     EntityManager.AddComponent<PreventOverride>(entity);
