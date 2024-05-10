@@ -115,23 +115,16 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/anarchy.1644970/" />
   <!--Version of the mod-->
-  <ModVersion Value="1.5.0" />
+  <ModVersion Value="1.5.1" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.1.*" />
   <!--Dependency for the mod, can be set multiple-->
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.2" />
   <Dependency Id="75426" DisplayName="I18n EveryWhere" Version="1.1.0" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog>## Patch V1.5.0
-* Set relative Elevation with Object tool and line tool for props, trees, and plants. (Options to disable and automatically reset elevation) keybinds: up arrow -&gt; elevation up, down arrow -&gt; elevation down, shift + r -&gt; reset elevation to 0, shift + e -&gt; change elevation step.
-* Elevation lock to prevent game systems from changing position of props, trees, plants, and decals. You can still change position with mods.
-* Fixed Stuttering from Prevent Accidental Culling system with heavily detailed builds or those with Anarchy forests.
-* Anarchy and Elevation lock can be added or removed after placement via the selected info panel. (Thanks Dome for the idea)
-* Ctrl + A keyboard shortcut can toggle anarchy at any time. You will only be able to tell using flaming chirper.
-* Updated localization.
-* Support for EDT such as: 
-	* Anarchy enabled allows placement of NetLane Fences and Hedges close together and overlapping.
-	* Automatically adds Elevation Lock when using Snap to Object Surface snapping option.</ChangeLog>
+  <ChangeLog>## Hotfix V1.5.1
+* Fix transit stop issues
+* All transit stops placed with V1.5.0 will be deleted upon game load.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
