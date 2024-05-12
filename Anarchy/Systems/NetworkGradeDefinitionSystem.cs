@@ -152,11 +152,16 @@ namespace Anarchy.Systems
                 currentCourse.m_EndPosition.m_Position.y = currentCourse.m_StartPosition.m_Position.y + (slope * currentCourse.m_Length);
                 m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} set y to {currentCourse.m_EndPosition.m_Position.y}.");
                 NetCourse nextCourse = netCourses[i + 1];
-                currentCourse.m_EndPosition.m_Elevation += currentCourse.m_EndPosition.m_Position.y - nextCourse.m_StartPosition.m_Position.y;
-                m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} set elevation to {currentCourse.m_EndPosition.m_Elevation}.");
+                m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} currentCourse.m_EndPosition elevation is {currentCourse.m_EndPosition.m_Elevation}.");
+                currentCourse.m_EndPosition.m_Elevation -= currentCourse.m_EndPosition.m_Position.y - nextCourse.m_StartPosition.m_Position.y;
+                m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} set currentCourse.m_EndPosition elevation to {currentCourse.m_EndPosition.m_Elevation}.");
                 nextCourse.m_StartPosition.m_Position.y = currentCourse.m_EndPosition.m_Position.y;
                 nextCourse.m_StartPosition.m_Elevation = currentCourse.m_EndPosition.m_Elevation;
+                currentCourse.m_Elevation = (currentCourse.m_StartPosition.m_Elevation + currentCourse.m_EndPosition.m_Elevation) / 2f;
+                currentCourse.m_EndPosition.m_Flags |= CoursePosFlags.FreeHeight;
+                m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} set course elevation to {currentCourse.m_EndPosition.m_Elevation}.");
                 netCourses[i] = currentCourse;
+
                 EntityManager.SetComponentData(entities[i], netCourses[i]);
                 netCourses[i + 1] = nextCourse;
             }
