@@ -119,6 +119,8 @@ namespace Anarchy.Systems
                 }
             }
 
+            m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} current end position ({netCourses[entities.Length - 1].m_EndPosition.m_Position.x}, {netCourses[entities.Length - 1].m_EndPosition.m_Position.y}, {netCourses[entities.Length - 1].m_EndPosition.m_Position.z})");
+
             /*
             m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} courses identified. middleCoursesList.Length {middleCoursesList.Length}");
 
