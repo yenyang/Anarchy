@@ -12,6 +12,7 @@ namespace Anarchy.Systems
     using Game.Tools;
     using Unity.Collections;
     using Unity.Entities;
+    using Unity.Entities.UniversalDelegates;
     using Unity.Mathematics;
     using UnityEngine;
 
@@ -68,17 +69,17 @@ namespace Anarchy.Systems
             NativeArray<Entity> entities = m_NetCourseQuery.ToEntityArray(Allocator.Temp);
             NetCourse startCourse = default;
             NetCourse endCourse = default;
-            NativeQueue<NetCourse> orderedNetCourses = new (Allocator.Temp);
-            NativeList<NetCourse> middleCoursesList = new (Allocator.Temp);
-
+            NativeArray<NetCourse> netCourses = new (entities.Length, Allocator.Temp);
+            float totalLength = 0f;
             if (entities.Length < 2)
             {
                 return;
             }
 
             m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} entities length = {entities.Length}.");
-            foreach (Entity entity in entities)
+            for (int i = 0; i < entities.Length; i++)
             {
+                Entity entity = entities[i];
                 if (!EntityManager.TryGetComponent(entity, out CreationDefinition currentCreationDefinition))
                 {
                     continue;
@@ -99,7 +100,6 @@ namespace Anarchy.Systems
                     if ((netCourse.m_StartPosition.m_Flags & CoursePosFlags.IsFirst) == CoursePosFlags.IsFirst)
                     {
                         startCourse = netCourse;
-                        orderedNetCourses.Enqueue(netCourse);
                         m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} startCourse is {entity.Index}:{entity.Version}.");
                     }
                     else if ((netCourse.m_EndPosition.m_Flags & CoursePosFlags.IsLast) == CoursePosFlags.IsLast)
@@ -109,47 +109,57 @@ namespace Anarchy.Systems
                     }
                     else
                     {
-                        middleCoursesList.Add(netCourse);
+                        // middleCoursesList.Add(netCourse);
                         m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} middle course added {entity.Index}:{entity.Version}.");
                     }
+
+                    totalLength += netCourse.m_Length;
+                    netCourses[i] = netCourse;
+                    m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} current course start position ({netCourse.m_StartPosition.m_Position.x}, {netCourse.m_StartPosition.m_Position.y}, {netCourse.m_StartPosition.m_Position.z})");
                 }
             }
 
+            /*
             m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} courses identified. middleCoursesList.Length {middleCoursesList.Length}");
 
             float3 currentPosition = startCourse.m_EndPosition.m_Position;
             for (int i = 0; i < middleCoursesList.Length; i++)
             {
-                int j;
-                for (j = 0; j < middleCoursesList.Length; j++)
+                for (int j = 0; j < middleCoursesList.Length; j++)
                 {
                     NetCourse currentCourse = middleCoursesList.ElementAt(j);
-                    if (currentCourse.m_StartPosition.Equals(currentPosition))
+                    if (currentCourse.m_StartPosition.m_Position.Equals(currentPosition))
                     {
-                        orderedNetCourses.Enqueue(currentCourse);
+                        orderedNetCourses.Add(currentCourse);
                         currentPosition = currentCourse.m_EndPosition.m_Position;
                         m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} found nextCourse.");
                         break;
                     }
                 }
-
-                middleCoursesList.RemoveAt(j);
             }
+            orderedNetCourses.Add(endCourse);
+            m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} courses ordered {orderedNetCourses.Length}.");
+            */
 
-            orderedNetCourses.Enqueue(endCourse);
-
-
-            m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} courses ordered {orderedNetCourses.Count}.");
-
-            for (int i = 0; i < orderedNetCourses.Count; i++)
+            float slope = (netCourses[entities.Length - 1].m_EndPosition.m_Position.y - netCourses[0].m_StartPosition.m_Position.y) / totalLength;
+            m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} slope {slope} or {slope * 100f}%");
+            for (int i = 0; i < entities.Length - 1; i++)
             {
-                NetCourse currentCourse = orderedNetCourses.Dequeue();
-                m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} current course start position ({currentCourse.m_StartPosition.m_Position.x}, {currentCourse.m_StartPosition.m_Position.y}, {currentCourse.m_StartPosition.m_Position.z})");
-                if (i == orderedNetCourses.Count - 1)
-                {
-                    m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} current course end position ({currentCourse.m_EndPosition.m_Position.x}, {currentCourse.m_EndPosition.m_Position.y}, {currentCourse.m_EndPosition.m_Position.z})");
-                }
+                NetCourse currentCourse = netCourses[i];
+                m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} current course end position ({currentCourse.m_EndPosition.m_Position.x}, {currentCourse.m_EndPosition.m_Position.y}, {currentCourse.m_EndPosition.m_Position.z})");
+                currentCourse.m_EndPosition.m_Position.y = currentCourse.m_StartPosition.m_Position.y + (slope * currentCourse.m_Length);
+                m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} set y to {currentCourse.m_EndPosition.m_Position.y}.");
+                NetCourse nextCourse = netCourses[i + 1];
+                currentCourse.m_EndPosition.m_Elevation += currentCourse.m_EndPosition.m_Position.y - nextCourse.m_StartPosition.m_Position.y;
+                m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} set elevation to {currentCourse.m_EndPosition.m_Elevation}.");
+                nextCourse.m_StartPosition.m_Position.y = currentCourse.m_EndPosition.m_Position.y;
+                nextCourse.m_StartPosition.m_Elevation = currentCourse.m_EndPosition.m_Elevation;
+                netCourses[i] = currentCourse;
+                EntityManager.SetComponentData(entities[i], netCourses[i]);
+                netCourses[i + 1] = nextCourse;
             }
+
+            EntityManager.SetComponentData(entities[entities.Length - 1], netCourses[entities.Length - 1]);
         }
 
     }
