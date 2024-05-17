@@ -10,9 +10,9 @@
 		
 		<!--The file where mod information which is required for publishing mod on PDX mods are stored-->
 		<PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
-		<AssemblyVersion>1.5.4</AssemblyVersion>
-		<FileVersion>1.5.4</FileVersion>
-		<Version>1.5.4</Version>
+		<AssemblyVersion>1.5.5</AssemblyVersion>
+		<FileVersion>1.5.5</FileVersion>
+		<Version>1.5.5</Version>
 	</PropertyGroup>
 	<Import Project="Keys.props" />
 	<!--Imports must be after PropertyGroup block-->

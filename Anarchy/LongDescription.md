@@ -29,7 +29,7 @@ The mod also has:
 * Anarchy and Elevation lock can be added or removed after placement via the selected info panel.
 
 Currently it applies to these tools:
-* Object Tool (Option to automatically disable Anarchy toggle while brushing objects. and Set relative elevation while plopping single item.)
+* Object Tool (Option to automatically disable Anarchy toggle while brushing objects. and Set relative elevation while plopping single item or brushing.)
 * Net Tool (While using the net tool Anarchy will now let you violate the clearance of other networks. I don't recommend having zoning under low bridges.)
 * Area Tool (Can exceed limits for specialized industry areas)
 * Bulldoze Tool (Option to default Anarchy to ON when activated)

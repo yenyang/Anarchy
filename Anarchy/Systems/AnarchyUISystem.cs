@@ -75,7 +75,7 @@ namespace Anarchy.Systems
         private ValueBindingHelper<int> m_ElevationScale;
         private ValueBindingHelper<bool> m_IsBuildingPrefab;
         private ValueBindingHelper<bool> m_ShowElevationSettingsOption;
-        private ValueBindingHelper<bool> m_PloppingWithObjectTool;
+        private ValueBindingHelper<bool> m_ObjectToolCreateOrBrushMode;
         private ElevateObjectDefinitionSystem m_ObjectDefinitionSystem;
         private ValueBindingHelper<bool> m_LockElevation;
         private ElevateTempObjectSystem m_ElevateTempObjectSystem;
@@ -191,7 +191,7 @@ namespace Anarchy.Systems
             m_LockElevation = CreateBinding("LockElevation", false);
             m_IsBuildingPrefab = CreateBinding("IsBuilding", false);
             m_ShowElevationSettingsOption = CreateBinding("ShowElevationSettingsOption", AnarchyMod.Instance.Settings.ShowElevationToolOption);
-            m_PloppingWithObjectTool = CreateBinding("ObjectToolCreateMode", m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create);
+            m_ObjectToolCreateOrBrushMode = CreateBinding("ObjectToolCreateOrBrushMode", m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush);
 
             // This binding listens for events triggered by the UI.
             AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", AnarchyToggled));
@@ -218,9 +218,9 @@ namespace Anarchy.Systems
                 m_IsBrushing = false;
             }
 
-            if (m_PloppingWithObjectTool.Value != (m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create))
+            if (m_ObjectToolCreateOrBrushMode.Value != (m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush))
             {
-                m_PloppingWithObjectTool.Value = m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create;
+                m_ObjectToolCreateOrBrushMode.Value = m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush;
             }
 
             base.OnUpdate();

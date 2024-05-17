@@ -1,5 +1,5 @@
 {
-  "Options.SECTION[Anarchy.Anarchy.AnarchyMod]": "Anarchy",
+  "Options.SECTION[Anarchy.Anarchy.AnarchyMod]": "아나키 모드(ANARCHY)",
   "Options.TAB[Anarchy.Anarchy.AnarchyMod.General]": "일반",
   "Options.TAB[Anarchy.Anarchy.AnarchyMod.UI]": "인터페이스",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.AnarchicBulldozer]": "불도저 도구에 항상 Anarchy 활성화",
@@ -34,8 +34,8 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ShowElevationToolOption]": "객체 도구 또는 선 도구를 사용하여 나무, 식물 및 프롭을 다양한 수직 고도에 배치를 허용합니다. 또한 배치하는 중에는 높이 잠금버튼도 표시됩니다. 단축키: 위쪽 화살표 -> 고도 상승 | 아래쪽 화살표 -> 고도 하강 | Shift + R -> 고도 0으로 재설정 | Shift + E -> 고도 단계 변경",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevationWhenChangingPrefab]": "새 에셋 선택시 높이 초기화",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevationWhenChangingPrefab]": "새 에셋을 선택하면 자동적으로 객체의 높이를 초기화합니다.",
-  "YY_ANARCHY.Anarchy": "Anarchy",
-  "YY_ANARCHY.AnarchyButton": "Anarchy",
+  "YY_ANARCHY.Anarchy": "아나키 모드",
+  "YY_ANARCHY.AnarchyButton": "아나키 모드",
   "YY_ANARCHY_DESCRIPTION.AnarchyButton": "도구에 대한 오류 검사를 비활성화하고 오류를 표시하지 않습니다. 해당되는 경우 식생과 소품(DevUI '객체 추가' 메뉴 포함) 을 다른 개체의 경계와 겹치거나 안쪽에 배치하고 함께 닫을 수 있습니다.",
   "Anarchy.TOOLTIP_DESCRIPTION[PreventOverrideButton]": "식물과 프롭을 다른 객체의 경계 내에 겹치거나 가깝게 배치할 수 있게 허용합니다.",
   "Anarchy.TOOLTIP_TITLE[PreventOverrideButton]": "덮어쓰기 방지",
