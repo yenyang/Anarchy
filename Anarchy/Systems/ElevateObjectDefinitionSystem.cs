@@ -45,12 +45,6 @@ namespace Anarchy.Systems
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_AnarchyUISystem = World.CreateSystemManaged<AnarchyUISystem>();
             m_Log.Info($"[{nameof(ElevateObjectDefinitionSystem)}] {nameof(OnCreate)}");
-        }
-
-
-        /// <inheritdoc/>
-        protected override void OnUpdate()
-        {
             m_ObjectDefinitionQuery = SystemAPI.QueryBuilder()
                 .WithAllRW<Game.Tools.ObjectDefinition>()
                 .WithAll<CreationDefinition, Updated>()
@@ -58,7 +52,12 @@ namespace Anarchy.Systems
                 .Build();
 
             RequireForUpdate(m_ObjectDefinitionQuery);
+        }
 
+
+        /// <inheritdoc/>
+        protected override void OnUpdate()
+        {
             if ((m_ToolSystem.activeTool != m_ObjectToolSystem && m_ToolSystem.activeTool.toolID != "Line Tool") || !AnarchyMod.Instance.Settings.ShowElevationToolOption)
             {
                 return;

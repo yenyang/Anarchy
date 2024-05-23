@@ -93,6 +93,7 @@ namespace Anarchy.Systems
             base.OnCreate();
         }
 
+        /// <inheritdoc/>
         protected override void OnGameLoadingComplete(Colossal.Serialization.Entities.Purpose purpose, GameMode mode)
         {
             base.OnGameLoadingComplete(purpose, mode);
