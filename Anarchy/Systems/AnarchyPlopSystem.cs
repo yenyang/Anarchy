@@ -204,7 +204,7 @@ namespace Anarchy.Systems
                 foreach (Entity entity in createdEntities)
                 {
                     PrefabBase prefabBase = null;
-                    if (EntityManager.TryGetComponent(entity, out PrefabRef prefabRef))
+                    if (EntityManager.TryGetComponent(entity, out PrefabRef prefabRef)) 
                     {
                         if (m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase))
                         {

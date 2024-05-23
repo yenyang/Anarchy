@@ -157,33 +157,6 @@ namespace Anarchy.Systems
 #if BURST
         [BurstCompile]
 #endif
-        private struct PreventCullingJob : IJobChunk
-        {
-            [ReadOnly]
-            public EntityTypeHandle m_EntityType;
-            [ReadOnly]
-            public ComponentTypeHandle<CullingInfo> m_CullingInfoType;
-            public EntityCommandBuffer.ParallelWriter buffer;
-
-            public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
-            {
-                NativeArray<Entity> entityNativeArray = chunk.GetNativeArray(m_EntityType);
-                NativeArray<CullingInfo> cullingInfoNativeArray = chunk.GetNativeArray(ref m_CullingInfoType);
-                for (int i = 0; i < chunk.Count; i++)
-                {
-                    Entity currentEntity = entityNativeArray[i];
-                    CullingInfo currentCullingInfo = cullingInfoNativeArray[i];
-                    if (currentCullingInfo.m_PassedCulling == 0)
-                    {
-                        buffer.AddComponent<Updated>(unfilteredChunkIndex, currentEntity);
-                    }
-                }
-            }
-        }
-
-#if BURST
-        [BurstCompile]
-#endif
         private struct VerifyVisibleJob : IJobChunk
         {
             [ReadOnly]

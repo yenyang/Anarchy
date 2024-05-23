@@ -1,6 +1,9 @@
 declare module "cs2/ui" {
-  import { CSSProperties, HTMLAttributes, PropsWithChildren, ReactNode } from 'react';
+  import { CSSProperties, HTMLAttributes, PropsWithChildren, ReactElement, ReactNode, Ref } from 'react';
   
+  export interface RefReactElement<T = any, P = any> extends ReactElement<P> {
+  	ref?: Ref<T>;
+  }
   export interface TransitionStyles {
   	base?: string;
   	enter?: string;
@@ -34,8 +37,36 @@ declare module "cs2/ui" {
   	theme?: Partial<BalloonTheme>;
   	direction?: BalloonDirection;
   	alignment?: BalloonAlignment;
+  	children: RefReactElement;
   }
   export export const Tooltip: ({ tooltip, disabled, theme, direction, alignment, className, children }: PropsWithChildren<TooltipProps>) => JSX.Element;
+  export interface PanelTheme extends PanelTitleBarTheme {
+  	panel: string;
+  	header: string;
+  	content: string;
+  	footer: string;
+  }
+  export interface PanelTitleBarTheme {
+  	titleBar: string;
+  	title: string;
+  	icon: string;
+  	iconSpace: string;
+  	closeButton: string;
+  	closeIcon: string;
+  	toggle: string;
+  	toggleIcon: string;
+  	toggleIconExpanded: string;
+  }
+  export interface DialogStackProps {
+  	showDialog: (dialog: ReactNode) => void;
+  	closeAll: () => void;
+  }
+  export export const DialogStack: import("react").Context<DialogStackProps>;
+  export interface DialogContextProps {
+  	onClose: () => void;
+  }
+  export export const DialogContext: import("react").Context<DialogContextProps>;
+  export export const DialogRenderer: ({ children }: PropsWithChildren) => JSX.Element;
   export interface ConfirmationDialogProps {
   	title?: ReactNode;
   	message: ReactNode;
@@ -114,6 +145,7 @@ declare module "cs2/ui" {
   	"Move Horizontal": Action1D;
   	"Change Slider Value": Action1D;
   	"Change Tool Option": Action1D;
+  	"Change Value": Action1D;
   	"Move Vertical": Action1D;
   	"Switch Radio Station": Action1D;
   	"Scroll Vertical": Action1D;
@@ -147,6 +179,9 @@ declare module "cs2/ui" {
   	"Tool Options": Action;
   	"Switch Toolmode": Action;
   	"Toggle Snapping": Action;
+  	"Capture Keyframe": Action;
+  	"Reset Property": Action;
+  	"Toggle Property": Action;
   	"Previous Tutorial Phase": Action;
   	"Continue Tutorial": Action;
   	"Focus Tutorial List": Action;
@@ -197,7 +232,7 @@ declare module "cs2/ui" {
   	hover?: UISound | string | null;
   	focus?: UISound | string | null;
   }
-  export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement | HTMLDivElement> {
   	focusKey?: FocusKey;
   	debugName?: string;
   	selected?: boolean;
@@ -205,8 +240,10 @@ declare module "cs2/ui" {
   	sounds?: ButtonSounds | null;
   	selectAction?: InputAction;
   	selectSound?: UISound | string | null;
+  	tooltipLabel?: ReactNode;
   	/** When the button is clicked or the SELECT button on a gamepad is pressed */
   	onSelect?: () => void;
+  	as?: "button" | "div";
   }
   export interface IconButtonTheme extends ButtonTheme {
   	icon: string;
@@ -263,6 +300,7 @@ declare module "cs2/ui" {
   	theme?: Partial<DropdownToggleTheme>;
   	sounds?: ButtonSounds | null;
   	selectSound?: UISound | string | null;
+  	tooltipLabel?: ReactNode;
   }
   export interface DropdownItemProps<T> extends ClassProps {
   	focusKey?: FocusKey;
@@ -291,23 +329,6 @@ declare module "cs2/ui" {
   export interface TransitionSounds {
   	enter?: UISound | string | null;
   	exit?: UISound | string | null;
-  }
-  export interface PanelTheme extends PanelTitleBarTheme {
-  	panel: string;
-  	header: string;
-  	content: string;
-  	footer: string;
-  }
-  export interface PanelTitleBarTheme {
-  	titleBar: string;
-  	title: string;
-  	icon: string;
-  	iconSpace: string;
-  	closeButton: string;
-  	closeIcon: string;
-  	toggle: string;
-  	toggleIcon: string;
-  	toggleIconExpanded: string;
   }
   export interface PanelProps extends HTMLAttributes<HTMLDivElement> {
   	focusKey?: FocusKey;
@@ -361,7 +382,9 @@ declare module "cs2/ui" {
   	className?: string;
   }
   export export const Icon: ({ tinted, className, src }: IconProps) => JSX.Element;
-  export const PortalContainerProvider: ({ children }: PropsWithChildren) => JSX.Element;
+  export const PortalContainerProvider: ({ children }: {
+  	children: RefReactElement<HTMLElement>;
+  }) => JSX.Element;
   export function usePortalContainer(): HTMLElement;
   export interface IPortal {
   	({ children }: PropsWithChildren): React.ReactPortal;

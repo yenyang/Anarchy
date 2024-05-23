@@ -65,11 +65,6 @@ namespace Anarchy.Systems
                 return;
             }
 
-            if (!m_AnarchyUISystem.AnarchyEnabled && m_ToolSystem.ignoreErrors && m_AnarchyUISystem.IsToolAppropriate(m_ToolSystem.activeTool.toolID))
-            {
-                m_ToolSystem.ignoreErrors = false;
-            }
-
             if (AnarchyMod.Instance.Settings.AllowPlacingMultipleUniqueBuildings)
             {
                 PrefabID prefabID = new ("NotificationIconPrefab", "Already Exists");

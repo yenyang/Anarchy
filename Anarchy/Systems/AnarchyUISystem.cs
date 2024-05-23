@@ -58,6 +58,7 @@ namespace Anarchy.Systems
             { ErrorType.NoGroundWater },
             { ErrorType.OnFire },
             { ErrorType.ExceedsLotLimits },
+            { ErrorType.NoCargoAccess },
         };
 
         private ToolSystem m_ToolSystem;
