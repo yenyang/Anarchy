@@ -6,6 +6,7 @@ namespace Anarchy.Systems
 {
     using Colossal.Entities;
     using Colossal.Logging;
+    using Colossal.Serialization.Entities;
     using Game;
     using Game.Common;
     using Game.Prefabs;
@@ -57,7 +58,6 @@ namespace Anarchy.Systems
 
             RequireForUpdate(m_TempObjectQuery);
         }
-
 
         /// <inheritdoc/>
         protected override void OnUpdate()

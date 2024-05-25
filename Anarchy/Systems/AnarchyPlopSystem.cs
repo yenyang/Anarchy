@@ -243,15 +243,12 @@ namespace Anarchy.Systems
                                 }
 
                                 // added for compatibility with EDT.
-                                if (m_ToolSystem.actionMode.IsGame())
+                                if (EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform2) && !EntityManager.HasComponent<TransformRecord>(entity) &&
+                                    m_AnarchyUISystem.LockElevation && (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool"))
                                 {
-                                    if (EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform) && !EntityManager.HasComponent<TransformRecord>(entity) &&
-                                        m_AnarchyUISystem.LockElevation && (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool"))
-                                    {
-                                        EntityManager.AddComponent<TransformRecord>(entity);
-                                        TransformRecord transformRecord = new () { m_Position = originalTransform.m_Position, m_Rotation = originalTransform.m_Rotation };
-                                        EntityManager.SetComponentData(entity, transformRecord);
-                                    }
+                                    EntityManager.AddComponent<TransformRecord>(entity);
+                                    TransformRecord transformRecord = new () { m_Position = originalTransform2.m_Position, m_Rotation = originalTransform2.m_Rotation };
+                                    EntityManager.SetComponentData(entity, transformRecord);
                                 }
 
                                 if (m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID) && (objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable)

@@ -371,7 +371,12 @@ namespace Anarchy.Systems
                 // I don't know why this is necessary. There seems to be a disconnect that forms in the binding value between C# and UI when the value is changed during onUpdate.
                 m_ElevateObjectDefinitionSystem.ElevationDelta = m_ElevationValue.Value;
                 m_ElevateTempObjectSystem.ElevationChange = difference;
-                m_ElevateTempObjectSystem.Enabled = true;
+
+                // This prevents a crash in the editor but doesn't actually provide the positive effect of the system.
+                if (m_ToolSystem.actionMode.IsGame())
+                {
+                    m_ElevateTempObjectSystem.Enabled = true;
+                }
             }
         }
 
