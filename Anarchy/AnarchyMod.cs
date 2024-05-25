@@ -91,7 +91,7 @@ namespace Anarchy
             Settings.RegisterInOptionsUI();
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Loading settings");
             AssetDatabase.global.LoadSettings("AnarchyMod", Settings, new AnarchyModSettings(this));
-            Settings.Contra = false;
+            Settings.RegisterKeyBindings();
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Injecting Harmony Patches.");
             m_Harmony = new Harmony("Mods_Yenyang_Anarchy");
             m_Harmony.PatchAll();

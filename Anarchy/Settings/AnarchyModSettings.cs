@@ -6,12 +6,11 @@ namespace Anarchy.Settings
 {
     using Anarchy.Systems;
     using Colossal.IO.AssetDatabase;
+    using Game.Input;
     using Game.Modding;
-    using Game.SceneFlow;
     using Game.Settings;
     using Game.UI;
     using Unity.Entities;
-    using static Game.Prefabs.CompositionFlags;
 
     /// <summary>
     /// The mod settings for the Anarchy Mod.
@@ -31,6 +30,12 @@ namespace Anarchy.Settings
         /// This is for general settings.
         /// </summary>
         public const string General = "General";
+
+
+        /// <summary>
+        /// This is for general settings.
+        /// </summary>
+        public const string Keybinds = "Keybinds";
 
         /// <summary>
         /// This is for settings that are stable.
@@ -143,10 +148,39 @@ namespace Anarchy.Settings
         public bool PreventOverrideInEditor { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether: Used to force saving of Modsettings if settings would result in empty Json.
+        /// Gets or sets a value indicating the keybinding for Toggling Anarchy.
         /// </summary>
-        [SettingsUIHidden]
-        public bool Contra { get; set; }
+        [SettingsUISection(Keybinds, Stable)]
+        [SettingUIKeyboardBinding(UnityEngine.InputSystem.Key.A, actionName: "Anarchy:ToggleAnarchy", ctrl: true)]
+        public ProxyBinding ToggleAnarchy { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the keybinding for Reset Elevation.
+        /// </summary>
+        [SettingsUISection(Keybinds, Stable)]
+        [SettingUIKeyboardBinding(UnityEngine.InputSystem.Key.R, actionName: "Anarchy:ResetElevation", shift: true)]
+        public ProxyBinding ResetElevation { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the keybinding for Elevation Step.
+        /// </summary>
+        [SettingsUISection(Keybinds, Stable)]
+        [SettingUIKeyboardBinding(UnityEngine.InputSystem.Key.E, actionName: "Anarchy:ElevationStep", shift: true)]
+        public ProxyBinding ElevationStep { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the keybinding for Increase Elevation.
+        /// </summary>
+        [SettingsUISection(Keybinds, Stable)]
+        [SettingUIKeyboardBinding(UnityEngine.InputSystem.Key.UpArrow, FloatComponent.Positive, actionName: "Anarchy:Elevation")]
+        public ProxyBinding IncreaseElevation { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the keybinding for Decrease Elevation.
+        /// </summary>
+        [SettingsUISection(Keybinds, Stable)]
+        [SettingUIKeyboardBinding(UnityEngine.InputSystem.Key.DownArrow, FloatComponent.Negative, actionName: "Anarchy:Elevation")]
+        public ProxyBinding DecreaseElevation { get; set; }
 
         /// <summary>
         /// Sets a value indicating whether: a button for Resetting the settings for the Mod.
@@ -208,7 +242,6 @@ namespace Anarchy.Settings
             AnarchicBulldozer = true;
             ShowTooltip = false;
             FlamingChirper = true;
-            Contra = true;
             ToolIcon = true;
             PreventAccidentalPropCulling = true;
             PropRefreshFrequency = 30;

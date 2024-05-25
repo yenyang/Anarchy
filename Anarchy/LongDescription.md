@@ -17,14 +17,14 @@ Full or Partial Localization: Spanish, German, Chinese Simplified, Brazilian Por
 # Detailed Descrption
 The mod also has: 
 * Optional Tool icon
-* Keyboard shortcut (Ctrl+A)
+* Configuration Keyboard shortcut (Default: Ctrl+A)
 * Optional flaming chirper
 * Option to automatically enable with bulldozer
 * Optional mouse tooltip
 * Opt-In Option to allow multiple copies of unique buildings using toolbar menu. Effects of multiple buildings stack!
 * Option to set minimum clearance below elevated networks even while Anarchy is active in case you don't remove the zoning under a low bridge. It would be better just to remove the zoning.
 * Opt-In Option to automatically disable Anarchy toggle while brushing objects such as trees.
-* Set relative Elevation with Object tool and line tool for props, trees, and plants. (Options to disable and automatically reset elevation) keybinds: up arrow -> elevation up, down arrow -> elevation down, shift + r -> reset elevation to 0, shift + e -> change elevation step. 
+* Set relative Elevation with Object tool and line tool for props, trees, and plants. (Options to disable and automatically reset elevation) Keybinds are Configurable . Defaults: up arrow -> elevation up, down arrow -> elevation down, shift + r -> reset elevation to 0, shift + e -> change elevation step. 
 * Elevation lock to prevent game systems from changing position of props, trees, plants, and decals. You can still change position with mods.
 * Anarchy and Elevation lock can be added or removed after placement via the selected info panel.
 

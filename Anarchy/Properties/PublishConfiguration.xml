@@ -25,14 +25,14 @@ Full or Partial Localization: Spanish, German, Chinese Simplified, Brazilian Por
 # Detailed Descrption
 The mod also has: 
 * Optional Tool icon
-* Keyboard shortcut (Ctrl+A)
+* Configuration Keyboard shortcut (Default: Ctrl+A)
 * Optional flaming chirper
 * Option to automatically enable with bulldozer
 * Optional mouse tooltip
 * Opt-In Option to allow multiple copies of unique buildings using toolbar menu. Effects of multiple buildings stack!
 * Option to set minimum clearance below elevated networks even while Anarchy is active in case you don't remove the zoning under a low bridge. It would be better just to remove the zoning.
 * Opt-In Option to automatically disable Anarchy toggle while brushing objects such as trees.
-* Set relative Elevation with Object tool and line tool for props, trees, and plants. (Options to disable and automatically reset elevation) keybinds: up arrow -&gt; elevation up, down arrow -&gt; elevation down, shift + r -&gt; reset elevation to 0, shift + e -&gt; change elevation step. 
+* Set relative Elevation with Object tool and line tool for props, trees, and plants. (Options to disable and automatically reset elevation) Keybinds are Configurable . Defaults: up arrow -&gt; elevation up, down arrow -&gt; elevation down, shift + r -&gt; reset elevation to 0, shift + e -&gt; change elevation step. 
 * Elevation lock to prevent game systems from changing position of props, trees, plants, and decals. You can still change position with mods.
 * Anarchy and Elevation lock can be added or removed after placement via the selected info panel.
 
@@ -115,16 +115,17 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/anarchy.1644970/" />
   <!--Version of the mod-->
-  <ModVersion Value="1.5.5" />
+  <ModVersion Value="1.6.0" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.1.*" />
   <!--Dependency for the mod, can be set multiple-->
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.2" />
   <Dependency Id="75426" DisplayName="I18n EveryWhere" Version="1.1.0" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog>## Patch V1.5.5
-* Expanded Elevation tool option to object tool brush.
-* Updated Localizations</ChangeLog>
+  <ChangeLog>## Update V1.6.0
+* Customizable Keybinds
+* NoCargoAccess added to list of errors disabled with Anarchy.
+* No longer disables Bypass Validation.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />

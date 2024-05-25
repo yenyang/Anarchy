@@ -6,15 +6,15 @@ namespace Anarchy.Systems
 {
     using System.Collections.Generic;
     using Anarchy.Utils;
-    using Colossal.IO.AssetDatabase;
     using Colossal.Logging;
+    using Colossal.Serialization.Entities;
     using Colossal.UI.Binding;
+    using Game;
+    using Game.Input;
     using Game.Prefabs;
-    using Game.Simulation;
     using Game.Tools;
     using Unity.Entities;
     using UnityEngine;
-    using UnityEngine.InputSystem;
 
     /// <summary>
     /// UI system for Anarchy.
@@ -83,7 +83,6 @@ namespace Anarchy.Systems
         private ObjectToolSystem m_ObjectToolSystem;
         private bool m_IsBrushing;
         private bool m_BeforeBrushingAnarchyEnabled;
-        private int m_ButtonCooldown = 0;
         private PrefabBase m_PreviousPrefab;
 
         /// <summary>
@@ -99,7 +98,7 @@ namespace Anarchy.Systems
         /// <summary>
         /// Gets a value indicating the elevation delta.
         /// </summary>
-        public float ElevationDelta { get => m_ElevationValue.Value; }
+        public float ElevationDelta { get => m_ElevationValue.Binding.value; }
 
         /// <summary>
         /// Gets a value indicating whether the elevation should be locked.
@@ -160,27 +159,6 @@ namespace Anarchy.Systems
             m_ToolSystem.EventToolChanged += OnToolChanged;
             m_ToolSystem.EventPrefabChanged += OnPrefabChanged;
             m_Log.Info($"{nameof(AnarchyUISystem)}.{nameof(OnCreate)}");
-            InputAction hotKey = new ("Anarchy");
-            hotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/ctrl").With("Button", "<Keyboard>/a");
-            hotKey.performed += OnKeyPressed;
-            hotKey.Enable();
-
-            InputAction elevationResetHotKey = new ($"{AnarchyMod.Id}.ElevationReset");
-            elevationResetHotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/shift").With("Button", "<Keyboard>/r");
-            elevationResetHotKey.performed += OnElevationResetKeyPressed;
-            elevationResetHotKey.Enable();
-
-            InputAction elevationStepHotKey = new ($"{AnarchyMod.Id}.ElevationStep");
-            elevationStepHotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/shift").With("Button", "<Keyboard>/e");
-            elevationStepHotKey.performed += OnElevationStepKeyPressed;
-            elevationStepHotKey.Enable();
-
-            InputAction elevationControl = new ($"{AnarchyMod.Id}.ElevationControl");
-            elevationControl.AddCompositeBinding("1DAxis")
-                .With("Positive", "<Keyboard>/upArrow")
-                .With("Negative", "<Keyboard>/downArrow");
-            elevationControl.performed += OnElevationControl;
-            elevationControl.Enable();
 
             // This binding communicates values between UI and C#
             AddBinding(m_AnarchyEnabled = new ValueBinding<bool>("Anarchy", "AnarchyEnabled", false));
@@ -224,7 +202,38 @@ namespace Anarchy.Systems
                 m_ObjectToolCreateOrBrushMode.Value = m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush;
             }
 
+            if (AnarchyMod.Instance.Settings.GetAction("Anarchy:ToggleAnarchy").WasPerformedThisFrame())
+            {
+                AnarchyToggled();
+            }
+
+            if (m_ToolSystem.activeTool.toolID != null && (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
+            {
+                if (AnarchyMod.Instance.Settings.GetAction("Anarchy:ResetElevation").WasPerformedThisFrame())
+                {
+                    ChangeElevation(m_ElevationValue.Value, m_ElevationValue.Value * -1f);
+                }
+
+                if (AnarchyMod.Instance.Settings.GetAction("Anarchy:ElevationStep").WasPerformedThisFrame())
+                {
+                    ElevationStepPressed();
+                }
+
+                ProxyAction elevationKey = AnarchyMod.Instance.Settings.GetAction("Anarchy:Elevation");
+                if (elevationKey.WasPerformedThisFrame())
+                {
+                    ChangeElevation(m_ElevationValue.Value, m_ElevationStep.Value * elevationKey.ReadValue<float>());
+                }
+            }
+
             base.OnUpdate();
+        }
+
+        /// <inheritdoc/>
+        protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
+        {
+            base.OnGameLoadingComplete(purpose, mode);
+            AnarchyMod.Instance.Settings.GetAction("Anarchy:ToggleAnarchy").shouldBeEnabled = mode.IsGameOrEditor();
         }
 
         /// <summary>
@@ -303,6 +312,19 @@ namespace Anarchy.Systems
                 }
             }
 
+            if ((tool == m_ObjectToolSystem || tool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
+            {
+                AnarchyMod.Instance.Settings.GetAction("Anarchy:ResetElevation").shouldBeEnabled = true;
+                AnarchyMod.Instance.Settings.GetAction("Anarchy:ElevationStep").shouldBeEnabled = true;
+                AnarchyMod.Instance.Settings.GetAction("Anarchy:Elevation").shouldBeEnabled = true;
+            }
+            else
+            {
+                AnarchyMod.Instance.Settings.GetAction("Anarchy:ResetElevation").shouldBeEnabled = false;
+                AnarchyMod.Instance.Settings.GetAction("Anarchy:ElevationStep").shouldBeEnabled = false;
+                AnarchyMod.Instance.Settings.GetAction("Anarchy:Elevation").shouldBeEnabled = false;
+            }
+
             m_LastTool = tool.toolID;
         }
 
@@ -325,43 +347,18 @@ namespace Anarchy.Systems
                     m_PreviousPrefab = prefabBase;
                 }
             }
-        }
 
-        private void OnKeyPressed(InputAction.CallbackContext context)
-        {
-             AnarchyToggled();
-        }
-
-        private void OnElevationResetKeyPressed(InputAction.CallbackContext context)
-        {
-            if (m_ToolSystem.activeTool.toolID != null)
+            if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && prefabBase is not BuildingPrefab)
             {
-                if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
-                {
-                    ChangeElevation(m_ElevationValue.Value, m_ElevationValue.Value * -1f);
-                }
+                AnarchyMod.Instance.Settings.GetAction("Anarchy:ResetElevation").shouldBeEnabled = true;
+                AnarchyMod.Instance.Settings.GetAction("Anarchy:ElevationStep").shouldBeEnabled = true;
+                AnarchyMod.Instance.Settings.GetAction("Anarchy:Elevation").shouldBeEnabled = true;
             }
-        }
-
-        private void OnElevationStepKeyPressed(InputAction.CallbackContext context)
-        {
-            if (m_ToolSystem.activeTool.toolID != null)
+            else
             {
-                if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
-                {
-                    ElevationStepPressed();
-                }
-            }
-        }
-
-        private void OnElevationControl(InputAction.CallbackContext context)
-        {
-            if (m_ToolSystem.activeTool.toolID != null)
-            {
-                if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
-                {
-                    ChangeElevation(m_ElevationValue.Value, m_ElevationStep.Value * context.ReadValue<float>());
-                }
+                AnarchyMod.Instance.Settings.GetAction("Anarchy:ResetElevation").shouldBeEnabled = false;
+                AnarchyMod.Instance.Settings.GetAction("Anarchy:ElevationStep").shouldBeEnabled = false;
+                AnarchyMod.Instance.Settings.GetAction("Anarchy:Elevation").shouldBeEnabled = false;
             }
         }
 
