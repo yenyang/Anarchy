@@ -124,6 +124,7 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>## Update V1.6.0
 * Customizable Keybinds
+* Fixed Stacked objects like cranes and vertical pillars being placed too high with 0 elevation.
 * NoCargoAccess added to list of errors disabled with Anarchy.
 * No longer disables Bypass Validation.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->

@@ -77,7 +77,7 @@ namespace Anarchy.Systems
         private ValueBindingHelper<bool> m_IsBuildingPrefab;
         private ValueBindingHelper<bool> m_ShowElevationSettingsOption;
         private ValueBindingHelper<bool> m_ObjectToolCreateOrBrushMode;
-        private ElevateObjectDefinitionSystem m_ObjectDefinitionSystem;
+        private ElevateObjectDefinitionSystem m_ElevateObjectDefinitionSystem;
         private ValueBindingHelper<bool> m_LockElevation;
         private ElevateTempObjectSystem m_ElevateTempObjectSystem;
         private ObjectToolSystem m_ObjectToolSystem;
@@ -96,9 +96,9 @@ namespace Anarchy.Systems
         public bool AnarchyEnabled { get => m_AnarchyEnabled.value; }
 
         /// <summary>
-        /// Gets a value indicating the elevation delta.
+        /// Gets a value indicating the elevation delta. This is not working correctly when the value is changed onUpdate. I do not know why.
         /// </summary>
-        public float ElevationDelta { get => m_ElevationValue.Binding.value; }
+        public float ElevationDelta { get => m_ElevationValue.Value; }
 
         /// <summary>
         /// Gets a value indicating whether the elevation should be locked.
@@ -122,7 +122,7 @@ namespace Anarchy.Systems
         public void SetShowElevationSettingsOption(bool value)
         {
             m_ShowElevationSettingsOption.Value = value;
-            m_ObjectDefinitionSystem.Enabled = value;
+            m_ElevateObjectDefinitionSystem.Enabled = value;
             m_ElevateTempObjectSystem.Enabled = false;
             m_ElevationValue.Value = 0f;
         }
@@ -153,7 +153,7 @@ namespace Anarchy.Systems
             m_BulldozeToolSystem = World.GetOrCreateSystemManaged<BulldozeToolSystem>();
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_ResetNetCompositionDataSystem = World.GetOrCreateSystemManaged<ResetNetCompositionDataSystem>();
-            m_ObjectDefinitionSystem = World.GetOrCreateSystemManaged<ElevateObjectDefinitionSystem>();
+            m_ElevateObjectDefinitionSystem = World.GetOrCreateSystemManaged<ElevateObjectDefinitionSystem>();
             m_ElevateTempObjectSystem = World.GetOrCreateSystemManaged<ElevateTempObjectSystem>();
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_ToolSystem.EventToolChanged += OnToolChanged;
@@ -174,11 +174,11 @@ namespace Anarchy.Systems
 
             // This binding listens for events triggered by the UI.
             AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", AnarchyToggled));
-            CreateTrigger("IncreaseElevation", () => ChangeElevation(m_ElevationValue.Value, m_ElevationStep.Value));
-            CreateTrigger("DecreaseElevation", () => ChangeElevation(m_ElevationValue.Value, -1f * m_ElevationStep.Value));
+            CreateTrigger("IncreaseElevation", () => ChangeElevation(m_ElevationStep.Value));
+            CreateTrigger("DecreaseElevation", () => ChangeElevation(-1f * m_ElevationStep.Value));
             CreateTrigger("LockElevationToggled", () => m_LockElevation.Value = !m_LockElevation.Value);
             CreateTrigger("ElevationStep", ElevationStepPressed);
-            CreateTrigger("ResetElevationToggled", () => ChangeElevation(m_ElevationValue.Value, -1f * m_ElevationValue.Value));
+            CreateTrigger("ResetElevationToggled", () => ChangeElevation(-1f * m_ElevationValue.Value));
         }
 
         /// <inheritdoc/>
@@ -211,7 +211,7 @@ namespace Anarchy.Systems
             {
                 if (AnarchyMod.Instance.Settings.GetAction("Anarchy:ResetElevation").WasPerformedThisFrame())
                 {
-                    ChangeElevation(m_ElevationValue.Value, m_ElevationValue.Value * -1f);
+                    ChangeElevation(m_ElevationValue.Value * -1f);
                 }
 
                 if (AnarchyMod.Instance.Settings.GetAction("Anarchy:ElevationStep").WasPerformedThisFrame())
@@ -222,7 +222,7 @@ namespace Anarchy.Systems
                 ProxyAction elevationKey = AnarchyMod.Instance.Settings.GetAction("Anarchy:Elevation");
                 if (elevationKey.WasPerformedThisFrame())
                 {
-                    ChangeElevation(m_ElevationValue.Value, m_ElevationStep.Value * elevationKey.ReadValue<float>());
+                    ChangeElevation(m_ElevationStep.Value * elevationKey.ReadValue<float>());
                 }
             }
 
@@ -307,7 +307,7 @@ namespace Anarchy.Systems
             {
                 if ((tool == m_ObjectToolSystem || tool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab && m_ToolSystem.activePrefab != m_PreviousPrefab)
                 {
-                    ChangeElevation(m_ElevationValue.Value, m_ElevationValue.Value * -1f);
+                    ChangeElevation(m_ElevationValue.Value * -1f);
                     m_PreviousPrefab = m_ToolSystem.activePrefab;
                 }
             }
@@ -343,7 +343,7 @@ namespace Anarchy.Systems
             {
                 if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab && prefabBase != m_PreviousPrefab)
                 {
-                    ChangeElevation(m_ElevationValue.Value, m_ElevationValue.Value * -1f);
+                    ChangeElevation(m_ElevationValue.Value * -1f);
                     m_PreviousPrefab = prefabBase;
                 }
             }
@@ -362,11 +362,14 @@ namespace Anarchy.Systems
             }
         }
 
-        private void ChangeElevation(float value, float difference)
+        private void ChangeElevation(float difference)
         {
             if (AnarchyMod.Instance.Settings.ShowElevationToolOption)
             {
-                m_ElevationValue.UpdateCallback(value + difference);
+                m_ElevationValue.Value += difference;
+
+                // I don't know why this is necessary. There seems to be a disconnect that forms in the binding value between C# and UI when the value is changed during onUpdate.
+                m_ElevateObjectDefinitionSystem.ElevationDelta = m_ElevationValue.Value;
                 m_ElevateTempObjectSystem.ElevationChange = difference;
                 m_ElevateTempObjectSystem.Enabled = true;
             }
