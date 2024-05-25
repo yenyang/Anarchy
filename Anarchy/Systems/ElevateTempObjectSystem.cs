@@ -11,6 +11,7 @@ namespace Anarchy.Systems
     using Game.Prefabs;
     using Game.Simulation;
     using Game.Tools;
+    using System.Runtime.InteropServices.WindowsRuntime;
     using Unity.Collections;
     using Unity.Entities;
 
@@ -49,12 +50,6 @@ namespace Anarchy.Systems
             m_AnarchyUISystem = World.CreateSystemManaged<AnarchyUISystem>();
             m_Log.Info($"[{nameof(ElevateTempObjectSystem)}] {nameof(OnCreate)}");
             Enabled = false;
-        }
-
-
-        /// <inheritdoc/>
-        protected override void OnUpdate()
-        {
             m_TempObjectQuery = SystemAPI.QueryBuilder()
                 .WithAllRW<Game.Objects.Transform>()
                 .WithAll<Temp, Game.Objects.Object, Game.Objects.Static, PrefabRef>()
@@ -62,6 +57,17 @@ namespace Anarchy.Systems
                 .Build();
 
             RequireForUpdate(m_TempObjectQuery);
+        }
+
+
+        /// <inheritdoc/>
+        protected override void OnUpdate()
+        {
+            if (m_ToolSystem.actionMode.IsEditor())
+            {
+                Enabled = false;
+                return;
+            }
 
             if ((m_ToolSystem.activeTool != m_ObjectToolSystem && m_ToolSystem.activeTool.toolID != "Line Tool") || !AnarchyMod.Instance.Settings.ShowElevationToolOption)
             {

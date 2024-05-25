@@ -122,9 +122,8 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.2" />
   <Dependency Id="75426" DisplayName="I18n EveryWhere" Version="1.1.0" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog>## Patch V1.5.5
-* Expanded Elevation tool option to object tool brush.
-* Updated Localizations</ChangeLog>
+  <ChangeLog>## Patch V1.5.6
+* Fixed Lock Elevation toggle not working in editor</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
