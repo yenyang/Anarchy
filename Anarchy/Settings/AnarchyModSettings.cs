@@ -151,39 +151,53 @@ namespace Anarchy.Settings
         /// Gets or sets a value indicating the keybinding for Toggling Anarchy.
         /// </summary>
         [SettingsUISection(Keybinds, Stable)]
-        [SettingUIKeyboardBinding(UnityEngine.InputSystem.Key.A, actionName: "Anarchy:ToggleAnarchy", ctrl: true)]
+        [SettingsUIKeyboardBinding(UnityEngine.InputSystem.Key.A, actionName: "ToggleAnarchy", ctrl: true)]
         public ProxyBinding ToggleAnarchy { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the keybinding for Reset Elevation.
         /// </summary>
         [SettingsUISection(Keybinds, Stable)]
-        [SettingUIKeyboardBinding(UnityEngine.InputSystem.Key.R, actionName: "Anarchy:ResetElevation", shift: true)]
+        [SettingsUIKeyboardBinding(UnityEngine.InputSystem.Key.R, actionName: "ResetElevation", shift: true)]
         public ProxyBinding ResetElevation { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the keybinding for Elevation Step.
         /// </summary>
         [SettingsUISection(Keybinds, Stable)]
-        [SettingUIKeyboardBinding(UnityEngine.InputSystem.Key.E, actionName: "Anarchy:ElevationStep", shift: true)]
+        [SettingsUIKeyboardBinding(UnityEngine.InputSystem.Key.E, actionName: "ElevationStep", shift: true)]
         public ProxyBinding ElevationStep { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the keybinding for Increase Elevation.
         /// </summary>
         [SettingsUISection(Keybinds, Stable)]
-        [SettingUIKeyboardBinding(UnityEngine.InputSystem.Key.UpArrow, FloatComponent.Positive, actionName: "Anarchy:Elevation")]
+        [SettingsUIKeyboardBinding(UnityEngine.InputSystem.Key.UpArrow, AxisComponent.Positive, actionName: "Elevation")]
         public ProxyBinding IncreaseElevation { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the keybinding for Decrease Elevation.
         /// </summary>
         [SettingsUISection(Keybinds, Stable)]
-        [SettingUIKeyboardBinding(UnityEngine.InputSystem.Key.DownArrow, FloatComponent.Negative, actionName: "Anarchy:Elevation")]
+        [SettingsUIKeyboardBinding(UnityEngine.InputSystem.Key.DownArrow, AxisComponent.Negative, actionName: "Elevation")]
         public ProxyBinding DecreaseElevation { get; set; }
 
         /// <summary>
-        /// Sets a value indicating whether: a button for Resetting the settings for the Mod.
+        /// Sets a value indicating whether: a button for Resetting the settings for keybinds.
+        /// </summary>
+        [SettingsUIButton]
+        [SettingsUIConfirmation]
+        [SettingsUISection(Keybinds, Reset)]
+        public bool ResetKeybindSettings
+        {
+            set
+            {
+                ResetKeyBindings();
+            }
+        }
+
+        /// <summary>
+        /// Sets a value indicating whether: a button for Resetting the general mod settings.
         /// </summary>
         [SettingsUIButton]
         [SettingsUIConfirmation]
@@ -202,7 +216,7 @@ namespace Anarchy.Settings
         }
 
         /// <summary>
-        /// Sets a value indicating whether: a button for Resetting the settings for the Mod.
+        /// Sets a value indicating whether: a button for Resetting for the ui Mod settings.
         /// </summary>
         [SettingsUIButton]
         [SettingsUIConfirmation]

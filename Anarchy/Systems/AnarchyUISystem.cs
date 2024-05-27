@@ -84,6 +84,10 @@ namespace Anarchy.Systems
         private bool m_IsBrushing;
         private bool m_BeforeBrushingAnarchyEnabled;
         private PrefabBase m_PreviousPrefab;
+        private ProxyAction m_ToggleAnarchy;
+        private ProxyAction m_ResetElevation;
+        private ProxyAction m_ElevationStepToggle;
+        private ProxyAction m_ElevationKey;
 
         /// <summary>
         /// Gets a value indicating whether the flaming chirper option binding is on/off.
@@ -179,6 +183,11 @@ namespace Anarchy.Systems
             CreateTrigger("LockElevationToggled", () => m_LockElevation.Value = !m_LockElevation.Value);
             CreateTrigger("ElevationStep", ElevationStepPressed);
             CreateTrigger("ResetElevationToggled", () => ChangeElevation(-1f * m_ElevationValue.Value));
+
+            m_ToggleAnarchy = AnarchyMod.Instance.Settings.GetAction("ToggleAnarchy");
+            m_ResetElevation = AnarchyMod.Instance.Settings.GetAction("ResetElevation");
+            m_ElevationStepToggle = AnarchyMod.Instance.Settings.GetAction("ElevationStep");
+            m_ElevationKey = AnarchyMod.Instance.Settings.GetAction("Elevation");
         }
 
         /// <inheritdoc/>
@@ -202,27 +211,26 @@ namespace Anarchy.Systems
                 m_ObjectToolCreateOrBrushMode.Value = m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush;
             }
 
-            if (AnarchyMod.Instance.Settings.GetAction("Anarchy:ToggleAnarchy").WasPerformedThisFrame())
+            if (m_ToggleAnarchy.WasPerformedThisFrame())
             {
                 AnarchyToggled();
             }
 
             if (m_ToolSystem.activeTool.toolID != null && (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
             {
-                if (AnarchyMod.Instance.Settings.GetAction("Anarchy:ResetElevation").WasPerformedThisFrame())
+                if (m_ResetElevation.WasPerformedThisFrame())
                 {
                     ChangeElevation(m_ElevationValue.Value * -1f);
                 }
 
-                if (AnarchyMod.Instance.Settings.GetAction("Anarchy:ElevationStep").WasPerformedThisFrame())
+                if (m_ElevationStepToggle.WasPerformedThisFrame())
                 {
                     ElevationStepPressed();
                 }
 
-                ProxyAction elevationKey = AnarchyMod.Instance.Settings.GetAction("Anarchy:Elevation");
-                if (elevationKey.WasPerformedThisFrame())
+                if (m_ElevationKey.WasPerformedThisFrame())
                 {
-                    ChangeElevation(m_ElevationStep.Value * elevationKey.ReadValue<float>());
+                    ChangeElevation(m_ElevationStep.Value * m_ElevationKey.ReadValue<float>());
                 }
             }
 
@@ -233,7 +241,7 @@ namespace Anarchy.Systems
         protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
         {
             base.OnGameLoadingComplete(purpose, mode);
-            AnarchyMod.Instance.Settings.GetAction("Anarchy:ToggleAnarchy").shouldBeEnabled = mode.IsGameOrEditor();
+            m_ToggleAnarchy.shouldBeEnabled = mode.IsGameOrEditor();
         }
 
         /// <summary>
@@ -314,15 +322,15 @@ namespace Anarchy.Systems
 
             if ((tool == m_ObjectToolSystem || tool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
             {
-                AnarchyMod.Instance.Settings.GetAction("Anarchy:ResetElevation").shouldBeEnabled = true;
-                AnarchyMod.Instance.Settings.GetAction("Anarchy:ElevationStep").shouldBeEnabled = true;
-                AnarchyMod.Instance.Settings.GetAction("Anarchy:Elevation").shouldBeEnabled = true;
+                m_ResetElevation.shouldBeEnabled = true;
+                m_ElevationStepToggle.shouldBeEnabled = true;
+                m_ElevationKey.shouldBeEnabled = true;
             }
             else
             {
-                AnarchyMod.Instance.Settings.GetAction("Anarchy:ResetElevation").shouldBeEnabled = false;
-                AnarchyMod.Instance.Settings.GetAction("Anarchy:ElevationStep").shouldBeEnabled = false;
-                AnarchyMod.Instance.Settings.GetAction("Anarchy:Elevation").shouldBeEnabled = false;
+                m_ResetElevation.shouldBeEnabled = false;
+                m_ElevationStepToggle.shouldBeEnabled = false;
+                m_ElevationKey.shouldBeEnabled = false;
             }
 
             m_LastTool = tool.toolID;
@@ -350,15 +358,15 @@ namespace Anarchy.Systems
 
             if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && prefabBase is not BuildingPrefab)
             {
-                AnarchyMod.Instance.Settings.GetAction("Anarchy:ResetElevation").shouldBeEnabled = true;
-                AnarchyMod.Instance.Settings.GetAction("Anarchy:ElevationStep").shouldBeEnabled = true;
-                AnarchyMod.Instance.Settings.GetAction("Anarchy:Elevation").shouldBeEnabled = true;
+                m_ResetElevation.shouldBeEnabled = true;
+                m_ElevationStepToggle.shouldBeEnabled = true;
+                m_ElevationKey.shouldBeEnabled = true;
             }
             else
             {
-                AnarchyMod.Instance.Settings.GetAction("Anarchy:ResetElevation").shouldBeEnabled = false;
-                AnarchyMod.Instance.Settings.GetAction("Anarchy:ElevationStep").shouldBeEnabled = false;
-                AnarchyMod.Instance.Settings.GetAction("Anarchy:Elevation").shouldBeEnabled = false;
+                m_ResetElevation.shouldBeEnabled = false;
+                m_ElevationStepToggle.shouldBeEnabled = false;
+                m_ElevationKey.shouldBeEnabled = false;
             }
         }
 
