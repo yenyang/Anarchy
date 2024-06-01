@@ -8,9 +8,10 @@ namespace Anarchy.Systems
     using Anarchy.Utils;
     using Colossal.IO.AssetDatabase;
     using Colossal.Logging;
+    using Colossal.Serialization.Entities;
     using Colossal.UI.Binding;
+    using Game;
     using Game.Prefabs;
-    using Game.Simulation;
     using Game.Tools;
     using Unity.Entities;
     using UnityEngine;
@@ -76,7 +77,8 @@ namespace Anarchy.Systems
         private ValueBindingHelper<bool> m_IsBuildingPrefab;
         private ValueBindingHelper<bool> m_ShowElevationSettingsOption;
         private ValueBindingHelper<bool> m_ObjectToolCreateOrBrushMode;
-        private ElevateObjectDefinitionSystem m_ObjectDefinitionSystem;
+        private ValueBindingHelper<bool> m_DisableElevationLock;
+        private ElevateObjectDefinitionSystem m_ElevateObjectDefinitionSystem;
         private ValueBindingHelper<bool> m_LockElevation;
         private ElevateTempObjectSystem m_ElevateTempObjectSystem;
         private ObjectToolSystem m_ObjectToolSystem;
@@ -116,13 +118,28 @@ namespace Anarchy.Systems
         }
 
         /// <summary>
+        /// Sets the prevent Override option binding to value.
+        /// </summary>
+        /// <param name="value">True for option enabled. false if not.</param>
+        public void SetDisableElevationLock(bool value)
+        {
+            if (m_ToolSystem.actionMode.IsEditor() && value == false)
+            {
+                m_DisableElevationLock.Value = true;
+                return;
+            }
+
+            m_DisableElevationLock.Value = false;
+        }
+
+        /// <summary>
         /// Sets the Show Elevation Settings option binding to value.
         /// </summary>
         /// <param name="value">True for option enabled. false if not.</param>
         public void SetShowElevationSettingsOption(bool value)
         {
             m_ShowElevationSettingsOption.Value = value;
-            m_ObjectDefinitionSystem.Enabled = value;
+            m_ElevateObjectDefinitionSystem.Enabled = value;
             m_ElevateTempObjectSystem.Enabled = false;
             m_ElevationValue.Value = 0f;
         }
@@ -153,7 +170,7 @@ namespace Anarchy.Systems
             m_BulldozeToolSystem = World.GetOrCreateSystemManaged<BulldozeToolSystem>();
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_ResetNetCompositionDataSystem = World.GetOrCreateSystemManaged<ResetNetCompositionDataSystem>();
-            m_ObjectDefinitionSystem = World.GetOrCreateSystemManaged<ElevateObjectDefinitionSystem>();
+            m_ElevateObjectDefinitionSystem = World.GetOrCreateSystemManaged<ElevateObjectDefinitionSystem>();
             m_ElevateTempObjectSystem = World.GetOrCreateSystemManaged<ElevateTempObjectSystem>();
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_ToolSystem.EventToolChanged += OnToolChanged;
@@ -188,6 +205,7 @@ namespace Anarchy.Systems
             m_ElevationValue = CreateBinding("ElevationValue", 0f);
             m_ElevationStep = CreateBinding("ElevationStep", 10f);
             m_ElevationScale = CreateBinding("ElevationScale", 1);
+            m_DisableElevationLock = CreateBinding("DisableElevationLock", false);
             m_LockElevation = CreateBinding("LockElevation", false);
             m_IsBuildingPrefab = CreateBinding("IsBuilding", false);
             m_ShowElevationSettingsOption = CreateBinding("ShowElevationSettingsOption", AnarchyMod.Instance.Settings.ShowElevationToolOption);
@@ -195,11 +213,24 @@ namespace Anarchy.Systems
 
             // This binding listens for events triggered by the UI.
             AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", AnarchyToggled));
-            CreateTrigger("IncreaseElevation", () => ChangeElevation(m_ElevationValue.Value, m_ElevationStep.Value));
-            CreateTrigger("DecreaseElevation", () => ChangeElevation(m_ElevationValue.Value, -1f * m_ElevationStep.Value));
+            CreateTrigger("IncreaseElevation", () => ChangeElevation(m_ElevationStep.Value));
+            CreateTrigger("DecreaseElevation", () => ChangeElevation(-1f * m_ElevationStep.Value));
             CreateTrigger("LockElevationToggled", () => m_LockElevation.Value = !m_LockElevation.Value);
             CreateTrigger("ElevationStep", ElevationStepPressed);
-            CreateTrigger("ResetElevationToggled", () => ChangeElevation(m_ElevationValue.Value, -1f * m_ElevationValue.Value));
+            CreateTrigger("ResetElevationToggled", () => ChangeElevation(-1f * m_ElevationValue.Value));
+        }
+
+        /// <inheritdoc/>
+        protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
+        {
+            base.OnGameLoadingComplete(purpose, mode);
+            if (mode.IsEditor() && !AnarchyMod.Instance.Settings.PreventOverrideInEditor)
+            {
+                m_DisableElevationLock.Value = true;
+                return;
+            }
+
+            m_DisableElevationLock.Value = false;
         }
 
         /// <inheritdoc/>
@@ -297,7 +328,7 @@ namespace Anarchy.Systems
             {
                 if ((tool == m_ObjectToolSystem || tool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab && m_ToolSystem.activePrefab != m_PreviousPrefab)
                 {
-                    ChangeElevation(m_ElevationValue.Value, m_ElevationValue.Value * -1f);
+                    ChangeElevation(m_ElevationValue.Value * -1f);
                     m_PreviousPrefab = m_ToolSystem.activePrefab;
                 }
             }
@@ -320,7 +351,7 @@ namespace Anarchy.Systems
             {
                 if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab && prefabBase != m_PreviousPrefab)
                 {
-                    ChangeElevation(m_ElevationValue.Value, m_ElevationValue.Value * -1f);
+                    ChangeElevation(m_ElevationValue.Value * -1f);
                     m_PreviousPrefab = prefabBase;
                 }
             }
@@ -337,7 +368,7 @@ namespace Anarchy.Systems
             {
                 if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
                 {
-                    ChangeElevation(m_ElevationValue.Value, m_ElevationValue.Value * -1f);
+                    ChangeElevation(m_ElevationValue.Value * -1f);
                 }
             }
         }
@@ -359,18 +390,26 @@ namespace Anarchy.Systems
             {
                 if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
                 {
-                    ChangeElevation(m_ElevationValue.Value, m_ElevationStep.Value * context.ReadValue<float>());
+                    ChangeElevation(m_ElevationStep.Value * context.ReadValue<float>());
                 }
             }
         }
 
-        private void ChangeElevation(float value, float difference)
+        private void ChangeElevation(float difference)
         {
             if (AnarchyMod.Instance.Settings.ShowElevationToolOption)
             {
-                m_ElevationValue.UpdateCallback(value + difference);
+                m_ElevationValue.Value += difference;
+
+                // I don't know why this is necessary. There seems to be a disconnect that forms in the binding value between C# and UI when the value is changed during onUpdate.
+                m_ElevateObjectDefinitionSystem.ElevationDelta = m_ElevationValue.Value;
                 m_ElevateTempObjectSystem.ElevationChange = difference;
-                m_ElevateTempObjectSystem.Enabled = true;
+
+                // This prevents a crash in the editor but doesn't actually provide the positive effect of the system.
+                if (m_ToolSystem.actionMode.IsGame())
+                {
+                    m_ElevateTempObjectSystem.Enabled = true;
+                }
             }
         }
 

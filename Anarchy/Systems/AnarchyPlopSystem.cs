@@ -17,10 +17,10 @@ namespace Anarchy.Systems
     using Game.Objects;
     using Game.Prefabs;
     using Game.Tools;
-    using Game.UI.InGame;
     using Game.Vehicles;
     using Unity.Collections;
     using Unity.Entities;
+    using UnityEngine;
 
     /// <summary>
     /// A system that prevents objects from being overriden when placed on each other.
@@ -71,7 +71,7 @@ namespace Anarchy.Systems
                 Any = new ComponentType[]
                 {
                     ComponentType.ReadOnly<Static>(),
-                    ComponentType.ReadOnly<Object>(),
+                    ComponentType.ReadOnly<Game.Objects.Object>(),
                     ComponentType.ReadOnly<Game.Tools.EditorContainer>(),
                 },
                 None = new ComponentType[]
@@ -84,7 +84,7 @@ namespace Anarchy.Systems
                     ComponentType.ReadOnly<Moving>(),
                     ComponentType.ReadOnly<Household>(),
                     ComponentType.ReadOnly<Vehicle>(),
-                    ComponentType.ReadOnly<Event>(),
+                    ComponentType.ReadOnly<Game.Common.Event>(),
                     ComponentType.ReadOnly<Game.Routes.TransportStop>(),
                     ComponentType.ReadOnly<Game.Routes.TransportLine>(),
                     ComponentType.ReadOnly<Game.Routes.TramStop>(),
@@ -118,7 +118,7 @@ namespace Anarchy.Systems
                     ComponentType.ReadOnly<Moving>(),
                     ComponentType.ReadOnly<Household>(),
                     ComponentType.ReadOnly<Vehicle>(),
-                    ComponentType.ReadOnly<Event>(),
+                    ComponentType.ReadOnly<Game.Events.Event>(),
                 },
             });
             m_AnarchyComponentsQuery = GetEntityQuery(new EntityQueryDesc

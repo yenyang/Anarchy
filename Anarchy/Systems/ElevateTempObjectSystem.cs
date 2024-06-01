@@ -95,7 +95,7 @@ namespace Anarchy.Systems
                     continue;
                 }
 
-                if (prefabBase is not BuildingPrefab)
+                if (prefabBase is not BuildingPrefab && !EntityManager.HasComponent<StackData>(currentPrefabRef.m_Prefab))
                 {
                     currentTransform.m_Position.y += m_ElevationChange;
                     buffer.SetComponent(entity, currentTransform);

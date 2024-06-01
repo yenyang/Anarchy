@@ -26,12 +26,14 @@ namespace Anarchy.Systems
         private EntityQuery m_ObjectDefinitionQuery;
         private ILog m_Log;
         private ElevateTempObjectSystem m_ElevateTempObjectSystem;
+        private float m_ElevationDelta;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ElevateObjectDefinitionSystem"/> class.
+        /// Sets the elevation delta.
         /// </summary>
-        public ElevateObjectDefinitionSystem()
+        public float ElevationDelta
         {
+            set { m_ElevationDelta = value; }
         }
 
         /// <inheritdoc/>
@@ -91,14 +93,14 @@ namespace Anarchy.Systems
                 {
                     if (!EntityManager.HasComponent<StackData>(currentCreationDefinition.m_Prefab))
                     {
-                        currentObjectDefinition.m_Elevation = Mathf.Max(m_AnarchyUISystem.ElevationDelta, 0);
+                        currentObjectDefinition.m_Elevation = Mathf.Max(m_ElevationDelta, 0);
+                        currentObjectDefinition.m_Position.y += m_ElevationDelta;
                     }
                     else
                     {
-                        currentObjectDefinition.m_Elevation += m_AnarchyUISystem.ElevationDelta;
+                        currentObjectDefinition.m_Position.y += m_ElevationDelta;
                     }
 
-                    currentObjectDefinition.m_Position.y += m_AnarchyUISystem.ElevationDelta;
                     EntityManager.SetComponentData(entity, currentObjectDefinition);
                 }
             }
