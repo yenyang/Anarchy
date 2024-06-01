@@ -58,8 +58,6 @@ namespace Anarchy.Systems
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            
-
             if ((m_ToolSystem.activeTool != m_ObjectToolSystem && m_ToolSystem.activeTool.toolID != "Line Tool") || !AnarchyMod.Instance.Settings.ShowElevationToolOption)
             {
                 return;
@@ -91,7 +89,6 @@ namespace Anarchy.Systems
 
                 if (prefabBase is not BuildingPrefab)
                 {
-
                     if (!EntityManager.HasComponent<StackData>(currentCreationDefinition.m_Prefab))
                     {
                         currentObjectDefinition.m_Elevation = Mathf.Max(m_AnarchyUISystem.ElevationDelta, 0);
