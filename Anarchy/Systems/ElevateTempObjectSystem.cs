@@ -12,6 +12,7 @@ namespace Anarchy.Systems
     using Game.Prefabs;
     using Game.Simulation;
     using Game.Tools;
+    using System.Runtime.InteropServices.WindowsRuntime;
     using Unity.Collections;
     using Unity.Entities;
 
@@ -59,6 +60,16 @@ namespace Anarchy.Systems
             RequireForUpdate(m_TempObjectQuery);
         }
 
+
+        /// <inheritdoc/>
+        protected override void OnUpdate()
+        {
+            if (m_ToolSystem.actionMode.IsEditor())
+            {
+                Enabled = false;
+                return;
+            }
+
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
@@ -88,7 +99,7 @@ namespace Anarchy.Systems
                     continue;
                 }
 
-                if (prefabBase is not BuildingPrefab)
+                if (prefabBase is not BuildingPrefab && !EntityManager.HasComponent<StackData>(currentPrefabRef.m_Prefab))
                 {
                     currentTransform.m_Position.y += m_ElevationChange;
                     buffer.SetComponent(entity, currentTransform);

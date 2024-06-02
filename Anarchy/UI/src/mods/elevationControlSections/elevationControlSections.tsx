@@ -22,6 +22,7 @@ const LockElevation$ =     bindValue<boolean> (mod.id, 'LockElevation');
 const IsBuilding$ =         bindValue<boolean>(mod.id, 'IsBuilding');
 const ShowElevationOption$ = bindValue<boolean>(mod.id, 'ShowElevationSettingsOption');
 const ObjectToolCreateOrBrushMode$ = bindValue<boolean>(mod.id, 'ObjectToolCreateOrBrushMode');
+const DisableElevationLock$ = bindValue<boolean>(mod.id, 'DisableElevationLock');
 
 // Stores the default values for the step arrays. Must be descending order.
 const defaultValues : number[] = [10, 2.5, 1.0, 0.1];
@@ -60,6 +61,7 @@ export const ElevationControlComponent: ModuleRegistryExtend = (Component : any)
         const IsBuilding = useValue(IsBuilding$);
         const ShowElevationOption = useValue(ShowElevationOption$);
         const ObjectToolCreateOrBrushMode = useValue(ObjectToolCreateOrBrushMode$);
+        const DisableElevationLock = useValue(DisableElevationLock$);
 
         if (toolId == tool.OBJECT_TOOL && !ObjectToolCreateOrBrushMode) 
         {
@@ -119,6 +121,7 @@ export const ElevationControlComponent: ModuleRegistryExtend = (Component : any)
                             onSelect={() => handleClick("LockElevationToggled")} 
                             src={heightLockSrc}
                             focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                            disabled={DisableElevationLock}
                         ></VanillaComponentResolver.instance.ToolButton>
                     </VanillaComponentResolver.instance.Section>             
                 </>

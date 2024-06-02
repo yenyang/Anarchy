@@ -77,6 +77,7 @@ namespace Anarchy.Systems
         private ValueBindingHelper<bool> m_IsBuildingPrefab;
         private ValueBindingHelper<bool> m_ShowElevationSettingsOption;
         private ValueBindingHelper<bool> m_ObjectToolCreateOrBrushMode;
+        private ValueBindingHelper<bool> m_DisableElevationLock;
         private ElevateObjectDefinitionSystem m_ElevateObjectDefinitionSystem;
         private ValueBindingHelper<bool> m_LockElevation;
         private ElevateTempObjectSystem m_ElevateTempObjectSystem;
@@ -117,6 +118,21 @@ namespace Anarchy.Systems
         {
             // This updates the flaming chirper option binding. It is triggered in the settings by overriding Apply.
             m_FlamingChirperOption.Update(value);
+        }
+
+        /// <summary>
+        /// Sets the prevent Override option binding to value.
+        /// </summary>
+        /// <param name="value">True for option enabled. false if not.</param>
+        public void SetDisableElevationLock(bool value)
+        {
+            if (m_ToolSystem.actionMode.IsEditor() && value == false)
+            {
+                m_DisableElevationLock.Value = true;
+                return;
+            }
+
+            m_DisableElevationLock.Value = false;
         }
 
         /// <summary>
@@ -171,6 +187,7 @@ namespace Anarchy.Systems
             m_ElevationValue = CreateBinding("ElevationValue", 0f);
             m_ElevationStep = CreateBinding("ElevationStep", 10f);
             m_ElevationScale = CreateBinding("ElevationScale", 1);
+            m_DisableElevationLock = CreateBinding("DisableElevationLock", false);
             m_LockElevation = CreateBinding("LockElevation", false);
             m_IsBuildingPrefab = CreateBinding("IsBuilding", false);
             m_ShowElevationSettingsOption = CreateBinding("ShowElevationSettingsOption", AnarchyMod.Instance.Settings.ShowElevationToolOption);
@@ -188,6 +205,20 @@ namespace Anarchy.Systems
             m_ResetElevation = AnarchyMod.Instance.Settings.GetAction("ResetElevation");
             m_ElevationStepToggle = AnarchyMod.Instance.Settings.GetAction("ElevationStep");
             m_ElevationKey = AnarchyMod.Instance.Settings.GetAction("Elevation");
+            CreateTrigger("ResetElevationToggled", () => ChangeElevation(-1f * m_ElevationValue.Value));
+        }
+
+        /// <inheritdoc/>
+        protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
+        {
+            base.OnGameLoadingComplete(purpose, mode);
+            if (mode.IsEditor() && !AnarchyMod.Instance.Settings.PreventOverrideInEditor)
+            {
+                m_DisableElevationLock.Value = true;
+                return;
+            }
+
+            m_DisableElevationLock.Value = false;
         }
 
         /// <inheritdoc/>

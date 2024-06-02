@@ -94,13 +94,13 @@ namespace Anarchy.Systems
                     if (!EntityManager.HasComponent<StackData>(currentCreationDefinition.m_Prefab))
                     {
                         currentObjectDefinition.m_Elevation = Mathf.Max(m_ElevationDelta, 0);
+                        currentObjectDefinition.m_Position.y += m_ElevationDelta;
                     }
                     else
                     {
-                        currentObjectDefinition.m_Elevation += m_ElevationDelta;
+                        currentObjectDefinition.m_Position.y += m_ElevationDelta;
                     }
 
-                    currentObjectDefinition.m_Position.y += m_ElevationDelta;
                     EntityManager.SetComponentData(entity, currentObjectDefinition);
                 }
             }
