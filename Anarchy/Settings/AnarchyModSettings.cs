@@ -140,6 +140,7 @@ namespace Anarchy.Settings
         /// Gets or sets a value indicating whether to prevent override in editor.
         /// </summary>
         [SettingsUISection(General, Stable)]
+        [SettingsUISetter(typeof(AnarchyModSettings), nameof(CheckForDisableElevationLock))]
         public bool PreventOverrideInEditor { get; set; }
 
         /// <summary>
@@ -239,6 +240,16 @@ namespace Anarchy.Settings
         {
             AnarchyUISystem anarchyReactUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyUISystem>();
             anarchyReactUISystem.SetFlamingChirperOption(value);
+        }
+
+        /// <summary>
+        /// Triggers method in Anarchy UI System for setting prevent override.
+        /// </summary>
+        /// <param name="value">The value being set to.</param>
+        public void CheckForDisableElevationLock(bool value)
+        {
+            AnarchyUISystem anarchyReactUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyUISystem>();
+            anarchyReactUISystem.SetDisableElevationLock(value);
         }
     }
 }

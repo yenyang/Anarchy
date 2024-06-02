@@ -115,16 +115,19 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/anarchy.1644970/" />
   <!--Version of the mod-->
-  <ModVersion Value="1.5.5" />
+  <ModVersion Value="1.5.6" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.1.*" />
   <!--Dependency for the mod, can be set multiple-->
-  <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.2" />
-  <Dependency Id="75426" DisplayName="I18n EveryWhere" Version="1.1.0" />
+  <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.8" />
+  <Dependency Id="75426" DisplayName="I18n EveryWhere" Version="1.1.2" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog>## Patch V1.5.5
-* Expanded Elevation tool option to object tool brush.
-* Updated Localizations</ChangeLog>
+  <ChangeLog>## Patch V1.5.6
+* Prevent Override in editor option name and description changed to be Anarchy Components and includes Lock Elevation.
+* Fixed Lock Elevation toggle not working in editor. Lock Elevation button will be disabled in editor without Anarchy Components In Editor option enabled.
+* Fixed/Change behavior of elevation being applied to pillars and any object prefabs with StackData.
+* Keybinds will change the elevation value in editor, but you must move the object to see any changes.
+* Tool options panel will be shown for items with Object Tool like pillars that do not normally have any tool options.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
