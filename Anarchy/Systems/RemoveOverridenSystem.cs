@@ -6,6 +6,7 @@ namespace Anarchy.Systems
 {
     using System.Collections.Generic;
     using Anarchy;
+    using Anarchy.Components;
     using Colossal.Logging;
     using Game;
     using Game.Buildings;
@@ -43,6 +44,7 @@ namespace Anarchy.Systems
         private ObjectToolSystem m_ObjectToolSystem;
         private PrefabSystem m_PrefabSystem;
         private EntityQuery m_OwnedAndOverridenQuery;
+        private EntityQuery m_HasAnarchyAndUpdatedQuery;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RemoveOverridenSystem"/> class.
@@ -83,6 +85,31 @@ namespace Anarchy.Systems
                     ComponentType.ReadOnly<Event>(),
                },
             });
+
+            m_HasAnarchyAndUpdatedQuery = GetEntityQuery(new EntityQueryDesc
+            {
+                All = new ComponentType[]
+               {
+                    ComponentType.ReadOnly<Updated>(),
+                    ComponentType.ReadOnly<Overridden>(),
+                    ComponentType.ReadOnly<PreventOverride>(),
+               },
+                None = new ComponentType[]
+               {
+                    ComponentType.ReadOnly<Owner>(),
+                    ComponentType.ReadOnly<Temp>(),
+                    ComponentType.ReadOnly<Building>(),
+                    ComponentType.ReadOnly<Game.Objects.Crane>(),
+                    ComponentType.ReadOnly<Animal>(),
+                    ComponentType.ReadOnly<Game.Creatures.Pet>(),
+                    ComponentType.ReadOnly<Creature>(),
+                    ComponentType.ReadOnly<Moving>(),
+                    ComponentType.ReadOnly<Household>(),
+                    ComponentType.ReadOnly<Vehicle>(),
+                    ComponentType.ReadOnly<Event>(),
+               },
+            });
+
             RequireForUpdate(m_OwnedAndOverridenQuery);
             base.OnCreate();
         }
@@ -100,7 +127,9 @@ namespace Anarchy.Systems
                 return;
             }
 
-            if (m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID) || (m_AppropriateToolsWithAnarchy.Contains(m_ToolSystem.activeTool.toolID) && m_AnarchyUISystem.AnarchyEnabled))
+            if (m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID)
+                || (m_AppropriateToolsWithAnarchy.Contains(m_ToolSystem.activeTool.toolID) && m_AnarchyUISystem.AnarchyEnabled)
+                || !m_HasAnarchyAndUpdatedQuery.IsEmptyIgnoreFilter)
             {
                 EntityManager.RemoveComponent(m_OwnedAndOverridenQuery, ComponentType.ReadWrite<Overridden>());
                 m_Log.Debug($"{nameof(RemoveOverridenSystem)}.{nameof(OnUpdate)}");

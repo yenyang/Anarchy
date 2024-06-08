@@ -16,11 +16,11 @@ namespace Anarchy.Systems
     using Game.Creatures;
     using Game.Objects;
     using Game.Prefabs;
+    using Game.Simulation;
     using Game.Tools;
     using Game.Vehicles;
     using Unity.Collections;
     using Unity.Entities;
-    using UnityEngine;
 
     /// <summary>
     /// A system that prevents objects from being overriden when placed on each other.
@@ -43,13 +43,13 @@ namespace Anarchy.Systems
         private EntityQuery m_CreatedQuery;
         private EntityQuery m_AnarchyComponentsQuery;
         private EntityQuery m_OwnedAndOverridenQuery;
+        private TerrainSystem m_TerrainSystem;
+        private bool m_ElevationChangeIsNegative;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AnarchyPlopSystem"/> class.
+        /// Gets or sets a value indicating whether Elevation change is negative.
         /// </summary>
-        public AnarchyPlopSystem()
-        {
-        }
+        public bool ElevationChangeIsNegative { get => m_ElevationChangeIsNegative; set => m_ElevationChangeIsNegative = value; }
 
         /// <inheritdoc/>
         protected override void OnCreate()
@@ -61,6 +61,7 @@ namespace Anarchy.Systems
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
+            m_TerrainSystem = World.GetOrCreateSystemManaged<TerrainSystem>();
             m_CreatedQuery = GetEntityQuery(new EntityQueryDesc
             {
                 All = new ComponentType[]
@@ -241,10 +242,14 @@ namespace Anarchy.Systems
                                         EntityManager.SetComponentData(entity, transformRecord);
                                     }
                                 }
+                                bool hasTransform = EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform2);
+                                TerrainHeightData terrainHeightData = m_TerrainSystem.GetHeightData();
+                                float terrainHeight = TerrainUtils.SampleHeight(ref terrainHeightData, originalTransform2.m_Position);
 
                                 // added for compatibility with EDT.
-                                if (EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform2) && !EntityManager.HasComponent<TransformRecord>(entity) &&
-                                    m_AnarchyUISystem.LockElevation && (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool"))
+                                if (hasTransform && !EntityManager.HasComponent<TransformRecord>(entity) &&
+                                    (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") &&
+                                    (m_AnarchyUISystem.LockElevation || (originalTransform2.m_Position.y <= terrainHeight - 0.1f && m_ElevationChangeIsNegative)))
                                 {
                                     EntityManager.AddComponent<TransformRecord>(entity);
                                     TransformRecord transformRecord = new () { m_Position = originalTransform2.m_Position, m_Rotation = originalTransform2.m_Rotation };

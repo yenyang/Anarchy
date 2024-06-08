@@ -68,9 +68,12 @@ namespace Anarchy.Systems
         private BulldozeToolSystem m_BulldozeToolSystem;
         private NetToolSystem m_NetToolSystem;
         private ResetNetCompositionDataSystem m_ResetNetCompositionDataSystem;
-        private ValueBinding<bool> m_AnarchyEnabled;
-        private ValueBinding<bool> m_ShowToolIcon;
-        private ValueBinding<bool> m_FlamingChirperOption;
+        private EnableToolErrorsSystem m_EnableToolErrorsSystem;
+        private AnarchyPlopSystem m_AnarchyPlopSystem;
+        private bool m_AnarchyEnabled;
+        private ValueBindingHelper<bool> m_AnarchyBinding;
+        private ValueBindingHelper<bool> m_ShowToolIcon;
+        private ValueBindingHelper<bool> m_FlamingChirperOption;
         private ValueBindingHelper<float> m_ElevationValue;
         private ValueBindingHelper<float> m_ElevationStep;
         private ValueBindingHelper<int> m_ElevationScale;
@@ -93,17 +96,12 @@ namespace Anarchy.Systems
         /// <summary>
         /// Gets a value indicating whether the flaming chirper option binding is on/off.
         /// </summary>
-        public bool FlamingChirperOption { get => m_FlamingChirperOption.value; }
+        public bool FlamingChirperOption { get => m_FlamingChirperOption.Value; }
 
         /// <summary>
         /// Gets a value indicating whether the flaming chirper option binding is on/off.
         /// </summary>
-        public bool AnarchyEnabled { get => m_AnarchyEnabled.value; }
-
-        /// <summary>
-        /// Gets a value indicating the elevation delta. This is not working correctly when the value is changed onUpdate. I do not know why.
-        /// </summary>
-        public float ElevationDelta { get => m_ElevationValue.Value; }
+        public bool AnarchyEnabled { get => m_AnarchyEnabled; }
 
         /// <summary>
         /// Gets a value indicating whether the elevation should be locked.
@@ -117,7 +115,7 @@ namespace Anarchy.Systems
         public void SetFlamingChirperOption(bool value)
         {
             // This updates the flaming chirper option binding. It is triggered in the settings by overriding Apply.
-            m_FlamingChirperOption.Update(value);
+            m_FlamingChirperOption.Value = value;
         }
 
         /// <summary>
@@ -176,19 +174,21 @@ namespace Anarchy.Systems
             m_ElevateObjectDefinitionSystem = World.GetOrCreateSystemManaged<ElevateObjectDefinitionSystem>();
             m_ElevateTempObjectSystem = World.GetOrCreateSystemManaged<ElevateTempObjectSystem>();
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
+            m_AnarchyPlopSystem = World.GetOrCreateSystemManaged<AnarchyPlopSystem>();
+            m_EnableToolErrorsSystem = World.GetOrCreateSystemManaged<EnableToolErrorsSystem>();
             m_ToolSystem.EventToolChanged += OnToolChanged;
             m_ToolSystem.EventPrefabChanged += OnPrefabChanged;
             m_Log.Info($"{nameof(AnarchyUISystem)}.{nameof(OnCreate)}");
 
             // This binding communicates values between UI and C#
-            AddBinding(m_AnarchyEnabled = new ValueBinding<bool>("Anarchy", "AnarchyEnabled", false));
-            AddBinding(m_ShowToolIcon = new ValueBinding<bool>("Anarchy", "ShowToolIcon", false));
-            AddBinding(m_FlamingChirperOption = new ValueBinding<bool>("Anarchy", "FlamingChirperOption", AnarchyMod.Instance.Settings.FlamingChirper));
+            m_AnarchyBinding = CreateBinding("AnarchyEnabled", false);
+            m_ShowToolIcon = CreateBinding("ShowToolIcon", false);
+            m_FlamingChirperOption = CreateBinding("FlamingChirperOption", AnarchyMod.Instance.Settings.FlamingChirper);
             m_ElevationValue = CreateBinding("ElevationValue", 0f);
             m_ElevationStep = CreateBinding("ElevationStep", 10f);
             m_ElevationScale = CreateBinding("ElevationScale", 1);
             m_DisableElevationLock = CreateBinding("DisableElevationLock", false);
-            m_LockElevation = CreateBinding("LockElevation", false);
+            m_LockElevation = CreateBinding("LockElevation", AnarchyMod.Instance.Settings.ElevationLock);
             m_IsBuildingPrefab = CreateBinding("IsBuilding", false);
             m_ShowElevationSettingsOption = CreateBinding("ShowElevationSettingsOption", AnarchyMod.Instance.Settings.ShowElevationToolOption);
             m_ObjectToolCreateOrBrushMode = CreateBinding("ObjectToolCreateOrBrushMode", m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush);
@@ -197,7 +197,11 @@ namespace Anarchy.Systems
             AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", AnarchyToggled));
             CreateTrigger("IncreaseElevation", () => ChangeElevation(m_ElevationStep.Value));
             CreateTrigger("DecreaseElevation", () => ChangeElevation(-1f * m_ElevationStep.Value));
-            CreateTrigger("LockElevationToggled", () => m_LockElevation.Value = !m_LockElevation.Value);
+            CreateTrigger("LockElevationToggled", () =>
+            {
+                m_LockElevation.Value = !m_LockElevation.Value;
+                AnarchyMod.Instance.Settings.ElevationLock = m_LockElevation.Value;
+            });
             CreateTrigger("ElevationStep", ElevationStepPressed);
             CreateTrigger("ResetElevationToggled", () => ChangeElevation(-1f * m_ElevationValue.Value));
 
@@ -219,6 +223,8 @@ namespace Anarchy.Systems
             }
 
             m_DisableElevationLock.Value = false;
+
+            m_ToggleAnarchy.shouldBeEnabled = mode.IsGameOrEditor();
         }
 
         /// <inheritdoc/>
@@ -227,13 +233,17 @@ namespace Anarchy.Systems
             if (AnarchyMod.Instance.Settings.DisableAnarchyWhileBrushing && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush && !m_IsBrushing)
             {
                 m_IsBrushing = true;
-                m_BeforeBrushingAnarchyEnabled = m_AnarchyEnabled.value;
-                m_AnarchyEnabled.Update(false);
+                m_BeforeBrushingAnarchyEnabled = m_AnarchyEnabled;
+                AnarchyToggled();
             }
 
             if ((m_IsBrushing && m_ToolSystem.activeTool != m_ObjectToolSystem) || (m_IsBrushing && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode != ObjectToolSystem.Mode.Brush))
             {
-                m_AnarchyEnabled.Update(m_BeforeBrushingAnarchyEnabled);
+                if (m_AnarchyEnabled != m_BeforeBrushingAnarchyEnabled)
+                {
+                    AnarchyToggled();
+                }
+
                 m_IsBrushing = false;
             }
 
@@ -265,14 +275,12 @@ namespace Anarchy.Systems
                 }
             }
 
-            base.OnUpdate();
-        }
+            if (m_AnarchyEnabled != m_AnarchyBinding.Value)
+            {
+                m_AnarchyBinding.Value = m_AnarchyEnabled;
+            }
 
-        /// <inheritdoc/>
-        protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
-        {
-            base.OnGameLoadingComplete(purpose, mode);
-            m_ToggleAnarchy.shouldBeEnabled = mode.IsGameOrEditor();
+            base.OnUpdate();
         }
 
         /// <summary>
@@ -281,9 +289,9 @@ namespace Anarchy.Systems
         /// <param name="flag">A bool for whether it's enabled or not.</param>
         private void AnarchyToggled()
         {
-            // This updates the Anarchy Enabled binding to its inverse.
-            m_AnarchyEnabled.Update(!m_AnarchyEnabled.value);
-            if (!m_AnarchyEnabled.value)
+            // This updates the field that holds the acutal value. The binding will be updated on the next update. This ensures the binding actually has the right value as trying to change it off update has been causing issues.
+            m_AnarchyEnabled = !m_AnarchyEnabled;
+            if (!m_AnarchyEnabled)
             {
                 m_DisableAnarchyWhenCompleted = false;
                 m_ResetNetCompositionDataSystem.Enabled = true;
@@ -296,19 +304,19 @@ namespace Anarchy.Systems
             if (tool == null || tool.toolID == null)
             {
                 // This updates the Show Tool Icon binding to not show the tool icon.
-                m_ShowToolIcon.Update(false);
+                m_ShowToolIcon.Value = false;
                 return;
             }
 
             if (IsToolAppropriate(tool.toolID) && AnarchyMod.Instance.Settings.ToolIcon)
             {
                 // This updates the Show Tool Icon binding to show the tool icon.
-                m_ShowToolIcon.Update(true);
+                m_ShowToolIcon.Value = true;
             }
             else
             {
                 // This updates the Show Tool Icon binding to not show the tool icon.
-                m_ShowToolIcon.Update(false);
+                m_ShowToolIcon.Value = false;
             }
 
             if (tool != m_BulldozeToolSystem && m_DisableAnarchyWhenCompleted)
@@ -316,16 +324,16 @@ namespace Anarchy.Systems
                 m_DisableAnarchyWhenCompleted = false;
 
                 // This updates the Anarchy Enabled binding to its inverse.
-                m_AnarchyEnabled.Update(!m_AnarchyEnabled.value);
+                AnarchyToggled();
             }
 
             // Implements Anarchic Bulldozer when bulldoze tool is activated.
-            if (AnarchyMod.Instance.Settings.AnarchicBulldozer && m_AnarchyEnabled.value == false && tool == m_BulldozeToolSystem)
+            if (AnarchyMod.Instance.Settings.AnarchicBulldozer && m_AnarchyEnabled == false && tool == m_BulldozeToolSystem)
             {
                 m_DisableAnarchyWhenCompleted = true;
 
                 // This updates the Anarchy Enabled binding to its inverse.
-                m_AnarchyEnabled.Update(!m_AnarchyEnabled.value);
+                AnarchyToggled();
             }
 
             if (tool != m_NetToolSystem && m_LastTool == m_NetToolSystem.toolID)
@@ -364,6 +372,7 @@ namespace Anarchy.Systems
                 m_ElevationKey.shouldBeEnabled = false;
             }
 
+            m_EnableToolErrorsSystem.Enabled = true;
             m_LastTool = tool.toolID;
         }
 
@@ -410,6 +419,7 @@ namespace Anarchy.Systems
                 // I don't know why this is necessary. There seems to be a disconnect that forms in the binding value between C# and UI when the value is changed during onUpdate.
                 m_ElevateObjectDefinitionSystem.ElevationDelta = m_ElevationValue.Value;
                 m_ElevateTempObjectSystem.ElevationChange = difference;
+                m_AnarchyPlopSystem.ElevationChangeIsNegative = m_ElevationValue < 0f;
 
                 // This prevents a crash in the editor but doesn't actually provide the positive effect of the system.
                 if (m_ToolSystem.actionMode.IsGame())
@@ -441,6 +451,5 @@ namespace Anarchy.Systems
 
             m_ElevationStep.Value = tempValue;
         }
-
     }
 }

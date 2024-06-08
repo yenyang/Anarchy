@@ -240,6 +240,12 @@ namespace Anarchy.Settings
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the player has enabled elevation lock.
+        /// </summary>
+        [SettingsUIHidden]
+        public bool ElevationLock { get; set; } = false;
+
+        /// <summary>
         /// Checks if prevent accidental prop culling is off or on.
         /// </summary>
         /// <returns>Opposite of PreventAccidentalPropCulling.</returns>

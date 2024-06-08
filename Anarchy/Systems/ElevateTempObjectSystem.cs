@@ -60,7 +60,6 @@ namespace Anarchy.Systems
             RequireForUpdate(m_TempObjectQuery);
         }
 
-
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
@@ -69,10 +68,6 @@ namespace Anarchy.Systems
                 Enabled = false;
                 return;
             }
-
-        /// <inheritdoc/>
-        protected override void OnUpdate()
-        {
             if ((m_ToolSystem.activeTool != m_ObjectToolSystem && m_ToolSystem.activeTool.toolID != "Line Tool") || !AnarchyMod.Instance.Settings.ShowElevationToolOption)
             {
                 return;
