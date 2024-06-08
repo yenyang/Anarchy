@@ -10,9 +10,11 @@ namespace Anarchy.Systems
     using Colossal.Logging;
     using Game;
     using Game.Common;
+    using Game.Objects;
     using Game.Tools;
     using Unity.Collections;
     using Unity.Entities;
+    using UnityEngine;
 
     /// <summary>
     /// A system that prevents objects from being overriden that has a custom component.
@@ -22,6 +24,7 @@ namespace Anarchy.Systems
         private ILog m_Log;
         private EntityQuery m_TransformRecordQuery;
         private ToolSystem m_ToolSystem;
+        private ModificationEndBarrier m_Barrier;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResetTransformSystem"/> class.
@@ -36,6 +39,7 @@ namespace Anarchy.Systems
             m_Log = AnarchyMod.Instance.Log;
             m_Log.Info($"{nameof(ResetTransformSystem)} Created.");
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
+            m_Barrier = World.GetOrCreateSystemManaged<ModificationEndBarrier>();
             m_TransformRecordQuery = GetEntityQuery(new EntityQueryDesc
             {
                 All = new ComponentType[]
@@ -69,22 +73,46 @@ namespace Anarchy.Systems
                     continue;
                 }
 
+                EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
+
                 if (transformRecord.Equals(originalTransform))
                 {
-                    EntityManager.RemoveComponent<UpdateNextFrame>(entity);
+                    buffer.RemoveComponent<UpdateNextFrame>(entity);
                     continue;
                 }
 
                 originalTransform.m_Position = transformRecord.m_Position;
                 originalTransform.m_Rotation = transformRecord.m_Rotation;
-                EntityManager.SetComponentData(entity, originalTransform);
+                buffer.SetComponent(entity, originalTransform);
                 if (EntityManager.HasComponent<UpdateNextFrame>(entity))
                 {
-                    EntityManager.RemoveComponent<UpdateNextFrame>(entity);
+                    buffer.RemoveComponent<UpdateNextFrame>(entity);
                 }
                 else
                 {
-                    EntityManager.AddComponent<UpdateNextFrame>(entity);
+                    buffer.AddComponent<UpdateNextFrame>(entity);
+                }
+
+                if (m_ToolSystem.actionMode.IsEditor() && EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<SubObject> subObjects))
+                {
+                    foreach (SubObject subObject in subObjects)
+                    {
+                        if (EntityManager.TryGetComponent(subObject.m_SubObject, out Game.Objects.Transform subObjectTransform)
+                            && EntityManager.TryGetComponent(subObject.m_SubObject, out LocalTransformCache localTransformCache))
+                        {
+                            subObjectTransform.m_Position = transformRecord.m_Position + localTransformCache.m_Position;
+                            subObjectTransform.m_Rotation.value = transformRecord.m_Rotation.value + localTransformCache.m_Rotation.value;
+                            buffer.SetComponent(subObject.m_SubObject, subObjectTransform);
+                            if (EntityManager.HasComponent<UpdateNextFrame>(entity))
+                            {
+                                buffer.RemoveComponent<UpdateNextFrame>(entity);
+                            }
+                            else
+                            {
+                                buffer.AddComponent<UpdateNextFrame>(entity);
+                            }
+                        }
+                    }
                 }
             }
 
