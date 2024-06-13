@@ -5,6 +5,7 @@
 namespace Anarchy.Systems
 {
     using System.Collections.Generic;
+    using Anarchy.Settings;
     using Anarchy.Utils;
     using Colossal.Logging;
     using Colossal.Serialization.Entities;
@@ -205,10 +206,10 @@ namespace Anarchy.Systems
             CreateTrigger("ElevationStep", ElevationStepPressed);
             CreateTrigger("ResetElevationToggled", () => ChangeElevation(-1f * m_ElevationValue.Value));
 
-            m_ToggleAnarchy = AnarchyMod.Instance.Settings.GetAction("ToggleAnarchy");
-            m_ResetElevation = AnarchyMod.Instance.Settings.GetAction("ResetElevation");
-            m_ElevationStepToggle = AnarchyMod.Instance.Settings.GetAction("ElevationStep");
-            m_ElevationKey = AnarchyMod.Instance.Settings.GetAction("Elevation");
+            m_ToggleAnarchy = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ToggleAnarchyActionName);
+            m_ResetElevation = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ResetElevationActionName);
+            m_ElevationStepToggle = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ElevationStepActionName);
+            m_ElevationKey = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ElevationActionName);
             CreateTrigger("ResetElevationToggled", () => ChangeElevation(-1f * m_ElevationValue.Value));
         }
 

@@ -87,6 +87,12 @@ namespace Anarchy.Settings
                 { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.IncreaseElevation)), "A keybind to increase the elevation value of objects during placement." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.DecreaseElevation)), "Decrease Elevation" },
                 { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.DecreaseElevation)), "A keybind to decrease the elevation value of objects during placement." },
+                { m_Setting.GetBindingMapLocaleID(), "Anarchy" },
+                { m_Setting.GetBindingKeyLocaleID(AnarchyModSettings.ToggleAnarchyActionName), "Press key" },
+                { m_Setting.GetBindingKeyLocaleID(AnarchyModSettings.ResetElevationActionName), "Press key" },
+                { m_Setting.GetBindingKeyLocaleID(AnarchyModSettings.ElevationStepActionName), "Press key" },
+                { m_Setting.GetBindingKeyLocaleID(AnarchyModSettings.ElevationActionName, Game.Input.AxisComponent.Positive), "Increase key" },
+                { m_Setting.GetBindingKeyLocaleID(AnarchyModSettings.ElevationActionName, Game.Input.AxisComponent.Negative), "Decrease key" },
             };
         }
 
