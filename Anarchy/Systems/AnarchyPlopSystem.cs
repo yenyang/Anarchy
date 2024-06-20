@@ -40,7 +40,7 @@ namespace Anarchy.Systems
         private NetToolSystem m_NetToolSystem;
         private ObjectToolSystem m_ObjectToolSystem;
         private PrefabSystem m_PrefabSystem;
-        private EntityQuery m_CreatedQuery;
+        private EntityQuery m_AppliedQuery;
         private EntityQuery m_AnarchyComponentsQuery;
         private EntityQuery m_OwnedAndOverridenQuery;
         private TerrainSystem m_TerrainSystem;
@@ -62,11 +62,11 @@ namespace Anarchy.Systems
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_TerrainSystem = World.GetOrCreateSystemManaged<TerrainSystem>();
-            m_CreatedQuery = GetEntityQuery(new EntityQueryDesc
+            m_AppliedQuery = GetEntityQuery(new EntityQueryDesc
             {
                 All = new ComponentType[]
                 {
-                    ComponentType.ReadOnly<Created>(),
+                    ComponentType.ReadOnly<Applied>(),
                     ComponentType.ReadOnly<Updated>(),
                 },
                 Any = new ComponentType[]
@@ -131,7 +131,7 @@ namespace Anarchy.Systems
                 },
             });
 
-            RequireForUpdate(m_CreatedQuery);
+            RequireForUpdate(m_AppliedQuery);
             base.OnCreate();
         }
 
@@ -194,15 +194,15 @@ namespace Anarchy.Systems
 
             if (!m_NetToolSystem.TrySetPrefab(m_ToolSystem.activePrefab) || m_ToolSystem.activePrefab is NetLaneGeometryPrefab || m_ToolSystem.activePrefab is NetLanePrefab)
             {
-                NativeArray<Entity> createdEntities = m_CreatedQuery.ToEntityArray(Allocator.Temp);
+                NativeArray<Entity> appliedEntities = m_AppliedQuery.ToEntityArray(Allocator.Temp);
                 m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)}");
                 if (m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID))
                 {
-                    EntityManager.RemoveComponent(m_CreatedQuery, ComponentType.ReadWrite<Overridden>());
+                    EntityManager.RemoveComponent(m_AppliedQuery, ComponentType.ReadWrite<Overridden>());
                     EntityManager.RemoveComponent(m_OwnedAndOverridenQuery, ComponentType.ReadWrite<Overridden>());
                 }
 
-                foreach (Entity entity in createdEntities)
+                foreach (Entity entity in appliedEntities)
                 {
                     PrefabBase prefabBase = null;
                     if (EntityManager.TryGetComponent(entity, out PrefabRef prefabRef)) 
@@ -222,7 +222,7 @@ namespace Anarchy.Systems
                                 {
                                     if (EntityManager.TryGetBuffer(attachedComponent.m_Parent, isReadOnly: false, out DynamicBuffer<Game.Objects.SubObject> subObjectBuffer))
                                     {
-                                        // Loop through all subobjecst started at last entry to try and quickly find created entity.
+                                        // Loop through all subobjecst started at last entry to try and quickly find applied entity.
                                         for (int i = subObjectBuffer.Length - 1; i >= 0; i--)
                                         {
                                             Game.Objects.SubObject subObject = subObjectBuffer[i];
@@ -266,7 +266,7 @@ namespace Anarchy.Systems
                             }
                             else if (m_ToolSystem.actionMode.IsGame() && prefabBase.GetPrefabID().ToString() == "NetPrefab:Lane Editor Container" && EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<Game.Net.SubLane> subLaneBuffer) && m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID))
                             {
-                                // Loop through all subobjects started at last entry to try and quickly find created entity.
+                                // Loop through all subobjects started at last entry to try and quickly find applied entity.
                                 for (int i = 0; i < subLaneBuffer.Length; i++)
                                 {
                                     Game.Net.SubLane subLane = subLaneBuffer[i];
@@ -285,7 +285,7 @@ namespace Anarchy.Systems
                     }
                 }
 
-                createdEntities.Dispose();
+                appliedEntities.Dispose();
             }
         }
     }
