@@ -121,7 +121,7 @@ declare module "cs2/input" {
   }
   export export class MultiChildFocusController extends FocusControllerBase {
   	private readonly activation;
-  	private readonly children;
+  	readonly children: Map<UniqueFocusKey, FocusController>;
   	private _focusedChildKey;
   	onRefocus: RefocusCallback | null;
   	constructor(focusKey: UniqueFocusKey | null, activation: FocusActivation);
@@ -391,6 +391,10 @@ declare module "cs2/input" {
   	readonly value: T;
   	setChangeListener(listener: BindingListener<T>): void;
   }
+  export interface ControlPath {
+  	name: string;
+  	displayName?: string;
+  }
   export enum GamepadType {
   	Xbox = 0,
   	PS = 1
@@ -477,6 +481,7 @@ declare module "cs2/input" {
   	"Save Options": Action;
   	"Switch User": Action;
   	"Unset Binding": Action;
+  	"Reset Binding": Action;
   	"Switch Savegame Location": Action1D;
   	"Debug UI": Action;
   	"Debug Prefab Tool": Action;
@@ -508,6 +513,10 @@ declare module "cs2/input" {
   	onSelect?: () => void;
   	as?: "button" | "div";
   }
+  export enum ShortInputPathOption {
+  	FallbackToLong = 1,
+  	FallbackToControl = 2
+  }
   export interface InputActionHintsProps extends ClassProps {
   	disabled?: boolean;
   	specifiedActions?: string[];
@@ -516,13 +525,17 @@ declare module "cs2/input" {
   }
   export export const InputActionHints: React$1.FC<InputActionHintsProps>;
   export interface ControlIconProps extends ClassProps {
-  	path: string;
-  	modifier?: boolean;
+  	binding: ControlPath;
+  	group: string;
+  	modifier: boolean;
+  	shortName?: ShortInputPathOption;
   	style?: React$1.CSSProperties;
+  	iconClassName?: string;
+  	buttonClassName?: string;
   }
   export export const ControlIcon: React$1.FC<ControlIconProps>;
   export export const ActionHintLayout: ({ children, className, ...props }: ButtonProps) => JSX.Element;
-  export export function useInputControlIcon(path: string): string | null;
+  export export function useInputControlIcon(binding: ControlPath, group: string): string | null;
   export export function useGamepadType(): GamepadType;
   export enum GamepadButton$1 {
   	buttonSouth = 0,

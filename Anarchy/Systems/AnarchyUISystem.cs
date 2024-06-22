@@ -5,6 +5,7 @@
 namespace Anarchy.Systems
 {
     using System.Collections.Generic;
+    using Anarchy.Domain;
     using Anarchy.Settings;
     using Anarchy.Utils;
     using Colossal.Logging;
@@ -62,6 +63,35 @@ namespace Anarchy.Systems
             { ErrorType.NoCargoAccess },
         };
 
+        private readonly ErrorCheck[] DefaultErrorChecks = new ErrorCheck[]
+        {
+            new (ErrorType.AlreadyExists, ErrorCheck.DisableState.WithAnarchy, 0),
+            new (ErrorType.AlreadyUpgraded, ErrorCheck.DisableState.WithAnarchy, 1),
+            new (ErrorType.ExceedsCityLimits, ErrorCheck.DisableState.WithAnarchy, 2),
+            new (ErrorType.ExceedsLotLimits, ErrorCheck.DisableState.WithAnarchy, 3),
+            new (ErrorType.InvalidShape, ErrorCheck.DisableState.WithAnarchy, 4),
+            new (ErrorType.InWater, ErrorCheck.DisableState.WithAnarchy, 5),
+            new (ErrorType.LongDistance, ErrorCheck.DisableState.WithAnarchy, 6),
+            new (ErrorType.LowElevation, ErrorCheck.DisableState.WithAnarchy, 7),
+            new (ErrorType.NoCarAccess, ErrorCheck.DisableState.WithAnarchy, 8),
+            new (ErrorType.NoCargoAccess, ErrorCheck.DisableState.WithAnarchy, 9),
+            new (ErrorType.NoGroundWater, ErrorCheck.DisableState.WithAnarchy, 10),
+            new (ErrorType.NoPedestrianAccess, ErrorCheck.DisableState.Never, 11),
+            new (ErrorType.NoRoadAccess, ErrorCheck.DisableState.Never, 12),
+            new (ErrorType.NotOnBorder, ErrorCheck.DisableState.WithAnarchy, 13),
+            new (ErrorType.NotOnShoreline, ErrorCheck.DisableState.WithAnarchy, 14),
+            new (ErrorType.NoTrackAccess, ErrorCheck.DisableState.Never, 15),
+            new (ErrorType.NoTrainAccess, ErrorCheck.DisableState.Never, 16),
+            new (ErrorType.NoWater, ErrorCheck.DisableState.WithAnarchy, 17),
+            new (ErrorType.OnFire, ErrorCheck.DisableState.WithAnarchy, 18),
+            new (ErrorType.OverlapExisting, ErrorCheck.DisableState.WithAnarchy, 19),
+            new (ErrorType.PathfindFailed, ErrorCheck.DisableState.Never, 20),
+            new (ErrorType.ShortDistance, ErrorCheck.DisableState.WithAnarchy, 21),
+            new (ErrorType.SmallArea, ErrorCheck.DisableState.WithAnarchy, 22),
+            new (ErrorType.SteepSlope, ErrorCheck.DisableState.WithAnarchy, 23),
+            new (ErrorType.TightCurve, ErrorCheck.DisableState.WithAnarchy, 24),
+        };
+
         private ToolSystem m_ToolSystem;
         private ILog m_Log;
         private bool m_DisableAnarchyWhenCompleted;
@@ -93,6 +123,9 @@ namespace Anarchy.Systems
         private ProxyAction m_ResetElevation;
         private ProxyAction m_ElevationStepToggle;
         private ProxyAction m_ElevationKey;
+        private ErrorCheck[] m_ErrorChecks;
+        private ValueBindingHelper<ErrorCheck[]> m_ErrorChecksBinding;
+        private bool m_UpdateErrorChecks;
 
         /// <summary>
         /// Gets a value indicating whether the flaming chirper option binding is on/off.
@@ -108,6 +141,11 @@ namespace Anarchy.Systems
         /// Gets a value indicating whether the elevation should be locked.
         /// </summary>
         public bool LockElevation { get => m_LockElevation.Value; }
+
+        /// <summary>
+        /// Gets the array of error checks.
+        /// </summary>
+        public ErrorCheck[] ErrorChecks { get => m_ErrorChecks; }
 
         /// <summary>
         /// Sets the flaming chirper option binding to value.
@@ -193,6 +231,8 @@ namespace Anarchy.Systems
             m_IsBuildingPrefab = CreateBinding("IsBuilding", false);
             m_ShowElevationSettingsOption = CreateBinding("ShowElevationSettingsOption", AnarchyMod.Instance.Settings.ShowElevationToolOption);
             m_ObjectToolCreateOrBrushMode = CreateBinding("ObjectToolCreateOrBrushMode", m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush);
+            m_ErrorChecks = DefaultErrorChecks;
+            m_ErrorChecksBinding = CreateBinding("ErrorChecks", DefaultErrorChecks);
 
             // This binding listens for events triggered by the UI.
             AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", AnarchyToggled));
@@ -211,6 +251,7 @@ namespace Anarchy.Systems
             m_ElevationStepToggle = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ElevationStepActionName);
             m_ElevationKey = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ElevationActionName);
             CreateTrigger("ResetElevationToggled", () => ChangeElevation(-1f * m_ElevationValue.Value));
+            CreateTrigger<int, int>("ChangeDisabledState", ChangeDisabledState);
         }
 
         /// <inheritdoc/>
@@ -279,6 +320,12 @@ namespace Anarchy.Systems
             if (m_AnarchyEnabled != m_AnarchyBinding.Value)
             {
                 m_AnarchyBinding.Value = m_AnarchyEnabled;
+            }
+
+            if (m_UpdateErrorChecks)
+            {
+                m_ErrorChecksBinding.Value = m_ErrorChecks;
+                m_UpdateErrorChecks = false;
             }
 
             base.OnUpdate();
@@ -451,6 +498,15 @@ namespace Anarchy.Systems
             }
 
             m_ElevationStep.Value = tempValue;
+        }
+
+        private void ChangeDisabledState(int index, int disabledState)
+        {
+            if (m_ErrorChecksBinding.Value.Length > index)
+            {
+                m_ErrorChecks[index].DisabledState = disabledState;
+                m_UpdateErrorChecks = true;
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ namespace Anarchy.Settings
 {
     using System.Collections.Generic;
     using Colossal;
+    using Game.Tools;
 
     /// <summary>
     /// Localization for Anarchy Mod in English.
@@ -93,9 +94,43 @@ namespace Anarchy.Settings
                 { m_Setting.GetBindingKeyLocaleID(AnarchyModSettings.ElevationStepActionName), "Press key" },
                 { m_Setting.GetBindingKeyLocaleID(AnarchyModSettings.ElevationActionName, Game.Input.AxisComponent.Positive), "Increase key" },
                 { m_Setting.GetBindingKeyLocaleID(AnarchyModSettings.ElevationActionName, Game.Input.AxisComponent.Negative), "Decrease key" },
+                { ErrorCheckKey(ErrorType.AlreadyExists), "Already Exists" },
+                { ErrorCheckKey(ErrorType.AlreadyUpgraded), "Already Upgraded" },
+                { ErrorCheckKey(ErrorType.ExceedsCityLimits), "Exceeds City Limits" },
+                { ErrorCheckKey(ErrorType.ExceedsLotLimits), "Exceeds Lot Limits" },
+                { ErrorCheckKey(ErrorType.InvalidShape), "Invalid Shape" },
+                { ErrorCheckKey(ErrorType.InWater), "In Water" },
+                { ErrorCheckKey(ErrorType.LongDistance), "Long Distance" },
+                { ErrorCheckKey(ErrorType.LowElevation), "Low Elevation" },
+                { ErrorCheckKey(ErrorType.NoCargoAccess), "No Cargo Access" },
+                { ErrorCheckKey(ErrorType.NoGroundWater), "No Ground Water" },
+                { ErrorCheckKey(ErrorType.NotOnBorder), "Not On Border" },
+                { ErrorCheckKey(ErrorType.NoWater), "No Water" },
+                { ErrorCheckKey(ErrorType.NotOnShoreline), "Not On Shoreline" },
+                { ErrorCheckKey(ErrorType.OnFire), "On Fire" },
+                { ErrorCheckKey(ErrorType.OverlapExisting), "Overlap Existing" },
+                { ErrorCheckKey(ErrorType.PathfindFailed), "Pathfind Failed" },
+                { ErrorCheckKey(ErrorType.SmallArea), "Small Area" },
+                { ErrorCheckKey(ErrorType.ShortDistance), "Short Distance" },
+                { ErrorCheckKey(ErrorType.SteepSlope), "Steep Slope" },
+                { ErrorCheckKey(ErrorType.TightCurve), "Tight Curve" },
+                { ErrorCheckKey(ErrorType.NoCarAccess), "No Car Access" },
+                { ErrorCheckKey(ErrorType.NoPedestrianAccess), "No Pedestrian Access" },
+                { ErrorCheckKey(ErrorType.NoRoadAccess), "No Road Access" },
+                { ErrorCheckKey(ErrorType.NoTrackAccess), "No Track Access" },
+                { ErrorCheckKey(ErrorType.NoTrainAccess), "No Train Access" },
             };
         }
 
+        /// <summary>
+        /// Gets a locale key for an error check.
+        /// </summary>
+        /// <param name="errorType">Error type enum.</param>
+        /// <returns>Localization key.</returns>
+        public static string ErrorCheckKey(ErrorType errorType)
+        {
+            return $"{AnarchyMod.Id}.ErrorType[{errorType}]";
+        }
 
         private string TooltipDescriptionKey(string key)
         {

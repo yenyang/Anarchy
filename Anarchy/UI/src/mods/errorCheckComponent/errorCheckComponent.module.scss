@@ -1,0 +1,25 @@
+.rowGroup {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding-bottom: 1rem;
+    padding-top: 1rem;
+    padding-left: 5rem;
+    padding-right: 5rem;
+}
+
+.errorCheckName {
+    width: 150rem;
+}
+
+.spacer {
+    width: 24rem;
+}
+
+.disableState {
+    width: 100rem;    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

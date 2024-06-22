@@ -72,7 +72,7 @@ namespace Anarchy.Systems
                 {
                     if (m_PrefabSystem.TryGetEntity(prefabBase, out Entity entity))
                     {
-                        if (EntityManager.TryGetComponent(entity, out ToolErrorData toolErrorData)) 
+                        if (EntityManager.TryGetComponent(entity, out ToolErrorData toolErrorData))
                         {
                             toolErrorData.m_Flags |= ToolErrorFlags.DisableInGame;
                             toolErrorData.m_Flags |= ToolErrorFlags.DisableInEditor;
@@ -80,11 +80,6 @@ namespace Anarchy.Systems
                         }
                     }
                 }
-            }
-
-            if (!m_AnarchyUISystem.AnarchyEnabled || !m_AnarchyUISystem.IsToolAppropriate(m_ToolSystem.activeTool.toolID))
-            {
-                return;
             }
 
             NativeArray <Entity> toolErrorPrefabs = m_ToolErrorPrefabQuery.ToEntityArray(Allocator.Temp);

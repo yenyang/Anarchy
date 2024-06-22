@@ -1,0 +1,49 @@
+.columnGroup {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 15rem;
+    padding-right: 15rem;
+}
+
+.rowGroup {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+}
+
+.panel {
+    position: absolute;
+    left: 610rem;    
+    top: 5rem;
+    flex-direction: flex-start;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.subtitleRight {
+    width: 150rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.subtitleLeft {
+    width: 150rem;
+}
+
+.subtitleRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: 2rem;
+}

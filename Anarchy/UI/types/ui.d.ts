@@ -34,12 +34,23 @@ declare module "cs2/ui" {
   export interface TooltipProps extends ClassProps {
   	tooltip: ReactNode;
   	disabled?: boolean;
+  	forceVisible?: boolean;
   	theme?: Partial<BalloonTheme>;
   	direction?: BalloonDirection;
   	alignment?: BalloonAlignment;
   	children: RefReactElement;
   }
-  export export const Tooltip: ({ tooltip, disabled, theme, direction, alignment, className, children }: PropsWithChildren<TooltipProps>) => JSX.Element;
+  export export const Tooltip: ({ tooltip, forceVisible, disabled, theme, direction, alignment, className, children }: PropsWithChildren<TooltipProps>) => JSX.Element;
+  export const FOCUS_DISABLED: unique symbol;
+  export const FOCUS_AUTO: unique symbol;
+  export type FocusKey = typeof FOCUS_DISABLED | typeof FOCUS_AUTO | UniqueFocusKey;
+  export type UniqueFocusKey = FocusSymbol | string | number;
+  export class FocusSymbol {
+  	readonly debugName: string;
+  	readonly r: number;
+  	constructor(debugName: string);
+  	toString(): string;
+  }
   export interface PanelTheme extends PanelTitleBarTheme {
   	panel: string;
   	header: string;
@@ -70,12 +81,14 @@ declare module "cs2/ui" {
   export interface ConfirmationDialogProps {
   	title?: ReactNode;
   	message: ReactNode;
+  	details?: string;
   	confirm?: ReactNode;
   	cancel?: ReactNode;
   	onConfirm: (dismiss: boolean) => void;
   	onCancel?: () => void;
   	dismissable?: boolean;
   	cancellable?: boolean;
+  	zIndex?: number;
   }
   export const UITriggeredConfirmationDialog: React.FC<ConfirmationDialogProps>;
   export enum UISound {
@@ -124,16 +137,6 @@ declare module "cs2/ui" {
   	closePanel = "close-panel",
   	openMenu = "open-menu",
   	closeMenu = "close-menu"
-  }
-  export const FOCUS_DISABLED: unique symbol;
-  export const FOCUS_AUTO: unique symbol;
-  export type FocusKey = typeof FOCUS_DISABLED | typeof FOCUS_AUTO | UniqueFocusKey;
-  export type UniqueFocusKey = FocusSymbol | string | number;
-  export class FocusSymbol {
-  	readonly debugName: string;
-  	readonly r: number;
-  	constructor(debugName: string);
-  	toString(): string;
   }
   export interface Number2 {
   	readonly x: number;
@@ -217,6 +220,7 @@ declare module "cs2/ui" {
   	"Save Options": Action;
   	"Switch User": Action;
   	"Unset Binding": Action;
+  	"Reset Binding": Action;
   	"Switch Savegame Location": Action1D;
   	"Debug UI": Action;
   	"Debug Prefab Tool": Action;
@@ -267,6 +271,7 @@ declare module "cs2/ui" {
   export export const Button: (props: ButtonProps$1) => JSX.Element;
   export export const MenuButton: (props: Partial<LabeledIconButtonProps>) => JSX.Element;
   export export const FloatingButton: (props: Partial<IconButtonProps>) => JSX.Element;
+  export type AnchoredPopupAlignment = "left" | "right";
   export interface DropdownTheme extends DropdownToggleTheme, DropdownMenuTheme, DropdownItemTheme {
   }
   export interface DropdownToggleTheme {
@@ -289,8 +294,9 @@ declare module "cs2/ui" {
   	initialFocused?: UniqueFocusKey | null;
   	theme?: Partial<DropdownTheme>;
   	content: ReactNode;
+  	alignment?: AnchoredPopupAlignment;
   }
-  export export const Dropdown: ({ focusKey, initialFocused, theme: partialTheme, content, children }: PropsWithChildren<DropdownProps>) => JSX.Element;
+  export export const Dropdown: ({ focusKey, initialFocused, theme: partialTheme, content, alignment, children }: PropsWithChildren<DropdownProps>) => JSX.Element;
   export interface DropdownToggleProps extends DropdownToggleBaseProps {
   	theme?: DropdownToggleTheme;
   }
