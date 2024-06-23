@@ -6,15 +6,19 @@
 namespace Anarchy
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using Anarchy.Settings;
     using Anarchy.Systems;
+    using Colossal;
     using Colossal.IO.AssetDatabase;
     using Colossal.Logging;
     using Game;
     using Game.Modding;
     using Game.SceneFlow;
     using HarmonyLib;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Mod entry point.
@@ -88,6 +92,20 @@ namespace Anarchy
             Settings = new (this);
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Loading localization");
             GameManager.instance.localizationManager.AddSource("en-US", new LocaleEN(Settings));
+
+#if DEBUG
+            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Exporting localization");
+            var localeDict = new LocaleEN(Settings).ReadEntries(new List<IDictionaryEntryError>(), new Dictionary<string, int>()).ToDictionary(pair => pair.Key, pair => pair.Value);
+            var str = JsonConvert.SerializeObject(localeDict, Formatting.Indented);
+            try
+            {
+                File.WriteAllText("C:\\Users\\TJ\\source\\repos\\Anarchy\\Anarchy\\UI\\src\\lang\\en-US.json", str);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.ToString());
+            }
+#endif
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Registering settings");
             Settings.RegisterInOptionsUI();
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Loading settings");
