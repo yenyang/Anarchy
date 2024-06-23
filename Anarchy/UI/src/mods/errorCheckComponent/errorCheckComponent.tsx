@@ -3,7 +3,7 @@ import styles from "./errorCheckComponent.module.scss";
 import { Button } from "cs2/ui";
 import { VanillaComponentResolver } from "mods/VanillaComponentResolver/VanillaComponentResolver";
 import mod from "../../../mod.json";
-import { trigger } from "cs2/api";
+import { bindValue, trigger, useValue } from "cs2/api";
 import { useLocalization } from "cs2/l10n";
 import { ErrorCheck } from "Domain/errorCheck";
 import { useState } from "react";
@@ -11,6 +11,8 @@ import { useState } from "react";
 const uilStandard =                         "coui://uil/Standard/";
 const arrowLeftSrc =           uilStandard +  "ArrowLeftThickStroke.svg";
 const arrowRightSrc =           uilStandard +  "ArrowRightThickStroke.svg";
+
+const ErrorChecks$ =           bindValue<ErrorCheck[]> (mod.id, "ErrorChecks");
 
 
 function handleClick(index: number, newState : number) {
@@ -22,6 +24,7 @@ const roundButtonHighlightStyle = getModule("game-ui/common/input/button/themes/
 export const ErrorCheckComponent = (props: { errorCheck : ErrorCheck }) => {
     const { translate } = useLocalization();
     
+    const ErrorChecks = useValue(ErrorChecks$);
 
     function getDisableStateText(state: number) : string {
         let stateText = "Anarchy";
@@ -33,7 +36,7 @@ export const ErrorCheckComponent = (props: { errorCheck : ErrorCheck }) => {
         return stateText;
     }
 
-    let [disableState, changeState] = useState<number>(props.errorCheck.DisabledState);
+    let [disableState, changeState] = useState<number>(ErrorChecks[props.errorCheck.Index].DisabledState);
 
     return (
         <div className={styles.rowGroup}>

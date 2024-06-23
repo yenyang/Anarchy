@@ -14,6 +14,7 @@ namespace Anarchy.Systems
     using Game;
     using Game.Input;
     using Game.Prefabs;
+    using Game.Rendering.Utilities;
     using Game.Tools;
     using Unity.Entities;
     using UnityEngine;
@@ -517,10 +518,11 @@ namespace Anarchy.Systems
 
         private void ChangeDisabledState(int index, int disabledState)
         {
-            if (m_ErrorChecksBinding.Value.Length > index)
+            if (m_ErrorChecks.Length > index)
             {
                 m_ErrorChecks[index].DisabledState = disabledState;
-                m_ErrorChecksBinding.Value = m_ErrorChecks;
+                m_ErrorChecksBinding.Binding.Update(m_ErrorChecks);
+                m_Log.Debug($"index: {index} state: {disabledState}");
             }
         }
     }
