@@ -119,6 +119,9 @@ namespace Anarchy.Settings
                 { ErrorCheckKey(ErrorType.NoRoadAccess), "No Road Access" },
                 { ErrorCheckKey(ErrorType.NoTrackAccess), "No Track Access" },
                 { ErrorCheckKey(ErrorType.NoTrainAccess), "No Train Access" },
+                { SectionLabel("ErrorType"), "Error Type" },
+                { SectionLabel("Disabled"), "Disabled?" },
+                { SectionLabel("AnarchyOptions"), "Anarchy Options" },
             };
         }
 

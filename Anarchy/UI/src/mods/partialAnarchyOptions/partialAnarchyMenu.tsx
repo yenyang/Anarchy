@@ -8,6 +8,7 @@ import { getModule } from "cs2/modding";
 import { ErrorCheckComponent } from "mods/errorCheckComponent/errorCheckComponent";
 import { ErrorCheck } from "Domain/errorCheck";
 import { game } from "cs2/bindings";
+import { useLocalization } from "cs2/l10n";
 
 const uilStandard =                         "coui://uil/Standard/";
 
@@ -29,6 +30,7 @@ export const PartialAnarchyMenyComponent = () => {
     const ErrorChecks = useValue(ErrorChecks$);
     const isPhotoMode = useValue(game.activeGamePanel$)?.__Type == game.GamePanelType.PhotoMode;
     const showToolIcon : boolean = useValue(showToolIcon$);
+    const { translate } = useLocalization();
     return (
         <>
             {ShowPanel && !isPhotoMode && showToolIcon && (
@@ -36,7 +38,7 @@ export const PartialAnarchyMenyComponent = () => {
                     <Panel
                         className={styles.panel}
                         header={(
-                            <VanillaComponentResolver.instance.Section title={"Anarchy Options"}>
+                            <VanillaComponentResolver.instance.Section title={translate(mod.id+".SECTION_TITLE["+"AnarchyOptions"+"]")}>
                                 <Button className={roundButtonHighlightStyle.button} variant="icon" onSelect={() => handleClick("ToggleAnarchyOptionsPanel")} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}>
                                     <img src={closeSrc}></img>
                                 </Button>
@@ -45,9 +47,9 @@ export const PartialAnarchyMenyComponent = () => {
                         <div className={styles.rowGroup}>
                             <div className={styles.columnGroup}>
                                 <div className={styles.subtitleRow}>
-                                    <div>Error Type</div>
+                                    <div>{translate(mod.id+".SECTION_TITLE["+"ErrorType"+"]")}</div>
                                     <span className={styles.subtitleSpanMiddle}></span>
-                                    <div>Disabled?</div>
+                                    <div>{translate(mod.id+".SECTION_TITLE["+"Disabled"+"]")}</div>
                                     <span className={styles.subtitleSpanRight}></span>
                                 </div>
                                 { ErrorChecks.map((currentErrorCheck) => (

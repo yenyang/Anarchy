@@ -4,16 +4,22 @@
 
 namespace Anarchy.Systems
 {
+    using System;
     using System.Collections.Generic;
+    using System.IO;
+    using System.Xml.Serialization;
     using Anarchy.Domain;
     using Anarchy.Settings;
     using Anarchy.Utils;
     using Colossal.Logging;
+    using Colossal.PSI.Common;
+    using Colossal.PSI.Environment;
     using Colossal.Serialization.Entities;
     using Colossal.UI.Binding;
     using Game;
     using Game.Input;
     using Game.Prefabs;
+    using Game.Rendering;
     using Game.Rendering.Utilities;
     using Game.Tools;
     using Unity.Entities;
@@ -64,7 +70,7 @@ namespace Anarchy.Systems
             { ErrorType.NoCargoAccess },
         };
 
-        private ErrorCheck[] DefaultErrorChecks = new ErrorCheck[]
+        private readonly ErrorCheck[] DefaultErrorChecks = new ErrorCheck[]
         {
             new (ErrorType.AlreadyExists, ErrorCheck.DisableState.WithAnarchy, 0),
             new (ErrorType.AlreadyUpgraded, ErrorCheck.DisableState.WithAnarchy, 1),
@@ -108,6 +114,7 @@ namespace Anarchy.Systems
         private ValueBindingHelper<bool> m_FlamingChirperOption;
         private ValueBindingHelper<float> m_ElevationValue;
         private ValueBindingHelper<float> m_ElevationStep;
+        private string m_ContentFolder;
         private ValueBindingHelper<int> m_ElevationScale;
         private ValueBindingHelper<bool> m_IsBuildingPrefab;
         private ValueBindingHelper<bool> m_ShowElevationSettingsOption;
@@ -124,10 +131,10 @@ namespace Anarchy.Systems
         private ProxyAction m_ResetElevation;
         private ProxyAction m_ElevationStepToggle;
         private ProxyAction m_ElevationKey;
-        private ErrorCheck[] m_ErrorChecks;
         private ValueBindingHelper<ErrorCheck[]> m_ErrorChecksBinding;
         private bool m_UpdateErrorChecks;
         private ValueBindingHelper<bool> m_ShowAnarchyToggleOptionsPanel;
+        private Dictionary<ErrorType, ErrorCheck.DisableState> m_DefaultErrorChecks;
 
         /// <summary>
         /// Gets a value indicating whether the flaming chirper option binding is on/off.
@@ -143,11 +150,6 @@ namespace Anarchy.Systems
         /// Gets a value indicating whether the elevation should be locked.
         /// </summary>
         public bool LockElevation { get => m_LockElevation.Value; }
-
-        /// <summary>
-        /// Gets the array of error checks.
-        /// </summary>
-        public ErrorCheck[] ErrorChecks { get => m_ErrorChecks; }
 
         /// <summary>
         /// Sets the flaming chirper option binding to value.
@@ -201,7 +203,7 @@ namespace Anarchy.Systems
         {
             List<ErrorType> allowableErrors = new List<ErrorType>();
 
-            foreach (ErrorCheck check in m_ErrorChecks)
+            foreach (ErrorCheck check in m_ErrorChecksBinding.Value)
             {
                 if (check.DisabledState == 0)
                 {
@@ -238,6 +240,9 @@ namespace Anarchy.Systems
             m_ToolSystem.EventToolChanged += OnToolChanged;
             m_ToolSystem.EventPrefabChanged += OnPrefabChanged;
             m_Log.Info($"{nameof(AnarchyUISystem)}.{nameof(OnCreate)}");
+            m_ContentFolder = Path.Combine(EnvPath.kUserDataPath, "ModsData", AnarchyMod.Id, "ErrorChecks");
+            System.IO.Directory.CreateDirectory(m_ContentFolder);
+            PopulateErrorCheckDictionary();
 
             // This binding communicates values between UI and C#
             m_AnarchyBinding = CreateBinding("AnarchyEnabled", false);
@@ -251,8 +256,13 @@ namespace Anarchy.Systems
             m_IsBuildingPrefab = CreateBinding("IsBuilding", false);
             m_ShowElevationSettingsOption = CreateBinding("ShowElevationSettingsOption", AnarchyMod.Instance.Settings.ShowElevationToolOption);
             m_ObjectToolCreateOrBrushMode = CreateBinding("ObjectToolCreateOrBrushMode", m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush);
-            m_ErrorChecks = DefaultErrorChecks;
-            m_ErrorChecksBinding = CreateBinding("ErrorChecks", DefaultErrorChecks);
+            ErrorCheck[] errorChecks = DefaultErrorChecks;
+            for (int i = 0; i < errorChecks.Length; i++)
+            {
+                TryLoadErrorCheck(ref errorChecks[i]);
+            }
+
+            m_ErrorChecksBinding = CreateBinding("ErrorChecks", errorChecks);
             m_ShowAnarchyToggleOptionsPanel = CreateBinding("ShowAnarchyToggleOptionsPanel", false);
 
             // This binding listens for events triggered by the UI.
@@ -518,12 +528,90 @@ namespace Anarchy.Systems
 
         private void ChangeDisabledState(int index, int disabledState)
         {
-            if (m_ErrorChecks.Length > index)
+            if (m_ErrorChecksBinding.Value.Length > index)
             {
-                m_ErrorChecks[index].DisabledState = disabledState;
-                m_ErrorChecksBinding.Binding.Update(m_ErrorChecks);
-                m_Log.Debug($"index: {index} state: {disabledState}");
+                m_ErrorChecksBinding.Value[index].DisabledState = disabledState;
+                TrySaveErrorCheck(m_ErrorChecksBinding.Value[index]);
             }
         }
+
+        private void PopulateErrorCheckDictionary()
+        {
+            m_DefaultErrorChecks = new Dictionary<ErrorType, ErrorCheck.DisableState>();
+            for (int i = 0; i < DefaultErrorChecks.Length; i++)
+            {
+                m_DefaultErrorChecks.Add(DefaultErrorChecks[i].GetErrorType(), DefaultErrorChecks[i].GetDisableState());
+            }
+        }
+
+        /// <summary>
+        /// Tries to save a custom color set.
+        /// </summary>
+        /// <param name="errorCheck"> Error type, disabled state, etc.</param>
+        /// <returns>True if saved, false if error occured.</returns>
+        private bool TrySaveErrorCheck(ErrorCheck errorCheck)
+        {
+            ErrorType errorType = (ErrorType)errorCheck.ID;
+            string filePath = Path.Combine(m_ContentFolder, errorType.ToString()+ ".xml");
+
+            if (m_DefaultErrorChecks.ContainsKey((ErrorType)errorCheck.ID) && m_DefaultErrorChecks[errorType] == errorCheck.GetDisableState())
+            {
+                if (File.Exists(filePath))
+                {
+                    try
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        m_Log.Warn($"{nameof(AnarchyUISystem)}.{nameof(TrySaveErrorCheck)} Could not delete file for Set {errorType}. Encountered exception {ex}");
+                    }
+                }
+
+                return false;
+            }
+
+            try
+            {
+                XmlSerializer serTool = new XmlSerializer(typeof(ErrorCheck)); // Create serializer
+                using (System.IO.FileStream file = System.IO.File.Create(filePath)) // Create file
+                {
+                    serTool.Serialize(file, errorCheck); // Serialize whole properties
+                }
+
+                m_Log.Debug($"{nameof(AnarchyUISystem)}.{nameof(TrySaveErrorCheck)} saved color set for {errorType}.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                m_Log.Warn($"{nameof(AnarchyUISystem)}.{nameof(TrySaveErrorCheck)} Could not save values for {errorType}. Encountered exception {ex}");
+                return false;
+            }
+        }
+
+        private bool TryLoadErrorCheck(ref ErrorCheck errorCheck)
+        {
+            string filePath = Path.Combine(m_ContentFolder, ((ErrorType)errorCheck.ID).ToString() + ".xml");
+            if (File.Exists(filePath))
+            {
+                try
+                {
+                    XmlSerializer serTool = new XmlSerializer(typeof(ErrorCheck)); // Create serializer
+                    using System.IO.FileStream readStream = new System.IO.FileStream(filePath, System.IO.FileMode.Open); // Open file
+                    errorCheck = (ErrorCheck)serTool.Deserialize(readStream); // Des-serialize to new Properties
+
+                    // m_Log.Debug($"{nameof(SelectedInfoPanelColorFieldsSystem)}.{nameof(TryLoadCustomColorSet)} loaded color set for {assetSeasonIdentifier.m_PrefabID}.");
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    m_Log.Warn($"{nameof(AnarchyUISystem)}.{nameof(TryLoadErrorCheck)} Could not get default values for Set {(ErrorType)errorCheck.ID}. Encountered exception {ex}");
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
     }
 }
