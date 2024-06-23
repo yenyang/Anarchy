@@ -122,6 +122,7 @@ namespace Anarchy.Settings
                 { SectionLabel("ErrorType"), "Error Type" },
                 { SectionLabel("Disabled"), "Disabled?" },
                 { SectionLabel("AnarchyOptions"), "Anarchy Options" },
+                { TooltipDescriptionKey("AnarchyOptions"), "Opens a panel for controlling which error checks are never disabled, disabled with Anarchy, or always disabled." },
             };
         }
 

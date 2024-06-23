@@ -47,9 +47,9 @@ export const PartialAnarchyMenyComponent = () => {
                         <div className={styles.rowGroup}>
                             <div className={styles.columnGroup}>
                                 <div className={styles.subtitleRow}>
-                                    <div>{translate(mod.id+".SECTION_TITLE["+"ErrorType"+"]")}</div>
+                                    <div>{translate(mod.id+".SECTION_TITLE["+"ErrorType"+"]", "Error Type")}</div>
                                     <span className={styles.subtitleSpanMiddle}></span>
-                                    <div>{translate(mod.id+".SECTION_TITLE["+"Disabled"+"]")}</div>
+                                    <div>{translate(mod.id+".SECTION_TITLE["+"Disabled"+"]", "Disabled?")}</div>
                                     <span className={styles.subtitleSpanRight}></span>
                                 </div>
                                 { ErrorChecks.map((currentErrorCheck) => (

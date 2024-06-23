@@ -55,7 +55,7 @@ export const AnarchyRowComponent: ModuleRegistryExtend = (Component : any) => {
                         selected = {showPanel}
                         multiSelect = {false}   // I haven't tested any other value here
                         disabled = {false}      // I haven't tested any other value here
-                        tooltip = {"Options Panel"}
+                        tooltip = {translate(mod.id + ".TOOLTIP_DESCRIPTION[AnarchyOptions]", "Opens a panel for controlling which error checks are never disabled, disabled with Anarchy, or always disabled.")}
                         className = {VanillaComponentResolver.instance.toolButtonTheme.button}
                         focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
                         onSelect={() => handleClick("ToggleAnarchyOptionsPanel")}
