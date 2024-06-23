@@ -3,8 +3,8 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    padding-left: 15rem;
-    padding-right: 15rem;
+    padding-left: 3rem;
+    padding-right: 3rem;
 }
 
 .rowGroup {
@@ -18,26 +18,29 @@
 
 .panel {
     position: absolute;
-    left: 610rem;    
-    top: 5rem;
+    top: 10rem;    
+    left: 600rem;
     flex-direction: flex-start;
+    font-size: 14rem !important;
+}
+
+
+.subtitleSpanLeft {
+    width: 10rem;
+}
+
+.subtitleSpanMiddle {
+    width: 90rem;
+}
+
+.subtitleSpanRight {
+    width: 15rem;
 }
 
 .header {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
-}
-
-.subtitleRight {
-    width: 150rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.subtitleLeft {
-    width: 150rem;
 }
 
 .subtitleRow {

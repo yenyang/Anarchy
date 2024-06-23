@@ -3,22 +3,27 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    padding-bottom: 1rem;
-    padding-top: 1rem;
-    padding-left: 5rem;
-    padding-right: 5rem;
+    padding-bottom: 0.25rem;
+    padding-top: 0.25rem;
+    padding-left: 3rem;
+    padding-right: 3rem;
 }
 
 .errorCheckName {
-    width: 150rem;
+    width: 135rem;
 }
 
 .spacer {
-    width: 24rem;
+    width: 18rem;
+}
+
+.smallButton {
+    width: 18rem !important;
+    height: 18rem !important;
 }
 
 .disableState {
-    width: 100rem;    
+    width: 60rem; 
     display: flex;
     align-items: center;
     justify-content: center;

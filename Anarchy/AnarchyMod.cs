@@ -2,6 +2,7 @@
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
+// #define VERBOSE
 namespace Anarchy
 {
     using System;
@@ -75,10 +76,10 @@ namespace Anarchy
             Instance = this;
             Log = LogManager.GetLogger("Mods_Yenyang_Anarchy").SetShowsErrorsInUI(false);
             Log.Info(nameof(OnLoad));
-#if DEBUG
-            Log.effectivenessLevel = Level.Debug;
-#elif VERBOSE
+#if VERBOSE
             Log.effectivenessLevel = Level.Verbose;
+#elif DEBUG
+            Log.effectivenessLevel = Level.Debug;
 #else
             Log.effectivenessLevel = Level.Info;
 #endif

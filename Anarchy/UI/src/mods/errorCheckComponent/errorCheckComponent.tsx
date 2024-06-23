@@ -15,7 +15,6 @@ const arrowRightSrc =           uilStandard +  "ArrowRightThickStroke.svg";
 
 function handleClick(index: number, newState : number) {
     trigger(mod.id, "ChangeDisabledState", index, newState);
-    console.log(index + " " + newState);
 }
 
 const roundButtonHighlightStyle = getModule("game-ui/common/input/button/themes/round-highlight-button.module.scss", "classes");
@@ -25,7 +24,7 @@ export const ErrorCheckComponent = (props: { errorCheck : ErrorCheck }) => {
     
 
     function getDisableStateText(state: number) : string {
-        let stateText = "With Anarchy";
+        let stateText = "Anarchy";
         if (state == 0) {
             stateText = "Never" ;
         } else if (state == 2) {
@@ -41,7 +40,7 @@ export const ErrorCheckComponent = (props: { errorCheck : ErrorCheck }) => {
             <div className={styles.errorCheckName}>{translate(props.errorCheck.LocaleKey)}</div>
             { disableState - 1 >= 0 ? 
                 (
-                    <Button className={roundButtonHighlightStyle.button} variant="icon" onSelect={() => {handleClick(props.errorCheck.Index, disableState-1); changeState(disableState-1);} } focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}>
+                    <Button className={roundButtonHighlightStyle.button + " " + styles.smallButton} variant="icon" onSelect={() => {handleClick(props.errorCheck.Index, disableState-1); changeState(disableState-1);} } focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}>
                         <img src={arrowLeftSrc}></img>
                     </Button>
                 ) : 
@@ -52,7 +51,7 @@ export const ErrorCheckComponent = (props: { errorCheck : ErrorCheck }) => {
             <div className={styles.disableState}>{getDisableStateText(disableState)}</div>
             { disableState + 1 <= 2 ? 
                 (
-                    <Button className={roundButtonHighlightStyle.button} variant="icon" onSelect={() => {handleClick(props.errorCheck.Index, disableState+1); changeState(disableState+1);}} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}>
+                    <Button className={roundButtonHighlightStyle.button + " " + styles.smallButton} variant="icon" onSelect={() => {handleClick(props.errorCheck.Index, disableState+1); changeState(disableState+1);}} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}>
                         <img src={arrowRightSrc}></img>
                     </Button>
                 ) :

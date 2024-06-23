@@ -66,24 +66,21 @@ namespace Anarchy.Systems
             {
                 if (EntityManager.TryGetComponent<ToolErrorData>(currentEntity, out ToolErrorData toolErrorData))
                 {
-                    if (m_AnarchyUISystem.IsErrorTypeAllowed(toolErrorData.m_Error))
+                    if (toolErrorData.m_Error != Game.Tools.ErrorType.ExceedsLotLimits)
                     {
-                        if (toolErrorData.m_Error != Game.Tools.ErrorType.ExceedsLotLimits)
-                        {
-                            toolErrorData.m_Flags &= ~ToolErrorFlags.DisableInGame;
-                        }
-
-                        if (!m_DoNotReEnableForEditor.Contains(toolErrorData.m_Error))
-                        {
-                            toolErrorData.m_Flags &= ~ToolErrorFlags.DisableInEditor;
-                        }
-
-                        EntityManager.SetComponentData(currentEntity, toolErrorData);
-#if VERBOSE
-                        AnarchyIMod.Logger.Verbose(("DisableToolErrorsSystem.OnUpdate currentEntity.index = " + currentEntity.Index + " currentEntity.version = " + currentEntity.Version + " ErrorType = " + toolErrorData.m_Error.ToString());
-                        AnarchyIMod.Logger.Verbose("DisableToolErrorsSystem.OnUpdate toolErrorData.m_Flags = " + toolErrorData.m_Flags.ToString());
-#endif
+                        toolErrorData.m_Flags &= ~ToolErrorFlags.DisableInGame;
                     }
+
+                    if (!m_DoNotReEnableForEditor.Contains(toolErrorData.m_Error))
+                    {
+                        toolErrorData.m_Flags &= ~ToolErrorFlags.DisableInEditor;
+                    }
+
+                    EntityManager.SetComponentData(currentEntity, toolErrorData);
+#if VERBOSE
+                    AnarchyIMod.Logger.Verbose(("DisableToolErrorsSystem.OnUpdate currentEntity.index = " + currentEntity.Index + " currentEntity.version = " + currentEntity.Version + " ErrorType = " + toolErrorData.m_Error.ToString());
+                    AnarchyIMod.Logger.Verbose("DisableToolErrorsSystem.OnUpdate toolErrorData.m_Flags = " + toolErrorData.m_Flags.ToString());
+#endif
                 }
             }
 

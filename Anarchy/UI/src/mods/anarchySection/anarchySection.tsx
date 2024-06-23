@@ -7,16 +7,18 @@ import mod from "../../../mod.json";
 // These establishes the binding with C# side. Without C# side game ui will crash.
 const anarchyEnabled$ = bindValue<boolean>(mod.id, 'AnarchyEnabled');
 const showToolIcon$ = bindValue<boolean>(mod.id, 'ShowToolIcon');
+const ShowPanel$ = bindValue<boolean>(mod.id, "ShowAnarchyToggleOptionsPanel");
 
 // These contain the coui paths to Unified Icon Library svg assets
 const uilStandard =                          "coui://uil/Standard/";
 const uilColored =                           "coui://uil/Colored/";
 const anarchyEnabledSrc =      uilColored +  "Anarchy.svg";
 const anarchyDisabledSrc =     uilStandard + "Anarchy.svg";
+const optionSrc =               uilStandard + "Gear.svg";
 
-function handleClick() {
-    // This triggers an event on C# side and C# designates the method to implement.
-    trigger(mod.id, "AnarchyToggled");
+
+function handleClick(event: string) {
+    trigger(mod.id, event);
 }
 
 export const AnarchyRowComponent: ModuleRegistryExtend = (Component : any) => {
@@ -25,6 +27,7 @@ export const AnarchyRowComponent: ModuleRegistryExtend = (Component : any) => {
         // These get the value of the bindings.
         const anarchyEnabled : boolean = useValue(anarchyEnabled$);
         const showToolIcon : boolean = useValue(showToolIcon$);
+        const showPanel : boolean = useValue(ShowPanel$);
         
         // translation handling. Translates using locale keys that are defined in C# or fallback string here.
         const { translate } = useLocalization();
@@ -48,13 +51,24 @@ export const AnarchyRowComponent: ModuleRegistryExtend = (Component : any) => {
                 */
                 <VanillaComponentResolver.instance.Section title={anarchySectionTitle}>
                     <VanillaComponentResolver.instance.ToolButton
+                        src={optionSrc}
+                        selected = {showPanel}
+                        multiSelect = {false}   // I haven't tested any other value here
+                        disabled = {false}      // I haven't tested any other value here
+                        tooltip = {"Options Panel"}
+                        className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                        focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                        onSelect={() => handleClick("ToggleAnarchyOptionsPanel")}
+                    />
+                    <VanillaComponentResolver.instance.ToolButton
                         src={anarchyEnabled ? anarchyEnabledSrc : anarchyDisabledSrc}
                         selected = {anarchyEnabled}
                         multiSelect = {false}   // I haven't tested any other value here
                         disabled = {false}      // I haven't tested any other value here
                         tooltip = {tooltipText}
-                        className = {VanillaComponentResolver.instance.toolButtonTheme.button}
-                        onSelect={handleClick}
+                        className = {VanillaComponentResolver.instance.toolButtonTheme.button}                        
+                        focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                        onSelect={() => handleClick("AnarchyToggled")}
                     />
                 </VanillaComponentResolver.instance.Section> 
             );

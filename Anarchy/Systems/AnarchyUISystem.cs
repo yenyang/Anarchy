@@ -63,7 +63,7 @@ namespace Anarchy.Systems
             { ErrorType.NoCargoAccess },
         };
 
-        private readonly ErrorCheck[] DefaultErrorChecks = new ErrorCheck[]
+        private ErrorCheck[] DefaultErrorChecks = new ErrorCheck[]
         {
             new (ErrorType.AlreadyExists, ErrorCheck.DisableState.WithAnarchy, 0),
             new (ErrorType.AlreadyUpgraded, ErrorCheck.DisableState.WithAnarchy, 1),
@@ -73,8 +73,8 @@ namespace Anarchy.Systems
             new (ErrorType.InWater, ErrorCheck.DisableState.WithAnarchy, 5),
             new (ErrorType.LongDistance, ErrorCheck.DisableState.WithAnarchy, 6),
             new (ErrorType.LowElevation, ErrorCheck.DisableState.WithAnarchy, 7),
-            new (ErrorType.NoCarAccess, ErrorCheck.DisableState.WithAnarchy, 8),
-            new (ErrorType.NoCargoAccess, ErrorCheck.DisableState.WithAnarchy, 9),
+            new (ErrorType.NoCarAccess, ErrorCheck.DisableState.Never, 8),
+            new (ErrorType.NoCargoAccess, ErrorCheck.DisableState.Never, 9),
             new (ErrorType.NoGroundWater, ErrorCheck.DisableState.WithAnarchy, 10),
             new (ErrorType.NoPedestrianAccess, ErrorCheck.DisableState.Never, 11),
             new (ErrorType.NoRoadAccess, ErrorCheck.DisableState.Never, 12),
@@ -126,6 +126,7 @@ namespace Anarchy.Systems
         private ErrorCheck[] m_ErrorChecks;
         private ValueBindingHelper<ErrorCheck[]> m_ErrorChecksBinding;
         private bool m_UpdateErrorChecks;
+        private ValueBindingHelper<bool> m_ShowAnarchyToggleOptionsPanel;
 
         /// <summary>
         /// Gets a value indicating whether the flaming chirper option binding is on/off.
@@ -192,13 +193,31 @@ namespace Anarchy.Systems
         public bool IsToolAppropriate(string toolID) => ToolIDs.Contains(toolID);
 
         /// <summary>
-        /// Checks the list of error types that Anarchy disables.
+        /// Gets a list of error types that should be disabled.
         /// </summary>
-        /// <param name="errorType">An Error type enum.</param>
-        /// <returns>True if that error type should be disabled by anarchy. False if not.</returns>
-        public bool IsErrorTypeAllowed(ErrorType errorType)
+        /// <returns>List or error types.</returns>
+        public List<ErrorType> GetAllowableErrorTypes()
         {
-            return AllowableErrorTypes.Contains(errorType);
+            List<ErrorType> allowableErrors = new List<ErrorType>();
+
+            foreach (ErrorCheck check in m_ErrorChecks)
+            {
+                if (check.DisabledState == 0)
+                {
+                    continue;
+                }
+                else if (check.DisabledState == 1 && m_AnarchyEnabled)
+                {
+                    allowableErrors.Add((ErrorType)check.ID);
+                    continue;
+                }
+                else if (check.DisabledState == 2)
+                {
+                    allowableErrors.Add((ErrorType)check.ID);
+                }
+            }
+
+            return allowableErrors;
         }
 
         /// <inheritdoc/>
@@ -233,6 +252,7 @@ namespace Anarchy.Systems
             m_ObjectToolCreateOrBrushMode = CreateBinding("ObjectToolCreateOrBrushMode", m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush);
             m_ErrorChecks = DefaultErrorChecks;
             m_ErrorChecksBinding = CreateBinding("ErrorChecks", DefaultErrorChecks);
+            m_ShowAnarchyToggleOptionsPanel = CreateBinding("ShowAnarchyToggleOptionsPanel", false);
 
             // This binding listens for events triggered by the UI.
             AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", AnarchyToggled));
@@ -252,6 +272,7 @@ namespace Anarchy.Systems
             m_ElevationKey = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ElevationActionName);
             CreateTrigger("ResetElevationToggled", () => ChangeElevation(-1f * m_ElevationValue.Value));
             CreateTrigger<int, int>("ChangeDisabledState", ChangeDisabledState);
+            CreateTrigger("ToggleAnarchyOptionsPanel", () => m_ShowAnarchyToggleOptionsPanel.Value = !m_ShowAnarchyToggleOptionsPanel.Value);
         }
 
         /// <inheritdoc/>
@@ -320,12 +341,6 @@ namespace Anarchy.Systems
             if (m_AnarchyEnabled != m_AnarchyBinding.Value)
             {
                 m_AnarchyBinding.Value = m_AnarchyEnabled;
-            }
-
-            if (m_UpdateErrorChecks)
-            {
-                m_ErrorChecksBinding.Value = m_ErrorChecks;
-                m_UpdateErrorChecks = false;
             }
 
             base.OnUpdate();
@@ -505,7 +520,7 @@ namespace Anarchy.Systems
             if (m_ErrorChecksBinding.Value.Length > index)
             {
                 m_ErrorChecks[index].DisabledState = disabledState;
-                m_UpdateErrorChecks = true;
+                m_ErrorChecksBinding.Value = m_ErrorChecks;
             }
         }
     }
