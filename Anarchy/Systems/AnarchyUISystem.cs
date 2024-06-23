@@ -12,15 +12,12 @@ namespace Anarchy.Systems
     using Anarchy.Settings;
     using Anarchy.Utils;
     using Colossal.Logging;
-    using Colossal.PSI.Common;
     using Colossal.PSI.Environment;
     using Colossal.Serialization.Entities;
     using Colossal.UI.Binding;
     using Game;
     using Game.Input;
     using Game.Prefabs;
-    using Game.Rendering;
-    using Game.Rendering.Utilities;
     using Game.Tools;
     using Unity.Entities;
     using UnityEngine;
@@ -42,32 +39,6 @@ namespace Anarchy.Systems
             { "Terrain Tool" },
             { "Upgrade Tool" },
             { "Line Tool" },
-        };
-
-        /// <summary>
-        /// A list of error types that Anarchy will disable.
-        /// </summary>
-        private readonly List<ErrorType> AllowableErrorTypes = new ()
-        {
-            { ErrorType.OverlapExisting },
-            { ErrorType.InvalidShape },
-            { ErrorType.LongDistance },
-            { ErrorType.TightCurve },
-            { ErrorType.AlreadyUpgraded },
-            { ErrorType.InWater },
-            { ErrorType.NoWater },
-            { ErrorType.ExceedsCityLimits },
-            { ErrorType.NotOnShoreline },
-            { ErrorType.AlreadyExists },
-            { ErrorType.ShortDistance },
-            { ErrorType.LowElevation },
-            { ErrorType.SmallArea },
-            { ErrorType.SteepSlope },
-            { ErrorType.NotOnBorder },
-            { ErrorType.NoGroundWater },
-            { ErrorType.OnFire },
-            { ErrorType.ExceedsLotLimits },
-            { ErrorType.NoCargoAccess },
         };
 
         private readonly ErrorCheck[] DefaultErrorChecks = new ErrorCheck[]

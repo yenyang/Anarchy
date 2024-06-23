@@ -17,7 +17,7 @@ Full or Partial Localization: Spanish, German, Chinese Simplified, Brazilian Por
 # Detailed Descrption
 The mod also has: 
 * Optional Tool icon
-* Configuration Keyboard shortcut (Default: Ctrl+A)
+* Customizable Keyboard shortcut (Default: Ctrl+A)
 * Optional flaming chirper
 * Option to automatically enable with bulldozer
 * Optional mouse tooltip
@@ -27,6 +27,7 @@ The mod also has:
 * Set relative Elevation with Object tool and line tool for props, trees, and plants. (Options to disable and automatically reset elevation) Keybinds are Configurable . Defaults: up arrow -> elevation up, down arrow -> elevation down, shift + r -> reset elevation to 0, shift + e -> change elevation step. 
 * Elevation lock to prevent game systems from changing position of props, trees, plants, and decals. You can still change position with mods.
 * Anarchy and Elevation lock can be added or removed after placement via the selected info panel.
+* In Game panel for controlling which error checks are never disabled, disabled with Anarchy, or always disabled.
 
 Currently it applies to these tools:
 * Object Tool (Option to automatically disable Anarchy toggle while brushing objects. and Set relative elevation while plopping single item or brushing.)
@@ -37,32 +38,15 @@ Currently it applies to these tools:
 * Upgrade Tool
 * Line Tool by Algernon (Set relative elevation).
 
-You can activate anarchy with the keyboard shortcut "Ctrl+A" or with the optional tool icon that only appears while using the above tools.
-Note for azerty users the shortcut is CTRL+Q.
+You can activate anarchy with the Customizable Keyboard shortcut (Default: Ctrl+A) or with the optional tool icon that only appears while using the above tools.
 
 You can tell anarchy is active using optional Flaming Chirper, the tool icon, or a tooltip.
 
-The following errors will not occur while Anarchy is enabled:
-* Overlap Existing
-* Invalid Shape
-* Long Distance
-* Tight Curve
-* Already Upgraded
-* In Water
-* No Water
-* Exceeds City Limits (This provides Cross the line Functionality)
-* Not On Shoreline
-* Already Exists
-* Short Distance
-* Low Elevation
-* Small Area
-* Steep Slope
-* Not On Border
-* No Groundwater
-* On Fire
-* Exceeds Lot Limits (Editor Only)
+Almost all error types in the game can be set to never be disabled, disabled with Anarchy toggle, or always disabled via a new in-game panel. You can open the panel using the gear icon button next to the Anarchy Icon in the tool options panel.
 
-If you find an error that you think should be added or if you find a tool that this should also be included, please let me know. 
+Some suggestions would be to Always enable "Exceeds City Limit" so you can always have cross the line functionality, and set "In Water" to never disable so that trees don't end up in the water if you don't want that.
+
+Some of the errors that can be disabled are opt-in. Those generally deal with pathfinding related issues.
 
 ## Props and Trees
 Placing standalone props is an unsupported feature of the game. You need DevUI to access the 'Add Object' menu via the home button to place standalone props. Other mods may make it easier to find and place props.
@@ -90,8 +74,8 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * yenyang - Mod Author
 * Chameleon TBN - Testing, Feedback, Icons, and Logo
 * Sully - Testing, Feedback, and Promotional Material.
-* Klyte45, Algernon - Help with UI, Cooperative Development and Code Sharing
+* Klyte45, Algernon, T.D.W. - Help with UI, Cooperative Development and Code Sharing
 * Bad Peanut - Image Credit for Flaming Chirper
-* T.D.W., krzychu124, Triton Supreme, and Quboid - Cooperative Development and Code Sharing
+* krzychu124, Triton Supreme, and Quboid - Cooperative Development and Code Sharing
 * Localization: Nyoko, Citadino, Dome, and Eryalito (Spanish), Hendrix (German), RilkeXS (Chinese Simplified), Luis Fernando de Paula and felipecollucci (Portuguese), Maxi and raistlin46 (Partial Italian), karmel68 and Lisek (Polish), Tanat and TwotoolusFLY_LSh.st (Korean), OWSEEX (Russian) and Quoifleur, Karg, CEO of Tabarnak and Edou24 (French). 
 * Testing, Feedback - Dante, starrysum, HarbourMaster Jay, Dome, Tigon Ologdring, BruceyBoy, RaftermanNZ, Elektrotek, SpaceChad 
