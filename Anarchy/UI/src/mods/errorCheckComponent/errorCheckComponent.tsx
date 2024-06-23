@@ -43,7 +43,7 @@ export const ErrorCheckComponent = (props: { errorCheck : ErrorCheck }) => {
             <div className={styles.errorCheckName}>{translate(props.errorCheck.LocaleKey)}</div>
             { disableState - 1 >= 0 ? 
                 (
-                    <Button className={roundButtonHighlightStyle.button + " " + styles.smallButton} variant="icon" onSelect={() => {handleClick(props.errorCheck.Index, disableState-1); changeState(disableState-1);} } focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}>
+                    <Button className={roundButtonHighlightStyle.button} variant="icon" onSelect={() => {handleClick(props.errorCheck.Index, disableState-1); changeState(disableState-1);} } focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}>
                         <img src={arrowLeftSrc}></img>
                     </Button>
                 ) : 
@@ -54,7 +54,7 @@ export const ErrorCheckComponent = (props: { errorCheck : ErrorCheck }) => {
             <div className={styles.disableState}>{getDisableStateText(disableState)}</div>
             { disableState + 1 <= 2 ? 
                 (
-                    <Button className={roundButtonHighlightStyle.button + " " + styles.smallButton} variant="icon" onSelect={() => {handleClick(props.errorCheck.Index, disableState+1); changeState(disableState+1);}} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}>
+                    <Button className={roundButtonHighlightStyle.button} variant="icon" onSelect={() => {handleClick(props.errorCheck.Index, disableState+1); changeState(disableState+1);}} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}>
                         <img src={arrowRightSrc}></img>
                     </Button>
                 ) :

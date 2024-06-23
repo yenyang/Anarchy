@@ -5,6 +5,7 @@
     align-items: center;
     padding-left: 3rem;
     padding-right: 3rem;
+    height: 345rem;
 }
 
 .rowGroup {
@@ -21,7 +22,14 @@
     top: 10rem;    
     left: 600rem;
     flex-direction: flex-start;
-    font-size: 14rem !important;
+}
+
+.subtitleLeft {
+    width: 175rem;
+}
+
+.subtitleRight {
+    width: 95rem;
 }
 
 
@@ -30,7 +38,7 @@
 }
 
 .subtitleSpanMiddle {
-    width: 90rem;
+    width: 10rem;
 }
 
 .subtitleSpanRight {
@@ -49,4 +57,7 @@
     justify-content: flex-start;
     align-items: center;
     padding-top: 2rem;
+    font-size: 18rem !important;
+    font-weight: bold;
+    padding-bottom: 5rem;
 }

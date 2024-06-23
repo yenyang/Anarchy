@@ -31,6 +31,9 @@ export const PartialAnarchyMenyComponent = () => {
     const isPhotoMode = useValue(game.activeGamePanel$)?.__Type == game.GamePanelType.PhotoMode;
     const showToolIcon : boolean = useValue(showToolIcon$);
     const { translate } = useLocalization();
+
+    const leftErrorChecks = ErrorChecks.slice(0,Math.ceil(ErrorChecks.length/2));
+    const rightErrorChecks = ErrorChecks.slice(Math.ceil(ErrorChecks.length/2))
     return (
         <>
             {ShowPanel && !isPhotoMode && showToolIcon && (
@@ -47,12 +50,22 @@ export const PartialAnarchyMenyComponent = () => {
                         <div className={styles.rowGroup}>
                             <div className={styles.columnGroup}>
                                 <div className={styles.subtitleRow}>
-                                    <div>{translate(mod.id+".SECTION_TITLE["+"ErrorType"+"]", "Error Type")}</div>
+                                    <div className={styles.subtitleLeft}>{translate(mod.id+".SECTION_TITLE["+"ErrorCheck"+"]", "Error Check")}</div>
+                                    <span className={styles.subtitleSpanMiddle}></span>
+                                    <div className={styles.subtitleRight}>{translate(mod.id+".SECTION_TITLE["+"Disabled"+"]", "Disabled?")}</div>
+                                </div>
+                                { leftErrorChecks.map((currentErrorCheck) => (
+                                    <ErrorCheckComponent errorCheck={currentErrorCheck}></ErrorCheckComponent> 
+                                ))}
+                            </div>
+                            <div className={styles.columnGroup}>
+                                <div className={styles.subtitleRow}>
+                                    <div>{translate(mod.id+".SECTION_TITLE["+"ErrorCheck"+"]", "Error Check")}</div>
                                     <span className={styles.subtitleSpanMiddle}></span>
                                     <div>{translate(mod.id+".SECTION_TITLE["+"Disabled"+"]", "Disabled?")}</div>
                                     <span className={styles.subtitleSpanRight}></span>
                                 </div>
-                                { ErrorChecks.map((currentErrorCheck) => (
+                                { rightErrorChecks.map((currentErrorCheck) => (
                                     <ErrorCheckComponent errorCheck={currentErrorCheck}></ErrorCheckComponent> 
                                 ))}
                             </div>

@@ -50,11 +50,11 @@ You can activate anarchy with the Customizable Keyboard shortcut (Default: Ctrl+
 
 You can tell anarchy is active using optional Flaming Chirper, the tool icon, or a tooltip.
 
-Almost all error types in the game can be set to never be disabled, disabled with Anarchy toggle, or always disabled via a new in-game panel. You can open the panel using the gear icon button next to the Anarchy Icon in the tool options panel.
+Almost all error checks in the game can be set to never be disabled, disabled with Anarchy toggle, or always disabled via a new in-game panel. You can open the panel using the gear icon button next to the Anarchy Icon in the tool options panel.
 
 Some suggestions would be to Always enable "Exceeds City Limit" so you can always have cross the line functionality, and set "In Water" to never disable so that trees don't end up in the water if you don't want that.
 
-Some of the errors that can be disabled are opt-in. Those generally deal with pathfinding related issues.
+Some of the error checks that can be disabled are opt-in. Those generally deal with pathfinding related issues.
 
 ## Props and Trees
 Placing standalone props is an unsupported feature of the game. You need DevUI to access the 'Add Object' menu via the home button to place standalone props. Other mods may make it easier to find and place props.

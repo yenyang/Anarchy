@@ -119,7 +119,7 @@ namespace Anarchy.Settings
                 { ErrorCheckKey(ErrorType.NoRoadAccess), "No Road Access" },
                 { ErrorCheckKey(ErrorType.NoTrackAccess), "No Track Access" },
                 { ErrorCheckKey(ErrorType.NoTrainAccess), "No Train Access" },
-                { SectionLabel("ErrorType"), "Error Type" },
+                { SectionLabel("ErrorCheck"), "Error Check" },
                 { SectionLabel("Disabled"), "Disabled?" },
                 { SectionLabel("AnarchyOptions"), "Anarchy Options" },
                 { TooltipDescriptionKey("AnarchyOptions"), "Opens a panel for controlling which error checks are never disabled, disabled with Anarchy, or always disabled." },
