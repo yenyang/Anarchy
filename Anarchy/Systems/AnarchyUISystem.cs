@@ -91,6 +91,7 @@ namespace Anarchy.Systems
         private ValueBindingHelper<bool> m_ShowElevationSettingsOption;
         private ValueBindingHelper<bool> m_ObjectToolCreateOrBrushMode;
         private ValueBindingHelper<bool> m_DisableElevationLock;
+        private ValueBindingHelper<bool> m_MultipleUniques;
         private ElevateObjectDefinitionSystem m_ElevateObjectDefinitionSystem;
         private ValueBindingHelper<bool> m_LockElevation;
         private ElevateTempObjectSystem m_ElevateTempObjectSystem;
@@ -145,6 +146,15 @@ namespace Anarchy.Systems
             }
 
             m_DisableElevationLock.Value = false;
+        }
+
+        /// <summary>
+        /// Sets the binding for multiple uniques.
+        /// </summary>
+        /// <param name="value">Toggle of setting.</param>
+        public void SetMultipleUniques(bool value)
+        {
+            m_MultipleUniques.Value = value;
         }
 
         /// <summary>
@@ -225,6 +235,7 @@ namespace Anarchy.Systems
             m_DisableElevationLock = CreateBinding("DisableElevationLock", false);
             m_LockElevation = CreateBinding("LockElevation", AnarchyMod.Instance.Settings.ElevationLock);
             m_IsBuildingPrefab = CreateBinding("IsBuilding", false);
+            m_MultipleUniques = CreateBinding("MultipleUniques", AnarchyMod.Instance.Settings.AllowPlacingMultipleUniqueBuildings);
             m_ShowElevationSettingsOption = CreateBinding("ShowElevationSettingsOption", AnarchyMod.Instance.Settings.ShowElevationToolOption);
             m_ObjectToolCreateOrBrushMode = CreateBinding("ObjectToolCreateOrBrushMode", m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush);
             ErrorCheck[] errorChecks = DefaultErrorChecks;

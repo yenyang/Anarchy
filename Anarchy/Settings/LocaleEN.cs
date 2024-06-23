@@ -123,6 +123,8 @@ namespace Anarchy.Settings
                 { SectionLabel("Disabled"), "Disabled?" },
                 { SectionLabel("AnarchyOptions"), "Anarchy Options" },
                 { TooltipDescriptionKey("AnarchyOptions"), "Opens a panel for controlling which error checks are never disabled, disabled with Anarchy, or always disabled." },
+                { UIText("Never"), "Never" },
+                { UIText("Always"), "Always" },
             };
         }
 
@@ -149,6 +151,11 @@ namespace Anarchy.Settings
         private string SectionLabel(string key)
         {
             return $"{AnarchyMod.Id}.SECTION_TITLE[{key}]";
+        }
+
+        private string UIText(string key)
+        {
+            return $"{AnarchyMod.Id}.UI_TEXT[{key}]";
         }
 
         /// <inheritdoc/>

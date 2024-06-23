@@ -159,6 +159,7 @@ namespace Anarchy.Settings
         /// Gets or sets a value indicating whether to use allow placing multiple unique buildings.
         /// </summary>
         [SettingsUISection(General, Stable)]
+        [SettingsUISetter(typeof(AnarchyModSettings), nameof(SetMultipleUniques))]
         public bool AllowPlacingMultipleUniqueBuildings { get; set; }
 
         /// <summary>
@@ -316,13 +317,23 @@ namespace Anarchy.Settings
         }
 
         /// <summary>
-        /// Triggers method in Anarchy UI System for setting prevent override.
+        /// Triggers method in Anarchy UI System for showing elevation lock.
         /// </summary>
         /// <param name="value">The value being set to.</param>
         public void CheckForDisableElevationLock(bool value)
         {
             AnarchyUISystem anarchyReactUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyUISystem>();
             anarchyReactUISystem.SetDisableElevationLock(value);
+        }
+
+        /// <summary>
+        /// Triggers method in Anarchy UI System for allowing multiple uniques.
+        /// </summary>
+        /// <param name="value">The value being set to.</param>
+        public void SetMultipleUniques(bool value)
+        {
+            AnarchyUISystem anarchyReactUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyUISystem>();
+            anarchyReactUISystem.SetMultipleUniques(value);
         }
     }
 }

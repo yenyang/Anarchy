@@ -13,6 +13,7 @@ const arrowLeftSrc =           uilStandard +  "ArrowLeftThickStroke.svg";
 const arrowRightSrc =           uilStandard +  "ArrowRightThickStroke.svg";
 
 const ErrorChecks$ =           bindValue<ErrorCheck[]> (mod.id, "ErrorChecks");
+const MultipleUniques$ =        bindValue<boolean>(mod.id, "MultipleUniques");
 
 
 function handleClick(index: number, newState : number) {
@@ -25,14 +26,15 @@ export const ErrorCheckComponent = (props: { errorCheck : ErrorCheck }) => {
     const { translate } = useLocalization();
     
     const ErrorChecks = useValue(ErrorChecks$);
+    const MultipleUniques = useValue(MultipleUniques$);
 
-    function getDisableStateText(state: number) : string {
-        let stateText = "Anarchy";
-        if (state == 0) {
-            stateText = "Never" ;
-        } else if (state == 2) {
-            stateText = "Always";
-        }
+    function getDisableStateText(state: number) : string | null {
+        let stateText = translate("YY_ANARCHY.AnarchyButton", "Anarchy");
+        if (state == 2 || (MultipleUniques && props.errorCheck.ID == 18)) {
+            stateText = translate("Anarchy.UI_TEXT[Always]", "Always");
+        } else if (state == 0 ) {
+            stateText = translate("Anarchy.UI_TEXT[Never]", "Never") ;
+        } 
         return stateText;
     }
 
@@ -40,8 +42,7 @@ export const ErrorCheckComponent = (props: { errorCheck : ErrorCheck }) => {
 
     return (
         <div className={styles.rowGroup}>
-            <div className={styles.errorCheckName}>{translate(props.errorCheck.LocaleKey)}</div>
-            { disableState - 1 >= 0 ? 
+            { disableState >= 1 && (!MultipleUniques || props.errorCheck.ID != 18)? 
                 (
                     <Button className={roundButtonHighlightStyle.button} variant="icon" onSelect={() => {handleClick(props.errorCheck.Index, disableState-1); changeState(disableState-1);} } focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}>
                         <img src={arrowLeftSrc}></img>
@@ -52,7 +53,7 @@ export const ErrorCheckComponent = (props: { errorCheck : ErrorCheck }) => {
                 )
             }
             <div className={styles.disableState}>{getDisableStateText(disableState)}</div>
-            { disableState + 1 <= 2 ? 
+            { disableState <= 1 && (!MultipleUniques || props.errorCheck.ID != 18)? 
                 (
                     <Button className={roundButtonHighlightStyle.button} variant="icon" onSelect={() => {handleClick(props.errorCheck.Index, disableState+1); changeState(disableState+1);}} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}>
                         <img src={arrowRightSrc}></img>

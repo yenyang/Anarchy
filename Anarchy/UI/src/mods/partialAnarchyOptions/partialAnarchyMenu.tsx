@@ -50,9 +50,15 @@ export const PartialAnarchyMenyComponent = () => {
                         <div className={styles.rowGroup}>
                             <div className={styles.columnGroup}>
                                 <div className={styles.subtitleRow}>
-                                    <div className={styles.subtitleLeft}>{translate(mod.id+".SECTION_TITLE["+"ErrorCheck"+"]", "Error Check")}</div>
-                                    <span className={styles.subtitleSpanMiddle}></span>
-                                    <div className={styles.subtitleRight}>{translate(mod.id+".SECTION_TITLE["+"Disabled"+"]", "Disabled?")}</div>
+                                    <div className={styles.errorTypeColumn}>{translate(mod.id+".SECTION_TITLE["+"ErrorCheck"+"]", "Error Check")}</div>
+                                </div>
+                                { leftErrorChecks.map((currentErrorCheck) => (
+                                    <div className={styles.errorTypeColumn}>{translate(currentErrorCheck.LocaleKey)}</div>
+                                ))}
+                            </div>
+                            <div className={styles.columnGroup}>
+                                <div className={styles.subtitleRow}>
+                                    <div>{translate(mod.id+".SECTION_TITLE["+"Disabled"+"]", "Disabled?")}</div>
                                 </div>
                                 { leftErrorChecks.map((currentErrorCheck) => (
                                     <ErrorCheckComponent errorCheck={currentErrorCheck}></ErrorCheckComponent> 
@@ -60,10 +66,15 @@ export const PartialAnarchyMenyComponent = () => {
                             </div>
                             <div className={styles.columnGroup}>
                                 <div className={styles.subtitleRow}>
-                                    <div>{translate(mod.id+".SECTION_TITLE["+"ErrorCheck"+"]", "Error Check")}</div>
-                                    <span className={styles.subtitleSpanMiddle}></span>
+                                    <div className={styles.errorTypeColumn}>{translate(mod.id+".SECTION_TITLE["+"ErrorCheck"+"]", "Error Check")}</div>
+                                </div>
+                                { rightErrorChecks.map((currentErrorCheck) => (
+                                    <div className={styles.errorTypeColumn}>{translate(currentErrorCheck.LocaleKey)}</div>
+                                ))}
+                            </div>
+                            <div className={styles.columnGroup}>
+                                <div className={styles.subtitleRow}>
                                     <div>{translate(mod.id+".SECTION_TITLE["+"Disabled"+"]", "Disabled?")}</div>
-                                    <span className={styles.subtitleSpanRight}></span>
                                 </div>
                                 { rightErrorChecks.map((currentErrorCheck) => (
                                     <ErrorCheckComponent errorCheck={currentErrorCheck}></ErrorCheckComponent> 
