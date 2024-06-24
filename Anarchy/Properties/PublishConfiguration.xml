@@ -100,20 +100,17 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/anarchy.1644970/" />
   <!--Version of the mod-->
-  <ModVersion Value="1.6.0" />
+  <ModVersion Value="1.6.1" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.1.*" />
   <!--Dependency for the mod, can be set multiple-->
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.8" />
   <Dependency Id="75426" DisplayName="I18n EveryWhere" Version="1.1.2" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog>## Update V1.6.0
-* New panel for controlling which error checks are never disabled, disabled with Anarchy, or always disabled.
-* Customizable Keybinds
-* Elevation Lock state will be saved into settings so it carries over between plays.
-* Elevation lock automatically added when lowering objects into terrain.
-* No longer disables Bypass Validation.
-* Maybe fixed some scenarios where subojects would become overriden.</ChangeLog>
+  <ChangeLog>## Patch V1.6.1
+* Fix css warning.
+* Fix Anarchy Option Panel not appearing in editor.
+* Remove unncessary Newtonsoft.Json.dll that shipped with v1.6.0.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
