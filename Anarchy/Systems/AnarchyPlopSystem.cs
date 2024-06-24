@@ -16,11 +16,11 @@ namespace Anarchy.Systems
     using Game.Creatures;
     using Game.Objects;
     using Game.Prefabs;
+    using Game.Simulation;
     using Game.Tools;
     using Game.Vehicles;
     using Unity.Collections;
     using Unity.Entities;
-    using UnityEngine;
 
     /// <summary>
     /// A system that prevents objects from being overriden when placed on each other.
@@ -40,16 +40,16 @@ namespace Anarchy.Systems
         private NetToolSystem m_NetToolSystem;
         private ObjectToolSystem m_ObjectToolSystem;
         private PrefabSystem m_PrefabSystem;
-        private EntityQuery m_CreatedQuery;
+        private EntityQuery m_AppliedQuery;
         private EntityQuery m_AnarchyComponentsQuery;
         private EntityQuery m_OwnedAndOverridenQuery;
+        private TerrainSystem m_TerrainSystem;
+        private bool m_ElevationChangeIsNegative;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AnarchyPlopSystem"/> class.
+        /// Gets or sets a value indicating whether Elevation change is negative.
         /// </summary>
-        public AnarchyPlopSystem()
-        {
-        }
+        public bool ElevationChangeIsNegative { get => m_ElevationChangeIsNegative; set => m_ElevationChangeIsNegative = value; }
 
         /// <inheritdoc/>
         protected override void OnCreate()
@@ -61,11 +61,12 @@ namespace Anarchy.Systems
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
-            m_CreatedQuery = GetEntityQuery(new EntityQueryDesc
+            m_TerrainSystem = World.GetOrCreateSystemManaged<TerrainSystem>();
+            m_AppliedQuery = GetEntityQuery(new EntityQueryDesc
             {
                 All = new ComponentType[]
                 {
-                    ComponentType.ReadOnly<Created>(),
+                    ComponentType.ReadOnly<Applied>(),
                     ComponentType.ReadOnly<Updated>(),
                 },
                 Any = new ComponentType[]
@@ -130,7 +131,7 @@ namespace Anarchy.Systems
                 },
             });
 
-            RequireForUpdate(m_CreatedQuery);
+            RequireForUpdate(m_AppliedQuery);
             base.OnCreate();
         }
 
@@ -193,18 +194,18 @@ namespace Anarchy.Systems
 
             if (!m_NetToolSystem.TrySetPrefab(m_ToolSystem.activePrefab) || m_ToolSystem.activePrefab is NetLaneGeometryPrefab || m_ToolSystem.activePrefab is NetLanePrefab)
             {
-                NativeArray<Entity> createdEntities = m_CreatedQuery.ToEntityArray(Allocator.Temp);
+                NativeArray<Entity> appliedEntities = m_AppliedQuery.ToEntityArray(Allocator.Temp);
                 m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)}");
                 if (m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID))
                 {
-                    EntityManager.RemoveComponent(m_CreatedQuery, ComponentType.ReadWrite<Overridden>());
+                    EntityManager.RemoveComponent(m_AppliedQuery, ComponentType.ReadWrite<Overridden>());
                     EntityManager.RemoveComponent(m_OwnedAndOverridenQuery, ComponentType.ReadWrite<Overridden>());
                 }
 
-                foreach (Entity entity in createdEntities)
+                foreach (Entity entity in appliedEntities)
                 {
                     PrefabBase prefabBase = null;
-                    if (EntityManager.TryGetComponent(entity, out PrefabRef prefabRef))
+                    if (EntityManager.TryGetComponent(entity, out PrefabRef prefabRef)) 
                     {
                         if (m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase))
                         {
@@ -221,7 +222,7 @@ namespace Anarchy.Systems
                                 {
                                     if (EntityManager.TryGetBuffer(attachedComponent.m_Parent, isReadOnly: false, out DynamicBuffer<Game.Objects.SubObject> subObjectBuffer))
                                     {
-                                        // Loop through all subobjecst started at last entry to try and quickly find created entity.
+                                        // Loop through all subobjecst started at last entry to try and quickly find applied entity.
                                         for (int i = subObjectBuffer.Length - 1; i >= 0; i--)
                                         {
                                             Game.Objects.SubObject subObject = subObjectBuffer[i];
@@ -241,10 +242,14 @@ namespace Anarchy.Systems
                                         EntityManager.SetComponentData(entity, transformRecord);
                                     }
                                 }
+                                bool hasTransform = EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform2);
+                                TerrainHeightData terrainHeightData = m_TerrainSystem.GetHeightData();
+                                float terrainHeight = TerrainUtils.SampleHeight(ref terrainHeightData, originalTransform2.m_Position);
 
                                 // added for compatibility with EDT.
-                                if (EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform2) && !EntityManager.HasComponent<TransformRecord>(entity) &&
-                                    m_AnarchyUISystem.LockElevation && (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool"))
+                                if (hasTransform && !EntityManager.HasComponent<TransformRecord>(entity) &&
+                                    (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") &&
+                                    (m_AnarchyUISystem.LockElevation || (originalTransform2.m_Position.y <= terrainHeight - 0.1f && m_ElevationChangeIsNegative)))
                                 {
                                     EntityManager.AddComponent<TransformRecord>(entity);
                                     TransformRecord transformRecord = new () { m_Position = originalTransform2.m_Position, m_Rotation = originalTransform2.m_Rotation };
@@ -261,7 +266,7 @@ namespace Anarchy.Systems
                             }
                             else if (m_ToolSystem.actionMode.IsGame() && prefabBase.GetPrefabID().ToString() == "NetPrefab:Lane Editor Container" && EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<Game.Net.SubLane> subLaneBuffer) && m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID))
                             {
-                                // Loop through all subobjects started at last entry to try and quickly find created entity.
+                                // Loop through all subobjects started at last entry to try and quickly find applied entity.
                                 for (int i = 0; i < subLaneBuffer.Length; i++)
                                 {
                                     Game.Net.SubLane subLane = subLaneBuffer[i];
@@ -280,7 +285,7 @@ namespace Anarchy.Systems
                     }
                 }
 
-                createdEntities.Dispose();
+                appliedEntities.Dispose();
             }
         }
     }

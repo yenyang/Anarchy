@@ -1,0 +1,66 @@
+.columnGroup {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 3rem;
+    padding-right: 3rem;
+    height: 345rem;
+}
+
+.rowGroup {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+}
+
+.panel {
+    position: absolute;
+    top: 10rem;    
+    left: 600rem;
+    flex-direction: flex-start;
+}
+
+.errorTypeColumn {
+    width: 175rem;
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+    padding-left: 4rem;
+}
+
+.subtitleRight {
+    width: 95rem;
+}
+
+
+.subtitleSpanLeft {
+    width: 10rem;
+}
+
+.subtitleSpanMiddle {
+    width: 10rem;
+}
+
+.subtitleSpanRight {
+    width: 15rem;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.subtitleRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: 2rem;
+    font-size: 18rem !important;
+    font-weight: bold;
+    padding-bottom: 5rem;
+}

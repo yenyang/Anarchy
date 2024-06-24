@@ -5,6 +5,7 @@
 // #define VERBOSE
 namespace Anarchy.Systems
 {
+    using System.Collections.Generic;
     using Anarchy;
     using Colossal.Entities;
     using Colossal.Logging;
@@ -65,11 +66,6 @@ namespace Anarchy.Systems
                 return;
             }
 
-            if (!m_AnarchyUISystem.AnarchyEnabled && m_ToolSystem.ignoreErrors && m_AnarchyUISystem.IsToolAppropriate(m_ToolSystem.activeTool.toolID))
-            {
-                m_ToolSystem.ignoreErrors = false;
-            }
-
             if (AnarchyMod.Instance.Settings.AllowPlacingMultipleUniqueBuildings)
             {
                 PrefabID prefabID = new ("NotificationIconPrefab", "Already Exists");
@@ -77,7 +73,7 @@ namespace Anarchy.Systems
                 {
                     if (m_PrefabSystem.TryGetEntity(prefabBase, out Entity entity))
                     {
-                        if (EntityManager.TryGetComponent(entity, out ToolErrorData toolErrorData)) 
+                        if (EntityManager.TryGetComponent(entity, out ToolErrorData toolErrorData))
                         {
                             toolErrorData.m_Flags |= ToolErrorFlags.DisableInGame;
                             toolErrorData.m_Flags |= ToolErrorFlags.DisableInEditor;
@@ -87,22 +83,18 @@ namespace Anarchy.Systems
                 }
             }
 
-            if (!m_AnarchyUISystem.AnarchyEnabled || !m_AnarchyUISystem.IsToolAppropriate(m_ToolSystem.activeTool.toolID))
-            {
-                return;
-            }
-
+            List<ErrorType> errorTypesToDisable = m_AnarchyUISystem.GetAllowableErrorTypes();
             NativeArray <Entity> toolErrorPrefabs = m_ToolErrorPrefabQuery.ToEntityArray(Allocator.Temp);
             foreach (Entity currentEntity in toolErrorPrefabs)
             {
                 if (EntityManager.TryGetComponent(currentEntity, out ToolErrorData toolErrorData))
                 {
-                    if (m_AnarchyUISystem.IsErrorTypeAllowed(toolErrorData.m_Error))
-                    {
 #if VERBOSE
-                        m_Log.Verbose("DisableToolErrorsSystem.OnUpdate currentEntity.index = " + currentEntity.Index + " currentEntity.version = " + currentEntity.Version + " ErrorType = " + toolErrorData.m_Error.ToString());
-                        m_Log.Verbose("DisableToolErrorsSystem.OnUpdate toolErrorData.m_Flags = " + toolErrorData.m_Flags.ToString()); 
+                    m_Log.Verbose("DisableToolErrorsSystem.OnUpdate currentEntity.index = " + currentEntity.Index + " currentEntity.version = " + currentEntity.Version + " ErrorType = " + toolErrorData.m_Error.ToString());
+                    m_Log.Verbose("DisableToolErrorsSystem.OnUpdate toolErrorData.m_Flags = " + toolErrorData.m_Flags.ToString());
 #endif
+                    if (errorTypesToDisable.Contains(toolErrorData.m_Error))
+                    {
                         toolErrorData.m_Flags |= ToolErrorFlags.DisableInGame;
                         toolErrorData.m_Flags |= ToolErrorFlags.DisableInEditor;
                         EntityManager.SetComponentData(currentEntity, toolErrorData);

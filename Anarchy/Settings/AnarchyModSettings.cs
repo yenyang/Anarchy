@@ -6,12 +6,11 @@ namespace Anarchy.Settings
 {
     using Anarchy.Systems;
     using Colossal.IO.AssetDatabase;
+    using Game.Input;
     using Game.Modding;
-    using Game.SceneFlow;
     using Game.Settings;
     using Game.UI;
     using Unity.Entities;
-    using static Game.Prefabs.CompositionFlags;
 
     /// <summary>
     /// The mod settings for the Anarchy Mod.
@@ -32,6 +31,12 @@ namespace Anarchy.Settings
         /// </summary>
         public const string General = "General";
 
+
+        /// <summary>
+        /// This is for general settings.
+        /// </summary>
+        public const string Keybinds = "Keybinds";
+
         /// <summary>
         /// This is for settings that are stable.
         /// </summary>
@@ -41,6 +46,26 @@ namespace Anarchy.Settings
         /// This is for reseting settings button group.
         /// </summary>
         public const string Reset = "Reset";
+
+        /// <summary>
+        /// The action name for toggle anarchy keybind.
+        /// </summary>
+        public const string ToggleAnarchyActionName = "ToggleAnarchy";
+
+        /// <summary>
+        /// The action name for reset elevation keybind.
+        /// </summary>
+        public const string ResetElevationActionName = "ResetElevation";
+
+        /// <summary>
+        /// The action name for Elevation Step key bind.
+        /// </summary>
+        public const string ElevationStepActionName = "ElevationStep";
+
+        /// <summary>
+        /// The action name for Elevation keybind.
+        /// </summary>
+        public const string ElevationActionName = "Elevation";
 
 
         /// <summary>
@@ -134,6 +159,7 @@ namespace Anarchy.Settings
         /// Gets or sets a value indicating whether to use allow placing multiple unique buildings.
         /// </summary>
         [SettingsUISection(General, Stable)]
+        [SettingsUISetter(typeof(AnarchyModSettings), nameof(SetMultipleUniques))]
         public bool AllowPlacingMultipleUniqueBuildings { get; set; }
 
         /// <summary>
@@ -144,13 +170,56 @@ namespace Anarchy.Settings
         public bool PreventOverrideInEditor { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether: Used to force saving of Modsettings if settings would result in empty Json.
+        /// Gets or sets a value indicating the keybinding for Toggling Anarchy.
         /// </summary>
-        [SettingsUIHidden]
-        public bool Contra { get; set; }
+        [SettingsUISection(Keybinds, Stable)]
+        [SettingsUIKeyboardBinding(UnityEngine.InputSystem.Key.A, actionName: ToggleAnarchyActionName, ctrl: true)]
+        public ProxyBinding ToggleAnarchy { get; set; }
 
         /// <summary>
-        /// Sets a value indicating whether: a button for Resetting the settings for the Mod.
+        /// Gets or sets a value indicating the keybinding for Reset Elevation.
+        /// </summary>
+        [SettingsUISection(Keybinds, Stable)]
+        [SettingsUIKeyboardBinding(UnityEngine.InputSystem.Key.R, actionName: ResetElevationActionName, shift: true)]
+        public ProxyBinding ResetElevation { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the keybinding for Elevation Step.
+        /// </summary>
+        [SettingsUISection(Keybinds, Stable)]
+        [SettingsUIKeyboardBinding(UnityEngine.InputSystem.Key.E, actionName: ElevationStepActionName, shift: true)]
+        public ProxyBinding ElevationStep { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the keybinding for Increase Elevation.
+        /// </summary>
+        [SettingsUISection(Keybinds, Stable)]
+        [SettingsUIKeyboardBinding(UnityEngine.InputSystem.Key.UpArrow, AxisComponent.Positive, actionName: ElevationActionName)]
+        public ProxyBinding IncreaseElevation { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the keybinding for Decrease Elevation.
+        /// </summary>
+        [SettingsUISection(Keybinds, Stable)]
+        [SettingsUIKeyboardBinding(UnityEngine.InputSystem.Key.DownArrow, AxisComponent.Negative, actionName: ElevationActionName)]
+        public ProxyBinding DecreaseElevation { get; set; }
+
+        /// <summary>
+        /// Sets a value indicating whether: a button for Resetting the settings for keybinds.
+        /// </summary>
+        [SettingsUIButton]
+        [SettingsUIConfirmation]
+        [SettingsUISection(Keybinds, Reset)]
+        public bool ResetKeybindSettings
+        {
+            set
+            {
+                ResetKeyBindings();
+            }
+        }
+
+        /// <summary>
+        /// Sets a value indicating whether: a button for Resetting the general mod settings.
         /// </summary>
         [SettingsUIButton]
         [SettingsUIConfirmation]
@@ -169,7 +238,7 @@ namespace Anarchy.Settings
         }
 
         /// <summary>
-        /// Sets a value indicating whether: a button for Resetting the settings for the Mod.
+        /// Sets a value indicating whether: a button for Resetting for the ui Mod settings.
         /// </summary>
         [SettingsUIButton]
         [SettingsUIConfirmation]
@@ -192,6 +261,12 @@ namespace Anarchy.Settings
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the player has enabled elevation lock.
+        /// </summary>
+        [SettingsUIHidden]
+        public bool ElevationLock { get; set; } = false;
+
+        /// <summary>
         /// Checks if prevent accidental prop culling is off or on.
         /// </summary>
         /// <returns>Opposite of PreventAccidentalPropCulling.</returns>
@@ -209,7 +284,6 @@ namespace Anarchy.Settings
             AnarchicBulldozer = true;
             ShowTooltip = false;
             FlamingChirper = true;
-            Contra = true;
             ToolIcon = true;
             PreventAccidentalPropCulling = true;
             PropRefreshFrequency = 30;
@@ -243,13 +317,23 @@ namespace Anarchy.Settings
         }
 
         /// <summary>
-        /// Triggers method in Anarchy UI System for setting prevent override.
+        /// Triggers method in Anarchy UI System for showing elevation lock.
         /// </summary>
         /// <param name="value">The value being set to.</param>
         public void CheckForDisableElevationLock(bool value)
         {
             AnarchyUISystem anarchyReactUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyUISystem>();
             anarchyReactUISystem.SetDisableElevationLock(value);
+        }
+
+        /// <summary>
+        /// Triggers method in Anarchy UI System for allowing multiple uniques.
+        /// </summary>
+        /// <param name="value">The value being set to.</param>
+        public void SetMultipleUniques(bool value)
+        {
+            AnarchyUISystem anarchyReactUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyUISystem>();
+            anarchyReactUISystem.SetMultipleUniques(value);
         }
     }
 }

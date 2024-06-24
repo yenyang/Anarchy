@@ -1,4 +1,4 @@
-﻿// <copyright file="TempObjectSystem.cs" company="Yenyang's Mods. MIT License">
+﻿// <copyright file="ElevateTempObjectSystem.cs" company="Yenyang's Mods. MIT License">
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
@@ -6,6 +6,7 @@ namespace Anarchy.Systems
 {
     using Colossal.Entities;
     using Colossal.Logging;
+    using Colossal.Serialization.Entities;
     using Game;
     using Game.Common;
     using Game.Prefabs;
@@ -59,7 +60,6 @@ namespace Anarchy.Systems
             RequireForUpdate(m_TempObjectQuery);
         }
 
-
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
@@ -68,7 +68,6 @@ namespace Anarchy.Systems
                 Enabled = false;
                 return;
             }
-
             if ((m_ToolSystem.activeTool != m_ObjectToolSystem && m_ToolSystem.activeTool.toolID != "Line Tool") || !AnarchyMod.Instance.Settings.ShowElevationToolOption)
             {
                 return;

@@ -39,7 +39,9 @@ declare module "cs2/l10n" {
   	BodiesPerMonth = "bodiesPerMonth",
   	XP = "xp",
   	Temperature = "temperature",
-  	NetElevation = "netElevation"
+  	NetElevation = "netElevation",
+  	ScreenFrequency = "screenFrequency",
+  	Custom = "custom"
   }
   export enum LocElementType {
   	Bounds = "Game.UI.Localization.LocalizedBounds",

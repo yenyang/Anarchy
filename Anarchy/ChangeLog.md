@@ -1,6 +1,7 @@
-﻿## Patch V1.5.6
-* Prevent Override in editor option name and description changed to be Anarchy Components and includes Lock Elevation.
-* Fixed Lock Elevation toggle not working in editor. Lock Elevation button will be disabled in editor without Anarchy Components In Editor option enabled.
-* Fixed/Change behavior of elevation being applied to pillars and any object prefabs with StackData.
-* Keybinds will change the elevation value in editor, but you must move the object to see any changes.
-* Tool options panel will be shown for items with Object Tool like pillars that do not normally have any tool options.
+﻿## Update V1.6.0
+* New panel for controlling which error checks are never disabled, disabled with Anarchy, or always disabled.
+* Customizable Keybinds
+* Elevation Lock state will be saved into settings so it carries over between plays.
+* Elevation lock automatically added when lowering objects into terrain.
+* No longer disables Bypass Validation.
+* Maybe fixed some scenarios where subojects would become overriden.

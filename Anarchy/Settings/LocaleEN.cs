@@ -4,13 +4,9 @@
 
 namespace Anarchy.Settings
 {
-    using System;
     using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
     using Colossal;
-    using Colossal.IO.AssetDatabase.Internal;
-    using Colossal.PSI.Common;
+    using Game.Tools;
 
     /// <summary>
     /// Localization for Anarchy Mod in English.
@@ -34,6 +30,7 @@ namespace Anarchy.Settings
                 { m_Setting.GetSettingsLocaleID(), "Anarchy" },
                 { m_Setting.GetOptionTabLocaleID(nameof(AnarchyModSettings.General)), "General" },
                 { m_Setting.GetOptionTabLocaleID(nameof(AnarchyModSettings.UI)), "UI" },
+                { m_Setting.GetOptionTabLocaleID(nameof(AnarchyModSettings.Keybinds)), "Keybinds" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.AnarchicBulldozer)), "Always enable Anarchy with Bulldoze Tool" },
                 { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.AnarchicBulldozer)), "With this option enabled the Bulldoze Tool will always have anarchy enabled." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.FlamingChirper)), "Flaming Chirper" },
@@ -48,6 +45,9 @@ namespace Anarchy.Settings
                 { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.ResetUIModSettings)), "Reset Anarchy UI Settings" },
                 { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.ResetUIModSettings)), "Upon confirmation this will reset the UI settings for Anarchy mod." },
                 { m_Setting.GetOptionWarningLocaleID(nameof(AnarchyModSettings.ResetUIModSettings)), "Reset Anarchy UI Settings?" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.ResetKeybindSettings)), "Reset Anarchy Keybindings" },
+                { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.ResetKeybindSettings)), "Upon confirmation this will reset the keybindings for Anarchy mod." },
+                { m_Setting.GetOptionWarningLocaleID(nameof(AnarchyModSettings.ResetKeybindSettings)), "Reset Anarchy Keybindings?" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.PreventAccidentalPropCulling)), "Prevent Accidental Prop Culling" },
                 { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.PreventAccidentalPropCulling)), "This will routinely trigger a graphical refresh to props placed with Anarchy that have been culled to prevent accidental culling of props. This affects performance." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.PropRefreshFrequency)), "Prop Refresh Frequency" },
@@ -63,7 +63,7 @@ namespace Anarchy.Settings
                 { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.DisableAnarchyWhileBrushing)), "Disable Anarchy Toggle While Brushing Objects" },
                 { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.DisableAnarchyWhileBrushing)), "Automatically disables the anarchy toggle while brushing objects such as trees. Toggle reverts back to previous state after you stop brushing objects." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.ShowElevationToolOption)), "Show Elevation Option for Objects" },
-                { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.ShowElevationToolOption)), "Allows trees, plants, and props to be placed at different vertical elevations with Object Tool or Line Tool. Also shows a button during placement for locking elevation. Keybinds are: Up Arrow -> Elevation Up | Down Arrow -> Elevation Down | Shift + R -> Reset to 0 | Shift + E -> change Elevation step" },
+                { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.ShowElevationToolOption)), "Allows trees, plants, and props to be placed at different vertical elevations with Object Tool or Line Tool. Also shows a button during placement for locking elevation. Keybinds are configurable in the Keybinds tab." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.ResetElevationWhenChangingPrefab)), "Reset Elevation When Selecting New Asset" },
                 { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.ResetElevationWhenChangingPrefab)), "Automatically resets object Elevation tool option when you change to a new asset selection." },
                 { "YY_ANARCHY.Anarchy", "Anarchy" },
@@ -72,15 +72,71 @@ namespace Anarchy.Settings
                 { TooltipDescriptionKey("PreventOverrideButton"), "Allows placement of vegetation and props overlapping or inside the boundaries of other objects and close together." },
                 { TooltipTitleKey("PreventOverrideButton"), "Prevent Override" },
                 { TooltipTitleKey("AnarchyModComponets"), "Anarchy Mod Components" },
-                { TooltipDescriptionKey("IncreaseElevation"), "Increases the elevation relative to the placement surface. Keybind: Up Arrow." },
-                { TooltipDescriptionKey("DecreaseElevation"), "Decreases the elevation relative to the placement surface. Keybind: Down Arrow." },
-                { TooltipDescriptionKey("ElevationStep"),  "Changes the rate in which the elevation changes. Keybind: Shift + E." },
+                { TooltipDescriptionKey("IncreaseElevation"), "Increases the elevation relative to the placement surface. Customize keybind in options menu." },
+                { TooltipDescriptionKey("DecreaseElevation"), "Decreases the elevation relative to the placement surface. Customize keybind in options menu." },
+                { TooltipDescriptionKey("ElevationStep"),  "Changes the rate in which the elevation changes. Customize keybind in options menu." },
                 { TooltipTitleKey("ElevationLock"),         "Elevation Lock" },
                 { TooltipDescriptionKey("ElevationLock"),  "Prevents game systems from changing elevation. You can still change position with mods." },
-                { TooltipDescriptionKey("ResetElevation"),  "Resets Elevation to 0. Keybind: Shift + R." },
+                { TooltipDescriptionKey("ResetElevation"),  "Resets Elevation to 0. Customize keybind in options menu." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.ToggleAnarchy)), "Toggle Anarchy" },
+                { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.ToggleAnarchy)), "A keybind to switch the Anarchy toggle on or off." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.ResetElevation)), "Reset Elevation" },
+                { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.ResetElevation)), "A keybind to reset the elevation value of objects during placement." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.ElevationStep)), "Change Elevation Step" },
+                { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.ElevationStep)), "A keybind to change the rate in which the elevation value changes." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.IncreaseElevation)), "Increase Elevation" },
+                { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.IncreaseElevation)), "A keybind to increase the elevation value of objects during placement." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.DecreaseElevation)), "Decrease Elevation" },
+                { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.DecreaseElevation)), "A keybind to decrease the elevation value of objects during placement." },
+                { m_Setting.GetBindingMapLocaleID(), "Anarchy" },
+                { m_Setting.GetBindingKeyLocaleID(AnarchyModSettings.ToggleAnarchyActionName), "Press key" },
+                { m_Setting.GetBindingKeyLocaleID(AnarchyModSettings.ResetElevationActionName), "Press key" },
+                { m_Setting.GetBindingKeyLocaleID(AnarchyModSettings.ElevationStepActionName), "Press key" },
+                { m_Setting.GetBindingKeyLocaleID(AnarchyModSettings.ElevationActionName, Game.Input.AxisComponent.Positive), "Increase key" },
+                { m_Setting.GetBindingKeyLocaleID(AnarchyModSettings.ElevationActionName, Game.Input.AxisComponent.Negative), "Decrease key" },
+                { ErrorCheckKey(ErrorType.AlreadyExists), "Already Exists" },
+                { ErrorCheckKey(ErrorType.AlreadyUpgraded), "Already Upgraded" },
+                { ErrorCheckKey(ErrorType.ExceedsCityLimits), "Exceeds City Limits" },
+                { ErrorCheckKey(ErrorType.ExceedsLotLimits), "Exceeds Lot Limits" },
+                { ErrorCheckKey(ErrorType.InvalidShape), "Invalid Shape" },
+                { ErrorCheckKey(ErrorType.InWater), "In Water" },
+                { ErrorCheckKey(ErrorType.LongDistance), "Long Distance" },
+                { ErrorCheckKey(ErrorType.LowElevation), "Low Elevation" },
+                { ErrorCheckKey(ErrorType.NoCargoAccess), "No Cargo Access" },
+                { ErrorCheckKey(ErrorType.NoGroundWater), "No Ground Water" },
+                { ErrorCheckKey(ErrorType.NotOnBorder), "Not On Border" },
+                { ErrorCheckKey(ErrorType.NoWater), "No Water" },
+                { ErrorCheckKey(ErrorType.NotOnShoreline), "Not On Shoreline" },
+                { ErrorCheckKey(ErrorType.OnFire), "On Fire" },
+                { ErrorCheckKey(ErrorType.OverlapExisting), "Overlap Existing" },
+                { ErrorCheckKey(ErrorType.PathfindFailed), "Pathfind Failed" },
+                { ErrorCheckKey(ErrorType.SmallArea), "Small Area" },
+                { ErrorCheckKey(ErrorType.ShortDistance), "Short Distance" },
+                { ErrorCheckKey(ErrorType.SteepSlope), "Steep Slope" },
+                { ErrorCheckKey(ErrorType.TightCurve), "Tight Curve" },
+                { ErrorCheckKey(ErrorType.NoCarAccess), "No Car Access" },
+                { ErrorCheckKey(ErrorType.NoPedestrianAccess), "No Pedestrian Access" },
+                { ErrorCheckKey(ErrorType.NoRoadAccess), "No Road Access" },
+                { ErrorCheckKey(ErrorType.NoTrackAccess), "No Track Access" },
+                { ErrorCheckKey(ErrorType.NoTrainAccess), "No Train Access" },
+                { SectionLabel("ErrorCheck"), "Error Check" },
+                { SectionLabel("Disabled"), "Disabled?" },
+                { SectionLabel("AnarchyOptions"), "Anarchy Options" },
+                { TooltipDescriptionKey("AnarchyOptions"), "Opens a panel for controlling which error checks are never disabled, disabled with Anarchy, or always disabled." },
+                { UIText("Never"), "Never" },
+                { UIText("Always"), "Always" },
             };
         }
 
+        /// <summary>
+        /// Gets a locale key for an error check.
+        /// </summary>
+        /// <param name="errorType">Error type enum.</param>
+        /// <returns>Localization key.</returns>
+        public static string ErrorCheckKey(ErrorType errorType)
+        {
+            return $"{AnarchyMod.Id}.ErrorType[{errorType}]";
+        }
 
         private string TooltipDescriptionKey(string key)
         {
@@ -95,6 +151,11 @@ namespace Anarchy.Settings
         private string SectionLabel(string key)
         {
             return $"{AnarchyMod.Id}.SECTION_TITLE[{key}]";
+        }
+
+        private string UIText(string key)
+        {
+            return $"{AnarchyMod.Id}.UI_TEXT[{key}]";
         }
 
         /// <inheritdoc/>

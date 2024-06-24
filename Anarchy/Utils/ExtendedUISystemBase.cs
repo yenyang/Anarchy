@@ -12,7 +12,7 @@ namespace Anarchy.Utils
     {
         public ValueBindingHelper<T> CreateBinding<T>(string key, T initialValue)
         {
-            var helper = new ValueBindingHelper<T>(new(AnarchyMod.Id, key, initialValue));
+            var helper = new ValueBindingHelper<T>(new (AnarchyMod.Id, key, initialValue, new GenericUIWriter<T>()));
 
             AddBinding(helper.Binding);
 
@@ -21,28 +21,8 @@ namespace Anarchy.Utils
 
         public ValueBindingHelper<T> CreateBinding<T>(string key, string setterKey, T initialValue, Action<T> updateCallBack = null)
         {
-            var helper = new ValueBindingHelper<T>(new(AnarchyMod.Id, key, initialValue), updateCallBack);
-            var trigger = new TriggerBinding<T>(AnarchyMod.Id, setterKey, helper.UpdateCallback);
-
-            AddBinding(helper.Binding);
-            AddBinding(trigger);
-
-            return helper;
-        }
-
-        public ValueBindingHelper<T[]> CreateBinding<T>(string key, T[] initialValue) where T : IJsonWritable
-        {
-            var helper = new ValueBindingHelper<T[]>(new(AnarchyMod.Id, key, initialValue, new ArrayWriter<T>(new ValueWriter<T>())));
-
-            AddBinding(helper.Binding);
-
-            return helper;
-        }
-
-        public ValueBindingHelper<T[]> CreateBinding<T>(string key, string setterKey, T[] initialValue, Action<T[]> updateCallBack = null) where T : IJsonWritable
-        {
-            var helper = new ValueBindingHelper<T[]>(new(AnarchyMod.Id, key, initialValue, new ArrayWriter<T>(new ValueWriter<T>())), updateCallBack);
-            var trigger = new TriggerBinding<T[]>(AnarchyMod.Id, setterKey, helper.UpdateCallback);
+            var helper = new ValueBindingHelper<T>(new (AnarchyMod.Id, key, initialValue, new GenericUIWriter<T>()), updateCallBack);
+            var trigger = new TriggerBinding<T>(AnarchyMod.Id, setterKey, helper.UpdateCallback, initialValue is Enum ? new EnumReader<T>() : null);
 
             AddBinding(helper.Binding);
             AddBinding(trigger);
@@ -52,16 +32,7 @@ namespace Anarchy.Utils
 
         public GetterValueBinding<T> CreateBinding<T>(string key, Func<T> getterFunc)
         {
-            var binding = new GetterValueBinding<T>(AnarchyMod.Id, key, getterFunc);
-
-            AddBinding(binding);
-
-            return binding;
-        }
-
-        public GetterValueBinding<T[]> CreateBinding<T>(string key, Func<T[]> getterFunc) where T : IJsonWritable
-        {
-            var binding = new GetterValueBinding<T[]>(AnarchyMod.Id, key, getterFunc, new ArrayWriter<T>(new ValueWriter<T>()));
+            var binding = new GetterValueBinding<T>(AnarchyMod.Id, key, getterFunc, new GenericUIWriter<T>());
 
             AddBinding(binding);
 
@@ -112,28 +83,5 @@ namespace Anarchy.Utils
 
             return binding;
         }
-    }
-
-    public class ValueBindingHelper<T>
-    {
-        private readonly Action<T> _updateCallBack;
-
-        public ValueBinding<T> Binding { get; }
-
-        public T Value { get => Binding.value; set => Binding.Update(value); }
-
-        public ValueBindingHelper(ValueBinding<T> binding, Action<T> updateCallBack = null)
-        {
-            Binding = binding;
-            _updateCallBack = updateCallBack;
-        }
-
-        public void UpdateCallback(T value)
-        {
-            Binding.Update(value);
-            _updateCallBack?.Invoke(value);
-        }
-
-        public static implicit operator T(ValueBindingHelper<T> helper) => helper.Binding.value;
     }
 }

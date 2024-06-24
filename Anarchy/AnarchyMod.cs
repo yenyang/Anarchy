@@ -2,18 +2,23 @@
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
+// #define VERBOSE
 namespace Anarchy
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using Anarchy.Settings;
     using Anarchy.Systems;
+    using Colossal;
     using Colossal.IO.AssetDatabase;
     using Colossal.Logging;
     using Game;
     using Game.Modding;
     using Game.SceneFlow;
     using HarmonyLib;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Mod entry point.
@@ -75,10 +80,10 @@ namespace Anarchy
             Instance = this;
             Log = LogManager.GetLogger("Mods_Yenyang_Anarchy").SetShowsErrorsInUI(false);
             Log.Info(nameof(OnLoad));
-#if DEBUG
-            Log.effectivenessLevel = Level.Debug;
-#elif VERBOSE
+#if VERBOSE
             Log.effectivenessLevel = Level.Verbose;
+#elif DEBUG
+            Log.effectivenessLevel = Level.Debug;
 #else
             Log.effectivenessLevel = Level.Info;
 #endif
@@ -87,11 +92,25 @@ namespace Anarchy
             Settings = new (this);
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Loading localization");
             GameManager.instance.localizationManager.AddSource("en-US", new LocaleEN(Settings));
+
+#if DEBUG
+            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Exporting localization");
+            var localeDict = new LocaleEN(Settings).ReadEntries(new List<IDictionaryEntryError>(), new Dictionary<string, int>()).ToDictionary(pair => pair.Key, pair => pair.Value);
+            var str = JsonConvert.SerializeObject(localeDict, Formatting.Indented);
+            try
+            {
+                File.WriteAllText("C:\\Users\\TJ\\source\\repos\\Anarchy\\Anarchy\\UI\\src\\lang\\en-US.json", str);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.ToString());
+            }
+#endif
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Registering settings");
             Settings.RegisterInOptionsUI();
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Loading settings");
             AssetDatabase.global.LoadSettings("AnarchyMod", Settings, new AnarchyModSettings(this));
-            Settings.Contra = false;
+            Settings.RegisterKeyBindings();
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Injecting Harmony Patches.");
             m_Harmony = new Harmony("Mods_Yenyang_Anarchy");
             m_Harmony.PatchAll();
@@ -106,7 +125,7 @@ namespace Anarchy
             updateSystem.UpdateAt<PreventCullingSystem>(SystemUpdatePhase.ToolUpdate);
             updateSystem.UpdateBefore<ModifyNetCompositionDataSystem>(SystemUpdatePhase.Modification4);
             updateSystem.UpdateAfter<ResetNetCompositionDataSystem>(SystemUpdatePhase.ModificationEnd);
-            updateSystem.UpdateBefore<ResetTransformSystem>(SystemUpdatePhase.ModificationEnd);
+            updateSystem.UpdateAt<ResetTransformSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<CheckTransformSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateBefore<HandleUpdateNextFrameSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateAt<SelectedInfoPanelTogglesSystem>(SystemUpdatePhase.UIUpdate);
