@@ -1,7 +1,4 @@
-﻿## Update V1.6.0
-* New panel for controlling which error checks are never disabled, disabled with Anarchy, or always disabled.
-* Customizable Keybinds
-* Elevation Lock state will be saved into settings so it carries over between plays.
-* Elevation lock automatically added when lowering objects into terrain.
-* No longer disables Bypass Validation.
-* Maybe fixed some scenarios where subojects would become overriden.
+﻿## Patch V1.6.1
+* Fix css warning.
+* Fix Anarchy Option Panel not appearing in editor.
+* Remove unncessary Newtonsoft.Json.dll that shipped with v1.6.0.
