@@ -29,6 +29,8 @@ const register: ModRegistrar = (moduleRegistry) => {
 
      moduleRegistry.append('Game', PartialAnarchyMenyComponent);
 
+     moduleRegistry.append('Editor', PartialAnarchyMenyComponent);
+
      // This is just to verify using UI console that all the component registriations was completed.
      console.log(mod.id + " UI module registrations completed.");
 }
