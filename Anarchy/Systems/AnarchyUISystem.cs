@@ -290,14 +290,14 @@ namespace Anarchy.Systems
             {
                 m_IsBrushing = true;
                 m_BeforeBrushingAnarchyEnabled = m_AnarchyEnabled;
-                AnarchyToggled();
+                m_AnarchyEnabled = false;
             }
 
             if ((m_IsBrushing && m_ToolSystem.activeTool != m_ObjectToolSystem) || (m_IsBrushing && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode != ObjectToolSystem.Mode.Brush))
             {
-                if (m_AnarchyEnabled != m_BeforeBrushingAnarchyEnabled)
+                if (!m_AnarchyEnabled && m_BeforeBrushingAnarchyEnabled)
                 {
-                    AnarchyToggled();
+                    m_AnarchyEnabled = true;
                 }
 
                 m_IsBrushing = false;
