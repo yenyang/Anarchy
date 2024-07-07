@@ -14,7 +14,7 @@ If you want to say thank you with a donation you can do so on Paypal.
 I am looking for volunteers to help translate the mod into the official languages. For those interested please find the project in the discord link. CSL2:CODEMODS -> mods-wip -> Anarchy: Translations.
 Full or Partial Localization: Spanish, German, Chinese Simplified, Brazilian Portuguese, Italian, Polish, Korean, Russian, and French. See credits for list of translators.
   
-# Detailed Descrption
+# Detailed Description
 The mod also has: 
 * Optional Tool icon
 * Customizable Keyboard shortcut (Default: Ctrl+A)
