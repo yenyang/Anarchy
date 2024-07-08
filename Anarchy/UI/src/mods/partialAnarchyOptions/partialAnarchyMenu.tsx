@@ -9,6 +9,7 @@ import { ErrorCheckComponent } from "mods/errorCheckComponent/errorCheckComponen
 import { ErrorCheck } from "Domain/errorCheck";
 import { game } from "cs2/bindings";
 import { useLocalization } from "cs2/l10n";
+import classNames from "classnames";
 
 const uilStandard =                         "coui://uil/Standard/";
 
@@ -25,7 +26,7 @@ function handleClick(event: string) {
 
 const roundButtonHighlightStyle = getModule("game-ui/common/input/button/themes/round-highlight-button.module.scss", "classes");
 
-export const PartialAnarchyMenyComponent = () => {
+export const PartialAnarchyMenuComponent = () => {
     const ShowPanel = useValue(ShowPanel$);
     const ErrorChecks = useValue(ErrorChecks$);
     const isPhotoMode = useValue(game.activeGamePanel$)?.__Type == game.GamePanelType.PhotoMode;
@@ -48,37 +49,35 @@ export const PartialAnarchyMenyComponent = () => {
                             </VanillaComponentResolver.instance.Section>
                         )}>
                         <div className={styles.rowGroup}>
-                            <div className={styles.columnGroup}>
-                                <div className={styles.subtitleRow}>
-                                    <div className={styles.errorTypeColumn}>{translate(mod.id+".SECTION_TITLE["+"ErrorCheck"+"]", "Error Check")}</div>
-                                </div>
+                            <div className={classNames(styles.columnGroup, styles.leftColumn)}>
+                                <div className={styles.subtitleRow}>{translate(mod.id+".SECTION_TITLE["+"ErrorCheck"+"]", "Error Check")}</div>                                
                                 { leftErrorChecks.map((currentErrorCheck) => (
-                                    <div className={styles.errorTypeColumn}>{translate(currentErrorCheck.LocaleKey)}</div>
+                                    <div className={styles.definedHeight}>{translate(currentErrorCheck.LocaleKey)}</div>
                                 ))}
                             </div>
                             <div className={styles.columnGroup}>
-                                <div className={styles.subtitleRow}>
-                                    <div>{translate(mod.id+".SECTION_TITLE["+"Disabled"+"]", "Disabled?")}</div>
-                                </div>
+                                <div className={classNames(styles.subtitleRow, styles.centeredSubTitle)}>{translate(mod.id+".SECTION_TITLE["+"Disabled"+"]", "Disabled?")}</div>
                                 { leftErrorChecks.map((currentErrorCheck) => (
                                     <ErrorCheckComponent errorCheck={currentErrorCheck}></ErrorCheckComponent> 
                                 ))}
                             </div>
                             <div className={styles.columnGroup}>
-                                <div className={styles.subtitleRow}>
-                                    <div className={styles.errorTypeColumn}>{translate(mod.id+".SECTION_TITLE["+"ErrorCheck"+"]", "Error Check")}</div>
-                                </div>
+                                <div className={styles.subtitleRow}>{translate(mod.id+".SECTION_TITLE["+"ErrorCheck"+"]", "Error Check")}</div>
                                 { rightErrorChecks.map((currentErrorCheck) => (
-                                    <div className={styles.errorTypeColumn}>{translate(currentErrorCheck.LocaleKey)}</div>
+                                    <div className={styles.definedHeight}>{translate(currentErrorCheck.LocaleKey)}</div>
                                 ))}
+                                { rightErrorChecks.length < leftErrorChecks.length && (
+                                    <div className={styles.definedHeight}></div>
+                                )}
                             </div>
-                            <div className={styles.columnGroup}>
-                                <div className={styles.subtitleRow}>
-                                    <div>{translate(mod.id+".SECTION_TITLE["+"Disabled"+"]", "Disabled?")}</div>
-                                </div>
+                            <div className={classNames(styles.columnGroup, styles.rightColumn)}>
+                                <div className={classNames(styles.subtitleRow, styles.centeredSubTitle)}>{translate(mod.id+".SECTION_TITLE["+"Disabled"+"]", "Disabled?")}</div>
                                 { rightErrorChecks.map((currentErrorCheck) => (
                                     <ErrorCheckComponent errorCheck={currentErrorCheck}></ErrorCheckComponent> 
                                 ))}
+                                { rightErrorChecks.length < leftErrorChecks.length && (
+                                    <div className={styles.definedHeight}></div>
+                                )}
                             </div>
                         </div>
                     </Panel>

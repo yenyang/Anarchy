@@ -2,10 +2,10 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    align-items: center;
-    padding-left: 3rem;
-    padding-right: 3rem;
-    height: 345rem;
+    align-items: left;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+    padding-bottom: 5rem;
 }
 
 .rowGroup {
@@ -13,38 +13,28 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    padding-top: 4rem;
-    padding-bottom: 4rem;
+}
+
+.leftColumn {
+    padding-left: 5rem !important;
+}
+
+.rightColumn {
+    padding-right: 5rem !important;
+}
+
+.definedHeight {
+    height: 30rem;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    text-align: left;
 }
 
 .panel {
     position: absolute;
-    top: 10rem;    
+    top: 10rem;
     left: 600rem;
-}
-
-.errorTypeColumn {
-    width: 175rem;
-    padding-top: 0.35rem;
-    padding-bottom: 0.35rem;
-    padding-left: 4rem;
-}
-
-.subtitleRight {
-    width: 95rem;
-}
-
-
-.subtitleSpanLeft {
-    width: 10rem;
-}
-
-.subtitleSpanMiddle {
-    width: 10rem;
-}
-
-.subtitleSpanRight {
-    width: 15rem;
 }
 
 .header {
@@ -58,8 +48,17 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
+    text-align: left;
     padding-top: 2rem;
     font-size: 18rem !important;
     font-weight: bold;
     padding-bottom: 5rem;
+    height: 35rem;
+    flex-grow: 1;
+}
+
+.centeredSubTitle {
+    text-align: center !important;
+    align-items: center !important;
+    justify-content: center !important;
 }

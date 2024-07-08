@@ -7,6 +7,7 @@ import { bindValue, trigger, useValue } from "cs2/api";
 import { useLocalization } from "cs2/l10n";
 import { ErrorCheck } from "Domain/errorCheck";
 import { useState } from "react";
+import classNames from "classnames";
 
 const uilStandard =                         "coui://uil/Standard/";
 const arrowLeftSrc =           uilStandard +  "ArrowLeftThickStroke.svg";
@@ -41,7 +42,7 @@ export const ErrorCheckComponent = (props: { errorCheck : ErrorCheck }) => {
     let [disableState, changeState] = useState<number>(ErrorChecks[props.errorCheck.Index].DisabledState);
 
     return (
-        <div className={styles.rowGroup}>
+        <div className={classNames(styles.rowGroup, styles.definedHeight)}>
             { disableState >= 1 && (!MultipleUniques || props.errorCheck.ID != 18)? 
                 (
                     <Button className={roundButtonHighlightStyle.button} variant="icon" onSelect={() => {handleClick(props.errorCheck.Index, disableState-1); changeState(disableState-1);} } focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}>

@@ -3,16 +3,15 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    padding-left: 3rem;
-    padding-right: 3rem;
-}
-
-.errorCheckName {
-    width: 175rem;
+    flex-grow: 1;
 }
 
 .spacer {
     width: 24rem;
+}
+
+.definedHeight {
+    height: 30rem;
 }
 
 .smallButton {
@@ -21,8 +20,8 @@
 }
 
 .disableState {
-    width: 60rem; 
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-grow: 1;
 }
