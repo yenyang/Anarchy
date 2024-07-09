@@ -110,7 +110,8 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <ChangeLog>## Patch V1.6.3
 * Updated Localization
 * Redesigned in-game Anarchy option panel to facilitate other languages.
-* Added version to mod options page.</ChangeLog>
+* Added version to mod options page.
+* Fix Anarchy keybind in editor when Anarchy component in Editor is disabled.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
