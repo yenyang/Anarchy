@@ -94,6 +94,8 @@ namespace Anarchy.Settings
                 { m_Setting.GetBindingKeyLocaleID(AnarchyModSettings.ElevationStepActionName), "Press key" },
                 { m_Setting.GetBindingKeyLocaleID(AnarchyModSettings.ElevationActionName, Game.Input.AxisComponent.Positive), "Increase key" },
                 { m_Setting.GetBindingKeyLocaleID(AnarchyModSettings.ElevationActionName, Game.Input.AxisComponent.Negative), "Decrease key" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyMod.Version)), "Version" },
+                { m_Setting.GetOptionDescLocaleID(nameof(AnarchyMod.Version)), $"Version number for the Anarchy mod installed." },
                 { ErrorCheckKey(ErrorType.AlreadyExists), "Already Exists" },
                 { ErrorCheckKey(ErrorType.AlreadyUpgraded), "Already Upgraded" },
                 { ErrorCheckKey(ErrorType.ExceedsCityLimits), "Exceeds City Limits" },

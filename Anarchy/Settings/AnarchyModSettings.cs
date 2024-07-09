@@ -18,7 +18,7 @@ namespace Anarchy.Settings
     [FileLocation("Mods_Yenyang_Anarchy")]
     [SettingsUITabOrder(General, UI)]
     [SettingsUISection(UI, General)]
-    [SettingsUIGroupOrder(Stable, Reset)]
+    [SettingsUIGroupOrder(Stable, Reset, About)]
     public class AnarchyModSettings : ModSetting
     {
         /// <summary>
@@ -41,6 +41,11 @@ namespace Anarchy.Settings
         /// This is for settings that are stable.
         /// </summary>
         public const string Stable = "Stable";
+
+        /// <summary>
+        /// This is for settings that are stable.
+        /// </summary>
+        public const string About = "About";
 
         /// <summary>
         /// This is for reseting settings button group.
@@ -169,39 +174,46 @@ namespace Anarchy.Settings
         [SettingsUISetter(typeof(AnarchyModSettings), nameof(CheckForDisableElevationLock))]
         public bool PreventOverrideInEditor { get; set; }
 
+
+        /// <summary>
+        /// Gets a value indicating the version.
+        /// </summary>
+        [SettingsUISection(General, About)]
+        public string Version => AnarchyMod.Instance.Version;
+
         /// <summary>
         /// Gets or sets a value indicating the keybinding for Toggling Anarchy.
         /// </summary>
         [SettingsUISection(Keybinds, Stable)]
-        [SettingsUIKeyboardBinding(UnityEngine.InputSystem.Key.A, actionName: ToggleAnarchyActionName, ctrl: true)]
+        [SettingsUIKeyboardBinding(BindingKeyboard.A, actionName: ToggleAnarchyActionName, ctrl: true)]
         public ProxyBinding ToggleAnarchy { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the keybinding for Reset Elevation.
         /// </summary>
         [SettingsUISection(Keybinds, Stable)]
-        [SettingsUIKeyboardBinding(UnityEngine.InputSystem.Key.R, actionName: ResetElevationActionName, shift: true)]
+        [SettingsUIKeyboardBinding(BindingKeyboard.R, actionName: ResetElevationActionName, shift: true)]
         public ProxyBinding ResetElevation { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the keybinding for Elevation Step.
         /// </summary>
         [SettingsUISection(Keybinds, Stable)]
-        [SettingsUIKeyboardBinding(UnityEngine.InputSystem.Key.E, actionName: ElevationStepActionName, shift: true)]
+        [SettingsUIKeyboardBinding(BindingKeyboard.E, actionName: ElevationStepActionName, shift: true)]
         public ProxyBinding ElevationStep { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the keybinding for Increase Elevation.
         /// </summary>
         [SettingsUISection(Keybinds, Stable)]
-        [SettingsUIKeyboardBinding(UnityEngine.InputSystem.Key.UpArrow, AxisComponent.Positive, actionName: ElevationActionName)]
+        [SettingsUIKeyboardBinding(BindingKeyboard.UpArrow, AxisComponent.Positive, actionName: ElevationActionName)]
         public ProxyBinding IncreaseElevation { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the keybinding for Decrease Elevation.
         /// </summary>
         [SettingsUISection(Keybinds, Stable)]
-        [SettingsUIKeyboardBinding(UnityEngine.InputSystem.Key.DownArrow, AxisComponent.Negative, actionName: ElevationActionName)]
+        [SettingsUIKeyboardBinding(BindingKeyboard.DownArrow, AxisComponent.Negative, actionName: ElevationActionName)]
         public ProxyBinding DecreaseElevation { get; set; }
 
         /// <summary>

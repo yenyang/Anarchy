@@ -272,6 +272,9 @@ namespace Anarchy.Systems
         protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
         {
             base.OnGameLoadingComplete(purpose, mode);
+
+            m_ToggleAnarchy.shouldBeEnabled = mode.IsGameOrEditor();
+
             if (mode.IsEditor() && !AnarchyMod.Instance.Settings.PreventOverrideInEditor)
             {
                 m_DisableElevationLock.Value = true;
@@ -279,8 +282,6 @@ namespace Anarchy.Systems
             }
 
             m_DisableElevationLock.Value = false;
-
-            m_ToggleAnarchy.shouldBeEnabled = mode.IsGameOrEditor();
         }
 
         /// <inheritdoc/>

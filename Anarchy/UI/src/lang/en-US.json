@@ -66,6 +66,8 @@
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod/ElevationStep/binding]": "Press key",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod/Elevation/positive]": "Increase key",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod/Elevation/negative]": "Decrease key",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.Version]": "Version",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.Version]": "Version number for the Anarchy mod installed.",
   "Anarchy.ErrorType[AlreadyExists]": "Already Exists",
   "Anarchy.ErrorType[AlreadyUpgraded]": "Already Upgraded",
   "Anarchy.ErrorType[ExceedsCityLimits]": "Exceeds City Limits",

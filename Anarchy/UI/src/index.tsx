@@ -6,7 +6,7 @@ import { SelectedInfoPanelTogglesComponent } from "mods/SelectedInfoPanelToggles
 import mod from "../mod.json";
 import { ElevationControlComponent } from "mods/elevationControlSections/elevationControlSections";
 import { ToolOptionsVisibility } from "mods/ToolOptionsVisible/toolOptionsVisible";
-import { PartialAnarchyMenyComponent } from "mods/partialAnarchyOptions/partialAnarchyMenu";
+import { PartialAnarchyMenuComponent } from "mods/partialAnarchyOptions/partialAnarchyMenu";
 
 const register: ModRegistrar = (moduleRegistry) => {
      // To find modules in the registry un comment the next line and go to the console on localhost:9444. You must have -uiDeveloperMode launch option enabled.
@@ -27,9 +27,9 @@ const register: ModRegistrar = (moduleRegistry) => {
 
      moduleRegistry.extend("game-ui/game/components/tool-options/tool-options-panel.tsx", 'useToolOptionsVisible', ToolOptionsVisibility);
 
-     moduleRegistry.append('Game', PartialAnarchyMenyComponent);
+     moduleRegistry.append('Game', PartialAnarchyMenuComponent);
 
-     moduleRegistry.append('Editor', PartialAnarchyMenyComponent);
+     moduleRegistry.append('Editor', PartialAnarchyMenuComponent);
 
      // This is just to verify using UI console that all the component registriations was completed.
      console.log(mod.id + " UI module registrations completed.");
