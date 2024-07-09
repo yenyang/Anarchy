@@ -3,12 +3,14 @@
 // </copyright>
 
 // #define VERBOSE
+// #define DUMP_VANILLA_LOCALIZATION
 namespace Anarchy
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Reflection;
     using Anarchy.Settings;
     using Anarchy.Systems;
     using Colossal;
@@ -19,6 +21,7 @@ namespace Anarchy
     using Game.SceneFlow;
     using HarmonyLib;
     using Newtonsoft.Json;
+    using UnityEngine;
 
     /// <summary>
     /// Mod entry point.
@@ -74,6 +77,12 @@ namespace Anarchy
         /// </summary>
         internal ILog Log { get; private set; }
 
+        /// <summary>
+        /// Gets the version of the mod.
+        /// </summary>
+        internal string Version => Assembly.GetExecutingAssembly().GetName().Version.ToString(3);
+
+
         /// <inheritdoc/>
         public void OnLoad(UpdateSystem updateSystem)
         {
@@ -105,6 +114,17 @@ namespace Anarchy
             {
                 Log.Error(ex.ToString());
             }
+#endif
+#if DUMP_VANILLA_LOCALIZATION
+            var strings = GameManager.instance.localizationManager.activeDictionary.entries
+                .OrderBy(kv => kv.Key)
+                .ToDictionary(kv => kv.Key, kv => kv.Value);
+
+            var json = Colossal.Json.JSON.Dump(strings);
+
+            var filePath = Path.Combine(Application.persistentDataPath, "locale-dictionary.json");
+
+            File.WriteAllText(filePath, json);
 #endif
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Registering settings");
             Settings.RegisterInOptionsUI();

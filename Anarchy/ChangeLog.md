@@ -1,2 +1,4 @@
-﻿## Patch V1.6.2
-* Fix Disable Anarchy While Brushing setting locking Anarchy on.
+﻿## Patch V1.6.3
+* Updated Localization
+* Redesigned in-game Anarchy option panel to facilitate other languages.
+* Added version to mod options page.
