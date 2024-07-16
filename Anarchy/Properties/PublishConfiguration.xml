@@ -19,8 +19,8 @@ I18n Everywhere (Soft dependency required for loading languages other than Engli
 If you want to say thank you with a donation you can do so on Paypal.
 
 ## Translations
-I am looking for volunteers to help translate the mod into the official languages. For those interested please find the project in the discord link. CSL2:CODEMODS -&gt; mods-wip -&gt; Anarchy: Translations.
-Full or Partial Localization: Spanish, German, Chinese Simplified, Brazilian Portuguese, Italian, Polish, Korean, Russian, and French. See credits for list of translators.
+I am looking for volunteers to help translate the mod into the other languages. For those interested please find the project in the discord link. CSL2:CODEMODS -&gt; mods-wip -&gt; Anarchy: Translations.
+Full or Partial Localization: Spanish, German, Chinese Simplified, Brazilian Portuguese, Italian, Polish, Korean, Russian, French, Japanese, and Chinese Traditional. See credits for list of translators.
   
 # Detailed Description
 The mod also has: 
@@ -85,7 +85,7 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * Klyte45, Algernon, T.D.W. - Help with UI, Cooperative Development and Code Sharing
 * Bad Peanut - Image Credit for Flaming Chirper
 * krzychu124, Triton Supreme, and Quboid - Cooperative Development and Code Sharing
-* Localization: Nyoko, Citadino, Dome, and Eryalito (Spanish), Hendrix (German), RilkeXS (Chinese Simplified), Luis Fernando de Paula and felipecollucci (Portuguese), Maxi and raistlin46 (Italian), karmel68 and Lisek (Polish), Tanat and TwotoolusFLY_LSh.st (Korean), OWSEEX (Russian) and Morgan Toverux, spooky_off, Quoifleur, Karg, CEO of Tabarnak and Edou24 (French), Seraphina (Japanese)
+* Localization: Nyoko, Citadino, Dome, elGendo87 and Eryalito (Spanish), Hendrix (German), RilkeXS, CBEdwin, and zlhww (Chinese Simplified), Luis Fernando de Paula and felipecollucci (Portuguese), Maxi and raistlin46 (Italian), karmel68 and Lisek (Polish), Tanat and TwotoolusFLY_LSh.st (Korean), OWSEEX and Katsumoto (Russian) and Morgan Toverux, spooky_off, Quoifleur, Karg, CEO of Tabarnak and Edou24 (French), Seraphina (Japanese), allegretic(Chinese Traditional)
 * Testing, Feedback - Dante, starrysum, HarbourMaster Jay, Dome, Tigon Ologdring, BruceyBoy, RaftermanNZ, Elektrotek, SpaceChad</LongDescription>
   <!--Thumbnail-->
   <Thumbnail Value="Properties/Thumbnail.png" />
@@ -100,7 +100,7 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/anarchy.1644970/" />
   <!--Version of the mod-->
-  <ModVersion Value="1.6.3" />
+  <ModVersion Value="1.6.4" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.1.*" />
   <!--Dependency for the mod, can be set multiple-->
@@ -109,9 +109,7 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>## Patch V1.6.3
 * Updated Localization
-* Redesigned in-game Anarchy option panel to facilitate other languages.
-* Added version to mod options page.
-* Fix Anarchy keybind in editor when Anarchy component in Editor is disabled.</ChangeLog>
+* Fix css errors.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
