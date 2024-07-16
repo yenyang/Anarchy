@@ -66,6 +66,8 @@
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod/ElevationStep/binding]": "Pas d’élévation",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod/Elevation/positive]": "Augmenter l’élévation",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod/Elevation/negative]": "Diminuer l’élévation",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.Version]": "Version",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.Version]": "Version actuelle du mod Anarchy.",
   "Anarchy.ErrorType[AlreadyExists]": "Existe Déjà",
   "Anarchy.ErrorType[AlreadyUpgraded]": "Déjà Amélioré",
   "Anarchy.ErrorType[ExceedsCityLimits]": "Dépasse les limites de la ville",

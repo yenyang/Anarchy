@@ -66,6 +66,8 @@
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod/ElevationStep/binding]": "Zmień stopień zmiany wysokości",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod/Elevation/positive]": "Zwiększ wysokość",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod/Elevation/negative]": "Zmniejsz wysokość",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.Version]": "Wersja",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.Version]": "Numer wersji zainstalowanego moda Anarchy.",
   "Anarchy.ErrorType[AlreadyExists]": "Już istnieje",
   "Anarchy.ErrorType[AlreadyUpgraded]": "Już ulepszono",
   "Anarchy.ErrorType[ExceedsCityLimits]": "Przekracza limit miasta",
