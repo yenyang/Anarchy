@@ -12,9 +12,6 @@ namespace Anarchy.Systems
     using Game.Tools;
     using Unity.Collections;
     using Unity.Entities;
-    using Unity.Entities.UniversalDelegates;
-    using Unity.Mathematics;
-    using UnityEngine;
 
     /// <summary>
     /// Overrides vertical position of creation definition.
@@ -27,7 +24,6 @@ namespace Anarchy.Systems
         private AnarchyUISystem m_AnarchyUISystem;
         private EntityQuery m_NetCourseQuery;
         private ILog m_Log;
-        private ElevateTempObjectSystem m_ElevateTempObjectSystem;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NetworkGradeDefinitionSystem"/> class.
@@ -43,10 +39,9 @@ namespace Anarchy.Systems
             m_Log = AnarchyMod.Instance.Log;
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
-            m_ElevateTempObjectSystem = World.GetOrCreateSystemManaged<ElevateTempObjectSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_AnarchyUISystem = World.CreateSystemManaged<AnarchyUISystem>();
-            m_Log.Info($"[{nameof(ElevateObjectDefinitionSystem)}] {nameof(OnCreate)}");
+            m_Log.Info($"[{nameof(NetworkGradeDefinitionSystem)}] {nameof(OnCreate)}");
         }
 
 
@@ -95,28 +90,25 @@ namespace Anarchy.Systems
                     continue;
                 }
 
-                if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Straight)
+                if ((netCourse.m_StartPosition.m_Flags & CoursePosFlags.IsFirst) == CoursePosFlags.IsFirst)
                 {
-                    if ((netCourse.m_StartPosition.m_Flags & CoursePosFlags.IsFirst) == CoursePosFlags.IsFirst)
-                    {
-                        startCourse = netCourse;
-                        m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} startCourse is {entity.Index}:{entity.Version}.");
-                    }
-                    else if ((netCourse.m_EndPosition.m_Flags & CoursePosFlags.IsLast) == CoursePosFlags.IsLast)
-                    {
-                        endCourse = netCourse;
-                        m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} endCourse is {entity.Index}:{entity.Version}.");
-                    }
-                    else
-                    {
-                        // middleCoursesList.Add(netCourse);
-                        m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} middle course added {entity.Index}:{entity.Version}.");
-                    }
-
-                    totalLength += netCourse.m_Length;
-                    netCourses[i] = netCourse;
-                    m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} current course start position ({netCourse.m_StartPosition.m_Position.x}, {netCourse.m_StartPosition.m_Position.y}, {netCourse.m_StartPosition.m_Position.z})");
+                    startCourse = netCourse;
+                    m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} startCourse is {entity.Index}:{entity.Version}.");
                 }
+                else if ((netCourse.m_EndPosition.m_Flags & CoursePosFlags.IsLast) == CoursePosFlags.IsLast)
+                {
+                    endCourse = netCourse;
+                    m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} endCourse is {entity.Index}:{entity.Version}.");
+                }
+                else
+                {
+                    // middleCoursesList.Add(netCourse);
+                    m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} middle course added {entity.Index}:{entity.Version}.");
+                }
+
+                totalLength += netCourse.m_Length;
+                netCourses[i] = netCourse;
+                m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} current course start position ({netCourse.m_StartPosition.m_Position.x}, {netCourse.m_StartPosition.m_Position.y}, {netCourse.m_StartPosition.m_Position.z})");
             }
 
             m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} current end position ({netCourses[entities.Length - 1].m_EndPosition.m_Position.x}, {netCourses[entities.Length - 1].m_EndPosition.m_Position.y}, {netCourses[entities.Length - 1].m_EndPosition.m_Position.z})");

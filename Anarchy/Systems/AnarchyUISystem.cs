@@ -114,7 +114,7 @@ namespace Anarchy.Systems
         public bool FlamingChirperOption { get => m_FlamingChirperOption.Value; }
 
         /// <summary>
-        /// Gets a value indicating whether the flaming chirper option binding is on/off.
+        /// Gets a value indicating whether Anarchy is enabled or not.
         /// </summary>
         public bool AnarchyEnabled { get => m_AnarchyEnabled; }
 
