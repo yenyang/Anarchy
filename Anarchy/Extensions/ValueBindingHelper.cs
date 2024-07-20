@@ -2,7 +2,7 @@
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
-namespace Anarchy.Utils
+namespace Anarchy.Extensions
 {
     using System;
     using Colossal.UI.Binding;

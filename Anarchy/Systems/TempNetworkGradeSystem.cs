@@ -44,7 +44,7 @@ namespace Anarchy.Systems
         protected override void OnUpdate()
         {
             m_TempEdgeCurveQuery = SystemAPI.QueryBuilder()
-                .WithAllRW<Game.Net.Curve>()
+                .WithAllRW<Game.Net.Curve, Game.Net.Elevation>()
                 .WithAll<Game.Net.Edge, Updated, Temp>()
                 .WithNone<Deleted, Overridden>()
                 .Build();
@@ -66,6 +66,12 @@ namespace Anarchy.Systems
                     curve.m_Bezier.b.y = curve.m_Bezier.a.y + (slope * Vector2.Distance(new float2(curve.m_Bezier.a.x, curve.m_Bezier.a.z), new float2(curve.m_Bezier.b.x, curve.m_Bezier.b.z)));
                     curve.m_Bezier.c.y = curve.m_Bezier.a.y + (slope * Vector2.Distance(new float2(curve.m_Bezier.a.x, curve.m_Bezier.a.z), new float2(curve.m_Bezier.c.x, curve.m_Bezier.c.z)));
                     EntityManager.SetComponentData(entity, curve);
+                }
+
+                if (EntityManager.TryGetComponent(entity, out Game.Net.Elevation elevation))
+                {
+                    elevation.m_Elevation = new float2(5f, -5f);
+                    EntityManager.SetComponentData(entity, elevation);
                 }
             }
         }

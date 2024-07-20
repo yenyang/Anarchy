@@ -1,8 +1,8 @@
-﻿// <copyright file="ReflectionExtensions.cs" company="Yenyang's Mods. MIT License">
-// Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
+﻿// <copyright file="ReflectionExtensions.cs" company="Yenyangs Mods. MIT License">
+// Copyright (c) Yenyangs Mods. MIT License. All rights reserved.
 // </copyright>
 
-namespace Anarchy.Utils
+namespace Anarchy.Extensions
 {
     using System.Reflection;
     using Anarchy;

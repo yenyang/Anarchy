@@ -10,7 +10,7 @@ namespace Anarchy.Systems
     using System.Xml.Serialization;
     using Anarchy.Domain;
     using Anarchy.Settings;
-    using Anarchy.Utils;
+    using Anarchy.Extensions;
     using Colossal.Logging;
     using Colossal.PSI.Environment;
     using Colossal.Serialization.Entities;

@@ -2,13 +2,12 @@
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
-namespace Anarchy.Utils
+namespace Anarchy.Extensions
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using Colossal.UI.Binding;
-    using Game.UI;
     using Unity.Entities;
     using UnityEngine;
 

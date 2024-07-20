@@ -4,7 +4,7 @@
 namespace Anarchy.Systems
 {
     using Anarchy.Components;
-    using Anarchy.Utils;
+    using Anarchy.Extensions;
     using Colossal.Entities;
     using Colossal.Logging;
     using Colossal.UI.Binding;
@@ -20,8 +20,8 @@ namespace Anarchy.Systems
     public partial class SelectedInfoPanelTogglesSystem : ExtendedInfoSectionBase
     {
         private ILog m_Log;
-        private ValueBindingHelperInfo<bool> m_HasPreventOverride;
-        private ValueBindingHelperInfo<bool> m_HasTransformRecord;
+        private ValueBindingHelper<bool> m_HasPreventOverride;
+        private ValueBindingHelper<bool> m_HasTransformRecord;
         private ToolSystem m_ToolSystem;
 
         /// <inheritdoc/>
