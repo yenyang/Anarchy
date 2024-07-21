@@ -2,6 +2,7 @@
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
+#define VERBOSE
 namespace Anarchy.Systems
 {
     using Colossal.Entities;
@@ -139,7 +140,7 @@ namespace Anarchy.Systems
 #if VERBOSE
                 m_Log.Verbose($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} currentCourse.m_EndPosition elevation is {currentCourse.m_EndPosition.m_Elevation}.");
 #endif
-                currentCourse.m_EndPosition.m_Elevation -= currentCourse.m_EndPosition.m_Position.y - nextCourse.m_StartPosition.m_Position.y;
+                currentCourse.m_EndPosition.m_Elevation += currentCourse.m_EndPosition.m_Position.y - nextCourse.m_StartPosition.m_Position.y;
 #if VERBOSE
                 m_Log.Verbose($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} set currentCourse.m_EndPosition elevation to {currentCourse.m_EndPosition.m_Elevation}.");
 #endif
@@ -149,7 +150,7 @@ namespace Anarchy.Systems
                 currentCourse.m_Elevation = (currentCourse.m_StartPosition.m_Elevation + currentCourse.m_EndPosition.m_Elevation) / 2f;
                 currentCourse.m_EndPosition.m_Flags |= CoursePosFlags.FreeHeight;
 #if VERBOSE
-                m_Log.Verbose($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} set course elevation to {currentCourse.m_EndPosition.m_Elevation}.");
+                m_Log.Verbose($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} set course elevation to {currentCourse.m_Elevation}.");
 #endif
                 netCourses[i] = currentCourse;
 
@@ -157,7 +158,10 @@ namespace Anarchy.Systems
                 netCourses[i + 1] = nextCourse;
             }
 
-            EntityManager.SetComponentData(entities[entities.Length - 1], netCourses[entities.Length - 1]);
+            NetCourse finalCourse = netCourses[entities.Length - 1];
+            finalCourse.m_Curve.b.y = finalCourse.m_Curve.a.y + (slope * Vector2.Distance(new float2(finalCourse.m_Curve.a.x, finalCourse.m_Curve.a.z), new float2(finalCourse.m_Curve.b.x, finalCourse.m_Curve.b.z)));
+            finalCourse.m_Curve.c.y = finalCourse.m_Curve.a.y + (slope * Vector2.Distance(new float2(finalCourse.m_Curve.a.x, finalCourse.m_Curve.a.z), new float2(finalCourse.m_Curve.c.x, finalCourse.m_Curve.c.z)));
+            EntityManager.SetComponentData(entities[entities.Length - 1], finalCourse);
         }
     }
 }

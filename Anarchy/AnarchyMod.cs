@@ -2,7 +2,7 @@
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
-// #define VERBOSE
+#define VERBOSE
 // #define DUMP_VANILLA_LOCALIZATION
 namespace Anarchy
 {
