@@ -7,7 +7,7 @@ import mod from "../mod.json";
 import { ElevationControlComponent } from "mods/elevationControlSections/elevationControlSections";
 import { ToolOptionsVisibility } from "mods/ToolOptionsVisible/toolOptionsVisible";
 import { PartialAnarchyMenuComponent } from "mods/partialAnarchyOptions/partialAnarchyMenu";
-import { networkAnarchySections } from "mods/networkAnarchySections/networkAnarchySection";
+import { NetworkAnarchySections } from "mods/networkAnarchySections/networkAnarchySection";
 
 const register: ModRegistrar = (moduleRegistry) => {
      // To find modules in the registry un comment the next line and go to the console on localhost:9444. You must have -uiDeveloperMode launch option enabled.
@@ -33,7 +33,7 @@ const register: ModRegistrar = (moduleRegistry) => {
      moduleRegistry.append('Editor', PartialAnarchyMenuComponent);
 
      // This extends mouse tooltip options with network Anarchy sections and toggles. It may or may not work with gamepads.
-     moduleRegistry.extend("game-ui/game/components/tool-options/mouse-tool-options/mouse-tool-options.tsx", 'MouseToolOptions', networkAnarchySections);
+     moduleRegistry.extend("game-ui/game/components/tool-options/mouse-tool-options/mouse-tool-options.tsx", 'MouseToolOptions', NetworkAnarchySections);
 
      // This is just to verify using UI console that all the component registriations was completed.
      console.log(mod.id + " UI module registrations completed.");

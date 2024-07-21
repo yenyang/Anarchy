@@ -152,7 +152,8 @@ namespace Anarchy
             updateSystem.UpdateBefore<ElevateObjectDefinitionSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateAt<ElevateTempObjectSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateBefore<NetworkGradeDefinitionSystem>(SystemUpdatePhase.Modification1);
-            updateSystem.UpdateBefore<TempNetworkGradeSystem>(SystemUpdatePhase.Modification3);
+            // updateSystem.UpdateBefore<TempNetworkGradeSystem>(SystemUpdatePhase.Modification3);
+            updateSystem.UpdateAt<NetworkAnarchyUISystem>(SystemUpdatePhase.UIUpdate);
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Completed.");
         }
 
