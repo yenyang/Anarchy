@@ -2,7 +2,7 @@
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
-#define VERBOSE
+// #define VERBOSE
 namespace Anarchy.Systems
 {
     using Colossal.Entities;
@@ -59,7 +59,8 @@ namespace Anarchy.Systems
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.ConstantSlope) != NetworkAnarchyUISystem.Composition.ConstantSlope)
+            if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.ConstantSlope) != NetworkAnarchyUISystem.Composition.ConstantSlope
+                && (m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Ground) != NetworkAnarchyUISystem.Composition.Ground)
             {
                 return;
             }
@@ -126,42 +127,63 @@ namespace Anarchy.Systems
             for (int i = 0; i < entities.Length - 1; i++)
             {
                 NetCourse currentCourse = netCourses[i];
+                NetCourse nextCourse = netCourses[i + 1];
 #if VERBOSE
                 m_Log.Verbose($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} current course end position ({currentCourse.m_EndPosition.m_Position.x}, {currentCourse.m_EndPosition.m_Position.y}, {currentCourse.m_EndPosition.m_Position.z})");
 #endif
-                currentCourse.m_EndPosition.m_Position.y = currentCourse.m_StartPosition.m_Position.y + (slope * currentCourse.m_Length);
-                currentCourse.m_Curve.d.y = currentCourse.m_EndPosition.m_Position.y;
-                currentCourse.m_Curve.b.y = currentCourse.m_Curve.a.y + (slope * Vector2.Distance(new float2(currentCourse.m_Curve.a.x, currentCourse.m_Curve.a.z), new float2(currentCourse.m_Curve.b.x, currentCourse.m_Curve.b.z)));
-                currentCourse.m_Curve.c.y = currentCourse.m_Curve.a.y + (slope * Vector2.Distance(new float2(currentCourse.m_Curve.a.x, currentCourse.m_Curve.a.z), new float2(currentCourse.m_Curve.c.x, currentCourse.m_Curve.c.z)));
+                if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.ConstantSlope) == NetworkAnarchyUISystem.Composition.ConstantSlope)
+                {
+                    currentCourse.m_EndPosition.m_Position.y = currentCourse.m_StartPosition.m_Position.y + (slope * currentCourse.m_Length);
+                    currentCourse.m_Curve.d.y = currentCourse.m_EndPosition.m_Position.y;
+                    currentCourse.m_Curve.b.y = currentCourse.m_Curve.a.y + (slope * Vector2.Distance(new float2(currentCourse.m_Curve.a.x, currentCourse.m_Curve.a.z), new float2(currentCourse.m_Curve.b.x, currentCourse.m_Curve.b.z)));
+                    currentCourse.m_Curve.c.y = currentCourse.m_Curve.a.y + (slope * Vector2.Distance(new float2(currentCourse.m_Curve.a.x, currentCourse.m_Curve.a.z), new float2(currentCourse.m_Curve.c.x, currentCourse.m_Curve.c.z)));
+
 #if VERBOSE
                 m_Log.Verbose($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} set y to {currentCourse.m_EndPosition.m_Position.y}.");
-#endif
-                NetCourse nextCourse = netCourses[i + 1];
-#if VERBOSE
                 m_Log.Verbose($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} currentCourse.m_EndPosition elevation is {currentCourse.m_EndPosition.m_Elevation}.");
 #endif
-                currentCourse.m_EndPosition.m_Elevation += currentCourse.m_EndPosition.m_Position.y - nextCourse.m_StartPosition.m_Position.y;
+                    currentCourse.m_EndPosition.m_Elevation += currentCourse.m_EndPosition.m_Position.y - nextCourse.m_StartPosition.m_Position.y;
+                    currentCourse.m_Elevation = (currentCourse.m_StartPosition.m_Elevation + currentCourse.m_EndPosition.m_Elevation) / 2f;
+                    currentCourse.m_EndPosition.m_Flags |= CoursePosFlags.FreeHeight;
+                }
+
+                CheckAndSetGroundElevations(ref currentCourse);
 #if VERBOSE
                 m_Log.Verbose($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} set currentCourse.m_EndPosition elevation to {currentCourse.m_EndPosition.m_Elevation}.");
-#endif
-                nextCourse.m_StartPosition.m_Position.y = currentCourse.m_EndPosition.m_Position.y;
-                nextCourse.m_Curve.a.y = currentCourse.m_EndPosition.m_Position.y;
-                nextCourse.m_StartPosition.m_Elevation = currentCourse.m_EndPosition.m_Elevation;
-                currentCourse.m_Elevation = (currentCourse.m_StartPosition.m_Elevation + currentCourse.m_EndPosition.m_Elevation) / 2f;
-                currentCourse.m_EndPosition.m_Flags |= CoursePosFlags.FreeHeight;
-#if VERBOSE
                 m_Log.Verbose($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} set course elevation to {currentCourse.m_Elevation}.");
 #endif
-                netCourses[i] = currentCourse;
+                if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.ConstantSlope) == NetworkAnarchyUISystem.Composition.ConstantSlope)
+                {
+                    nextCourse.m_StartPosition.m_Position.y = currentCourse.m_EndPosition.m_Position.y;
+                    nextCourse.m_Curve.a.y = currentCourse.m_EndPosition.m_Position.y;
+                    nextCourse.m_StartPosition.m_Elevation = currentCourse.m_EndPosition.m_Elevation;
+                }
 
+                netCourses[i] = currentCourse;
                 EntityManager.SetComponentData(entities[i], netCourses[i]);
                 netCourses[i + 1] = nextCourse;
             }
 
             NetCourse finalCourse = netCourses[entities.Length - 1];
-            finalCourse.m_Curve.b.y = finalCourse.m_Curve.a.y + (slope * Vector2.Distance(new float2(finalCourse.m_Curve.a.x, finalCourse.m_Curve.a.z), new float2(finalCourse.m_Curve.b.x, finalCourse.m_Curve.b.z)));
-            finalCourse.m_Curve.c.y = finalCourse.m_Curve.a.y + (slope * Vector2.Distance(new float2(finalCourse.m_Curve.a.x, finalCourse.m_Curve.a.z), new float2(finalCourse.m_Curve.c.x, finalCourse.m_Curve.c.z)));
+            if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.ConstantSlope) == NetworkAnarchyUISystem.Composition.ConstantSlope)
+            {
+                finalCourse.m_Curve.b.y = finalCourse.m_Curve.a.y + (slope * Vector2.Distance(new float2(finalCourse.m_Curve.a.x, finalCourse.m_Curve.a.z), new float2(finalCourse.m_Curve.b.x, finalCourse.m_Curve.b.z)));
+                finalCourse.m_Curve.c.y = finalCourse.m_Curve.a.y + (slope * Vector2.Distance(new float2(finalCourse.m_Curve.a.x, finalCourse.m_Curve.a.z), new float2(finalCourse.m_Curve.c.x, finalCourse.m_Curve.c.z)));
+            }
+
+            CheckAndSetGroundElevations(ref finalCourse);
+
             EntityManager.SetComponentData(entities[entities.Length - 1], finalCourse);
+        }
+
+        private void CheckAndSetGroundElevations(ref NetCourse netCourse)
+        {
+            if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Ground) == NetworkAnarchyUISystem.Composition.Ground)
+            {
+                netCourse.m_StartPosition.m_Elevation = new float2(0, 0);
+                netCourse.m_EndPosition.m_Elevation = new float2(0, 0);
+                netCourse.m_Elevation = new float2(0, 0);
+            }
         }
     }
 }
