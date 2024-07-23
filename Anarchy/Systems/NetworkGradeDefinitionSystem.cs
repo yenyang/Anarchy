@@ -60,7 +60,8 @@ namespace Anarchy.Systems
         protected override void OnUpdate()
         {
             if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.ConstantSlope) != NetworkAnarchyUISystem.Composition.ConstantSlope
-                && (m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Ground) != NetworkAnarchyUISystem.Composition.Ground)
+                && (m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Ground) != NetworkAnarchyUISystem.Composition.Ground
+                && (m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Tunnel) != NetworkAnarchyUISystem.Composition.Tunnel)
             {
                 return;
             }
@@ -147,7 +148,7 @@ namespace Anarchy.Systems
                     currentCourse.m_EndPosition.m_Flags |= CoursePosFlags.FreeHeight;
                 }
 
-                CheckAndSetGroundElevations(ref currentCourse);
+                CheckAndSetElevations(ref currentCourse);
 #if VERBOSE
                 m_Log.Verbose($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} set currentCourse.m_EndPosition elevation to {currentCourse.m_EndPosition.m_Elevation}.");
                 m_Log.Verbose($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} set course elevation to {currentCourse.m_Elevation}.");
@@ -171,18 +172,27 @@ namespace Anarchy.Systems
                 finalCourse.m_Curve.c.y = finalCourse.m_Curve.a.y + (slope * Vector2.Distance(new float2(finalCourse.m_Curve.a.x, finalCourse.m_Curve.a.z), new float2(finalCourse.m_Curve.c.x, finalCourse.m_Curve.c.z)));
             }
 
-            CheckAndSetGroundElevations(ref finalCourse);
+            CheckAndSetElevations(ref finalCourse);
 
             EntityManager.SetComponentData(entities[entities.Length - 1], finalCourse);
         }
 
-        private void CheckAndSetGroundElevations(ref NetCourse netCourse)
+        private void CheckAndSetElevations(ref NetCourse netCourse)
         {
             if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Ground) == NetworkAnarchyUISystem.Composition.Ground)
             {
                 netCourse.m_StartPosition.m_Elevation = new float2(0, 0);
                 netCourse.m_EndPosition.m_Elevation = new float2(0, 0);
                 netCourse.m_Elevation = new float2(0, 0);
+            }
+            else if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Tunnel) == NetworkAnarchyUISystem.Composition.Tunnel)
+            {
+                netCourse.m_StartPosition.m_Elevation.x = Mathf.Min(netCourse.m_StartPosition.m_Elevation.x, -12f);
+                netCourse.m_StartPosition.m_Elevation.y = Mathf.Min(netCourse.m_StartPosition.m_Elevation.y, -12f);
+                netCourse.m_EndPosition.m_Elevation.x = Mathf.Min(netCourse.m_StartPosition.m_Elevation.x, -12f);
+                netCourse.m_EndPosition.m_Elevation.y = Mathf.Min(netCourse.m_StartPosition.m_Elevation.y, -12f);
+                netCourse.m_Elevation.x = Mathf.Min(netCourse.m_Elevation.x, -12f);
+                netCourse.m_Elevation.y = Mathf.Min(netCourse.m_Elevation.y, -12f);
             }
         }
     }

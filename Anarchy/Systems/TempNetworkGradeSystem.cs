@@ -4,24 +4,33 @@
 
 namespace Anarchy.Systems
 {
-    using Colossal.Entities;
+    using System.Collections.Generic;
     using Colossal.Logging;
     using Game;
-    using Game.Citizens;
     using Game.Common;
     using Game.Prefabs;
     using Game.Simulation;
     using Game.Tools;
     using Unity.Collections;
     using Unity.Entities;
-    using Unity.Mathematics;
-    using UnityEngine;
 
     /// <summary>
     /// Overrides vertical position of creation definition.
     /// </summary>
     public partial class TempNetworkGradeSystem : GameSystemBase
     {
+        private readonly Dictionary<NetworkAnarchyUISystem.SideUpgrades, CompositionFlags.Side> SideUpgradeLookup = new Dictionary<NetworkAnarchyUISystem.SideUpgrades, CompositionFlags.Side>()
+        {
+            { NetworkAnarchyUISystem.SideUpgrades.Quay, CompositionFlags.Side.Raised },
+            { NetworkAnarchyUISystem.SideUpgrades.RetainingWall, CompositionFlags.Side.Lowered },
+            { NetworkAnarchyUISystem.SideUpgrades.Trees, CompositionFlags.Side.SecondaryBeautification },
+            { NetworkAnarchyUISystem.SideUpgrades.GrassStrip, CompositionFlags.Side.PrimaryBeautification },
+            { NetworkAnarchyUISystem.SideUpgrades.WideSidewalk, CompositionFlags.Side.WideSidewalk },
+            { NetworkAnarchyUISystem.SideUpgrades.SoundBarrier, CompositionFlags.Side.SoundBarrier },
+            { NetworkAnarchyUISystem.SideUpgrades.Trees | NetworkAnarchyUISystem.SideUpgrades.GrassStrip, CompositionFlags.Side.PrimaryBeautification | CompositionFlags.Side.SecondaryBeautification },
+            { NetworkAnarchyUISystem.SideUpgrades.WideSidewalk | NetworkAnarchyUISystem.SideUpgrades.Trees, CompositionFlags.Side.WideSidewalk | CompositionFlags.Side.SecondaryBeautification },
+        };
+
         private ToolSystem m_ToolSystem;
         private NetToolSystem m_NetToolSystem;
         private PrefabSystem m_PrefabSystem;
@@ -92,27 +101,14 @@ namespace Anarchy.Systems
                     compositionFlags.m_General |= CompositionFlags.General.Tunnel;
                 }
 
-                if ((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
+                if (SideUpgradeLookup.ContainsKey(m_UISystem.LeftUpgrade))
                 {
-                    compositionFlags.m_Left |= CompositionFlags.Side.Raised;
-                }
-                else if ((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall)
-                {
-                    compositionFlags.m_Left |= CompositionFlags.Side.Lowered;
+                    compositionFlags.m_Left = SideUpgradeLookup[m_UISystem.LeftUpgrade];
                 }
 
-                if ((m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
+                if (SideUpgradeLookup.ContainsKey(m_UISystem.RightUpgrade))
                 {
-                    compositionFlags.m_Right |= CompositionFlags.Side.Raised;
-                }
-                else if ((m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall)
-                {
-                    compositionFlags.m_Right |= CompositionFlags.Side.Lowered;
-                }
-
-                if (compositionFlags.m_General == 0 && compositionFlags.m_Left == 0 && compositionFlags.m_Right == 0)
-                {
-                    continue;
+                    compositionFlags.m_Right = SideUpgradeLookup[m_UISystem.RightUpgrade];
                 }
 
                 Game.Net.Upgraded upgrades = new Game.Net.Upgraded()

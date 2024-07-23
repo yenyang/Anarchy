@@ -36,6 +36,26 @@ namespace Anarchy.Systems
             /// Attempted RetainingWall Placement.
             /// </summary>
             RetainingWall = 2,
+
+            /// <summary>
+            /// Adds street trees.
+            /// </summary>
+            Trees = 4,
+
+            /// <summary>
+            /// Adds Grass Strips.
+            /// </summary>
+            GrassStrip = 8,
+
+            /// <summary>
+            /// Adds Wide Sidewalk
+            /// </summary>
+            WideSidewalk = 16,
+
+            /// <summary>
+            /// Adds Sound Barrier.
+            /// </summary>
+            SoundBarrier = 32,
         }
 
         /// <summary>
@@ -120,25 +140,57 @@ namespace Anarchy.Systems
 
         private void LeftUpgradeClicked(int mode)
         {
-            if ((SideUpgrades)mode == m_LeftUpgrade)
+            SideUpgrades sideUpgrade = (SideUpgrades)mode;
+            if ((m_LeftUpgrade.Value & sideUpgrade) == sideUpgrade)
             {
-                m_LeftUpgrade.Value = SideUpgrades.None;
+                m_LeftUpgrade.Value &= ~sideUpgrade;
+            }
+            else if ((sideUpgrade == SideUpgrades.Trees && (m_LeftUpgrade.Value == SideUpgrades.WideSidewalk || m_LeftUpgrade.Value == SideUpgrades.GrassStrip))
+                || (m_LeftUpgrade == SideUpgrades.Trees && (sideUpgrade == SideUpgrades.WideSidewalk || sideUpgrade == SideUpgrades.GrassStrip)))
+            {
+                m_LeftUpgrade.Value |= sideUpgrade;
+            }
+            else if ((m_LeftUpgrade.Value & SideUpgrades.WideSidewalk) == SideUpgrades.WideSidewalk && sideUpgrade == SideUpgrades.GrassStrip)
+            {
+                m_LeftUpgrade.Value &= ~SideUpgrades.WideSidewalk;
+                m_LeftUpgrade.Value |= sideUpgrade;
+            }
+            else if ((m_LeftUpgrade.Value & SideUpgrades.GrassStrip) == SideUpgrades.GrassStrip && sideUpgrade == SideUpgrades.WideSidewalk)
+            {
+                m_LeftUpgrade.Value &= ~SideUpgrades.GrassStrip;
+                m_LeftUpgrade.Value |= sideUpgrade;
             }
             else
             {
-                m_LeftUpgrade.Value = (SideUpgrades)mode;
+                m_LeftUpgrade.Value = sideUpgrade;
             }
         }
 
         private void RightUpgradeClicked(int mode)
         {
-            if ((SideUpgrades)mode == m_RightUprade.Value)
+            SideUpgrades sideUpgrade = (SideUpgrades)mode;
+            if ((m_RightUprade.Value & sideUpgrade) == sideUpgrade)
             {
-                m_RightUprade.Value = SideUpgrades.None;
+                m_RightUprade.Value &= ~sideUpgrade;
+            }
+            else if ((sideUpgrade == SideUpgrades.Trees && (m_RightUprade.Value == SideUpgrades.WideSidewalk || m_RightUprade.Value == SideUpgrades.GrassStrip))
+                || (m_RightUprade == SideUpgrades.Trees && (sideUpgrade == SideUpgrades.WideSidewalk || sideUpgrade == SideUpgrades.GrassStrip)))
+            {
+                m_RightUprade.Value |= sideUpgrade;
+            }
+            else if ((m_RightUprade.Value & SideUpgrades.WideSidewalk) == SideUpgrades.WideSidewalk && sideUpgrade == SideUpgrades.GrassStrip)
+            {
+                m_RightUprade.Value &= ~SideUpgrades.WideSidewalk;
+                m_RightUprade.Value |= sideUpgrade;
+            }
+            else if ((m_RightUprade.Value & SideUpgrades.GrassStrip) == SideUpgrades.GrassStrip && sideUpgrade == SideUpgrades.WideSidewalk)
+            {
+                m_RightUprade.Value &= ~SideUpgrades.GrassStrip;
+                m_RightUprade.Value |= sideUpgrade;
             }
             else
             {
-                m_RightUprade.Value = (SideUpgrades)mode;
+                m_RightUprade.Value = sideUpgrade;
             }
         }
 
