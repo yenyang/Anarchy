@@ -17,7 +17,7 @@ namespace Anarchy.Systems
     /// <summary>
     /// Overrides vertical position of creation definition.
     /// </summary>
-    public partial class TempNetworkGradeSystem : GameSystemBase
+    public partial class TempNetworkSystem : GameSystemBase
     {
         private readonly Dictionary<NetworkAnarchyUISystem.SideUpgrades, CompositionFlags.Side> SideUpgradeLookup = new Dictionary<NetworkAnarchyUISystem.SideUpgrades, CompositionFlags.Side>()
         {
@@ -39,6 +39,14 @@ namespace Anarchy.Systems
         private TerrainSystem m_TerrainSystem;
         private ILog m_Log;
 
+        /// <summary>
+        /// Gets the sideUpgradeLookup.
+        /// </summary>
+        public Dictionary<NetworkAnarchyUISystem.SideUpgrades, CompositionFlags.Side> SideUpgradesDictionary
+        {
+            get { return SideUpgradeLookup; }
+        }
+
         /// <inheritdoc/>
         protected override void OnCreate()
         {
@@ -50,7 +58,7 @@ namespace Anarchy.Systems
             m_UISystem = World.GetOrCreateSystemManaged<NetworkAnarchyUISystem>();
             m_TerrainSystem = World.GetOrCreateSystemManaged<TerrainSystem>();
             m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_NetToolSystem;
-            m_Log.Info($"[{nameof(TempNetworkGradeSystem)}] {nameof(OnCreate)}");
+            m_Log.Info($"[{nameof(TempNetworkSystem)}] {nameof(OnCreate)}");
             m_TempEdgeCurveQuery = SystemAPI.QueryBuilder()
                 .WithAll<Updated, Temp, Game.Net.Edge>()
                 .WithNone<Deleted, Overridden, Game.Net.Upgraded>()
@@ -110,6 +118,7 @@ namespace Anarchy.Systems
                 {
                     compositionFlags.m_Right = SideUpgradeLookup[m_UISystem.RightUpgrade];
                 }
+
 
                 Game.Net.Upgraded upgrades = new Game.Net.Upgraded()
                 {

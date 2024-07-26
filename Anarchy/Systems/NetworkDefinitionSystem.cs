@@ -20,7 +20,7 @@ namespace Anarchy.Systems
     /// <summary>
     /// Overrides vertical position of creation definition.
     /// </summary>
-    public partial class NetworkGradeDefinitionSystem : GameSystemBase
+    public partial class NetworkDefinitionSystem : GameSystemBase
     {
         private ToolSystem m_ToolSystem;
         private NetToolSystem m_NetToolSystem;
@@ -30,9 +30,9 @@ namespace Anarchy.Systems
         private ILog m_Log;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NetworkGradeDefinitionSystem"/> class.
+        /// Initializes a new instance of the <see cref="NetworkDefinitionSystem"/> class.
         /// </summary>
-        public NetworkGradeDefinitionSystem()
+        public NetworkDefinitionSystem()
         {
         }
 
@@ -46,7 +46,7 @@ namespace Anarchy.Systems
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_UISystem = World.GetOrCreateSystemManaged<NetworkAnarchyUISystem>();
             m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_NetToolSystem;
-            m_Log.Info($"[{nameof(NetworkGradeDefinitionSystem)}] {nameof(OnCreate)}");
+            m_Log.Info($"[{nameof(NetworkDefinitionSystem)}] {nameof(OnCreate)}");
 
             m_NetCourseQuery = SystemAPI.QueryBuilder()
                             .WithAllRW<NetCourse>()
@@ -76,7 +76,7 @@ namespace Anarchy.Systems
                 return;
             }
 
-            m_Log.Debug($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} entities length = {entities.Length}.");
+            m_Log.Debug($"{nameof(NetworkDefinitionSystem)}.{nameof(OnUpdate)} entities length = {entities.Length}.");
             for (int i = 0; i < entities.Length; i++)
             {
                 Entity entity = entities[i];
@@ -95,14 +95,14 @@ namespace Anarchy.Systems
                     continue;
                 }
 
-                if ((netCourse.m_StartPosition.m_Flags & CoursePosFlags.IsFirst) == CoursePosFlags.IsFirst)
+                if ((netCourse.m_StartPosition.m_Flags & CoursePosFlags.IsFirst) == CoursePosFlags.IsFirst && (netCourse.m_StartPosition.m_Flags & CoursePosFlags.IsParallel) != CoursePosFlags.IsParallel)
                 {
                     startCourse = netCourse;
 #if VERBOSE
                     m_Log.Verbose($"{nameof(NetworkGradeDefinitionSystem)}.{nameof(OnUpdate)} startCourse is {entity.Index}:{entity.Version}.");
 #endif
                 }
-                else if ((netCourse.m_EndPosition.m_Flags & CoursePosFlags.IsLast) == CoursePosFlags.IsLast)
+                else if ((netCourse.m_EndPosition.m_Flags & CoursePosFlags.IsLast) == CoursePosFlags.IsLast && (netCourse.m_StartPosition.m_Flags & CoursePosFlags.IsParallel) != CoursePosFlags.IsParallel)
                 {
                     endCourse = netCourse;
 #if VERBOSE
@@ -187,12 +187,12 @@ namespace Anarchy.Systems
             }
             else if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Tunnel) == NetworkAnarchyUISystem.Composition.Tunnel)
             {
-                netCourse.m_StartPosition.m_Elevation.x = Mathf.Min(netCourse.m_StartPosition.m_Elevation.x, -12f);
-                netCourse.m_StartPosition.m_Elevation.y = Mathf.Min(netCourse.m_StartPosition.m_Elevation.y, -12f);
-                netCourse.m_EndPosition.m_Elevation.x = Mathf.Min(netCourse.m_StartPosition.m_Elevation.x, -12f);
-                netCourse.m_EndPosition.m_Elevation.y = Mathf.Min(netCourse.m_StartPosition.m_Elevation.y, -12f);
-                netCourse.m_Elevation.x = Mathf.Min(netCourse.m_Elevation.x, -12f);
-                netCourse.m_Elevation.y = Mathf.Min(netCourse.m_Elevation.y, -12f);
+                netCourse.m_StartPosition.m_Elevation.x = Mathf.Min(netCourse.m_StartPosition.m_Elevation.x, -25f);
+                netCourse.m_StartPosition.m_Elevation.y = Mathf.Min(netCourse.m_StartPosition.m_Elevation.y, -25f);
+                netCourse.m_EndPosition.m_Elevation.x = Mathf.Min(netCourse.m_StartPosition.m_Elevation.x, -25f);
+                netCourse.m_EndPosition.m_Elevation.y = Mathf.Min(netCourse.m_StartPosition.m_Elevation.y, -25f);
+                netCourse.m_Elevation.x = Mathf.Min(netCourse.m_Elevation.x, -25f);
+                netCourse.m_Elevation.y = Mathf.Min(netCourse.m_Elevation.y, -25f);
             }
         }
     }

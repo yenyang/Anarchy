@@ -91,6 +91,7 @@ enum Composition
 const leftUpgrade$ = bindValue<SideUpgrades>(mod.id, "LeftUpgrade");
 const rightUpgrade$ = bindValue<SideUpgrades>(mod.id, "RightUpgrade");
 const composition$ = bindValue<Composition>(mod.id, "Composition");
+const showUpgrade$ = bindValue<SideUpgrades>(mod.id, "ShowUpgrade");
 
 
 // These contain the coui paths to Unified Icon Library svg assets
@@ -129,6 +130,7 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
         const rightUpgrade = useValue(rightUpgrade$);
         const composition = useValue(composition$);
         const netToolActive = useValue(tool.activeTool$).id == tool.NET_TOOL;
+        const showUpgrade = useValue(showUpgrade$);
 
         // translation handling. Translates using locale keys that are defined in C# or fallback string here.
         const { translate } = useLocalization();
@@ -139,54 +141,48 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
 
         // This gets the original component that we may alter and return.
         var result : JSX.Element = Component();
-        // It is important that we coordinate how to handle the tool options panel because it is possibile to create a mod that works for your mod but prevents others from doing the same thing.
-        // If show icon add new section with title, and one button. 
         if (netToolActive) {
             result.props.children?.push(
-                /* 
-                Add a new section before other tool options sections with translated title based of this localization key. Localization key defined in C#.
-                Add a new Tool button into that section. Selected is based on Anarchy Enabled binding. 
-                Tooltip is translated based on localization key. OnSelect run callback fucntion here to trigger event. 
-                Anarchy specific image source changes bases on Anarchy Enabled binding. 
-                */
                <>
                     <VanillaComponentResolver.instance.Section title={"Left"}>
                         <>
-                            { true && (
-                                <>
-                                    <VanillaComponentResolver.instance.ToolButton
-                                        src={wideSidewalkSrc}
-                                        selected = {(leftUpgrade & SideUpgrades.WideSidewalk) == SideUpgrades.WideSidewalk}
-                                        multiSelect = {false}   // I haven't tested any other value here
-                                        disabled = {false}      // I haven't tested any other value here
-                                        tooltip = {"tooltip"}
-                                        className = {VanillaComponentResolver.instance.toolButtonTheme.button}
-                                        focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                                        onSelect={() => handleClick(leftUpgradeEvent, SideUpgrades.WideSidewalk)}
-                                    />
-                                    <VanillaComponentResolver.instance.ToolButton
-                                        src={grassSrc}
-                                        selected = {(leftUpgrade & SideUpgrades.GrassStrip) == SideUpgrades.GrassStrip}
-                                        multiSelect = {false}   // I haven't tested any other value here
-                                        disabled = {false}      // I haven't tested any other value here
-                                        tooltip = {"tooltip"}
-                                        className = {VanillaComponentResolver.instance.toolButtonTheme.button}
-                                        focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                                        onSelect={() => handleClick(leftUpgradeEvent, SideUpgrades.GrassStrip)}
-                                    />
-                                    <VanillaComponentResolver.instance.ToolButton
-                                        src={treesSrc}
-                                        selected = {(leftUpgrade & SideUpgrades.Trees) == SideUpgrades.Trees}
-                                        multiSelect = {false}   // I haven't tested any other value here
-                                        disabled = {false}      // I haven't tested any other value here
-                                        tooltip = {"tooltip"}
-                                        className = {VanillaComponentResolver.instance.toolButtonTheme.button}
-                                        focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                                        onSelect={() => handleClick(leftUpgradeEvent, SideUpgrades.Trees)}
-                                    />
-                                </>
+                            { (showUpgrade & SideUpgrades.WideSidewalk) == SideUpgrades.WideSidewalk && (
+                                <VanillaComponentResolver.instance.ToolButton
+                                    src={wideSidewalkSrc}
+                                    selected = {(leftUpgrade & SideUpgrades.WideSidewalk) == SideUpgrades.WideSidewalk}
+                                    multiSelect = {false}   // I haven't tested any other value here
+                                    disabled = {false}      // I haven't tested any other value here
+                                    tooltip = {"tooltip"}
+                                    className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                                    focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                    onSelect={() => handleClick(leftUpgradeEvent, SideUpgrades.WideSidewalk)}
+                                />
                             )}
-                            { false && (
+                            { (showUpgrade & SideUpgrades.GrassStrip) == SideUpgrades.GrassStrip && (
+                                <VanillaComponentResolver.instance.ToolButton
+                                    src={grassSrc}
+                                    selected = {(leftUpgrade & SideUpgrades.GrassStrip) == SideUpgrades.GrassStrip}
+                                    multiSelect = {false}   // I haven't tested any other value here
+                                    disabled = {false}      // I haven't tested any other value here
+                                    tooltip = {"tooltip"}
+                                    className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                                    focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                    onSelect={() => handleClick(leftUpgradeEvent, SideUpgrades.GrassStrip)}
+                                />
+                            )}
+                            { (showUpgrade & SideUpgrades.Trees) == SideUpgrades.Trees && (
+                                <VanillaComponentResolver.instance.ToolButton
+                                    src={treesSrc}
+                                    selected = {(leftUpgrade & SideUpgrades.Trees) == SideUpgrades.Trees}
+                                    multiSelect = {false}   // I haven't tested any other value here
+                                    disabled = {false}      // I haven't tested any other value here
+                                    tooltip = {"tooltip"}
+                                    className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                                    focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                    onSelect={() => handleClick(leftUpgradeEvent, SideUpgrades.Trees)}
+                                />
+                            )}
+                            { (showUpgrade & SideUpgrades.SoundBarrier) == SideUpgrades.SoundBarrier && (
                                 <VanillaComponentResolver.instance.ToolButton
                                     src={barrierSrc}
                                     selected = {leftUpgrade == SideUpgrades.SoundBarrier}
@@ -198,76 +194,83 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
                                     onSelect={() => handleClick(leftUpgradeEvent, SideUpgrades.SoundBarrier)}
                                 />
                             )}
-                            <VanillaComponentResolver.instance.ToolButton
-                                src={quaySrc}
-                                selected = {leftUpgrade == SideUpgrades.Quay}
-                                multiSelect = {false}   // I haven't tested any other value here
-                                disabled = {false}      // I haven't tested any other value here
-                                tooltip = {"tooltip"}
-                                className = {VanillaComponentResolver.instance.toolButtonTheme.button}
-                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                                onSelect={() => handleClick(leftUpgradeEvent, SideUpgrades.Quay)}
-                            />
-                            <VanillaComponentResolver.instance.ToolButton
-                                src={retainingWallSrc}
-                                selected = {leftUpgrade == SideUpgrades.RetainingWall}
-                                multiSelect = {false}   // I haven't tested any other value here
-                                disabled = {false}      // I haven't tested any other value here
-                                tooltip = {"tooltip"}
-                                className = {VanillaComponentResolver.instance.toolButtonTheme.button}
-                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                                onSelect={() => handleClick(leftUpgradeEvent, SideUpgrades.RetainingWall)}
-                            />
+                            { (showUpgrade & SideUpgrades.Quay) == SideUpgrades.Quay && (
+                                <VanillaComponentResolver.instance.ToolButton
+                                    src={quaySrc}
+                                    selected = {leftUpgrade == SideUpgrades.Quay}
+                                    multiSelect = {false}   // I haven't tested any other value here
+                                    disabled = {false}      // I haven't tested any other value here
+                                    tooltip = {"tooltip"}
+                                    className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                                    focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                    onSelect={() => handleClick(leftUpgradeEvent, SideUpgrades.Quay)}
+                                />
+                            )}
+                            { (showUpgrade & SideUpgrades.RetainingWall) == SideUpgrades.RetainingWall && (
+                                <VanillaComponentResolver.instance.ToolButton
+                                    src={retainingWallSrc}
+                                    selected = {leftUpgrade == SideUpgrades.RetainingWall}
+                                    multiSelect = {false}   // I haven't tested any other value here
+                                    disabled = {false}      // I haven't tested any other value here
+                                    tooltip = {"tooltip"}
+                                    className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                                    focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                    onSelect={() => handleClick(leftUpgradeEvent, SideUpgrades.RetainingWall)}
+                                />
+                            )}
                         </>
                     </VanillaComponentResolver.instance.Section>
                     <VanillaComponentResolver.instance.Section title ={"Right"}>
                         <>
-                            { true && (
-                                        <>
-                                            <VanillaComponentResolver.instance.ToolButton
-                                                src={wideSidewalkSrc}
-                                                selected = {(rightUpgrade & SideUpgrades.WideSidewalk) == SideUpgrades.WideSidewalk}
-                                                multiSelect = {false}   // I haven't tested any other value here
-                                                disabled = {false}      // I haven't tested any other value here
-                                                tooltip = {"tooltip"}
-                                                className = {VanillaComponentResolver.instance.toolButtonTheme.button}
-                                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                                                onSelect={() => handleClick(rightUpgradeEvent, SideUpgrades.WideSidewalk)}
-                                            />
-                                            <VanillaComponentResolver.instance.ToolButton
-                                                src={grassSrc}
-                                                selected = {(rightUpgrade & SideUpgrades.GrassStrip) == SideUpgrades.GrassStrip}
-                                                multiSelect = {false}   // I haven't tested any other value here
-                                                disabled = {false}      // I haven't tested any other value here
-                                                tooltip = {"tooltip"}
-                                                className = {VanillaComponentResolver.instance.toolButtonTheme.button}
-                                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                                                onSelect={() => handleClick(rightUpgradeEvent, SideUpgrades.GrassStrip)}
-                                            />
-                                            <VanillaComponentResolver.instance.ToolButton
-                                                src={treesSrc}
-                                                selected = {(rightUpgrade & SideUpgrades.Trees) == SideUpgrades.Trees}
-                                                multiSelect = {false}   // I haven't tested any other value here
-                                                disabled = {false}      // I haven't tested any other value here
-                                                tooltip = {"tooltip"}
-                                                className = {VanillaComponentResolver.instance.toolButtonTheme.button}
-                                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                                                onSelect={() => handleClick(rightUpgradeEvent, SideUpgrades.Trees)}
-                                            />
-                                        </>
-                                    )}
-                                    { false && (
-                                        <VanillaComponentResolver.instance.ToolButton
-                                            src={barrierSrc}
-                                            selected = {rightUpgrade == SideUpgrades.SoundBarrier}
-                                            multiSelect = {false}   // I haven't tested any other value here
-                                            disabled = {false}      // I haven't tested any other value here
-                                            tooltip = {"tooltip"}
-                                            className = {VanillaComponentResolver.instance.toolButtonTheme.button}
-                                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                                            onSelect={() => handleClick(leftUpgradeEvent, SideUpgrades.SoundBarrier)}
-                                        />
-                                    )}
+                        { (showUpgrade & SideUpgrades.WideSidewalk) == SideUpgrades.WideSidewalk && (
+                                <VanillaComponentResolver.instance.ToolButton
+                                    src={wideSidewalkSrc}
+                                    selected = {(rightUpgrade & SideUpgrades.WideSidewalk) == SideUpgrades.WideSidewalk}
+                                    multiSelect = {false}   // I haven't tested any other value here
+                                    disabled = {false}      // I haven't tested any other value here
+                                    tooltip = {"tooltip"}
+                                    className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                                    focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                    onSelect={() => handleClick(rightUpgradeEvent, SideUpgrades.WideSidewalk)}
+                                />
+                            )}
+                            { (showUpgrade & SideUpgrades.GrassStrip) == SideUpgrades.GrassStrip && (
+                                <VanillaComponentResolver.instance.ToolButton
+                                    src={grassSrc}
+                                    selected = {(rightUpgrade & SideUpgrades.GrassStrip) == SideUpgrades.GrassStrip}
+                                    multiSelect = {false}   // I haven't tested any other value here
+                                    disabled = {false}      // I haven't tested any other value here
+                                    tooltip = {"tooltip"}
+                                    className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                                    focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                    onSelect={() => handleClick(rightUpgradeEvent, SideUpgrades.GrassStrip)}
+                                />
+                            )}
+                            { (showUpgrade & SideUpgrades.Trees) == SideUpgrades.Trees && (
+                                <VanillaComponentResolver.instance.ToolButton
+                                    src={treesSrc}
+                                    selected = {(rightUpgrade & SideUpgrades.Trees) == SideUpgrades.Trees}
+                                    multiSelect = {false}   // I haven't tested any other value here
+                                    disabled = {false}      // I haven't tested any other value here
+                                    tooltip = {"tooltip"}
+                                    className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                                    focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                    onSelect={() => handleClick(rightUpgradeEvent, SideUpgrades.Trees)}
+                                />
+                            )}
+                            { (showUpgrade & SideUpgrades.SoundBarrier) == SideUpgrades.SoundBarrier && (
+                                <VanillaComponentResolver.instance.ToolButton
+                                    src={barrierSrc}
+                                    selected = {rightUpgrade == SideUpgrades.SoundBarrier}
+                                    multiSelect = {false}   // I haven't tested any other value here
+                                    disabled = {false}      // I haven't tested any other value here
+                                    tooltip = {"tooltip"}
+                                    className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                                    focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                    onSelect={() => handleClick(rightUpgradeEvent, SideUpgrades.SoundBarrier)}
+                                />
+                            )}
+                            { (showUpgrade & SideUpgrades.Quay) == SideUpgrades.Quay && (
                                 <VanillaComponentResolver.instance.ToolButton
                                     src={quaySrc}
                                     selected = {rightUpgrade == SideUpgrades.Quay}
@@ -278,6 +281,8 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
                                     focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
                                     onSelect={() => handleClick(rightUpgradeEvent, SideUpgrades.Quay)}
                                 />
+                            )}
+                            { (showUpgrade & SideUpgrades.RetainingWall) == SideUpgrades.RetainingWall && (
                                 <VanillaComponentResolver.instance.ToolButton
                                     src={retainingWallSrc}
                                     selected = {rightUpgrade == SideUpgrades.RetainingWall}
@@ -287,7 +292,8 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
                                     className = {VanillaComponentResolver.instance.toolButtonTheme.button}
                                     focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
                                     onSelect={() => handleClick(rightUpgradeEvent, SideUpgrades.RetainingWall)}
-                                />     
+                                />
+                            )}    
                         </>                   
                     </VanillaComponentResolver.instance.Section>
                     <VanillaComponentResolver.instance.Section title={"Composition"}>

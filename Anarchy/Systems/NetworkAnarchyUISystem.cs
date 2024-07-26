@@ -4,8 +4,13 @@
 
 namespace Anarchy.Systems
 {
+    using System.Collections.Generic;
     using Anarchy.Extensions;
+    using Colossal.Entities;
     using Colossal.Logging;
+    using Game.Prefabs;
+    using Game.Tools;
+    using Unity.Entities;
 
     /// <summary>
     /// A UI System for CS:1 Network Anarchy type UI.
@@ -14,8 +19,13 @@ namespace Anarchy.Systems
     {
         private ILog m_Log;
         private ValueBindingHelper<SideUpgrades> m_LeftUpgrade;
-        private ValueBindingHelper<SideUpgrades> m_RightUprade;
+        private ValueBindingHelper<SideUpgrades> m_RightUpgrade;
         private ValueBindingHelper<Composition> m_Composition;
+        private ValueBindingHelper<SideUpgrades> m_ShowUpgrade;
+        private ToolSystem m_ToolSystem;
+        private PrefabSystem m_PrefabSystem;
+        private NetToolSystem m_NetToolSystem;
+        private TempNetworkSystem m_TempNetworkSystem;
 
         /// <summary>
         /// An enum for network cross section modes.
@@ -112,7 +122,7 @@ namespace Anarchy.Systems
         /// </summary>
         public SideUpgrades RightUpgrade
         {
-            get { return m_RightUprade; }
+            get { return m_RightUpgrade; }
         }
 
         /// <summary>
@@ -129,10 +139,20 @@ namespace Anarchy.Systems
             base.OnCreate();
             m_Log = AnarchyMod.Instance.Log;
             m_Log.Info($"{nameof(NetworkAnarchyUISystem)}.{nameof(OnCreate)}");
-            m_LeftUpgrade = CreateBinding("LeftUpgrade", SideUpgrades.None);
-            m_RightUprade = CreateBinding("RightUpgrade", SideUpgrades.None);
-            m_Composition = CreateBinding("Composition", Composition.None);
+            m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
+            m_ToolSystem.EventToolChanged += OnToolChanged;
+            m_ToolSystem.EventPrefabChanged += OnPrefabChanged;
+            m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
+            m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
+            m_TempNetworkSystem = World.GetOrCreateSystemManaged<TempNetworkSystem>();
 
+            // Establishing bindings between UI and C#.
+            m_LeftUpgrade = CreateBinding("LeftUpgrade", SideUpgrades.None);
+            m_RightUpgrade = CreateBinding("RightUpgrade", SideUpgrades.None);
+            m_Composition = CreateBinding("Composition", Composition.None);
+            m_ShowUpgrade = CreateBinding("ShowUpgrade", SideUpgrades.None);
+
+            // Creates triggers for C# methods based on UI events.
             CreateTrigger<int>("LeftUpgrade", LeftUpgradeClicked);
             CreateTrigger<int>("RightUpgrade", RightUpgradeClicked);
             CreateTrigger<int>("Composition", CompositionModeClicked);
@@ -169,28 +189,28 @@ namespace Anarchy.Systems
         private void RightUpgradeClicked(int mode)
         {
             SideUpgrades sideUpgrade = (SideUpgrades)mode;
-            if ((m_RightUprade.Value & sideUpgrade) == sideUpgrade)
+            if ((m_RightUpgrade.Value & sideUpgrade) == sideUpgrade)
             {
-                m_RightUprade.Value &= ~sideUpgrade;
+                m_RightUpgrade.Value &= ~sideUpgrade;
             }
-            else if ((sideUpgrade == SideUpgrades.Trees && (m_RightUprade.Value == SideUpgrades.WideSidewalk || m_RightUprade.Value == SideUpgrades.GrassStrip))
-                || (m_RightUprade == SideUpgrades.Trees && (sideUpgrade == SideUpgrades.WideSidewalk || sideUpgrade == SideUpgrades.GrassStrip)))
+            else if ((sideUpgrade == SideUpgrades.Trees && (m_RightUpgrade.Value == SideUpgrades.WideSidewalk || m_RightUpgrade.Value == SideUpgrades.GrassStrip))
+                || (m_RightUpgrade == SideUpgrades.Trees && (sideUpgrade == SideUpgrades.WideSidewalk || sideUpgrade == SideUpgrades.GrassStrip)))
             {
-                m_RightUprade.Value |= sideUpgrade;
+                m_RightUpgrade.Value |= sideUpgrade;
             }
-            else if ((m_RightUprade.Value & SideUpgrades.WideSidewalk) == SideUpgrades.WideSidewalk && sideUpgrade == SideUpgrades.GrassStrip)
+            else if ((m_RightUpgrade.Value & SideUpgrades.WideSidewalk) == SideUpgrades.WideSidewalk && sideUpgrade == SideUpgrades.GrassStrip)
             {
-                m_RightUprade.Value &= ~SideUpgrades.WideSidewalk;
-                m_RightUprade.Value |= sideUpgrade;
+                m_RightUpgrade.Value &= ~SideUpgrades.WideSidewalk;
+                m_RightUpgrade.Value |= sideUpgrade;
             }
-            else if ((m_RightUprade.Value & SideUpgrades.GrassStrip) == SideUpgrades.GrassStrip && sideUpgrade == SideUpgrades.WideSidewalk)
+            else if ((m_RightUpgrade.Value & SideUpgrades.GrassStrip) == SideUpgrades.GrassStrip && sideUpgrade == SideUpgrades.WideSidewalk)
             {
-                m_RightUprade.Value &= ~SideUpgrades.GrassStrip;
-                m_RightUprade.Value |= sideUpgrade;
+                m_RightUpgrade.Value &= ~SideUpgrades.GrassStrip;
+                m_RightUpgrade.Value |= sideUpgrade;
             }
             else
             {
-                m_RightUprade.Value = sideUpgrade;
+                m_RightUpgrade.Value = sideUpgrade;
             }
         }
 
@@ -223,6 +243,48 @@ namespace Anarchy.Systems
                 m_Composition.Value &= ~Composition.Tunnel;
                 m_Composition.Value &= ~Composition.Ground;
             }
+        }
+
+        private void OnToolChanged(ToolBaseSystem toolSystem)
+        {
+            m_ShowUpgrade.Value = SideUpgrades.None;
+            PrefabBase prefabBase = toolSystem.GetPrefab();
+
+            if (m_ToolSystem.activeTool != m_NetToolSystem || prefabBase is null)
+            {
+                return;
+            }
+
+            OnPrefabChanged(prefabBase);
+        }
+
+        private void OnPrefabChanged(PrefabBase prefabBase)
+        {
+            m_ShowUpgrade.Value = SideUpgrades.None;
+
+            if (prefabBase is null || m_ToolSystem.activeTool != m_NetToolSystem)
+            {
+                return;
+            }
+
+            if (!m_PrefabSystem.TryGetEntity(prefabBase, out Entity prefabEntity))
+            {
+                return;
+            }
+
+            if (!EntityManager.TryGetComponent(prefabEntity, out NetData netData))
+            {
+                return;
+            }
+
+            foreach (KeyValuePair<SideUpgrades, CompositionFlags.Side> keyValuePair in m_TempNetworkSystem.SideUpgradesDictionary)
+            {
+                if ((netData.m_SideFlagMask & keyValuePair.Value) == keyValuePair.Value)
+                {
+                    m_ShowUpgrade.Value |= keyValuePair.Key;
+                }
+            }
+
         }
     }
 }
