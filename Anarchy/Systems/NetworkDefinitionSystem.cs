@@ -151,22 +151,29 @@ namespace Anarchy.Systems
 
             OrderNetCourses(netCourses, out NativeArray<Entity> netCourseEntities, out NativeArray<NetCourse> netCoursesArray);
             ProcessNetCourses(netCourseEntities, netCoursesArray, slope);
-            if (parallelCourses.Count > 0 )
+            if (parallelCourses.Count > 0)
             {
-                OrderNetCourses(parallelCourses, out NativeArray<Entity> parallelEntities, out NativeArray<NetCourse> parallelNetCourses);
-                ProcessNetCourses(parallelEntities, parallelNetCourses, -slope);
+                OrderNetCourses(parallelCourses, out NativeArray<Entity> parallelEntities, out NativeArray<NetCourse> parallelNetCourses, isParallel: true);
+                ProcessNetCourses(parallelEntities, parallelNetCourses, slope);
             }
         }
 
 
-        private void OrderNetCourses(NativeHashMap<Entity, NetCourse> kVPairs, out NativeArray<Entity> entities, out NativeArray<NetCourse> netCourses)
+        private void OrderNetCourses(NativeHashMap<Entity, NetCourse> kVPairs, out NativeArray<Entity> entities, out NativeArray<NetCourse> netCourses, bool isParallel = false)
         {
             entities = new NativeArray<Entity>(kVPairs.Count, Allocator.Temp);
             netCourses = new NativeArray<NetCourse>(kVPairs.Count, Allocator.Temp);
 
             foreach (KVPair<Entity, NetCourse> kVPair in kVPairs)
             {
-                if ((kVPair.Value.m_StartPosition.m_Flags & CoursePosFlags.IsFirst) == CoursePosFlags.IsFirst)
+                if (!isParallel && (kVPair.Value.m_StartPosition.m_Flags & CoursePosFlags.IsFirst) == CoursePosFlags.IsFirst )
+                {
+                    entities[0] = kVPair.Key;
+                    netCourses[0] = kVPair.Value;
+                    break;
+                }
+
+                if (isParallel && (kVPair.Value.m_EndPosition.m_Flags & CoursePosFlags.IsFirst) == CoursePosFlags.IsFirst)
                 {
                     entities[0] = kVPair.Key;
                     netCourses[0] = kVPair.Value;
@@ -178,9 +185,20 @@ namespace Anarchy.Systems
             {
                 foreach (KVPair<Entity, NetCourse> kVPair in kVPairs)
                 {
-                    if (kVPair.Value.m_StartPosition.m_Position.x == netCourses[i].m_EndPosition.m_Position.x
+                    if (!isParallel &&
+                        kVPair.Value.m_StartPosition.m_Position.x == netCourses[i].m_EndPosition.m_Position.x
                         && kVPair.Value.m_StartPosition.m_Position.y == netCourses[i].m_EndPosition.m_Position.y
                         && kVPair.Value.m_StartPosition.m_Position.z == netCourses[i].m_EndPosition.m_Position.z)
+                    {
+                        entities[i + 1] = kVPair.Key;
+                        netCourses[i + 1] = kVPair.Value;
+                        break;
+                    }
+
+                    if (isParallel &&
+                        kVPair.Value.m_EndPosition.m_Position.x == netCourses[i].m_StartPosition.m_Position.x
+                        && kVPair.Value.m_EndPosition.m_Position.y == netCourses[i].m_StartPosition.m_Position.y
+                        && kVPair.Value.m_EndPosition.m_Position.z == netCourses[i].m_StartPosition.m_Position.z)
                     {
                         entities[i + 1] = kVPair.Key;
                         netCourses[i + 1] = kVPair.Value;
