@@ -62,15 +62,28 @@ namespace Anarchy.Systems
             if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.ConstantSlope) != NetworkAnarchyUISystem.Composition.ConstantSlope
                 && (m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Ground) != NetworkAnarchyUISystem.Composition.Ground
                 && (m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Tunnel) != NetworkAnarchyUISystem.Composition.Tunnel
-                && (m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Elevated) != NetworkAnarchyUISystem.Composition.Elevated
-                && m_NetToolSystem.actualMode != NetToolSystem.Mode.Grid)
+                && (m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Elevated) != NetworkAnarchyUISystem.Composition.Elevated)
             {
                 return;
             }
 
             NativeArray<Entity> entities = m_NetCourseQuery.ToEntityArray(Allocator.Temp);
-            NetCourse startCourse = default;
-            NetCourse endCourse = default;
+
+            // If not constant slope only check and set elevations for network composition mode.
+            if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.ConstantSlope) != NetworkAnarchyUISystem.Composition.ConstantSlope
+                || m_NetToolSystem.actualMode == NetToolSystem.Mode.Grid)
+            {
+                foreach (Entity entity in entities)
+                {
+                    if (EntityManager.TryGetComponent(entity, out NetCourse netCourse))
+                    {
+                        CheckAndSetElevations(ref netCourse);
+                        EntityManager.SetComponentData(entity, netCourse);
+                    }
+                }
+
+                return;
+            }
 
             NativeHashMap<Entity, NetCourse> netCourses;
             NativeHashMap<Entity, NetCourse> parallelCourses;
@@ -85,27 +98,40 @@ namespace Anarchy.Systems
                 parallelCourses = new (entities.Length / 2, Allocator.Temp);
             }
 
-            float totalLength = 0f;
             if (entities.Length < 2)
             {
                 return;
             }
 
             m_Log.Debug($"{nameof(NetworkDefinitionSystem)}.{nameof(OnUpdate)} entities length = {entities.Length}.");
+
+            CalculateSlope(entities, out float slope, out float parallelSlope, ref netCourses, ref parallelCourses);
+
+            OrderNetCourses(netCourses, out NativeArray<Entity> netCourseEntities, out NativeArray<NetCourse> netCoursesArray);
+            ProcessNetCourses(netCourseEntities, netCoursesArray, slope);
+            if (parallelCourses.Count > 0)
+            {
+                OrderParallelNetCourses(parallelCourses, out NativeArray<Entity> parallelEntities, out NativeArray<NetCourse> parallelNetCourses);
+                ProcessParallelNetCourses(parallelEntities, parallelNetCourses, parallelSlope);
+            }
+        }
+
+        private void CalculateSlope(NativeArray<Entity> entities, out float slope, out float parallelSlope, ref NativeHashMap<Entity, NetCourse> netCourses, ref NativeHashMap<Entity, NetCourse> parallelCourses)
+        {
+            float totalLength = 0;
+            float parallelLength = 0;
+            NetCourse startCourse = default;
+            NetCourse endCourse = default;
+            NetCourse parallelStartCourse = default;
+            NetCourse parallelEndCourse = default;
+            slope = 0;
+            parallelSlope = 0;
+
             for (int i = 0; i < entities.Length; i++)
             {
                 Entity entity = entities[i];
-                if (!EntityManager.TryGetComponent(entity, out CreationDefinition currentCreationDefinition))
-                {
-                    continue;
-                }
 
                 if (!EntityManager.TryGetComponent(entity, out NetCourse netCourse))
-                {
-                    continue;
-                }
-
-                if (!m_PrefabSystem.TryGetPrefab(currentCreationDefinition.m_Prefab, out PrefabBase prefabBase))
                 {
                     continue;
                 }
@@ -114,20 +140,39 @@ namespace Anarchy.Systems
                 {
                     startCourse = netCourse;
 #if VERBOSE
-                    m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(OnUpdate)} startCourse is {entity.Index}:{entity.Version}.");
+                    m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(CalculateSlope)} startCourse is {entity.Index}:{entity.Version}.");
 #endif
                 }
                 else if ((netCourse.m_EndPosition.m_Flags & CoursePosFlags.IsLast) == CoursePosFlags.IsLast && (netCourse.m_StartPosition.m_Flags & CoursePosFlags.IsParallel) != CoursePosFlags.IsParallel)
                 {
                     endCourse = netCourse;
 #if VERBOSE
-                    m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(OnUpdate)} endCourse is {entity.Index}:{entity.Version}.");
+                    m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(CalculateSlope)} endCourse is {entity.Index}:{entity.Version}.");
+#endif
+                }
+
+                if ((netCourse.m_EndPosition.m_Flags & CoursePosFlags.IsFirst) == CoursePosFlags.IsFirst && (netCourse.m_StartPosition.m_Flags & CoursePosFlags.IsParallel) == CoursePosFlags.IsParallel)
+                {
+                    parallelStartCourse = netCourse;
+#if VERBOSE
+                    m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(CalculateSlope)} parallelStartCourse is {entity.Index}:{entity.Version}.");
+#endif
+                }
+                else if ((netCourse.m_StartPosition.m_Flags & CoursePosFlags.IsLast) == CoursePosFlags.IsLast && (netCourse.m_StartPosition.m_Flags & CoursePosFlags.IsParallel) == CoursePosFlags.IsParallel)
+                {
+                    parallelEndCourse = netCourse;
+#if VERBOSE
+                    m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(CalculateSlope)} parallelEndCourse is {entity.Index}:{entity.Version}.");
 #endif
                 }
 
                 if ((netCourse.m_StartPosition.m_Flags & CoursePosFlags.IsParallel) != CoursePosFlags.IsParallel)
                 {
                     totalLength += netCourse.m_Length;
+                }
+                else
+                {
+                    parallelLength += netCourse.m_Length;
                 }
 
                 if ((netCourse.m_StartPosition.m_Flags & CoursePosFlags.IsParallel) != CoursePosFlags.IsParallel)
@@ -139,41 +184,33 @@ namespace Anarchy.Systems
                     parallelCourses.Add(entity, netCourse);
                 }
 #if VERBOSE
-                m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(OnUpdate)} current course start position ({netCourse.m_StartPosition.m_Position.x}, {netCourse.m_StartPosition.m_Position.y}, {netCourse.m_StartPosition.m_Position.z})");
-                m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(OnUpdate)} current course end position ({netCourse.m_EndPosition.m_Position.x}, {netCourse.m_EndPosition.m_Position.y}, {netCourse.m_EndPosition.m_Position.z})");
+                m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(CalculateSlope)} current course start position ({netCourse.m_StartPosition.m_Position.x}, {netCourse.m_StartPosition.m_Position.y}, {netCourse.m_StartPosition.m_Position.z})");
+                m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(CalculateSlope)} current course end position ({netCourse.m_EndPosition.m_Position.x}, {netCourse.m_EndPosition.m_Position.y}, {netCourse.m_EndPosition.m_Position.z})");
 #endif
-            }
+                if (totalLength > 0)
+                {
+                    slope = (endCourse.m_EndPosition.m_Position.y - startCourse.m_StartPosition.m_Position.y) / totalLength;
+                }
 
-            float slope = (endCourse.m_EndPosition.m_Position.y - startCourse.m_StartPosition.m_Position.y) / totalLength;
+                if (parallelLength > 0)
+                {
+                    parallelSlope = (parallelEndCourse.m_StartPosition.m_Position.y - parallelStartCourse.m_EndPosition.m_Position.y) / parallelLength;
+                }
 #if VERBOSE
-            m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(OnUpdate)} slope {slope} or {slope * 100f}%");
+                m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(CalculateSlope)} slope {slope} or {slope * 100f}%");
+                m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(CalculateSlope)} parallelSlope {parallelSlope} or {parallelSlope * 100f}%");
 #endif
-
-            OrderNetCourses(netCourses, out NativeArray<Entity> netCourseEntities, out NativeArray<NetCourse> netCoursesArray);
-            ProcessNetCourses(netCourseEntities, netCoursesArray, slope);
-            if (parallelCourses.Count > 0)
-            {
-                OrderNetCourses(parallelCourses, out NativeArray<Entity> parallelEntities, out NativeArray<NetCourse> parallelNetCourses, isParallel: true);
-                ProcessNetCourses(parallelEntities, parallelNetCourses, slope);
             }
         }
 
-
-        private void OrderNetCourses(NativeHashMap<Entity, NetCourse> kVPairs, out NativeArray<Entity> entities, out NativeArray<NetCourse> netCourses, bool isParallel = false)
+        private void OrderNetCourses(NativeHashMap<Entity, NetCourse> kVPairs, out NativeArray<Entity> entities, out NativeArray<NetCourse> netCourses)
         {
             entities = new NativeArray<Entity>(kVPairs.Count, Allocator.Temp);
             netCourses = new NativeArray<NetCourse>(kVPairs.Count, Allocator.Temp);
 
             foreach (KVPair<Entity, NetCourse> kVPair in kVPairs)
             {
-                if (!isParallel && (kVPair.Value.m_StartPosition.m_Flags & CoursePosFlags.IsFirst) == CoursePosFlags.IsFirst )
-                {
-                    entities[0] = kVPair.Key;
-                    netCourses[0] = kVPair.Value;
-                    break;
-                }
-
-                if (isParallel && (kVPair.Value.m_EndPosition.m_Flags & CoursePosFlags.IsFirst) == CoursePosFlags.IsFirst)
+                if ((kVPair.Value.m_StartPosition.m_Flags & CoursePosFlags.IsFirst) == CoursePosFlags.IsFirst )
                 {
                     entities[0] = kVPair.Key;
                     netCourses[0] = kVPair.Value;
@@ -185,8 +222,7 @@ namespace Anarchy.Systems
             {
                 foreach (KVPair<Entity, NetCourse> kVPair in kVPairs)
                 {
-                    if (!isParallel &&
-                        kVPair.Value.m_StartPosition.m_Position.x == netCourses[i].m_EndPosition.m_Position.x
+                    if (kVPair.Value.m_StartPosition.m_Position.x == netCourses[i].m_EndPosition.m_Position.x
                         && kVPair.Value.m_StartPosition.m_Position.y == netCourses[i].m_EndPosition.m_Position.y
                         && kVPair.Value.m_StartPosition.m_Position.z == netCourses[i].m_EndPosition.m_Position.z)
                     {
@@ -194,9 +230,30 @@ namespace Anarchy.Systems
                         netCourses[i + 1] = kVPair.Value;
                         break;
                     }
+                }
+            }
+        }
 
-                    if (isParallel &&
-                        kVPair.Value.m_EndPosition.m_Position.x == netCourses[i].m_StartPosition.m_Position.x
+        private void OrderParallelNetCourses(NativeHashMap<Entity, NetCourse> kVPairs, out NativeArray<Entity> entities, out NativeArray<NetCourse> netCourses)
+        {
+            entities = new NativeArray<Entity>(kVPairs.Count, Allocator.Temp);
+            netCourses = new NativeArray<NetCourse>(kVPairs.Count, Allocator.Temp);
+
+            foreach (KVPair<Entity, NetCourse> kVPair in kVPairs)
+            {
+                if ((kVPair.Value.m_EndPosition.m_Flags & CoursePosFlags.IsFirst) == CoursePosFlags.IsFirst)
+                {
+                    entities[0] = kVPair.Key;
+                    netCourses[0] = kVPair.Value;
+                    break;
+                }
+            }
+
+            for (int i = 0; i < kVPairs.Count - 1; i++)
+            {
+                foreach (KVPair<Entity, NetCourse> kVPair in kVPairs)
+                {
+                    if (kVPair.Value.m_EndPosition.m_Position.x == netCourses[i].m_StartPosition.m_Position.x
                         && kVPair.Value.m_EndPosition.m_Position.y == netCourses[i].m_StartPosition.m_Position.y
                         && kVPair.Value.m_EndPosition.m_Position.z == netCourses[i].m_StartPosition.m_Position.z)
                     {
@@ -206,7 +263,6 @@ namespace Anarchy.Systems
                     }
                 }
             }
-
         }
 
         private void CheckAndSetElevations(ref NetCourse netCourse)
@@ -244,36 +300,30 @@ namespace Anarchy.Systems
                 NetCourse currentCourse = netCourses[i];
                 NetCourse nextCourse = netCourses[i + 1];
 #if VERBOSE
-                m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(OnUpdate)} current course end position ({currentCourse.m_EndPosition.m_Position.x}, {currentCourse.m_EndPosition.m_Position.y}, {currentCourse.m_EndPosition.m_Position.z})");
+                m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(ProcessNetCourses)} current course end position ({currentCourse.m_EndPosition.m_Position.x}, {currentCourse.m_EndPosition.m_Position.y}, {currentCourse.m_EndPosition.m_Position.z})");
                 m_Log.Verbose($"currentCourse.m_StartPosition.m_Flags = {currentCourse.m_StartPosition.m_Flags} currentCourse.m_EndPosition.m_Flags = {currentCourse.m_EndPosition.m_Flags} nextCourse.m_StartPosition.m_Flags = {nextCourse.m_StartPosition.m_Flags} nextCourse.m_EndPosition.m_Flags = {nextCourse.m_EndPosition.m_Flags}");
 #endif
-                if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.ConstantSlope) == NetworkAnarchyUISystem.Composition.ConstantSlope)
-                {
-                    currentCourse.m_EndPosition.m_Position.y = currentCourse.m_StartPosition.m_Position.y + (slope * currentCourse.m_Length);
-                    currentCourse.m_Curve.d.y = currentCourse.m_EndPosition.m_Position.y;
-                    currentCourse.m_Curve.b.y = currentCourse.m_Curve.a.y + (slope * Vector2.Distance(new float2(currentCourse.m_Curve.a.x, currentCourse.m_Curve.a.z), new float2(currentCourse.m_Curve.b.x, currentCourse.m_Curve.b.z)));
-                    currentCourse.m_Curve.c.y = currentCourse.m_Curve.a.y + (slope * Vector2.Distance(new float2(currentCourse.m_Curve.a.x, currentCourse.m_Curve.a.z), new float2(currentCourse.m_Curve.c.x, currentCourse.m_Curve.c.z)));
+                currentCourse.m_EndPosition.m_Position.y = currentCourse.m_StartPosition.m_Position.y + (slope * currentCourse.m_Length);
+                currentCourse.m_Curve.d.y = currentCourse.m_EndPosition.m_Position.y;
+                currentCourse.m_Curve.b.y = currentCourse.m_Curve.a.y + (slope * Vector2.Distance(new float2(currentCourse.m_Curve.a.x, currentCourse.m_Curve.a.z), new float2(currentCourse.m_Curve.b.x, currentCourse.m_Curve.b.z)));
+                currentCourse.m_Curve.c.y = currentCourse.m_Curve.a.y + (slope * Vector2.Distance(new float2(currentCourse.m_Curve.a.x, currentCourse.m_Curve.a.z), new float2(currentCourse.m_Curve.c.x, currentCourse.m_Curve.c.z)));
 
 #if VERBOSE
-                    m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(OnUpdate)} set y to {currentCourse.m_EndPosition.m_Position.y}.");
-                    m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(OnUpdate)} currentCourse.m_EndPosition elevation is {currentCourse.m_EndPosition.m_Elevation}.");
+                m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(ProcessNetCourses)} set y to {currentCourse.m_EndPosition.m_Position.y}.");
+                m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(ProcessNetCourses)} currentCourse.m_EndPosition elevation is {currentCourse.m_EndPosition.m_Elevation}.");
 #endif
-                    currentCourse.m_EndPosition.m_Elevation += currentCourse.m_EndPosition.m_Position.y - nextCourse.m_StartPosition.m_Position.y;
-                    currentCourse.m_Elevation = (currentCourse.m_StartPosition.m_Elevation + currentCourse.m_EndPosition.m_Elevation) / 2f;
-                    currentCourse.m_EndPosition.m_Flags |= CoursePosFlags.FreeHeight;
-                }
+                currentCourse.m_EndPosition.m_Elevation += currentCourse.m_EndPosition.m_Position.y - nextCourse.m_StartPosition.m_Position.y;
+                currentCourse.m_Elevation = (currentCourse.m_StartPosition.m_Elevation + currentCourse.m_EndPosition.m_Elevation) / 2f;
+                currentCourse.m_EndPosition.m_Flags |= CoursePosFlags.FreeHeight;
 
                 CheckAndSetElevations(ref currentCourse);
 #if VERBOSE
-                m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(OnUpdate)} set currentCourse.m_EndPosition elevation to {currentCourse.m_EndPosition.m_Elevation}.");
-                m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(OnUpdate)} set course elevation to {currentCourse.m_Elevation}.");
+                m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(ProcessNetCourses)} set currentCourse.m_EndPosition elevation to {currentCourse.m_EndPosition.m_Elevation}.");
+                m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(ProcessNetCourses)} set course elevation to {currentCourse.m_Elevation}.");
 #endif
-                if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.ConstantSlope) == NetworkAnarchyUISystem.Composition.ConstantSlope)
-                {
-                    nextCourse.m_StartPosition.m_Position.y = currentCourse.m_EndPosition.m_Position.y;
-                    nextCourse.m_Curve.a.y = currentCourse.m_EndPosition.m_Position.y;
-                    nextCourse.m_StartPosition.m_Elevation = currentCourse.m_EndPosition.m_Elevation;
-                }
+                nextCourse.m_StartPosition.m_Position.y = currentCourse.m_EndPosition.m_Position.y;
+                nextCourse.m_Curve.a.y = currentCourse.m_EndPosition.m_Position.y;
+                nextCourse.m_StartPosition.m_Elevation = currentCourse.m_EndPosition.m_Elevation;
 
                 netCourses[i] = currentCourse;
                 EntityManager.SetComponentData(entities[i], netCourses[i]);
@@ -285,6 +335,57 @@ namespace Anarchy.Systems
                     {
                         nextCourse.m_Curve.b.y = nextCourse.m_Curve.a.y + (slope * Vector2.Distance(new float2(nextCourse.m_Curve.a.x, nextCourse.m_Curve.a.z), new float2(nextCourse.m_Curve.b.x, nextCourse.m_Curve.b.z)));
                         nextCourse.m_Curve.c.y = nextCourse.m_Curve.a.y + (slope * Vector2.Distance(new float2(nextCourse.m_Curve.a.x, nextCourse.m_Curve.a.z), new float2(nextCourse.m_Curve.c.x, nextCourse.m_Curve.c.z)));
+                    }
+
+                    CheckAndSetElevations(ref nextCourse);
+
+                    EntityManager.SetComponentData(entities[i + 1], nextCourse);
+                }
+            }
+        }
+
+        private void ProcessParallelNetCourses(NativeArray<Entity> entities, NativeArray<NetCourse> netCourses, float slope)
+        {
+            for (int i = 0; i < netCourses.Length - 1; i++)
+            {
+                NetCourse currentCourse = netCourses[i];
+                NetCourse nextCourse = netCourses[i + 1];
+#if VERBOSE
+                m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(ProcessNetCourses)} current course end position ({currentCourse.m_EndPosition.m_Position.x}, {currentCourse.m_EndPosition.m_Position.y}, {currentCourse.m_EndPosition.m_Position.z})");
+                m_Log.Verbose($"currentCourse.m_StartPosition.m_Flags = {currentCourse.m_StartPosition.m_Flags} currentCourse.m_EndPosition.m_Flags = {currentCourse.m_EndPosition.m_Flags} nextCourse.m_StartPosition.m_Flags = {nextCourse.m_StartPosition.m_Flags} nextCourse.m_EndPosition.m_Flags = {nextCourse.m_EndPosition.m_Flags}");
+#endif
+                currentCourse.m_StartPosition.m_Position.y = currentCourse.m_EndPosition.m_Position.y + (slope * currentCourse.m_Length);
+                currentCourse.m_Curve.a.y = currentCourse.m_StartPosition.m_Position.y;
+                currentCourse.m_Curve.b.y = currentCourse.m_Curve.d.y + (slope * Vector2.Distance(new float2(currentCourse.m_Curve.d.x, currentCourse.m_Curve.d.z), new float2(currentCourse.m_Curve.b.x, currentCourse.m_Curve.b.z)));
+                currentCourse.m_Curve.c.y = currentCourse.m_Curve.d.y + (slope * Vector2.Distance(new float2(currentCourse.m_Curve.d.x, currentCourse.m_Curve.d.z), new float2(currentCourse.m_Curve.c.x, currentCourse.m_Curve.c.z)));
+
+#if VERBOSE
+                m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(ProcessNetCourses)} set y to {currentCourse.m_StartPosition.m_Position.y}.");
+                m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(ProcessNetCourses)} currentCourse.m_EndPosition elevation is {currentCourse.m_StartPosition.m_Elevation}.");
+#endif
+                currentCourse.m_StartPosition.m_Elevation += currentCourse.m_StartPosition.m_Position.y - nextCourse.m_EndPosition.m_Position.y;
+                currentCourse.m_Elevation = (currentCourse.m_StartPosition.m_Elevation + currentCourse.m_EndPosition.m_Elevation) / 2f;
+                currentCourse.m_StartPosition.m_Flags |= CoursePosFlags.FreeHeight;
+
+                CheckAndSetElevations(ref currentCourse);
+#if VERBOSE
+                m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(ProcessNetCourses)} set currentCourse.m_EndPosition elevation to {currentCourse.m_StartPosition.m_Elevation}.");
+                m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(ProcessNetCourses)} set course elevation to {currentCourse.m_Elevation}.");
+#endif
+                nextCourse.m_EndPosition.m_Position.y = currentCourse.m_StartPosition.m_Position.y;
+                nextCourse.m_Curve.d.y = currentCourse.m_StartPosition.m_Position.y;
+                nextCourse.m_EndPosition.m_Elevation = currentCourse.m_StartPosition.m_Elevation;
+
+                netCourses[i] = currentCourse;
+                EntityManager.SetComponentData(entities[i], netCourses[i]);
+                netCourses[i + 1] = nextCourse;
+
+                if ((nextCourse.m_StartPosition.m_Flags & CoursePosFlags.IsLast) == CoursePosFlags.IsLast)
+                {
+                    if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.ConstantSlope) == NetworkAnarchyUISystem.Composition.ConstantSlope)
+                    {
+                        nextCourse.m_Curve.b.y = nextCourse.m_Curve.d.y + (slope * Vector2.Distance(new float2(nextCourse.m_Curve.d.x, nextCourse.m_Curve.d.z), new float2(nextCourse.m_Curve.b.x, nextCourse.m_Curve.b.z)));
+                        nextCourse.m_Curve.c.y = nextCourse.m_Curve.d.y + (slope * Vector2.Distance(new float2(nextCourse.m_Curve.d.x, nextCourse.m_Curve.d.z), new float2(nextCourse.m_Curve.c.x, nextCourse.m_Curve.c.z)));
                     }
 
                     CheckAndSetElevations(ref nextCourse);
