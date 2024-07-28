@@ -35,6 +35,17 @@ namespace Anarchy.Systems
             { NetworkAnarchyUISystem.SideUpgrades.WideSidewalk | NetworkAnarchyUISystem.SideUpgrades.Trees, CompositionFlags.Side.WideSidewalk | CompositionFlags.Side.SecondaryBeautification },
         };
 
+        private readonly Dictionary<NetworkAnarchyUISystem.Composition, CompositionFlags.General> GeneralCompositionLookup = new Dictionary<NetworkAnarchyUISystem.Composition, CompositionFlags.General>()
+        {
+            { NetworkAnarchyUISystem.Composition.Elevated, CompositionFlags.General.Elevated },
+            { NetworkAnarchyUISystem.Composition.Tunnel, CompositionFlags.General.Tunnel },
+            { NetworkAnarchyUISystem.Composition.WideMedian, CompositionFlags.General.WideMedian },
+            { NetworkAnarchyUISystem.Composition.Lighting, CompositionFlags.General.Lighting | CompositionFlags.General.WideMedian},
+            { NetworkAnarchyUISystem.Composition.GrassStrip, CompositionFlags.General.PrimaryMiddleBeautification },
+            { NetworkAnarchyUISystem.Composition.Trees, CompositionFlags.General.SecondaryMiddleBeautification },
+            { NetworkAnarchyUISystem.Composition.Trees | NetworkAnarchyUISystem.Composition.GrassStrip, CompositionFlags.General.SecondaryMiddleBeautification | CompositionFlags.General.PrimaryMiddleBeautification },
+        };
+
         private ToolSystem m_ToolSystem;
         private NetToolSystem m_NetToolSystem;
         private PrefabSystem m_PrefabSystem;
@@ -50,6 +61,15 @@ namespace Anarchy.Systems
         {
             get { return SideUpgradeLookup; }
         }
+
+        /// <summary>
+        /// Gets the sideUpgradeLookup.
+        /// </summary>
+        public Dictionary<NetworkAnarchyUISystem.Composition, CompositionFlags.General> GeneralCompositionDictionary
+        {
+            get { return GeneralCompositionLookup; }
+        }
+
 
         /// <inheritdoc/>
         protected override void OnCreate()
@@ -76,8 +96,7 @@ namespace Anarchy.Systems
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Elevated) != NetworkAnarchyUISystem.Composition.Elevated
-                && (m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Tunnel) != NetworkAnarchyUISystem.Composition.Tunnel
+            if (m_UISystem.NetworkComposition == NetworkAnarchyUISystem.Composition.None
                 && m_UISystem.LeftUpgrade == NetworkAnarchyUISystem.SideUpgrades.None
                 && m_UISystem.RightUpgrade == NetworkAnarchyUISystem.SideUpgrades.None)
             {
@@ -87,10 +106,11 @@ namespace Anarchy.Systems
             NativeArray<Entity> entities = m_TempEdgeCurveQuery.ToEntityArray(Allocator.Temp);
             foreach (Entity entity in entities)
             {
-                if ((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
+                if (((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
                     || (m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay
                     || (m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
                     || (m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
+                    && EntityManager.HasComponent<Game.Net.Node>(entity))
                 {
                     if (!EntityManager.TryGetComponent(entity, out Game.Net.Elevation elevation))
                     {
@@ -119,14 +139,7 @@ namespace Anarchy.Systems
                 }
 
                 CompositionFlags compositionFlags = default;
-                if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Elevated) == NetworkAnarchyUISystem.Composition.Elevated)
-                {
-                    compositionFlags.m_General |= CompositionFlags.General.Elevated;
-                }
-                else if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Tunnel) == NetworkAnarchyUISystem.Composition.Tunnel)
-                {
-                    compositionFlags.m_General |= CompositionFlags.General.Tunnel;
-                }
+                compositionFlags.m_General = GetCompositionGeneralFlags();
 
                 if (SideUpgradeLookup.ContainsKey(m_UISystem.LeftUpgrade))
                 {
@@ -149,5 +162,22 @@ namespace Anarchy.Systems
             }
         }
 
+        /// <summary>
+        /// Gets the composition general flags.
+        /// </summary>
+        /// <returns>Compsoition General flags.</returns>
+        private CompositionFlags.General GetCompositionGeneralFlags()
+        {
+            NetworkAnarchyUISystem.Composition composition = m_UISystem.NetworkComposition;
+            composition &= ~NetworkAnarchyUISystem.Composition.ConstantSlope;
+            composition &= ~NetworkAnarchyUISystem.Composition.Ground;
+
+            if (GeneralCompositionLookup.ContainsKey(composition))
+            {
+                return GeneralCompositionLookup[composition];
+            }
+
+            return 0;
+        }
     }
 }

@@ -22,6 +22,7 @@ namespace Anarchy.Systems
         private ValueBindingHelper<SideUpgrades> m_RightUpgrade;
         private ValueBindingHelper<Composition> m_Composition;
         private ValueBindingHelper<SideUpgrades> m_ShowUpgrade;
+        private ValueBindingHelper<Composition> m_ShowComposition;
         private ToolSystem m_ToolSystem;
         private PrefabSystem m_PrefabSystem;
         private NetToolSystem m_NetToolSystem;
@@ -99,14 +100,24 @@ namespace Anarchy.Systems
             ConstantSlope = 8,
 
             /// <summary>
-            /// Remove pillars.
+            /// Adds a wide median.
             /// </summary>
-            NoPillars = 16,
+            WideMedian = 16,
 
             /// <summary>
-            /// Remove Height Limits and clearances.
+            /// Median Trees.
             /// </summary>
-            NoHeightLimits = 32,
+            Trees = 32,
+
+            /// <summary>
+            /// Median Grass Strip.
+            /// </summary>
+            GrassStrip = 64,
+
+            /// <summary>
+            /// Lighting
+            /// </summary>
+            Lighting = 128,
         }
 
         /// <summary>
@@ -151,6 +162,7 @@ namespace Anarchy.Systems
             m_RightUpgrade = CreateBinding("RightUpgrade", SideUpgrades.None);
             m_Composition = CreateBinding("Composition", Composition.None);
             m_ShowUpgrade = CreateBinding("ShowUpgrade", SideUpgrades.None);
+            m_ShowComposition = CreateBinding("ShowComposition", Composition.None);
 
             // Creates triggers for C# methods based on UI events.
             CreateTrigger<int>("LeftUpgrade", LeftUpgradeClicked);
@@ -261,6 +273,7 @@ namespace Anarchy.Systems
         private void OnPrefabChanged(PrefabBase prefabBase)
         {
             m_ShowUpgrade.Value = SideUpgrades.None;
+            m_ShowComposition.Value = Composition.None;
 
             if (prefabBase is null || m_ToolSystem.activeTool != m_NetToolSystem)
             {
@@ -283,6 +296,34 @@ namespace Anarchy.Systems
                 {
                     m_ShowUpgrade.Value |= keyValuePair.Key;
                 }
+            }
+
+            foreach (KeyValuePair<Composition, CompositionFlags.General> generalUpgradePairs in m_TempNetworkSystem.GeneralCompositionDictionary)
+            {
+                if ((netData.m_GeneralFlagMask & generalUpgradePairs.Value) == generalUpgradePairs.Value)
+                {
+                    m_ShowComposition.Value |= generalUpgradePairs.Key;
+                }
+            }
+
+            if (!EntityManager.TryGetComponent(prefabEntity, out NetGeometryData netGeometryData))
+            {
+                return;
+            }
+
+            if ((netGeometryData.m_Flags & Game.Net.GeometryFlags.RequireElevated) == Game.Net.GeometryFlags.RequireElevated)
+            {
+                m_ShowComposition.Value &= ~Composition.Elevated;
+                m_ShowComposition.Value &= ~Composition.Tunnel;
+            }
+            else
+            {
+                m_ShowComposition.Value |= Composition.Ground;
+            }
+
+            if ((netGeometryData.m_Flags & Game.Net.GeometryFlags.SmoothSlopes) != Game.Net.GeometryFlags.SmoothSlopes)
+            {
+                m_ShowComposition.Value |= Composition.ConstantSlope;
             }
 
         }
