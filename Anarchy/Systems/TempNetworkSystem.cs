@@ -5,14 +5,18 @@
 namespace Anarchy.Systems
 {
     using System.Collections.Generic;
+    using Colossal.Entities;
     using Colossal.Logging;
     using Game;
     using Game.Common;
+    using Game.Net;
     using Game.Prefabs;
     using Game.Simulation;
     using Game.Tools;
     using Unity.Collections;
     using Unity.Entities;
+    using Unity.Mathematics;
+    using UnityEngine;
 
     /// <summary>
     /// Overrides vertical position of creation definition.
@@ -60,7 +64,8 @@ namespace Anarchy.Systems
             m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_NetToolSystem;
             m_Log.Info($"[{nameof(TempNetworkSystem)}] {nameof(OnCreate)}");
             m_TempEdgeCurveQuery = SystemAPI.QueryBuilder()
-                .WithAll<Updated, Temp, Game.Net.Edge>()
+                .WithAll<Updated, Temp>()
+                .WithAny<Game.Net.Edge, Game.Net.Node>()
                 .WithNone<Deleted, Overridden, Game.Net.Upgraded>()
                 .Build();
 
@@ -82,23 +87,37 @@ namespace Anarchy.Systems
             NativeArray<Entity> entities = m_TempEdgeCurveQuery.ToEntityArray(Allocator.Temp);
             foreach (Entity entity in entities)
             {
-                /*
-                if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.ConstantSlope) == NetworkAnarchyUISystem.Composition.ConstantSlope
-                    && EntityManager.TryGetComponent(entity, out Game.Net.Curve curve))
+                if ((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
+                    || (m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay
+                    || (m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
+                    || (m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
                 {
-                    float length = Vector2.Distance(new float2(curve.m_Bezier.a.x, curve.m_Bezier.a.z), new float2(curve.m_Bezier.d.x, curve.m_Bezier.d.z));
-                    float slope = (curve.m_Bezier.d.y - curve.m_Bezier.a.y) / length;
-                    curve.m_Bezier.b.y = curve.m_Bezier.a.y + (slope * Vector2.Distance(new float2(curve.m_Bezier.a.x, curve.m_Bezier.a.z), new float2(curve.m_Bezier.b.x, curve.m_Bezier.b.z)));
-                    curve.m_Bezier.c.y = curve.m_Bezier.a.y + (slope * Vector2.Distance(new float2(curve.m_Bezier.a.x, curve.m_Bezier.a.z), new float2(curve.m_Bezier.c.x, curve.m_Bezier.c.z)));
-                    EntityManager.SetComponentData(entity, curve);
-                    // Need left and right terrain height.
-                    if (EntityManager.TryGetComponent(entity, out Game.Net.Elevation elevation))
+                    if (!EntityManager.TryGetComponent(entity, out Game.Net.Elevation elevation))
                     {
-                        elevation.m_Elevation = new float2(5f, -5f);
-                        EntityManager.SetComponentData(entity, elevation);
+                        EntityManager.AddComponent<Elevation>(entity);
                     }
+
+                    if ((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall)
+                    {
+                        elevation.m_Elevation.x = Mathf.Min(elevation.m_Elevation.x, m_NetToolSystem.elevation, NetworkDefinitionSystem.RetainingWallThreshold);
+                    }
+                    else if ((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
+                    {
+                        elevation.m_Elevation.x = Mathf.Max(elevation.m_Elevation.x, m_NetToolSystem.elevation, NetworkDefinitionSystem.QuayThreshold);
+                    }
+
+                    if ((m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall)
+                    {
+                        elevation.m_Elevation.y = Mathf.Min(elevation.m_Elevation.y, m_NetToolSystem.elevation, NetworkDefinitionSystem.RetainingWallThreshold);
+                    }
+                    else if ((m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
+                    {
+                        elevation.m_Elevation.y = Mathf.Max(elevation.m_Elevation.y, m_NetToolSystem.elevation, NetworkDefinitionSystem.QuayThreshold);
+                    }
+
+                    EntityManager.SetComponentData(entity, elevation);
                 }
-                */
+
                 CompositionFlags compositionFlags = default;
                 if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Elevated) == NetworkAnarchyUISystem.Composition.Elevated)
                 {

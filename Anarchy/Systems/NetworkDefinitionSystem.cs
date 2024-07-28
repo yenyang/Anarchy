@@ -2,7 +2,7 @@
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
-#define VERBOSE
+// #define VERBOSE
 namespace Anarchy.Systems
 {
     using Colossal.Entities;
@@ -22,6 +22,11 @@ namespace Anarchy.Systems
     /// </summary>
     public partial class NetworkDefinitionSystem : GameSystemBase
     {
+        public const float QuayThreshold = 5f;
+        public const float RetainingWallThreshold = -5f;
+        public const float TunnelThreshold = -25f;
+        public const float ElevatedThreshold = 10f;
+
         private ToolSystem m_ToolSystem;
         private NetToolSystem m_NetToolSystem;
         private PrefabSystem m_PrefabSystem;
@@ -267,6 +272,34 @@ namespace Anarchy.Systems
 
         private void CheckAndSetElevations(ref NetCourse netCourse)
         {
+            if ((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall)
+            {
+                netCourse.m_StartPosition.m_Elevation.x = Mathf.Min(netCourse.m_StartPosition.m_Elevation.x, m_NetToolSystem.elevation, RetainingWallThreshold);
+                netCourse.m_Elevation.x = Mathf.Min(netCourse.m_Elevation.x, m_NetToolSystem.elevation, RetainingWallThreshold);
+                netCourse.m_EndPosition.m_Elevation.x = Mathf.Min(netCourse.m_EndPosition.m_Elevation.x, m_NetToolSystem.elevation, RetainingWallThreshold);
+            }
+            else if ((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
+            {
+                netCourse.m_StartPosition.m_Elevation.x = Mathf.Max(netCourse.m_StartPosition.m_Elevation.x, m_NetToolSystem.elevation, QuayThreshold);
+                netCourse.m_Elevation.x = Mathf.Max(netCourse.m_Elevation.x, m_NetToolSystem.elevation, QuayThreshold);
+                netCourse.m_EndPosition.m_Elevation.x = Mathf.Max(netCourse.m_EndPosition.m_Elevation.x, m_NetToolSystem.elevation, QuayThreshold);
+            }
+
+            if ((m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall)
+            {
+                netCourse.m_StartPosition.m_Elevation.y = Mathf.Min(netCourse.m_StartPosition.m_Elevation.y, m_NetToolSystem.elevation, RetainingWallThreshold);
+                netCourse.m_Elevation.y = Mathf.Min(netCourse.m_Elevation.y, m_NetToolSystem.elevation, RetainingWallThreshold);
+                netCourse.m_EndPosition.m_Elevation.y = Mathf.Min(netCourse.m_EndPosition.m_Elevation.y, m_NetToolSystem.elevation, RetainingWallThreshold);
+            }
+            else if ((m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
+            {
+                netCourse.m_StartPosition.m_Elevation.y = Mathf.Max(netCourse.m_StartPosition.m_Elevation.y, m_NetToolSystem.elevation, QuayThreshold);
+                netCourse.m_Elevation.y = Mathf.Max(netCourse.m_Elevation.y, m_NetToolSystem.elevation, QuayThreshold);
+                netCourse.m_EndPosition.m_Elevation.y = Mathf.Max(netCourse.m_EndPosition.m_Elevation.y, m_NetToolSystem.elevation, QuayThreshold);
+            }
+
+
+
             if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Ground) == NetworkAnarchyUISystem.Composition.Ground)
             {
                 netCourse.m_StartPosition.m_Elevation = new float2(0, 0);
@@ -275,21 +308,21 @@ namespace Anarchy.Systems
             }
             else if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Tunnel) == NetworkAnarchyUISystem.Composition.Tunnel)
             {
-                netCourse.m_StartPosition.m_Elevation.x = Mathf.Min(netCourse.m_StartPosition.m_Elevation.x, -25f);
-                netCourse.m_StartPosition.m_Elevation.y = Mathf.Min(netCourse.m_StartPosition.m_Elevation.y, -25f);
-                netCourse.m_EndPosition.m_Elevation.x = Mathf.Min(netCourse.m_StartPosition.m_Elevation.x, -25f);
-                netCourse.m_EndPosition.m_Elevation.y = Mathf.Min(netCourse.m_StartPosition.m_Elevation.y, -25f);
-                netCourse.m_Elevation.x = Mathf.Min(netCourse.m_Elevation.x, -25f);
-                netCourse.m_Elevation.y = Mathf.Min(netCourse.m_Elevation.y, -25f);
+                netCourse.m_StartPosition.m_Elevation.x = Mathf.Min(netCourse.m_StartPosition.m_Elevation.x, TunnelThreshold);
+                netCourse.m_StartPosition.m_Elevation.y = Mathf.Min(netCourse.m_StartPosition.m_Elevation.y, TunnelThreshold);
+                netCourse.m_EndPosition.m_Elevation.x = Mathf.Min(netCourse.m_StartPosition.m_Elevation.x, TunnelThreshold);
+                netCourse.m_EndPosition.m_Elevation.y = Mathf.Min(netCourse.m_StartPosition.m_Elevation.y, TunnelThreshold);
+                netCourse.m_Elevation.x = Mathf.Min(netCourse.m_Elevation.x, TunnelThreshold);
+                netCourse.m_Elevation.y = Mathf.Min(netCourse.m_Elevation.y, TunnelThreshold);
             }
             else if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Elevated) == NetworkAnarchyUISystem.Composition.Elevated)
             {
-                netCourse.m_StartPosition.m_Elevation.x = Mathf.Max(netCourse.m_StartPosition.m_Elevation.x, 10f);
-                netCourse.m_StartPosition.m_Elevation.y = Mathf.Max(netCourse.m_StartPosition.m_Elevation.y, 10f);
-                netCourse.m_EndPosition.m_Elevation.x = Mathf.Max(netCourse.m_StartPosition.m_Elevation.x, 10f);
-                netCourse.m_EndPosition.m_Elevation.y = Mathf.Max(netCourse.m_StartPosition.m_Elevation.y, 10f);
-                netCourse.m_Elevation.x = Mathf.Max(netCourse.m_Elevation.x, 10f);
-                netCourse.m_Elevation.y = Mathf.Max(netCourse.m_Elevation.y, 10f);
+                netCourse.m_StartPosition.m_Elevation.x = Mathf.Max(netCourse.m_StartPosition.m_Elevation.x, ElevatedThreshold);
+                netCourse.m_StartPosition.m_Elevation.y = Mathf.Max(netCourse.m_StartPosition.m_Elevation.y, ElevatedThreshold);
+                netCourse.m_EndPosition.m_Elevation.x = Mathf.Max(netCourse.m_StartPosition.m_Elevation.x, ElevatedThreshold);
+                netCourse.m_EndPosition.m_Elevation.y = Mathf.Max(netCourse.m_StartPosition.m_Elevation.y, ElevatedThreshold);
+                netCourse.m_Elevation.x = Mathf.Max(netCourse.m_Elevation.x, ElevatedThreshold);
+                netCourse.m_Elevation.y = Mathf.Max(netCourse.m_Elevation.y, ElevatedThreshold);
             }
         }
 
