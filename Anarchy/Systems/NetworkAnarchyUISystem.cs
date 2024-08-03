@@ -27,6 +27,7 @@ namespace Anarchy.Systems
         private PrefabSystem m_PrefabSystem;
         private NetToolSystem m_NetToolSystem;
         private TempNetworkSystem m_TempNetworkSystem;
+        private NetToolSystem.Mode m_PreviousMode;
 
         /// <summary>
         /// An enum for network cross section modes.
@@ -166,11 +167,22 @@ namespace Anarchy.Systems
             m_Composition = CreateBinding("Composition", Composition.None);
             m_ShowUpgrade = CreateBinding("ShowUpgrade", SideUpgrades.None);
             m_ShowComposition = CreateBinding("ShowComposition", Composition.None);
+            m_PreviousMode = m_NetToolSystem.actualMode;
 
             // Creates triggers for C# methods based on UI events.
             CreateTrigger<int>("LeftUpgrade", LeftUpgradeClicked);
             CreateTrigger<int>("RightUpgrade", RightUpgradeClicked);
             CreateTrigger<int>("Composition", CompositionModeClicked);
+        }
+
+        /// <inheritdoc/>
+        protected override void OnUpdate()
+        {
+            if (m_PreviousMode != m_NetToolSystem.actualMode)
+            {
+                OnPrefabChanged(m_ToolSystem.activePrefab);
+                m_PreviousMode = m_NetToolSystem.actualMode;
+            }
         }
 
         private void LeftUpgradeClicked(int mode)
@@ -266,6 +278,8 @@ namespace Anarchy.Systems
             {
                 m_Composition.Value |= newComposition;
             }
+
+            OnPrefabChanged(m_ToolSystem.activePrefab);
         }
 
         private void OnToolChanged(ToolBaseSystem toolSystem)
@@ -275,9 +289,11 @@ namespace Anarchy.Systems
 
             if (m_ToolSystem.activeTool != m_NetToolSystem || prefabBase is null)
             {
+                Enabled = false;
                 return;
             }
 
+            Enabled = true;
             OnPrefabChanged(prefabBase);
         }
 
@@ -322,21 +338,40 @@ namespace Anarchy.Systems
                 return;
             }
 
+            if (!EntityManager.TryGetComponent(prefabEntity, out PlaceableNetData placeableNetData))
+            {
+                return;
+            }
+
             if ((netGeometryData.m_Flags & Game.Net.GeometryFlags.RequireElevated) == Game.Net.GeometryFlags.RequireElevated)
             {
                 m_ShowComposition.Value &= ~(Composition.Elevated | Composition.Tunnel | Composition.Trees | Composition.GrassStrip);
                 m_ShowUpgrade.Value &= ~(SideUpgrades.Trees | SideUpgrades.GrassStrip | SideUpgrades.SoundBarrier | SideUpgrades.WideSidewalk);
             }
-            else
+            else if ((placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.IsUpgrade) != Game.Net.PlacementFlags.IsUpgrade
+                && (placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.UpgradeOnly) != Game.Net.PlacementFlags.UpgradeOnly)
             {
                 m_ShowComposition.Value |= Composition.Ground;
             }
+            else
+            {
+                m_ShowComposition.Value &= ~(Composition.Elevated | Composition.Tunnel);
+            }
 
-            if ((netGeometryData.m_Flags & Game.Net.GeometryFlags.SmoothSlopes) != Game.Net.GeometryFlags.SmoothSlopes)
+            if ((m_Composition & Composition.Tunnel) == Composition.Tunnel
+                || (m_Composition & Composition.Elevated) == Composition.Elevated)
+            {
+                m_ShowComposition.Value &= ~(Composition.Trees | Composition.GrassStrip);
+                m_ShowUpgrade.Value &= ~(SideUpgrades.Trees | SideUpgrades.GrassStrip | SideUpgrades.SoundBarrier | SideUpgrades.WideSidewalk);
+            }
+
+            if ((netGeometryData.m_Flags & Game.Net.GeometryFlags.SmoothSlopes) != Game.Net.GeometryFlags.SmoothSlopes
+                && (placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.IsUpgrade) != Game.Net.PlacementFlags.IsUpgrade
+                && (placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.UpgradeOnly) != Game.Net.PlacementFlags.UpgradeOnly
+                && m_NetToolSystem.actualMode != NetToolSystem.Mode.Grid)
             {
                 m_ShowComposition.Value |= Composition.ConstantSlope;
             }
-
         }
     }
 }
