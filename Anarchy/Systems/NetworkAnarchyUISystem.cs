@@ -125,7 +125,10 @@ namespace Anarchy.Systems
         /// </summary>
         public SideUpgrades LeftUpgrade
         {
-            get { return m_LeftUpgrade; }
+            get 
+            {
+                return m_LeftUpgrade.Value & m_ShowUpgrade.Value;
+            }
         }
 
         /// <summary>
@@ -133,7 +136,7 @@ namespace Anarchy.Systems
         /// </summary>
         public SideUpgrades RightUpgrade
         {
-            get { return m_RightUpgrade; }
+            get { return m_RightUpgrade.Value & m_ShowUpgrade.Value; }
         }
 
         /// <summary>
@@ -141,7 +144,7 @@ namespace Anarchy.Systems
         /// </summary>
         public Composition NetworkComposition
         {
-            get { return m_Composition; }
+            get { return m_Composition.Value & m_ShowComposition.Value; }
         }
 
         /// <inheritdoc/>
@@ -224,36 +227,44 @@ namespace Anarchy.Systems
             {
                 m_RightUpgrade.Value = sideUpgrade;
             }
+
+            if (((SideUpgrades.WideSidewalk | SideUpgrades.Trees | SideUpgrades.GrassStrip) & sideUpgrade) == sideUpgrade)
+            {
+                m_Composition.Value &= ~(Composition.WideMedian | Composition.GrassStrip | Composition.Trees);
+            }
         }
 
         private void CompositionModeClicked(int composition)
         {
+            Composition oldComposition = m_Composition.Value;
+
             Composition newComposition = (Composition)composition;
-            if ((m_Composition.Value & newComposition) == newComposition)
+            if (((Composition.Tunnel | Composition.Ground | Composition.Elevated) & newComposition) == newComposition)
+            {
+                m_Composition.Value &= ~(Composition.Tunnel | Composition.Ground | Composition.Elevated);
+            }
+
+            if (((Composition.GrassStrip | Composition.Trees) & newComposition) == newComposition)
+            {
+                m_Composition.Value &= ~Composition.WideMedian;
+                m_LeftUpgrade.Value &= ~(SideUpgrades.GrassStrip | SideUpgrades.WideSidewalk | SideUpgrades.Trees);
+                m_RightUpgrade.Value &= ~(SideUpgrades.GrassStrip | SideUpgrades.WideSidewalk | SideUpgrades.Trees);
+            }
+
+            if ((Composition.WideMedian & newComposition) == newComposition)
+            {
+                m_Composition.Value &= ~(Composition.GrassStrip | Composition.Trees);
+                m_LeftUpgrade.Value &= ~(SideUpgrades.GrassStrip | SideUpgrades.WideSidewalk | SideUpgrades.Trees);
+                m_RightUpgrade.Value &= ~(SideUpgrades.GrassStrip | SideUpgrades.WideSidewalk | SideUpgrades.Trees);
+            }
+
+            if ((oldComposition & newComposition) == newComposition)
             {
                 m_Composition.Value &= ~newComposition;
             }
             else
             {
                 m_Composition.Value |= newComposition;
-            }
-
-            if (newComposition == Composition.Ground)
-            {
-                m_Composition.Value &= ~Composition.Tunnel;
-                m_Composition.Value &= ~Composition.Elevated;
-            }
-
-            if (newComposition == Composition.Tunnel)
-            {
-                m_Composition.Value &= ~Composition.Ground;
-                m_Composition.Value &= ~Composition.Elevated;
-            }
-
-            if (newComposition == Composition.Elevated)
-            {
-                m_Composition.Value &= ~Composition.Tunnel;
-                m_Composition.Value &= ~Composition.Ground;
             }
         }
 
@@ -313,8 +324,8 @@ namespace Anarchy.Systems
 
             if ((netGeometryData.m_Flags & Game.Net.GeometryFlags.RequireElevated) == Game.Net.GeometryFlags.RequireElevated)
             {
-                m_ShowComposition.Value &= ~Composition.Elevated;
-                m_ShowComposition.Value &= ~Composition.Tunnel;
+                m_ShowComposition.Value &= ~(Composition.Elevated | Composition.Tunnel | Composition.Trees | Composition.GrassStrip);
+                m_ShowUpgrade.Value &= ~(SideUpgrades.Trees | SideUpgrades.GrassStrip | SideUpgrades.SoundBarrier | SideUpgrades.WideSidewalk);
             }
             else
             {
