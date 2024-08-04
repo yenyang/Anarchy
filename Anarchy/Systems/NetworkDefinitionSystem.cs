@@ -22,8 +22,8 @@ namespace Anarchy.Systems
     /// </summary>
     public partial class NetworkDefinitionSystem : GameSystemBase
     {
-        public const float QuayThreshold = 5f;
-        public const float RetainingWallThreshold = -5f;
+        public const float QuayThreshold = 4f;
+        public const float RetainingWallThreshold = -4f;
         public const float TunnelThreshold = -25f;
         public const float ElevatedThreshold = 10f;
         public const float ForceGroundElevation = 0f;

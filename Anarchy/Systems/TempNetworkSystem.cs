@@ -15,11 +15,10 @@ namespace Anarchy.Systems
     using Game.Tools;
     using Unity.Collections;
     using Unity.Entities;
-    using Unity.Mathematics;
     using UnityEngine;
 
     /// <summary>
-    /// Overrides vertical position of creation definition.
+    /// Applies upgrades and/or elevation to Temp networks.
     /// </summary>
     public partial class TempNetworkSystem : GameSystemBase
     {
@@ -50,7 +49,7 @@ namespace Anarchy.Systems
         private NetToolSystem m_NetToolSystem;
         private PrefabSystem m_PrefabSystem;
         private NetworkAnarchyUISystem m_UISystem;
-        private EntityQuery m_TempEdgeCurveQuery;
+        private EntityQuery m_TempNetworksQuery;
         private TerrainSystem m_TerrainSystem;
         private ILog m_Log;
 
@@ -83,13 +82,13 @@ namespace Anarchy.Systems
             m_TerrainSystem = World.GetOrCreateSystemManaged<TerrainSystem>();
             m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_NetToolSystem;
             m_Log.Info($"[{nameof(TempNetworkSystem)}] {nameof(OnCreate)}");
-            m_TempEdgeCurveQuery = SystemAPI.QueryBuilder()
+            m_TempNetworksQuery = SystemAPI.QueryBuilder()
                 .WithAll<Updated, Temp>()
                 .WithAny<Game.Net.Edge, Game.Net.Node>()
                 .WithNone<Deleted, Overridden>()
                 .Build();
 
-            RequireForUpdate(m_TempEdgeCurveQuery);
+            RequireForUpdate(m_TempNetworksQuery);
         }
 
 
@@ -104,7 +103,7 @@ namespace Anarchy.Systems
                 return;
             }
 
-            NativeArray<Entity> entities = m_TempEdgeCurveQuery.ToEntityArray(Allocator.Temp);
+            NativeArray<Entity> entities = m_TempNetworksQuery.ToEntityArray(Allocator.Temp);
             foreach (Entity entity in entities)
             {
                 if (EntityManager.TryGetComponent(entity, out Temp temp))
@@ -116,33 +115,36 @@ namespace Anarchy.Systems
                     }
                 }
 
-                if (((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
+                if ((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
                     || (m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay
                     || (m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
                     || (m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
-                    && EntityManager.HasComponent<Game.Net.Node>(entity))
                 {
                     if (!EntityManager.TryGetComponent(entity, out Game.Net.Elevation elevation))
                     {
                         EntityManager.AddComponent<Elevation>(entity);
                     }
 
-                    if ((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall)
+                    if (((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall && EntityManager.HasComponent<Game.Net.Node>(entity))
+                        || ((m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall && EntityManager.HasComponent<Game.Net.Edge>(entity)))
                     {
-                        elevation.m_Elevation.y = Mathf.Min(elevation.m_Elevation.x, m_NetToolSystem.elevation, NetworkDefinitionSystem.RetainingWallThreshold);
+                        elevation.m_Elevation.y = Mathf.Min(elevation.m_Elevation.y, m_NetToolSystem.elevation, NetworkDefinitionSystem.RetainingWallThreshold);
                     }
-                    else if ((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
+                    else if (((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay && EntityManager.HasComponent<Game.Net.Node>(entity))
+                        || ((m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay && EntityManager.HasComponent<Game.Net.Edge>(entity)))
                     {
-                        elevation.m_Elevation.y = Mathf.Max(elevation.m_Elevation.x, m_NetToolSystem.elevation, NetworkDefinitionSystem.QuayThreshold);
+                        elevation.m_Elevation.y = Mathf.Max(elevation.m_Elevation.y, m_NetToolSystem.elevation, NetworkDefinitionSystem.QuayThreshold);
                     }
 
-                    if ((m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall)
+                    if (((m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall && EntityManager.HasComponent<Game.Net.Node>(entity))
+                        || ((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall && EntityManager.HasComponent<Game.Net.Edge>(entity)))
                     {
                         elevation.m_Elevation.x = Mathf.Min(elevation.m_Elevation.x, m_NetToolSystem.elevation, NetworkDefinitionSystem.RetainingWallThreshold);
                     }
-                    else if ((m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
+                    else if (((m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay && EntityManager.HasComponent<Game.Net.Node>(entity))
+                        || ((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay && EntityManager.HasComponent<Game.Net.Edge>(entity)))
                     {
-                        elevation.m_Elevation.x = Mathf.Max(elevation.m_Elevation.y, m_NetToolSystem.elevation, NetworkDefinitionSystem.QuayThreshold);
+                        elevation.m_Elevation.x = Mathf.Max(elevation.m_Elevation.x, m_NetToolSystem.elevation, NetworkDefinitionSystem.QuayThreshold);
                     }
 
                     EntityManager.SetComponentData(entity, elevation);
