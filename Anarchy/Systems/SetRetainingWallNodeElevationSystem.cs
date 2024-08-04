@@ -1,8 +1,8 @@
-﻿// <copyright file="FixRetainingWallsSystem.cs" company="Yenyang's Mods. MIT License">
+﻿// <copyright file="SetRetainingWallNodeElevationSystem.cs" company="Yenyang's Mods. MIT License">
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
-// #define BURST
+#define BURST
 namespace Anarchy.Systems
 {
     using Anarchy.Components;
@@ -10,7 +10,6 @@ namespace Anarchy.Systems
     using Game;
     using Game.Common;
     using Game.Net;
-    using Game.Prefabs;
     using Game.Tools;
     using Unity.Burst;
     using Unity.Burst.Intrinsics;
@@ -108,9 +107,6 @@ namespace Anarchy.Systems
                 {
                     if (m_ElevationLookup.TryGetComponent(segment.m_Edge, out Elevation segmentElevation))
                     {
-#if !BURST
-                        AnarchyMod.Instance.Log.Debug("found a segment");
-#endif
                         if (Mathf.Abs(segmentElevation.m_Elevation.x) > Mathf.Abs(elevation.m_Elevation.y))
                         {
                             elevation.m_Elevation.y = segmentElevation.m_Elevation.x;
@@ -121,12 +117,7 @@ namespace Anarchy.Systems
                             elevation.m_Elevation.x = segmentElevation.m_Elevation.y;
                         }
                     }
-#if !BURST
-                    else
-                    {
-                        AnarchyMod.Instance.Log.Debug("Did not get elevation component from segment in map.");
-                    }
-#endif
+
                     buffer.AddComponent<Updated>(segment.m_Edge);
                 }
 
