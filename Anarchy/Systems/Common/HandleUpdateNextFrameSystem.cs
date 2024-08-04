@@ -2,14 +2,13 @@
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
-namespace Anarchy.Systems
+namespace Anarchy.Systems.Common
 {
     using Anarchy;
     using Anarchy.Components;
     using Colossal.Logging;
     using Game;
     using Game.Common;
-    using Game.Rendering;
     using Unity.Entities;
 
     /// <summary>

@@ -2,7 +2,7 @@
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
-namespace Anarchy.Systems
+namespace Anarchy.Systems.OverridePrevention
 {
     using Anarchy;
     using Anarchy.Components;

@@ -2,10 +2,11 @@
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
-namespace Anarchy.Systems
+namespace Anarchy.Systems.ErrorChecks
 {
     using System.Collections.Generic;
     using Anarchy;
+    using Anarchy.Systems.Common;
     using Colossal.Entities;
     using Colossal.Logging;
     using Game;

@@ -2,11 +2,12 @@
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
-namespace Anarchy.Systems
+namespace Anarchy.Systems.OverridePrevention
 {
     using System.Collections.Generic;
     using Anarchy;
     using Anarchy.Components;
+    using Anarchy.Systems.Common;
     using Colossal.Logging;
     using Game;
     using Game.Buildings;
@@ -75,7 +76,7 @@ namespace Anarchy.Systems
                {
                     ComponentType.ReadOnly<Temp>(),
                     ComponentType.ReadOnly<Building>(),
-                    ComponentType.ReadOnly<Game.Objects.Crane>(),
+                    ComponentType.ReadOnly<Crane>(),
                     ComponentType.ReadOnly<Animal>(),
                     ComponentType.ReadOnly<Game.Creatures.Pet>(),
                     ComponentType.ReadOnly<Creature>(),
@@ -99,7 +100,7 @@ namespace Anarchy.Systems
                     ComponentType.ReadOnly<Owner>(),
                     ComponentType.ReadOnly<Temp>(),
                     ComponentType.ReadOnly<Building>(),
-                    ComponentType.ReadOnly<Game.Objects.Crane>(),
+                    ComponentType.ReadOnly<Crane>(),
                     ComponentType.ReadOnly<Animal>(),
                     ComponentType.ReadOnly<Game.Creatures.Pet>(),
                     ComponentType.ReadOnly<Creature>(),
@@ -117,7 +118,7 @@ namespace Anarchy.Systems
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            if (m_ToolSystem.activeTool.toolID == null || (m_ToolSystem.actionMode.IsEditor() && !AnarchyMod.Instance.Settings.PreventOverrideInEditor) || m_ToolSystem.activePrefab == null)
+            if (m_ToolSystem.activeTool.toolID == null || m_ToolSystem.actionMode.IsEditor() && !AnarchyMod.Instance.Settings.PreventOverrideInEditor || m_ToolSystem.activePrefab == null)
             {
                 return;
             }
@@ -128,7 +129,7 @@ namespace Anarchy.Systems
             }
 
             if (m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID)
-                || (m_AppropriateToolsWithAnarchy.Contains(m_ToolSystem.activeTool.toolID) && m_AnarchyUISystem.AnarchyEnabled)
+                || m_AppropriateToolsWithAnarchy.Contains(m_ToolSystem.activeTool.toolID) && m_AnarchyUISystem.AnarchyEnabled
                 || !m_HasAnarchyAndUpdatedQuery.IsEmptyIgnoreFilter)
             {
                 EntityManager.RemoveComponent(m_OwnedAndOverridenQuery, ComponentType.ReadWrite<Overridden>());

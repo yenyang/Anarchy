@@ -2,15 +2,19 @@
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
-namespace Anarchy.Systems
+namespace Anarchy.Systems.Common
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Xml.Serialization;
     using Anarchy.Domain;
-    using Anarchy.Settings;
     using Anarchy.Extensions;
+    using Anarchy.Settings;
+    using Anarchy.Systems.ClearanceViolation;
+    using Anarchy.Systems.ErrorChecks;
+    using Anarchy.Systems.ObjectElevation;
+    using Anarchy.Systems.OverridePrevention;
     using Colossal.Logging;
     using Colossal.PSI.Environment;
     using Colossal.Serialization.Entities;

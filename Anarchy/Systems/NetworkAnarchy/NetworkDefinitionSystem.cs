@@ -3,7 +3,7 @@
 // </copyright>
 
 // #define VERBOSE
-namespace Anarchy.Systems
+namespace Anarchy.Systems.NetworkAnarchy
 {
     using Colossal.Entities;
     using Colossal.Logging;

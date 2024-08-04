@@ -1,7 +1,7 @@
 ﻿// <copyright file="SelectedInfoPanelTogglesSystem.cs" company="Yenyang's Mods. MIT License">
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
-namespace Anarchy.Systems
+namespace Anarchy.Systems.Common
 {
     using Anarchy.Components;
     using Anarchy.Extensions;

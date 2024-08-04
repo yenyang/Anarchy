@@ -2,10 +2,12 @@
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
-namespace Anarchy.Systems
+namespace Anarchy.Systems.NetworkAnarchy
 {
     using System.Collections.Generic;
+    using Anarchy;
     using Anarchy.Extensions;
+    using Anarchy.Systems;
     using Colossal.Entities;
     using Colossal.Logging;
     using Game.Prefabs;
@@ -126,7 +128,7 @@ namespace Anarchy.Systems
         /// </summary>
         public SideUpgrades LeftUpgrade
         {
-            get 
+            get
             {
                 return m_LeftUpgrade.Value & m_ShowUpgrade.Value;
             }
@@ -192,8 +194,8 @@ namespace Anarchy.Systems
             {
                 m_LeftUpgrade.Value &= ~sideUpgrade;
             }
-            else if ((sideUpgrade == SideUpgrades.Trees && (m_LeftUpgrade.Value == SideUpgrades.WideSidewalk || m_LeftUpgrade.Value == SideUpgrades.GrassStrip))
-                || (m_LeftUpgrade == SideUpgrades.Trees && (sideUpgrade == SideUpgrades.WideSidewalk || sideUpgrade == SideUpgrades.GrassStrip)))
+            else if (sideUpgrade == SideUpgrades.Trees && (m_LeftUpgrade.Value == SideUpgrades.WideSidewalk || m_LeftUpgrade.Value == SideUpgrades.GrassStrip)
+                || m_LeftUpgrade == SideUpgrades.Trees && (sideUpgrade == SideUpgrades.WideSidewalk || sideUpgrade == SideUpgrades.GrassStrip))
             {
                 m_LeftUpgrade.Value |= sideUpgrade;
             }
@@ -220,8 +222,8 @@ namespace Anarchy.Systems
             {
                 m_RightUpgrade.Value &= ~sideUpgrade;
             }
-            else if ((sideUpgrade == SideUpgrades.Trees && (m_RightUpgrade.Value == SideUpgrades.WideSidewalk || m_RightUpgrade.Value == SideUpgrades.GrassStrip))
-                || (m_RightUpgrade == SideUpgrades.Trees && (sideUpgrade == SideUpgrades.WideSidewalk || sideUpgrade == SideUpgrades.GrassStrip)))
+            else if (sideUpgrade == SideUpgrades.Trees && (m_RightUpgrade.Value == SideUpgrades.WideSidewalk || m_RightUpgrade.Value == SideUpgrades.GrassStrip)
+                || m_RightUpgrade == SideUpgrades.Trees && (sideUpgrade == SideUpgrades.WideSidewalk || sideUpgrade == SideUpgrades.GrassStrip))
             {
                 m_RightUpgrade.Value |= sideUpgrade;
             }

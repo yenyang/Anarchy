@@ -1,9 +1,10 @@
-﻿// <copyright file="ObjectDefinitionSystem.cs" company="Yenyang's Mods. MIT License">
+﻿// <copyright file="ElevateObjectDefinitionSystem.cs" company="Yenyang's Mods. MIT License">
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
-namespace Anarchy.Systems
+namespace Anarchy.Systems.ObjectElevation
 {
+    using Anarchy.Systems.Common;
     using Colossal.Entities;
     using Colossal.Logging;
     using Game;

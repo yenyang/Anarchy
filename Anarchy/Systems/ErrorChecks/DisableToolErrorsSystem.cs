@@ -3,8 +3,9 @@
 // </copyright>
 
 // #define VERBOSE
-namespace Anarchy.Systems
+namespace Anarchy.Systems.ErrorChecks
 {
+    using Anarchy.Systems.Common;
     using System.Collections.Generic;
     using Anarchy;
     using Colossal.Entities;

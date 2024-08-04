@@ -3,7 +3,7 @@
 // </copyright>
 
 #define BURST
-namespace Anarchy.Systems
+namespace Anarchy.Systems.NetworkAnarchy
 {
     using Anarchy.Components;
     using Colossal.Logging;
@@ -27,6 +27,8 @@ namespace Anarchy.Systems
         private EntityQuery m_UpgradedAndUpdatedQuery;
         private ILog m_Log;
         private ModificationEndBarrier m_Barrier;
+        private ToolSystem m_ToolSystem;
+        private NetToolSystem m_NetToolSystem;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SetRetainingWallSegmentElevationSystem"/> class.
@@ -42,7 +44,9 @@ namespace Anarchy.Systems
             m_Log = AnarchyMod.Instance.Log;
             m_Barrier = World.GetOrCreateSystemManaged<ModificationEndBarrier>();
             m_Log.Info($"[{nameof(SetRetainingWallSegmentElevationSystem)}] {nameof(OnCreate)}");
-
+            m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
+            m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
+            m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_NetToolSystem;
             m_UpgradedAndUpdatedQuery = SystemAPI.QueryBuilder()
                             .WithAll<Updated, Game.Net.Upgraded, Game.Net.Edge>()
                             .WithNone<Deleted, Overridden, Temp>()

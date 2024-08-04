@@ -2,17 +2,16 @@
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
-namespace Anarchy.Systems
+namespace Anarchy.Systems.ObjectElevation
 {
+    using Anarchy.Systems.Common;
     using Colossal.Entities;
     using Colossal.Logging;
-    using Colossal.Serialization.Entities;
     using Game;
     using Game.Common;
     using Game.Prefabs;
     using Game.Simulation;
     using Game.Tools;
-    using System.Runtime.InteropServices.WindowsRuntime;
     using Unity.Collections;
     using Unity.Entities;
 

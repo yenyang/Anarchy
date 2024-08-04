@@ -3,7 +3,7 @@
 // </copyright>
 
 #define BURST
-namespace Anarchy.Systems
+namespace Anarchy.Systems.OverridePrevention
 {
     using Anarchy;
     using Anarchy.Components;

@@ -3,7 +3,7 @@
 // </copyright>
 
 #define BURST
-namespace Anarchy.Systems
+namespace Anarchy.Systems.ObjectElevation
 {
     using System.Collections.Generic;
     using System.Reflection;

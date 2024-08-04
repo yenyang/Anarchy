@@ -3,10 +3,11 @@
 // </copyright>
 
 // #define VERBOSE
-namespace Anarchy.Systems
+namespace Anarchy.Systems.ClearanceViolation
 {
     using Anarchy;
     using Anarchy.Components;
+    using Anarchy.Systems.Common;
     using Colossal.Entities;
     using Colossal.Logging;
     using Colossal.Mathematics;

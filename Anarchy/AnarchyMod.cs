@@ -13,7 +13,12 @@ namespace Anarchy
     using System.Linq;
     using System.Reflection;
     using Anarchy.Settings;
-    using Anarchy.Systems;
+    using Anarchy.Systems.ClearanceViolation;
+    using Anarchy.Systems.Common;
+    using Anarchy.Systems.ErrorChecks;
+    using Anarchy.Systems.NetworkAnarchy;
+    using Anarchy.Systems.ObjectElevation;
+    using Anarchy.Systems.OverridePrevention;
     using Colossal;
     using Colossal.IO.AssetDatabase;
     using Colossal.Logging;

@@ -2,9 +2,10 @@
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
-namespace Anarchy.Systems
+namespace Anarchy.Systems.NetworkAnarchy
 {
     using System.Collections.Generic;
+    using Anarchy.Systems.NetworkAnarchy;
     using Colossal.Entities;
     using Colossal.Logging;
     using Game;
@@ -69,7 +70,6 @@ namespace Anarchy.Systems
             get { return GeneralCompositionLookup; }
         }
 
-
         /// <inheritdoc/>
         protected override void OnCreate()
         {
@@ -90,7 +90,6 @@ namespace Anarchy.Systems
 
             RequireForUpdate(m_TempNetworksQuery);
         }
-
 
         /// <inheritdoc/>
         protected override void OnUpdate()
@@ -115,10 +114,11 @@ namespace Anarchy.Systems
                     }
                 }
 
-                if ((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
+                if (((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
                     || (m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay
                     || (m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
                     || (m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
+                    && (temp.m_Flags != TempFlags.IsLast || !EntityManager.HasComponent<Game.Net.Node>(entity)))
                 {
                     if (!EntityManager.TryGetComponent(entity, out Game.Net.Elevation elevation))
                     {
@@ -148,6 +148,10 @@ namespace Anarchy.Systems
                     }
 
                     EntityManager.SetComponentData(entity, elevation);
+                }
+                else if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace && EntityManager.HasComponent<Elevation>(entity))
+                {
+                    EntityManager.RemoveComponent<Elevation>(entity);
                 }
 
                 CompositionFlags compositionFlags = default;
