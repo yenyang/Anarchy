@@ -67,7 +67,7 @@ function descriptionTooltip(tooltipTitle: string | null, tooltipDescription: str
 
 export const SelectedInfoPanelTogglesComponent = (componentList: any): any => {
     // I believe you should not put anything here.
-	componentList["Anarchy.Systems.SelectedInfoPanelTogglesSystem"] = (e: InfoSectionComponent) => {
+	componentList["Anarchy.Systems.Common.SelectedInfoPanelTogglesSystem"] = (e: InfoSectionComponent) => {
         // These get the value of the bindings.
         const hasPreventOverride : boolean = useValue(hasPreventOverride$);
         const hasTransformRecord : boolean = useValue(hasTransformRecord$);

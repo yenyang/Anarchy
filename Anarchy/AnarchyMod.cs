@@ -13,6 +13,7 @@ namespace Anarchy
     using System.Linq;
     using System.Reflection;
     using Anarchy.Settings;
+    using Anarchy.Systems.AnarchyComponentsTool;
     using Anarchy.Systems.ClearanceViolation;
     using Anarchy.Systems.Common;
     using Anarchy.Systems.ErrorChecks;
@@ -34,6 +35,16 @@ namespace Anarchy
     /// </summary>
     public class AnarchyMod : IMod
     {
+        /// <summary>
+        /// Fake keybind action for apply.
+        /// </summary>
+        public const string ApplyMimicAction = "ApplyMimic";
+
+        /// <summary>
+        /// Fake keybind action for secondary apply.
+        /// </summary>
+        public const string SecondaryApplyMimicAction = "SecondaryApplyMimic";
+
         /// <summary>
         /// An id used for bindings between UI and C#.
         /// </summary>
@@ -162,6 +173,7 @@ namespace Anarchy
             updateSystem.UpdateAt<SetRetainingWallNodeElevationSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateBefore<TempNetworkSystem>(SystemUpdatePhase.Modification3);
             updateSystem.UpdateAt<NetworkAnarchyUISystem>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateAt<AnarchyComponentsToolSystem>(SystemUpdatePhase.ToolUpdate);
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Completed.");
         }
 

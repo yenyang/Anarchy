@@ -243,6 +243,7 @@ namespace Anarchy.Systems.OverridePrevention
                                         EntityManager.SetComponentData(entity, transformRecord);
                                     }
                                 }
+
                                 bool hasTransform = EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform2);
                                 TerrainHeightData terrainHeightData = m_TerrainSystem.GetHeightData();
                                 float terrainHeight = TerrainUtils.SampleHeight(ref terrainHeightData, originalTransform2.m_Position);

@@ -15,6 +15,7 @@ const uilColored =                           "coui://uil/Colored/";
 const anarchyEnabledSrc =      uilColored +  "Anarchy.svg";
 const anarchyDisabledSrc =     uilStandard + "Anarchy.svg";
 const optionSrc =               uilStandard + "Gear.svg";
+const toolSrc =                 uilStandard + "Tools.svg"
 
 
 function handleClick(event: string) {
@@ -59,6 +60,15 @@ export const AnarchyRowComponent: ModuleRegistryExtend = (Component : any) => {
                         className = {VanillaComponentResolver.instance.toolButtonTheme.button}
                         focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
                         onSelect={() => handleClick("ToggleAnarchyOptionsPanel")}
+                    />
+                    <VanillaComponentResolver.instance.ToolButton
+                        src={toolSrc}
+                        multiSelect = {false}   // I haven't tested any other value here
+                        disabled = {false}      // I haven't tested any other value here
+                        tooltip = {"Anarchy Components Tool"}
+                        className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                        focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                        onSelect={() => handleClick("ActivateAnarchyComponentsTool")}
                     />
                     <VanillaComponentResolver.instance.ToolButton
                         src={anarchyEnabled ? anarchyEnabledSrc : anarchyDisabledSrc}

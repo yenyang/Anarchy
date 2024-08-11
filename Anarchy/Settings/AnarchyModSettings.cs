@@ -20,6 +20,8 @@ namespace Anarchy.Settings
     [SettingsUITabOrder(General, UI)]
     [SettingsUISection(UI, General)]
     [SettingsUIGroupOrder(Stable, Reset, About)]
+    [SettingsUIMouseAction(AnarchyMod.ApplyMimicAction, "AnarchyComponentsTool")]
+    [SettingsUIMouseAction(AnarchyMod.SecondaryApplyMimicAction, "AnarchyComponentsTool")]
     public class AnarchyModSettings : ModSetting
     {
         /// <summary>
@@ -146,6 +148,23 @@ namespace Anarchy.Settings
         [SettingsUISlider(min = 1, max = 600, step = 1, scalarMultiplier = 1, unit = Unit.kInteger)]
         [SettingsUIHideByCondition(typeof(AnarchyModSettings), nameof(IsCullingNotBeingPrevented))]
         public int PropRefreshFrequency { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets hidden keybinding for apply action.
+        /// </summary>
+        [SettingsUIMouseBinding(AnarchyMod.ApplyMimicAction)]
+        [SettingsUISection(General, Keybinds)]
+        [SettingsUIHidden]
+        public ProxyBinding ApplyMimic { get; set; }
+
+        /// <summary>
+        /// Gets or sets hidden keybinding for secondary apply action.
+        /// </summary>
+        [SettingsUIMouseBinding(AnarchyMod.SecondaryApplyMimicAction)]
+        [SettingsUISection(General, Keybinds)]
+        [SettingsUIHidden]
+        public ProxyBinding SecondaryApplyMimic { get; set; }
 
         /// <summary>
         /// Sets a value indicating whether: to update props now.
