@@ -29,6 +29,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
     using Unity.Mathematics;
     using UnityEngine;
     using UnityEngine.InputSystem;
+    using static Anarchy.Systems.AnarchyComponentsTool.AnarchyComponentsToolUISystem;
 
 
     /// <summary>
@@ -52,6 +53,14 @@ namespace Anarchy.Systems.AnarchyComponentsTool
 
         /// <inheritdoc/>
         public override string toolID => "AnarchyComponentsTool";
+
+        /// <summary>
+        /// Gets a value indicating whether the previous show markers.
+        /// </summary>
+        public bool PreviousShowMarkers
+        {
+            get { return m_PreviousShowMarkers; }
+        }
 
         /// <inheritdoc/>
         public override PrefabBase GetPrefab()
@@ -205,13 +214,12 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         {
             m_ApplyAction.shouldBeEnabled = true;
             m_SecondaryApplyMimic.shouldBeEnabled = true;
+            m_Log.Debug($"{nameof(AnarchyComponentsToolSystem)}.{nameof(OnStartRunning)}");
             m_PreviousShowMarkers = m_RenderingSystem.markersVisible;
-            if (m_UISystem.CurrentComponentType == AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride)
+            if ((m_UISystem.CurrentComponentType & AnarchyComponentType.PreventOverride) == AnarchyComponentType.PreventOverride)
             {
                 m_RenderingSystem.markersVisible = true;
             }
-
-            m_Log.Debug($"{nameof(AnarchyComponentsToolSystem)}.{nameof(OnStartRunning)}");
         }
 
         /// <inheritdoc/>
@@ -228,12 +236,66 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             inputDeps = Dependency;
             bool raycastFlag = GetRaycastResult(out Entity e, out RaycastHit hit);
 
+            if (!m_OverridenQuery.IsEmptyIgnoreFilter
+                && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride) == AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride)
+            {
+                ObjectHoopRenderJob overridenHoopRenderJob = new ObjectHoopRenderJob()
+                {
+                    m_Color = UnityEngine.Color.yellow,
+                    m_CullingInfoType = SystemAPI.GetComponentTypeHandle<CullingInfo>(isReadOnly: true),
+                    m_OverlayBuffer = m_OverlayRenderSystem.GetBuffer(out JobHandle outJobHandle),
+                    m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
+                    m_EntityType = SystemAPI.GetEntityTypeHandle(),
+                    m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(isReadOnly: true),
+                    m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(isReadOnly: true),
+                    m_TreeLookup = SystemAPI.GetComponentLookup<Game.Objects.Tree>(isReadOnly: true),
+                };
+                inputDeps = overridenHoopRenderJob.Schedule(m_OverridenQuery, JobHandle.CombineDependencies(inputDeps, outJobHandle));
+                m_OverlayRenderSystem.AddBufferWriter(inputDeps);
+            }
+
+            if (!m_PreventOverrideQuery.IsEmptyIgnoreFilter
+                && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride) == AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride)
+            {
+                ObjectHoopRenderJob preventOverrideHoopRenderJob = new ObjectHoopRenderJob()
+                {
+                    m_Color = UnityEngine.Color.red,
+                    m_CullingInfoType = SystemAPI.GetComponentTypeHandle<CullingInfo>(isReadOnly: true),
+                    m_OverlayBuffer = m_OverlayRenderSystem.GetBuffer(out JobHandle outJobHandle),
+                    m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
+                    m_EntityType = SystemAPI.GetEntityTypeHandle(),
+                    m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(isReadOnly: true),
+                    m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(isReadOnly: true),
+                    m_TreeLookup = SystemAPI.GetComponentLookup<Game.Objects.Tree>(isReadOnly: true),
+                };
+                inputDeps = preventOverrideHoopRenderJob.Schedule(m_PreventOverrideQuery, JobHandle.CombineDependencies(inputDeps, outJobHandle));
+                m_OverlayRenderSystem.AddBufferWriter(inputDeps);
+            }
+
+            if (!m_ElevationLockedQuery.IsEmptyIgnoreFilter
+                && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord) == AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord)
+            {
+                ObjectHoopRenderJob elevationLockedHoopRenderJob = new ObjectHoopRenderJob()
+                {
+                    m_Color = UnityEngine.Color.blue,
+                    m_CullingInfoType = SystemAPI.GetComponentTypeHandle<CullingInfo>(isReadOnly: true),
+                    m_OverlayBuffer = m_OverlayRenderSystem.GetBuffer(out JobHandle outJobHandle),
+                    m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
+                    m_EntityType = SystemAPI.GetEntityTypeHandle(),
+                    m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(isReadOnly: true),
+                    m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(isReadOnly: true),
+                    m_TreeLookup = SystemAPI.GetComponentLookup<Game.Objects.Tree>(isReadOnly: true),
+                };
+                inputDeps = elevationLockedHoopRenderJob.Schedule(m_ElevationLockedQuery, JobHandle.CombineDependencies(inputDeps, outJobHandle));
+                m_OverlayRenderSystem.AddBufferWriter(inputDeps);
+            }
+
             if (hit.m_HitPosition.x == 0 && hit.m_HitPosition.y == 0 && hit.m_HitPosition.z == 0)
             {
                 return inputDeps;
             }
 
-            float radius = 10f;
+            float radius = m_UISystem.SelectionRadius;
             if (m_UISystem.CurrentSelectionMode == AnarchyComponentsToolUISystem.SelectionMode.Radius)
             {
                 ToolRadiusJob toolRadiusJob = new ()
@@ -246,130 +308,78 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                 m_OverlayRenderSystem.AddBufferWriter(inputDeps);
             }
 
-            if (m_UISystem.CurrentComponentType == AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride)
+            if (m_ApplyAction.IsPressed()
+                && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride) == AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride)
             {
-                if (!m_OverridenQuery.IsEmptyIgnoreFilter)
+                AddOrRemoveComponentWithinRadiusJob addPreventOverrideJob = new ()
                 {
-                    ObjectHoopRenderJob overridenHoopRenderJob = new ObjectHoopRenderJob()
-                    {
-                        m_Color = UnityEngine.Color.magenta,
-                        m_CullingInfoType = SystemAPI.GetComponentTypeHandle<CullingInfo>(isReadOnly: true),
-                        m_OverlayBuffer = m_OverlayRenderSystem.GetBuffer(out JobHandle outJobHandle),
-                        m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
-                        m_EntityType = SystemAPI.GetEntityTypeHandle(),
-                        m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(isReadOnly: true),
-                        m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(isReadOnly: true),
-                        m_TreeLookup = SystemAPI.GetComponentLookup<Game.Objects.Tree>(isReadOnly: true),
-                    };
-                    inputDeps = overridenHoopRenderJob.Schedule(m_OverridenQuery, JobHandle.CombineDependencies(inputDeps, outJobHandle));
-                    m_OverlayRenderSystem.AddBufferWriter(inputDeps);
-                }
-
-                if (!m_PreventOverrideQuery.IsEmptyIgnoreFilter)
-                {
-                    ObjectHoopRenderJob preventOverrideHoopRenderJob = new ObjectHoopRenderJob()
-                    {
-                        m_Color = UnityEngine.Color.red,
-                        m_CullingInfoType = SystemAPI.GetComponentTypeHandle<CullingInfo>(isReadOnly: true),
-                        m_OverlayBuffer = m_OverlayRenderSystem.GetBuffer(out JobHandle outJobHandle),
-                        m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
-                        m_EntityType = SystemAPI.GetEntityTypeHandle(),
-                        m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(isReadOnly: true),
-                        m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(isReadOnly: true),
-                        m_TreeLookup = SystemAPI.GetComponentLookup<Game.Objects.Tree>(isReadOnly: true),
-                    };
-                    inputDeps = preventOverrideHoopRenderJob.Schedule(m_PreventOverrideQuery, JobHandle.CombineDependencies(inputDeps, outJobHandle));
-                    m_OverlayRenderSystem.AddBufferWriter(inputDeps);
-                }
-
-                if (m_ApplyAction.IsPressed())
-                {
-                    AddOrRemoveComponentWithinRadiusJob addPreventOverrideJob = new ()
-                    {
-                        m_EntityType = SystemAPI.GetEntityTypeHandle(),
-                        m_Position = hit.m_HitPosition,
-                        m_Radius = radius,
-                        m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
-                        buffer = m_Barrier.CreateCommandBuffer(),
-                        m_Add = true,
-                        m_ComponentType = ComponentType.ReadOnly<PreventOverride>(),
-                        m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(),
-                        m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
-                    };
-                    inputDeps = JobChunkExtensions.Schedule(addPreventOverrideJob, m_NotPreventOverrideQuery, inputDeps);
-                    m_Barrier.AddJobHandleForProducer(inputDeps);
-                }
-                else if (m_SecondaryApplyMimic.IsPressed())
-                {
-                    AddOrRemoveComponentWithinRadiusJob removePreventOverrideJob = new ()
-                    {
-                        m_EntityType = SystemAPI.GetEntityTypeHandle(),
-                        m_Position = hit.m_HitPosition,
-                        m_Radius = radius,
-                        m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
-                        buffer = m_Barrier.CreateCommandBuffer(),
-                        m_Add = false,
-                        m_ComponentType = ComponentType.ReadOnly<PreventOverride>(),
-                        m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(),
-                        m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
-                    };
-                    inputDeps = JobChunkExtensions.Schedule(removePreventOverrideJob, m_PreventOverrideQuery, inputDeps);
-                    m_Barrier.AddJobHandleForProducer(inputDeps);
-                }
+                    m_EntityType = SystemAPI.GetEntityTypeHandle(),
+                    m_Position = hit.m_HitPosition,
+                    m_Radius = radius,
+                    m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
+                    buffer = m_Barrier.CreateCommandBuffer(),
+                    m_Add = true,
+                    m_ComponentType = ComponentType.ReadOnly<PreventOverride>(),
+                    m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(),
+                    m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
+                };
+                inputDeps = JobChunkExtensions.Schedule(addPreventOverrideJob, m_NotPreventOverrideQuery, inputDeps);
+                m_Barrier.AddJobHandleForProducer(inputDeps);
             }
-            else if (m_UISystem.CurrentComponentType == AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord)
+            else if (m_SecondaryApplyMimic.IsPressed()
+                && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride) == AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride)
             {
-                if (!m_ElevationLockedQuery.IsEmptyIgnoreFilter)
+                AddOrRemoveComponentWithinRadiusJob removePreventOverrideJob = new ()
                 {
-                    ObjectHoopRenderJob elevationLockedHoopRenderJob = new ObjectHoopRenderJob()
-                    {
-                        m_Color = UnityEngine.Color.cyan,
-                        m_CullingInfoType = SystemAPI.GetComponentTypeHandle<CullingInfo>(isReadOnly: true),
-                        m_OverlayBuffer = m_OverlayRenderSystem.GetBuffer(out JobHandle outJobHandle),
-                        m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
-                        m_EntityType = SystemAPI.GetEntityTypeHandle(),
-                        m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(isReadOnly: true),
-                        m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(isReadOnly: true),
-                        m_TreeLookup = SystemAPI.GetComponentLookup<Game.Objects.Tree>(isReadOnly: true),
-                    };
-                    inputDeps = elevationLockedHoopRenderJob.Schedule(m_ElevationLockedQuery, JobHandle.CombineDependencies(inputDeps, outJobHandle));
-                    m_OverlayRenderSystem.AddBufferWriter(inputDeps);
-                }
+                    m_EntityType = SystemAPI.GetEntityTypeHandle(),
+                    m_Position = hit.m_HitPosition,
+                    m_Radius = radius,
+                    m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
+                    buffer = m_Barrier.CreateCommandBuffer(),
+                    m_Add = false,
+                    m_ComponentType = ComponentType.ReadOnly<PreventOverride>(),
+                    m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(),
+                    m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
+                };
+                inputDeps = JobChunkExtensions.Schedule(removePreventOverrideJob, m_PreventOverrideQuery, inputDeps);
+                m_Barrier.AddJobHandleForProducer(inputDeps);
+            }
 
-                if (m_ApplyAction.IsPressed())
+            if (m_ApplyAction.IsPressed()
+                && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord) == AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord)
+            {
+                AddOrRemoveComponentWithinRadiusJob addTransformRecordJob = new ()
                 {
-                    AddOrRemoveComponentWithinRadiusJob addTransformRecordJob = new ()
-                    {
-                        m_EntityType = SystemAPI.GetEntityTypeHandle(),
-                        m_Position = hit.m_HitPosition,
-                        m_Radius = radius,
-                        m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
-                        buffer = m_Barrier.CreateCommandBuffer(),
-                        m_Add = true,
-                        m_ComponentType = ComponentType.ReadOnly<TransformRecord>(),
-                        m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(),
-                        m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
-                    };
-                    inputDeps = JobChunkExtensions.Schedule(addTransformRecordJob, m_NotTransformRecordQuery, inputDeps);
-                    m_Barrier.AddJobHandleForProducer(inputDeps);
-                }
-                else if (m_SecondaryApplyMimic.IsPressed())
+                    m_EntityType = SystemAPI.GetEntityTypeHandle(),
+                    m_Position = hit.m_HitPosition,
+                    m_Radius = radius,
+                    m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
+                    buffer = m_Barrier.CreateCommandBuffer(),
+                    m_Add = true,
+                    m_ComponentType = ComponentType.ReadOnly<TransformRecord>(),
+                    m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(),
+                    m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
+                };
+                inputDeps = JobChunkExtensions.Schedule(addTransformRecordJob, m_NotTransformRecordQuery, inputDeps);
+                m_Barrier.AddJobHandleForProducer(inputDeps);
+            }
+            else if (m_SecondaryApplyMimic.IsPressed()
+                && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord) == AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord)
+            {
+                AddOrRemoveComponentWithinRadiusJob removeTransformRecordJob = new ()
                 {
-                    AddOrRemoveComponentWithinRadiusJob removeTransformRecordJob = new ()
-                    {
-                        m_EntityType = SystemAPI.GetEntityTypeHandle(),
-                        m_Position = hit.m_HitPosition,
-                        m_Radius = radius,
-                        m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
-                        buffer = m_Barrier.CreateCommandBuffer(),
-                        m_Add = false,
-                        m_ComponentType = ComponentType.ReadOnly<TransformRecord>(),
-                        m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(),
-                        m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
-                    };
-                    inputDeps = JobChunkExtensions.Schedule(removeTransformRecordJob, m_ElevationLockedQuery, inputDeps);
-                    m_Barrier.AddJobHandleForProducer(inputDeps);
-                }
+                    m_EntityType = SystemAPI.GetEntityTypeHandle(),
+                    m_Position = hit.m_HitPosition,
+                    m_Radius = radius,
+                    m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
+                    buffer = m_Barrier.CreateCommandBuffer(),
+                    m_Add = false,
+                    m_ComponentType = ComponentType.ReadOnly<TransformRecord>(),
+                    m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(),
+                    m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
+                };
+                inputDeps = JobChunkExtensions.Schedule(removeTransformRecordJob, m_ElevationLockedQuery, inputDeps);
+                m_Barrier.AddJobHandleForProducer(inputDeps);
             }
 
             return inputDeps;

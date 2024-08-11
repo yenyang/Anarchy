@@ -15,7 +15,7 @@ const uilColored =                           "coui://uil/Colored/";
 const anarchyEnabledSrc =      uilColored +  "Anarchy.svg";
 const anarchyDisabledSrc =     uilStandard + "Anarchy.svg";
 const optionSrc =               uilStandard + "Gear.svg";
-const toolSrc =                 uilStandard + "Tools.svg"
+const toolSrc =                 uilStandard + "Tools.svg";
 
 
 function handleClick(event: string) {
