@@ -97,7 +97,20 @@ namespace Anarchy.Systems.AnarchyComponentsTool
 
             // Creates triggers for C# methods based on UI events.
             CreateTrigger("ActivateAnarchyComponentsTool", () => m_ToolSystem.activeTool = m_AnarchyComponentsTool);
-            CreateTrigger("SelectionMode", (int mode) => m_SelectionMode.Value = (SelectionMode)mode);
+            CreateTrigger("SelectionMode", (int mode) =>
+            {
+                m_SelectionMode.Value = (SelectionMode)mode;
+                if ((m_AnarchyComponentType & AnarchyComponentType.PreventOverride) == AnarchyComponentType.PreventOverride
+                    && m_SelectionMode == SelectionMode.Radius)
+                {
+                    m_RenderingSystem.markersVisible = true;
+                }
+                else
+                {
+                    m_RenderingSystem.markersVisible = m_AnarchyComponentsTool.PreviousShowMarkers;
+                }
+            });
+
             CreateTrigger("AnarchyComponentType", (int type) =>
             {
                 AnarchyComponentType anarchyComponentType = (AnarchyComponentType)type;
@@ -118,7 +131,8 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                     m_AnarchyComponentType.Value |= anarchyComponentType;
                 }
 
-                if ((m_AnarchyComponentType & AnarchyComponentType.PreventOverride) == AnarchyComponentType.PreventOverride)
+                if ((m_AnarchyComponentType & AnarchyComponentType.PreventOverride) == AnarchyComponentType.PreventOverride
+                    && m_SelectionMode == SelectionMode.Radius)
                 {
                     m_RenderingSystem.markersVisible = true;
                 }

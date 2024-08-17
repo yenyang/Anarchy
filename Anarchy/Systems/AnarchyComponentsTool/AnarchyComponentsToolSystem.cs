@@ -7,6 +7,8 @@ namespace Anarchy.Systems.AnarchyComponentsTool
 {
     using System.Linq;
     using Anarchy.Components;
+    using Anarchy.Systems.Common;
+    using Colossal.Entities;
     using Colossal.Logging;
     using Colossal.Mathematics;
     using Colossal.Serialization.Entities;
@@ -50,6 +52,8 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         private AnarchyComponentsToolUISystem m_UISystem;
         private EntityQuery m_NotPreventOverrideQuery;
         private EntityQuery m_NotTransformRecordQuery;
+        private EntityQuery m_HighlightedQuery;
+        private Entity m_PreviousRaycastedEntity = Entity.Null;
 
         /// <inheritdoc/>
         public override string toolID => "AnarchyComponentsTool";
@@ -78,7 +82,15 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         public override void InitializeRaycast()
         {
             base.InitializeRaycast();
-            m_ToolRaycastSystem.typeMask = TypeMask.Terrain;
+            if (m_UISystem.CurrentSelectionMode == SelectionMode.Radius)
+            {
+                m_ToolRaycastSystem.typeMask = TypeMask.Terrain;
+            }
+            else
+            {
+                m_ToolRaycastSystem.typeMask = TypeMask.StaticObjects;
+                m_ToolRaycastSystem.raycastFlags |= RaycastFlags.Markers | RaycastFlags.Placeholders;
+            }
         }
 
         /// <summary>
@@ -168,6 +180,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                 None = new ComponentType[]
                 {
                     ComponentType.ReadOnly<TransformRecord>(),
+                    ComponentType.ReadOnly<Stack>(),
                     ComponentType.ReadOnly<Building>(),
                     ComponentType.ReadOnly<Deleted>(),
                     ComponentType.ReadOnly<Temp>(),
@@ -194,6 +207,11 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                 },
             });
 
+            m_HighlightedQuery = SystemAPI.QueryBuilder()
+                .WithAll<Highlighted>()
+                .WithNone<Deleted, Temp>()
+                .Build();
+
             m_ApplyAction = AnarchyMod.Instance.Settings.GetAction(AnarchyMod.ApplyMimicAction);
             var builtInApplyAction = InputManager.instance.FindAction(InputManager.kToolMap, "Apply");
             var mimicApplyBinding = m_ApplyAction.bindings.FirstOrDefault(b => b.group == nameof(Mouse));
@@ -216,7 +234,8 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             m_SecondaryApplyMimic.shouldBeEnabled = true;
             m_Log.Debug($"{nameof(AnarchyComponentsToolSystem)}.{nameof(OnStartRunning)}");
             m_PreviousShowMarkers = m_RenderingSystem.markersVisible;
-            if ((m_UISystem.CurrentComponentType & AnarchyComponentType.PreventOverride) == AnarchyComponentType.PreventOverride)
+            if ((m_UISystem.CurrentComponentType & AnarchyComponentType.PreventOverride) == AnarchyComponentType.PreventOverride
+                && m_UISystem.CurrentSelectionMode == SelectionMode.Radius)
             {
                 m_RenderingSystem.markersVisible = true;
             }
@@ -228,16 +247,22 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             m_ApplyAction.shouldBeEnabled = false;
             m_SecondaryApplyMimic.shouldBeEnabled = false;
             m_RenderingSystem.markersVisible = m_PreviousShowMarkers;
+            if (!m_HighlightedQuery.IsEmptyIgnoreFilter)
+            {
+                EntityManager.AddComponent<BatchesUpdated>(m_HighlightedQuery);
+                EntityManager.RemoveComponent<Highlighted>(m_HighlightedQuery);
+            }
         }
 
         /// <inheritdoc/>
         protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
             inputDeps = Dependency;
-            bool raycastFlag = GetRaycastResult(out Entity e, out RaycastHit hit);
+            bool raycastFlag = GetRaycastResult(out Entity currentRaycastEntity, out RaycastHit hit);
 
             if (!m_OverridenQuery.IsEmptyIgnoreFilter
-                && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride) == AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride)
+                && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride) == AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride
+                && m_UISystem.CurrentSelectionMode == SelectionMode.Radius)
             {
                 ObjectHoopRenderJob overridenHoopRenderJob = new ObjectHoopRenderJob()
                 {
@@ -290,15 +315,15 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                 m_OverlayRenderSystem.AddBufferWriter(inputDeps);
             }
 
-            if (hit.m_HitPosition.x == 0 && hit.m_HitPosition.y == 0 && hit.m_HitPosition.z == 0)
-            {
-                return inputDeps;
-            }
-
             float radius = m_UISystem.SelectionRadius;
             if (m_UISystem.CurrentSelectionMode == AnarchyComponentsToolUISystem.SelectionMode.Radius)
             {
-                ToolRadiusJob toolRadiusJob = new ()
+                if (hit.m_HitPosition.x == 0 && hit.m_HitPosition.y == 0 && hit.m_HitPosition.z == 0)
+                {
+                    return inputDeps;
+                }
+
+                ToolRadiusJob toolRadiusJob = new()
                 {
                     m_OverlayBuffer = m_OverlayRenderSystem.GetBuffer(out JobHandle outJobHandle),
                     m_Position = new Vector3(hit.m_HitPosition.x, hit.m_Position.y, hit.m_HitPosition.z),
@@ -306,80 +331,159 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                 };
                 inputDeps = IJobExtensions.Schedule(toolRadiusJob, JobHandle.CombineDependencies(inputDeps, outJobHandle));
                 m_OverlayRenderSystem.AddBufferWriter(inputDeps);
+
+                if (m_ApplyAction.IsPressed()
+                && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride) == AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride)
+                {
+                    AddOrRemoveComponentWithinRadiusJob addPreventOverrideJob = new()
+                    {
+                        m_EntityType = SystemAPI.GetEntityTypeHandle(),
+                        m_Position = hit.m_HitPosition,
+                        m_Radius = radius,
+                        m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
+                        buffer = m_Barrier.CreateCommandBuffer(),
+                        m_Add = true,
+                        m_ComponentType = ComponentType.ReadOnly<PreventOverride>(),
+                        m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(),
+                        m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
+                    };
+                    inputDeps = JobChunkExtensions.Schedule(addPreventOverrideJob, m_NotPreventOverrideQuery, inputDeps);
+                    m_Barrier.AddJobHandleForProducer(inputDeps);
+                }
+                else if (m_SecondaryApplyMimic.IsPressed()
+                    && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride) == AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride)
+                {
+                    AddOrRemoveComponentWithinRadiusJob removePreventOverrideJob = new()
+                    {
+                        m_EntityType = SystemAPI.GetEntityTypeHandle(),
+                        m_Position = hit.m_HitPosition,
+                        m_Radius = radius,
+                        m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
+                        buffer = m_Barrier.CreateCommandBuffer(),
+                        m_Add = false,
+                        m_ComponentType = ComponentType.ReadOnly<PreventOverride>(),
+                        m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(),
+                        m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
+                    };
+                    inputDeps = JobChunkExtensions.Schedule(removePreventOverrideJob, m_PreventOverrideQuery, inputDeps);
+                    m_Barrier.AddJobHandleForProducer(inputDeps);
+                }
+
+                if (m_ApplyAction.IsPressed()
+                    && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord) == AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord)
+                {
+                    AddOrRemoveComponentWithinRadiusJob addTransformRecordJob = new()
+                    {
+                        m_EntityType = SystemAPI.GetEntityTypeHandle(),
+                        m_Position = hit.m_HitPosition,
+                        m_Radius = radius,
+                        m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
+                        buffer = m_Barrier.CreateCommandBuffer(),
+                        m_Add = true,
+                        m_ComponentType = ComponentType.ReadOnly<TransformRecord>(),
+                        m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(),
+                        m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
+                    };
+                    inputDeps = JobChunkExtensions.Schedule(addTransformRecordJob, m_NotTransformRecordQuery, inputDeps);
+                    m_Barrier.AddJobHandleForProducer(inputDeps);
+                }
+                else if (m_SecondaryApplyMimic.IsPressed()
+                    && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord) == AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord)
+                {
+                    AddOrRemoveComponentWithinRadiusJob removeTransformRecordJob = new()
+                    {
+                        m_EntityType = SystemAPI.GetEntityTypeHandle(),
+                        m_Position = hit.m_HitPosition,
+                        m_Radius = radius,
+                        m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
+                        buffer = m_Barrier.CreateCommandBuffer(),
+                        m_Add = false,
+                        m_ComponentType = ComponentType.ReadOnly<TransformRecord>(),
+                        m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(),
+                        m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
+                    };
+                    inputDeps = JobChunkExtensions.Schedule(removeTransformRecordJob, m_ElevationLockedQuery, inputDeps);
+                    m_Barrier.AddJobHandleForProducer(inputDeps);
+                }
+
+                return inputDeps;
             }
 
-            if (m_ApplyAction.IsPressed()
-                && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride) == AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride)
+            EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
+            if (!m_HighlightedQuery.IsEmptyIgnoreFilter
+                && (currentRaycastEntity != m_PreviousRaycastedEntity
+                || !ScreenEntity(currentRaycastEntity)
+                || (hit.m_HitPosition.x == 0 && hit.m_HitPosition.y == 0 && hit.m_HitPosition.z == 0)))
             {
-                AddOrRemoveComponentWithinRadiusJob addPreventOverrideJob = new ()
-                {
-                    m_EntityType = SystemAPI.GetEntityTypeHandle(),
-                    m_Position = hit.m_HitPosition,
-                    m_Radius = radius,
-                    m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
-                    buffer = m_Barrier.CreateCommandBuffer(),
-                    m_Add = true,
-                    m_ComponentType = ComponentType.ReadOnly<PreventOverride>(),
-                    m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(),
-                    m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
-                };
-                inputDeps = JobChunkExtensions.Schedule(addPreventOverrideJob, m_NotPreventOverrideQuery, inputDeps);
-                m_Barrier.AddJobHandleForProducer(inputDeps);
-            }
-            else if (m_SecondaryApplyMimic.IsPressed()
-                && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride) == AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride)
-            {
-                AddOrRemoveComponentWithinRadiusJob removePreventOverrideJob = new ()
-                {
-                    m_EntityType = SystemAPI.GetEntityTypeHandle(),
-                    m_Position = hit.m_HitPosition,
-                    m_Radius = radius,
-                    m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
-                    buffer = m_Barrier.CreateCommandBuffer(),
-                    m_Add = false,
-                    m_ComponentType = ComponentType.ReadOnly<PreventOverride>(),
-                    m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(),
-                    m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
-                };
-                inputDeps = JobChunkExtensions.Schedule(removePreventOverrideJob, m_PreventOverrideQuery, inputDeps);
-                m_Barrier.AddJobHandleForProducer(inputDeps);
+                buffer.AddComponent<BatchesUpdated>(m_HighlightedQuery, EntityQueryCaptureMode.AtPlayback);
+                buffer.RemoveComponent<Highlighted>(m_HighlightedQuery, EntityQueryCaptureMode.AtPlayback);
+                m_PreviousRaycastedEntity = Entity.Null;
+                return inputDeps;
             }
 
-            if (m_ApplyAction.IsPressed()
-                && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord) == AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord)
+            if (raycastFlag)
             {
-                AddOrRemoveComponentWithinRadiusJob addTransformRecordJob = new ()
+                if (!EntityManager.HasComponent<Highlighted>(currentRaycastEntity)
+                    && ScreenEntity(currentRaycastEntity)
+                    && m_PreviousRaycastedEntity == Entity.Null)
                 {
-                    m_EntityType = SystemAPI.GetEntityTypeHandle(),
-                    m_Position = hit.m_HitPosition,
-                    m_Radius = radius,
-                    m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
-                    buffer = m_Barrier.CreateCommandBuffer(),
-                    m_Add = true,
-                    m_ComponentType = ComponentType.ReadOnly<TransformRecord>(),
-                    m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(),
-                    m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
-                };
-                inputDeps = JobChunkExtensions.Schedule(addTransformRecordJob, m_NotTransformRecordQuery, inputDeps);
-                m_Barrier.AddJobHandleForProducer(inputDeps);
-            }
-            else if (m_SecondaryApplyMimic.IsPressed()
-                && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord) == AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord)
-            {
-                AddOrRemoveComponentWithinRadiusJob removeTransformRecordJob = new ()
+                    buffer.AddComponent<Highlighted>(currentRaycastEntity);
+                    buffer.AddComponent<BatchesUpdated>(currentRaycastEntity);
+                    m_PreviousRaycastedEntity = currentRaycastEntity;
+                }
+
+                if (m_ApplyAction.WasPerformedThisFrame()
+                    && ScreenEntity(currentRaycastEntity))
                 {
-                    m_EntityType = SystemAPI.GetEntityTypeHandle(),
-                    m_Position = hit.m_HitPosition,
-                    m_Radius = radius,
-                    m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
-                    buffer = m_Barrier.CreateCommandBuffer(),
-                    m_Add = false,
-                    m_ComponentType = ComponentType.ReadOnly<TransformRecord>(),
-                    m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(),
-                    m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
-                };
-                inputDeps = JobChunkExtensions.Schedule(removeTransformRecordJob, m_ElevationLockedQuery, inputDeps);
-                m_Barrier.AddJobHandleForProducer(inputDeps);
+                    if ((m_UISystem.CurrentComponentType & AnarchyComponentType.TransformRecord) == AnarchyComponentType.TransformRecord
+                         && !EntityManager.HasComponent<TransformRecord>(currentRaycastEntity)
+                         && EntityManager.TryGetComponent(currentRaycastEntity, out Game.Objects.Transform transform))
+                    {
+                        buffer.AddComponent<TransformRecord>(currentRaycastEntity);
+                        TransformRecord transformRecord = new TransformRecord()
+                        {
+                            m_Position = transform.m_Position,
+                            m_Rotation = transform.m_Rotation,
+                        };
+                        buffer.SetComponent(currentRaycastEntity, transformRecord);
+                    }
+                    else
+                    {
+                        // Tooltip as to why can't add component.
+                    }
+
+                    if ((m_UISystem.CurrentComponentType & AnarchyComponentType.PreventOverride) == AnarchyComponentType.PreventOverride
+                       && !EntityManager.HasComponent<PreventOverride>(currentRaycastEntity))
+                    {
+                       buffer.AddComponent<PreventOverride>(currentRaycastEntity);
+                    }
+                    else
+                    {
+                       // tooltip as to why can't add component.
+                    }
+                }
+                else if (m_SecondaryApplyMimic.WasPerformedThisFrame() && ScreenEntity(currentRaycastEntity))
+                {
+                    if ((m_UISystem.CurrentComponentType & AnarchyComponentType.TransformRecord) == AnarchyComponentType.TransformRecord
+                         && EntityManager.HasComponent<TransformRecord>(currentRaycastEntity))
+                    {
+                        buffer.RemoveComponent<TransformRecord>(currentRaycastEntity);
+                    }
+                    else
+                    {
+                        // Tooltip as to why can't remove component.
+                    }
+
+                    if ((m_UISystem.CurrentComponentType & AnarchyComponentType.PreventOverride) == AnarchyComponentType.PreventOverride
+                       && EntityManager.HasComponent<PreventOverride>(currentRaycastEntity))
+                    {
+                        buffer.RemoveComponent<PreventOverride>(currentRaycastEntity);
+                    }
+                    else
+                    {
+                        // tooltip as to why can't remove component.
+                    }
+                }
             }
 
             return inputDeps;
@@ -411,6 +515,47 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             InputManager.instance.SetBinding(newMimicBinding, out _);
         }
 
+        /// <summary>
+        /// Validates whether entity should receive anarchy components.
+        /// </summary>
+        /// <returns>True if entity can receive anarchy components. False if not approved.</returns>
+        private bool ScreenEntity(Entity entity)
+        {
+            PrefabBase prefabBase = null;
+            if (EntityManager.TryGetComponent(entity, out PrefabRef prefabRef) && !EntityManager.HasComponent<Owner>(entity) && m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase))
+            {
+                if (prefabBase is StaticObjectPrefab && EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData) && prefabBase is not BuildingPrefab)
+                {
+                    if (((objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable
+                        && (m_UISystem.CurrentComponentType & AnarchyComponentType.PreventOverride) == AnarchyComponentType.PreventOverride)
+                        || ((m_UISystem.CurrentComponentType & AnarchyComponentType.TransformRecord) == AnarchyComponentType.TransformRecord
+                            && !EntityManager.HasComponent<Stack>(entity)
+                            && EntityManager.HasComponent<Game.Objects.Transform>(entity)))
+                    {
+#if VERBOSE
+                        m_Log.Verbose($"{nameof(AnarchyComponentsToolSystem)}.{nameof(ScreenEntity)} Acceptable entity.");
+#endif
+                        return true;
+                    }
+                }
+                else if (m_ToolSystem.actionMode.IsGame() && prefabBase.GetPrefabID().ToString() == "NetPrefab:Lane Editor Container" && EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<Game.Net.SubLane> subLaneBuffer))
+                {
+#if VERBOSE
+                    m_Log.Verbose($"{nameof(AnarchyComponentsToolSystem)}.{nameof(ScreenEntity)} Acceptable entity.");
+#endif
+                    return true;
+                }
+            }
+
+#if VERBOSE
+            if (prefabBase != null)
+            {
+                m_Log.Verbose($"{nameof(AnarchyComponentsToolSystem)}.{nameof(ScreenEntity)} entity {prefabBase.name} is not acceptable for anarchy components.");
+            }
+#endif
+
+            return false;
+        }
 
 #if BURST
         [BurstCompile]
