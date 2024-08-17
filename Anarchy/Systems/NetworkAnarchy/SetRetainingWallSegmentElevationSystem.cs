@@ -139,11 +139,6 @@ namespace Anarchy.Systems.NetworkAnarchy
                         elevation.m_Elevation.x = Mathf.Max(elevation.m_Elevation.x, NetworkDefinitionSystem.QuayThreshold);
                     }
 
-                    upgraded.m_Flags.m_Right &= ~CompositionFlags.Side.Raised;
-                    upgraded.m_Flags.m_Right &= ~CompositionFlags.Side.Lowered;
-                    upgraded.m_Flags.m_Left &= ~CompositionFlags.Side.Raised;
-                    upgraded.m_Flags.m_Left &= ~CompositionFlags.Side.Lowered;
-
                     if (upgraded.m_Flags.m_Left == 0 && upgraded.m_Flags.m_Right == 0 && upgraded.m_Flags.m_General == 0)
                     {
                         buffer.RemoveComponent<Upgraded>(entity);
