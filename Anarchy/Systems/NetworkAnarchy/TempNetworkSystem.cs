@@ -84,7 +84,6 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_Log.Info($"[{nameof(TempNetworkSystem)}] {nameof(OnCreate)}");
             m_TempNetworksQuery = SystemAPI.QueryBuilder()
                 .WithAll<Updated, Temp, Game.Net.Edge>()
-                // .WithAny<Game.Net.Edge, Game.Net.Node>()
                 .WithNone<Deleted, Overridden>()
                 .Build();
 
@@ -114,35 +113,42 @@ namespace Anarchy.Systems.NetworkAnarchy
                     }
                 }
 
+                if (m_ToolSystem.activePrefab == null || !m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) || !EntityManager.TryGetComponent(prefabEntity, out PlaceableNetData placeableNetData))
+                {
+                    continue;
+                }
+
+                if ((placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.IsUpgrade) == Game.Net.PlacementFlags.IsUpgrade
+                    || (placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.UpgradeOnly) == Game.Net.PlacementFlags.UpgradeOnly)
+                {
+                    continue;
+                }
+
                 if (((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
                     || (m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay
                     || (m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
                     || (m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
-                    && (temp.m_Flags != TempFlags.IsLast || !EntityManager.HasComponent<Game.Net.Node>(entity)))
+                    && (temp.m_Flags != TempFlags.IsLast))
                 {
                     if (!EntityManager.TryGetComponent(entity, out Game.Net.Elevation elevation))
                     {
                         EntityManager.AddComponent<Elevation>(entity);
                     }
 
-                    if (((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall && EntityManager.HasComponent<Game.Net.Node>(entity))
-                        || ((m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall && EntityManager.HasComponent<Game.Net.Edge>(entity)))
+                    if ((m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall && EntityManager.HasComponent<Game.Net.Edge>(entity))
                     {
                         elevation.m_Elevation.y = Mathf.Min(elevation.m_Elevation.y, m_NetToolSystem.elevation, NetworkDefinitionSystem.RetainingWallThreshold);
                     }
-                    else if (((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay && EntityManager.HasComponent<Game.Net.Node>(entity))
-                        || ((m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay && EntityManager.HasComponent<Game.Net.Edge>(entity)))
+                    else if ((m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay && EntityManager.HasComponent<Game.Net.Edge>(entity))
                     {
                         elevation.m_Elevation.y = Mathf.Max(elevation.m_Elevation.y, m_NetToolSystem.elevation, NetworkDefinitionSystem.QuayThreshold);
                     }
 
-                    if (((m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall && EntityManager.HasComponent<Game.Net.Node>(entity))
-                        || ((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall && EntityManager.HasComponent<Game.Net.Edge>(entity)))
+                    if ((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall && EntityManager.HasComponent<Game.Net.Edge>(entity))
                     {
                         elevation.m_Elevation.x = Mathf.Min(elevation.m_Elevation.x, m_NetToolSystem.elevation, NetworkDefinitionSystem.RetainingWallThreshold);
                     }
-                    else if (((m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay && EntityManager.HasComponent<Game.Net.Node>(entity))
-                        || ((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay && EntityManager.HasComponent<Game.Net.Edge>(entity)))
+                    else if ((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay && EntityManager.HasComponent<Game.Net.Edge>(entity))
                     {
                         elevation.m_Elevation.x = Mathf.Max(elevation.m_Elevation.x, m_NetToolSystem.elevation, NetworkDefinitionSystem.QuayThreshold);
                     }
@@ -152,22 +158,32 @@ namespace Anarchy.Systems.NetworkAnarchy
                 else if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace && EntityManager.HasComponent<Elevation>(entity))
                 {
                     EntityManager.RemoveComponent<Elevation>(entity);
+                    m_Log.Debug("Removed Elevation");
+                    temp.m_Flags |= TempFlags.Replace;
+                    EntityManager.SetComponentData(entity, temp);
+                    m_Log.Debug($"{nameof(TempNetworkSystem)}{nameof(OnUpdate)} added replace to temp.");
                 }
 
                 CompositionFlags compositionFlags = default;
                 compositionFlags.m_General = GetCompositionGeneralFlags();
-                if (!EntityManager.HasComponent<Game.Net.Node>(entity))
+                if (SideUpgradeLookup.ContainsKey(m_UISystem.LeftUpgrade))
                 {
-                    if (SideUpgradeLookup.ContainsKey(m_UISystem.LeftUpgrade))
-                    {
-                        compositionFlags.m_Left = SideUpgradeLookup[m_UISystem.LeftUpgrade];
-                    }
-
-                    if (SideUpgradeLookup.ContainsKey(m_UISystem.RightUpgrade))
-                    {
-                        compositionFlags.m_Right = SideUpgradeLookup[m_UISystem.RightUpgrade];
-                    }
+                    compositionFlags.m_Left = SideUpgradeLookup[m_UISystem.LeftUpgrade];
                 }
+
+                if (SideUpgradeLookup.ContainsKey(m_UISystem.RightUpgrade))
+                {
+                    compositionFlags.m_Right = SideUpgradeLookup[m_UISystem.RightUpgrade];
+                }
+
+                if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace)
+                {
+                    temp.m_Flags |= TempFlags.Upgrade | TempFlags.Parent;
+                    EntityManager.SetComponentData(entity, temp);
+
+                    m_Log.Debug($"{nameof(TempNetworkSystem)}{nameof(OnUpdate)} modified temp.");
+                }
+
 
                 if (compositionFlags.m_General == 0 && compositionFlags.m_Left == 0 && compositionFlags.m_Right == 0)
                 {
@@ -188,14 +204,6 @@ namespace Anarchy.Systems.NetworkAnarchy
                 if (!EntityManager.HasComponent<Game.Net.Upgraded>(entity))
                 {
                     EntityManager.AddComponent<Game.Net.Upgraded>(entity);
-                }
-
-                if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace)
-                {
-                    temp.m_Flags |= TempFlags.Upgrade | TempFlags.Parent;
-                    EntityManager.SetComponentData(entity, temp);
-
-                    m_Log.Debug($"{nameof(TempNetworkSystem)}{nameof(OnUpdate)} modified temp.");
                 }
 
                 EntityManager.SetComponentData(entity, upgrades);

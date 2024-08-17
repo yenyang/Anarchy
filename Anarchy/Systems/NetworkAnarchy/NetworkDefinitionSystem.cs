@@ -104,11 +104,6 @@ namespace Anarchy.Systems.NetworkAnarchy
                 parallelCourses = new (entities.Length / 2, Allocator.Temp);
             }
 
-            if (entities.Length < 2)
-            {
-                return;
-            }
-
             m_Log.Debug($"{nameof(NetworkDefinitionSystem)}.{nameof(OnUpdate)} entities length = {entities.Length}.");
 
             CalculateSlope(entities, out float slope, out float parallelSlope, ref netCourses, ref parallelCourses);
