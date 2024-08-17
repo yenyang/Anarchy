@@ -170,7 +170,6 @@ namespace Anarchy
             updateSystem.UpdateAt<ElevateTempObjectSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateBefore<NetworkDefinitionSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateAt<SetRetainingWallSegmentElevationSystem>(SystemUpdatePhase.ModificationEnd);
-            updateSystem.UpdateAt<SetRetainingWallNodeElevationSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateBefore<TempNetworkSystem>(SystemUpdatePhase.Modification3);
             updateSystem.UpdateAt<NetworkAnarchyUISystem>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateAt<AnarchyComponentsToolSystem>(SystemUpdatePhase.ToolUpdate);

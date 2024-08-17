@@ -83,8 +83,8 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_NetToolSystem;
             m_Log.Info($"[{nameof(TempNetworkSystem)}] {nameof(OnCreate)}");
             m_TempNetworksQuery = SystemAPI.QueryBuilder()
-                .WithAll<Updated, Temp>()
-                .WithAny<Game.Net.Edge, Game.Net.Node>()
+                .WithAll<Updated, Temp, Game.Net.Edge>()
+                // .WithAny<Game.Net.Edge, Game.Net.Node>()
                 .WithNone<Deleted, Overridden>()
                 .Build();
 

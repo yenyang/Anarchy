@@ -5,7 +5,6 @@
 #define BURST
 namespace Anarchy.Systems.NetworkAnarchy
 {
-    using Anarchy.Components;
     using Colossal.Logging;
     using Game;
     using Game.Common;
@@ -48,7 +47,7 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_NetToolSystem;
             m_UpgradedAndUpdatedQuery = SystemAPI.QueryBuilder()
-                            .WithAll<Updated, Game.Net.Upgraded, Game.Net.Edge>()
+                            .WithAll<Applied, Game.Net.Upgraded, Game.Net.Edge>()
                             .WithNone<Deleted, Overridden, Temp>()
                             .Build();
             RequireForUpdate(m_UpgradedAndUpdatedQuery);
@@ -140,13 +139,21 @@ namespace Anarchy.Systems.NetworkAnarchy
                         elevation.m_Elevation.x = Mathf.Max(elevation.m_Elevation.x, NetworkDefinitionSystem.QuayThreshold);
                     }
 
-                    buffer.SetComponent(entity, elevation);
+                    upgraded.m_Flags.m_Right &= ~CompositionFlags.Side.Raised;
+                    upgraded.m_Flags.m_Right &= ~CompositionFlags.Side.Lowered;
+                    upgraded.m_Flags.m_Left &= ~CompositionFlags.Side.Raised;
+                    upgraded.m_Flags.m_Left &= ~CompositionFlags.Side.Lowered;
 
-                    if (m_EdgeLookup.TryGetComponent(entity, out Edge currentEdges))
+                    if (upgraded.m_Flags.m_Left == 0 && upgraded.m_Flags.m_Right == 0 && upgraded.m_Flags.m_General == 0)
                     {
-                        buffer.AddComponent<UpdateNextFrame>(currentEdges.m_Start);
-                        buffer.AddComponent<UpdateNextFrame>(currentEdges.m_End);
+                        buffer.RemoveComponent<Upgraded>(entity);
                     }
+                    else
+                    {
+                        buffer.SetComponent(entity, upgraded);
+                    }
+
+                    buffer.SetComponent(entity, elevation);
                 }
             }
         }
