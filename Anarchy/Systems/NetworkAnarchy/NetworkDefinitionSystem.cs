@@ -24,7 +24,7 @@ namespace Anarchy.Systems.NetworkAnarchy
     {
         public const float QuayThreshold = 4f;
         public const float RetainingWallThreshold = -4f;
-        public const float TunnelThreshold = -25f;
+        public const float TunnelThreshold = -12f;
         public const float ElevatedThreshold = 10f;
         public const float ForceGroundElevation = 0f;
 
@@ -285,10 +285,6 @@ namespace Anarchy.Systems.NetworkAnarchy
             }
             else if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Elevated) == NetworkAnarchyUISystem.Composition.Elevated)
             {
-                netCourse.m_StartPosition.m_Elevation.x = Mathf.Max(netCourse.m_StartPosition.m_Elevation.x, ElevatedThreshold);
-                netCourse.m_StartPosition.m_Elevation.y = Mathf.Max(netCourse.m_StartPosition.m_Elevation.y, ElevatedThreshold);
-                netCourse.m_EndPosition.m_Elevation.x = Mathf.Max(netCourse.m_StartPosition.m_Elevation.x, ElevatedThreshold);
-                netCourse.m_EndPosition.m_Elevation.y = Mathf.Max(netCourse.m_StartPosition.m_Elevation.y, ElevatedThreshold);
                 netCourse.m_Elevation.x = Mathf.Max(netCourse.m_Elevation.x, ElevatedThreshold);
                 netCourse.m_Elevation.y = Mathf.Max(netCourse.m_Elevation.y, ElevatedThreshold);
             }

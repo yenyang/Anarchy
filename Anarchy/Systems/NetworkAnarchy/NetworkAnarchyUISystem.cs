@@ -12,6 +12,7 @@ namespace Anarchy.Systems.NetworkAnarchy
     using Colossal.Logging;
     using Game.Prefabs;
     using Game.Tools;
+    using Game.UI.InGame;
     using Unity.Entities;
 
     /// <summary>
@@ -23,8 +24,12 @@ namespace Anarchy.Systems.NetworkAnarchy
         private ValueBindingHelper<SideUpgrades> m_LeftUpgrade;
         private ValueBindingHelper<SideUpgrades> m_RightUpgrade;
         private ValueBindingHelper<Composition> m_Composition;
-        private ValueBindingHelper<SideUpgrades> m_ShowUpgrade;
+        private ValueBindingHelper<SideUpgrades> m_LeftShowUpgrade;
+        private ValueBindingHelper<SideUpgrades> m_RightShowUpgrade;
         private ValueBindingHelper<Composition> m_ShowComposition;
+        private ValueBindingHelper<ButtonState> m_ReplaceLeftUpgrade;
+        private ValueBindingHelper<ButtonState> m_ReplaceRightUpgrade;
+        private ValueBindingHelper<ButtonState> m_ReplaceComposition;
         private ToolSystem m_ToolSystem;
         private PrefabSystem m_PrefabSystem;
         private NetToolSystem m_NetToolSystem;
@@ -124,13 +129,34 @@ namespace Anarchy.Systems.NetworkAnarchy
         }
 
         /// <summary>
+        /// An enum to handle whether a button is selected and/or hidden.
+        /// </summary>
+        public enum ButtonState
+        {
+            /// <summary>
+            /// Not selected.
+            /// </summary>
+            Off = 0,
+
+            /// <summary>
+            /// Selected.
+            /// </summary>
+            On = 1,
+
+            /// <summary>
+            /// Not shown.
+            /// </summary>
+            Hidden = 2,
+        }
+
+        /// <summary>
         /// Gets the Left upgdrade.
         /// </summary>
         public SideUpgrades LeftUpgrade
         {
             get
             {
-                return m_LeftUpgrade.Value & m_ShowUpgrade.Value;
+                return m_LeftUpgrade.Value & m_LeftShowUpgrade.Value;
             }
         }
 
@@ -139,7 +165,7 @@ namespace Anarchy.Systems.NetworkAnarchy
         /// </summary>
         public SideUpgrades RightUpgrade
         {
-            get { return m_RightUpgrade.Value & m_ShowUpgrade.Value; }
+            get { return m_RightUpgrade.Value & m_RightShowUpgrade.Value; }
         }
 
         /// <summary>
@@ -150,6 +176,30 @@ namespace Anarchy.Systems.NetworkAnarchy
             get { return m_Composition.Value & m_ShowComposition.Value; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether gets replace left upgrade.
+        /// </summary>
+        public bool ReplaceLeftUpgrade
+        {
+            get { return (m_ReplaceLeftUpgrade & ButtonState.On) == ButtonState.On; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether gets replace right upgrade.
+        /// </summary>
+        public bool ReplaceRightUpgrade
+        {
+            get { return (m_ReplaceRightUpgrade & ButtonState.On) == ButtonState.On; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether gets replace composition.
+        /// </summary>
+        public bool ReplaceComposition
+        {
+            get { return (m_ReplaceComposition & ButtonState.On) == ButtonState.On; }
+        }
+
         /// <inheritdoc/>
         protected override void OnCreate()
         {
@@ -157,8 +207,8 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_Log = AnarchyMod.Instance.Log;
             m_Log.Info($"{nameof(NetworkAnarchyUISystem)}.{nameof(OnCreate)}");
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
-            m_ToolSystem.EventToolChanged += OnToolChanged;
-            m_ToolSystem.EventPrefabChanged += OnPrefabChanged;
+            m_ToolSystem.EventToolChanged += CheckPrefabAndUpdateButtonDisplay;
+            m_ToolSystem.EventPrefabChanged += UpdateButtonDisplay;
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_TempNetworkSystem = World.GetOrCreateSystemManaged<TempNetworkSystem>();
@@ -167,14 +217,21 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_LeftUpgrade = CreateBinding("LeftUpgrade", SideUpgrades.None);
             m_RightUpgrade = CreateBinding("RightUpgrade", SideUpgrades.None);
             m_Composition = CreateBinding("Composition", Composition.None);
-            m_ShowUpgrade = CreateBinding("ShowUpgrade", SideUpgrades.None);
+            m_LeftShowUpgrade = CreateBinding("LeftShowUpgrade", SideUpgrades.None);
+            m_RightShowUpgrade = CreateBinding("RightShowUpgrade", SideUpgrades.None);
             m_ShowComposition = CreateBinding("ShowComposition", Composition.None);
+            m_ReplaceRightUpgrade = CreateBinding("ReplaceRightUpgrade", ButtonState.Hidden | ButtonState.Off);
+            m_ReplaceLeftUpgrade = CreateBinding("ReplaceLeftUpgrade", ButtonState.Hidden | ButtonState.Off);
+            m_ReplaceComposition = CreateBinding("ReplaceComposition", ButtonState.Hidden | ButtonState.Off);
             m_PreviousMode = m_NetToolSystem.actualMode;
 
             // Creates triggers for C# methods based on UI events.
             CreateTrigger<int>("LeftUpgrade", LeftUpgradeClicked);
             CreateTrigger<int>("RightUpgrade", RightUpgradeClicked);
             CreateTrigger<int>("Composition", CompositionModeClicked);
+            CreateTrigger("ReplaceComposition", () => InvertButtonState(ref m_ReplaceComposition));
+            CreateTrigger("ReplaceLeftUpgrade", () => InvertButtonState(ref m_ReplaceLeftUpgrade));
+            CreateTrigger("ReplaceRightUpgrade", () => InvertButtonState(ref m_ReplaceRightUpgrade));
         }
 
         /// <inheritdoc/>
@@ -182,7 +239,7 @@ namespace Anarchy.Systems.NetworkAnarchy
         {
             if (m_PreviousMode != m_NetToolSystem.actualMode)
             {
-                OnPrefabChanged(m_ToolSystem.activePrefab);
+                UpdateButtonDisplay(m_ToolSystem.activePrefab);
                 m_PreviousMode = m_NetToolSystem.actualMode;
             }
         }
@@ -281,12 +338,11 @@ namespace Anarchy.Systems.NetworkAnarchy
                 m_Composition.Value |= newComposition;
             }
 
-            OnPrefabChanged(m_ToolSystem.activePrefab);
+            UpdateButtonDisplay(m_ToolSystem.activePrefab);
         }
 
-        private void OnToolChanged(ToolBaseSystem toolSystem)
+        private void CheckPrefabAndUpdateButtonDisplay(ToolBaseSystem toolSystem)
         {
-            m_ShowUpgrade.Value = SideUpgrades.None;
             PrefabBase prefabBase = toolSystem.GetPrefab();
 
             if (m_ToolSystem.activeTool != m_NetToolSystem || prefabBase is null)
@@ -296,13 +352,31 @@ namespace Anarchy.Systems.NetworkAnarchy
             }
 
             Enabled = true;
-            OnPrefabChanged(prefabBase);
+            UpdateButtonDisplay(prefabBase);
         }
 
-        private void OnPrefabChanged(PrefabBase prefabBase)
+        private void InvertButtonState(ref ValueBindingHelper<ButtonState> button)
         {
-            m_ShowUpgrade.Value = SideUpgrades.None;
+            if ((button.Value &= ButtonState.On) == ButtonState.On)
+            {
+                button.Value &= ~ButtonState.On;
+            }
+            else
+            {
+                button.Value |= ButtonState.On;
+            }
+
+            CheckPrefabAndUpdateButtonDisplay(m_ToolSystem.activeTool);
+        }
+
+        private void UpdateButtonDisplay(PrefabBase prefabBase)
+        {
+            m_LeftShowUpgrade.Value = SideUpgrades.None;
+            m_RightShowUpgrade.Value = SideUpgrades.None;
             m_ShowComposition.Value = Composition.None;
+            m_ReplaceComposition.Value |= ButtonState.Hidden;
+            m_ReplaceLeftUpgrade.Value |= ButtonState.Hidden;
+            m_ReplaceRightUpgrade.Value |= ButtonState.Hidden;
 
             if (prefabBase is null || m_ToolSystem.activeTool != m_NetToolSystem)
             {
@@ -323,7 +397,8 @@ namespace Anarchy.Systems.NetworkAnarchy
             {
                 if ((netData.m_SideFlagMask & keyValuePair.Value) == keyValuePair.Value)
                 {
-                    m_ShowUpgrade.Value |= keyValuePair.Key;
+                    m_LeftShowUpgrade.Value |= keyValuePair.Key;
+                    m_RightShowUpgrade.Value |= keyValuePair.Key;
                 }
             }
 
@@ -348,7 +423,8 @@ namespace Anarchy.Systems.NetworkAnarchy
             if ((netGeometryData.m_Flags & Game.Net.GeometryFlags.RequireElevated) == Game.Net.GeometryFlags.RequireElevated)
             {
                 m_ShowComposition.Value &= ~(Composition.Elevated | Composition.Tunnel | Composition.Trees | Composition.GrassStrip);
-                m_ShowUpgrade.Value &= ~(SideUpgrades.Trees | SideUpgrades.GrassStrip | SideUpgrades.SoundBarrier | SideUpgrades.WideSidewalk);
+                m_LeftShowUpgrade.Value &= ~(SideUpgrades.Trees | SideUpgrades.GrassStrip | SideUpgrades.SoundBarrier | SideUpgrades.WideSidewalk);
+                m_RightShowUpgrade.Value &= ~(SideUpgrades.Trees | SideUpgrades.GrassStrip | SideUpgrades.SoundBarrier | SideUpgrades.WideSidewalk);
             }
             else if ((placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.IsUpgrade) != Game.Net.PlacementFlags.IsUpgrade
                 && (placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.UpgradeOnly) != Game.Net.PlacementFlags.UpgradeOnly)
@@ -364,7 +440,8 @@ namespace Anarchy.Systems.NetworkAnarchy
                 || (m_Composition & Composition.Elevated) == Composition.Elevated)
             {
                 m_ShowComposition.Value &= ~(Composition.Trees | Composition.GrassStrip);
-                m_ShowUpgrade.Value &= ~(SideUpgrades.Trees | SideUpgrades.GrassStrip | SideUpgrades.SoundBarrier | SideUpgrades.WideSidewalk);
+                m_LeftShowUpgrade.Value &= ~(SideUpgrades.Trees | SideUpgrades.GrassStrip | SideUpgrades.SoundBarrier | SideUpgrades.WideSidewalk);
+                m_RightShowUpgrade.Value &= ~(SideUpgrades.Trees | SideUpgrades.GrassStrip | SideUpgrades.SoundBarrier | SideUpgrades.WideSidewalk);
             }
 
             if ((netGeometryData.m_Flags & Game.Net.GeometryFlags.SmoothSlopes) != Game.Net.GeometryFlags.SmoothSlopes
@@ -373,6 +450,37 @@ namespace Anarchy.Systems.NetworkAnarchy
                 && m_NetToolSystem.actualMode != NetToolSystem.Mode.Grid)
             {
                 m_ShowComposition.Value |= Composition.ConstantSlope;
+            }
+
+            if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace)
+            {
+                if (m_LeftShowUpgrade.Value != 0)
+                {
+                    m_ReplaceLeftUpgrade.Value &= ~ButtonState.Hidden;
+                    m_ReplaceRightUpgrade.Value &= ~ButtonState.Hidden;
+
+                    if ((m_ReplaceLeftUpgrade.Value &= ButtonState.On) != ButtonState.On)
+                    {
+                        m_LeftShowUpgrade.Value = 0;
+                    }
+
+                    if ((m_ReplaceRightUpgrade.Value &= ButtonState.On) != ButtonState.On)
+                    {
+                        m_RightShowUpgrade.Value = 0;
+                    }
+                }
+
+                if (m_ShowComposition.Value != 0)
+                {
+                    m_ReplaceComposition.Value &= ~ButtonState.Hidden;
+
+                    if ((m_ReplaceComposition.Value &= ButtonState.On) != ButtonState.On)
+                    {
+                        m_ShowComposition.Value = 0;
+                    }
+                }
+
+                m_ShowComposition.Value &= ~(Composition.ConstantSlope | Composition.Ground);
             }
         }
     }

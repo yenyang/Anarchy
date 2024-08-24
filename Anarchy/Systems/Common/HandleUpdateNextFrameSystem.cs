@@ -36,8 +36,6 @@ namespace Anarchy.Systems.Common
                 All = new ComponentType[]
                {
                     ComponentType.ReadOnly<UpdateNextFrame>(),
-                    ComponentType.ReadOnly<TransformRecord>(),
-                    ComponentType.ReadWrite<Game.Objects.Transform>(),
                },
                 None = new ComponentType[]
                {

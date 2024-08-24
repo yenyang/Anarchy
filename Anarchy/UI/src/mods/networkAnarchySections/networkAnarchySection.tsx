@@ -100,11 +100,35 @@ export enum Composition
     Lighting = 128,
 }
 
+
+/// <summary>
+/// An enum to handle whether a button is selected and/or hidden.
+/// </summary>
+export enum ButtonState
+{
+    /// <summary>
+    /// Not selected.
+    /// </summary>
+    Off = 0,
+
+    /// <summary>
+    /// Selected.
+    /// </summary>
+    On = 1,
+
+    /// <summary>
+    /// Not shown.
+    /// </summary>
+    Hidden = 2,
+}
+
 // These establishes the binding with C# side. Without C# side game ui will crash.
-const leftUpgrade$ = bindValue<SideUpgrades>(mod.id, "LeftUpgrade");
-const rightUpgrade$ = bindValue<SideUpgrades>(mod.id, "RightUpgrade");
-const showUpgrade$ = bindValue<SideUpgrades>(mod.id, "ShowUpgrade");
+const replaceLeftUpgrade$ = bindValue<ButtonState>(mod.id, "ReplaceLeftUpgrade");
+const replaceRightUpgrade$ = bindValue<ButtonState>(mod.id, "ReplaceRightUpgrade");
+const leftShowUpgrade$ = bindValue<SideUpgrades>(mod.id, "LeftShowUpgrade");
+const rightShowUpgrade$ = bindValue<SideUpgrades>(mod.id, "RightShowUpgrade");
 const showComposition$ = bindValue<Composition>(mod.id, "ShowComposition");
+const replaceComposition$ = bindValue<ButtonState>(mod.id, "ReplaceComposition");
 
 // These contain the coui paths to Unified Icon Library svg assets
 const uilStandard =                          "coui://uil/Standard/";
@@ -124,25 +148,31 @@ const tunnelSrc =                   uilStandard + "NetworkTunnel.svg";
 const elevatedSrc =                uilStandard+ "NetworkElevated.svg";
 const groundSrc =                  uilStandard + "NetworkGround.svg";
 const constantSlopeSrc =               uilStandard + "NetworkSlope.svg";
+const onSrc = uilStandard + "On.svg";
+const offSrc = uilStandard + "Off.svg";
+const replaceSrc = uilStandard + "Replace.svg";
 // const noPillarsSrc =                    uilStandard + "NetworkNoPillars.svg";
 // const noHeightLimitSrc =                uilStandard + "NoHeightLimit.svg";
 
-const leftUpgradeEvent = "LeftUpgrade";
-const rightUpgradeEvent = "RightUpgrade";
-
 function handleClick(event: string, mode: SideUpgrades | Composition) {
     trigger(mod.id, event, mode as number);
+}
+
+function handleEvent(event: string) {
+    trigger(mod.id, event);
 }
 
 export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) => {
     // I believe you should not put anything here.
     return (props) => {
         // These get the value of the bindings.
-        const leftUpgrade = useValue(leftUpgrade$);
-        const rightUpgrade = useValue(rightUpgrade$);
         const netToolActive = useValue(tool.activeTool$).id == tool.NET_TOOL;
-        const showUpgrade = useValue(showUpgrade$);
+        const leftShowUpgrade = useValue(leftShowUpgrade$);        
+        const rightShowUpgrade = useValue(rightShowUpgrade$);
         const showComposition = useValue(showComposition$);
+        const replaceLeftUpgrade = useValue(replaceLeftUpgrade$);
+        const replaceRightUpgrade = useValue(replaceRightUpgrade$);
+        const replaceComposition = useValue(replaceComposition$);
 
         // translation handling. Translates using locale keys that are defined in C# or fallback string here.
         const { translate } = useLocalization();
@@ -156,36 +186,82 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
         if (netToolActive) {
             result.props.children?.push(
                <>
-                    { (showUpgrade != SideUpgrades.None) && (
+                    { (leftShowUpgrade != SideUpgrades.None || (replaceLeftUpgrade & ButtonState.Hidden) != ButtonState.Hidden) && (
                         <>
                             <VanillaComponentResolver.instance.Section title={"Left"}>
-                                <LeftButtonComponent src={wideSidewalkSrc} localeId="tooltip" upgrade={SideUpgrades.WideSidewalk}/>
-                                <LeftButtonComponent src={grassSrc} localeId="tooltip" upgrade={SideUpgrades.GrassStrip}/>
-                                <LeftButtonComponent src={treesSrc} localeId="tooltip" upgrade={SideUpgrades.Trees}/>
-                                <LeftButtonComponent src={barrierSrc} localeId="tooltip" upgrade={SideUpgrades.SoundBarrier}/>
-                                <LeftButtonComponent src={quaySrc} localeId="tooltip" upgrade={SideUpgrades.Quay}/>
-                                <LeftButtonComponent src={retainingWallSrc} localeId="tooltip" upgrade={SideUpgrades.RetainingWall}/>
-                            </VanillaComponentResolver.instance.Section>
-                            <VanillaComponentResolver.instance.Section title ={"Right"}>
-                                <RightButtonComponent src={wideSidewalkSrc} localeId="tooltip" upgrade={SideUpgrades.WideSidewalk}/>
-                                <RightButtonComponent src={grassSrc} localeId="tooltip" upgrade={SideUpgrades.GrassStrip}/>
-                                <RightButtonComponent src={treesSrc} localeId="tooltip" upgrade={SideUpgrades.Trees}/>
-                                <RightButtonComponent src={barrierSrc} localeId="tooltip" upgrade={SideUpgrades.SoundBarrier}/>
-                                <RightButtonComponent src={quaySrc} localeId="tooltip" upgrade={SideUpgrades.Quay}/>
-                                <RightButtonComponent src={retainingWallSrc} localeId="tooltip" upgrade={SideUpgrades.RetainingWall}/>
+                                <>
+                                    {(replaceLeftUpgrade & ButtonState.Hidden) != ButtonState.Hidden && (
+                                        <VanillaComponentResolver.instance.ToolButton
+                                            src={replaceSrc}
+                                            selected = {(replaceLeftUpgrade & ButtonState.On) == ButtonState.On}
+                                            multiSelect = {false}   // I haven't tested any other value here
+                                            disabled = {false}      // I haven't tested any other value here
+                                            tooltip = {"tooltip"}
+                                            className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                            onSelect={() => handleEvent("ReplaceLeftUpgrade")}
+                                        />
+                                    )}
+                                    <LeftButtonComponent src={wideSidewalkSrc} localeId="tooltip" upgrade={SideUpgrades.WideSidewalk}/>
+                                    <LeftButtonComponent src={grassSrc} localeId="tooltip" upgrade={SideUpgrades.GrassStrip}/>
+                                    <LeftButtonComponent src={treesSrc} localeId="tooltip" upgrade={SideUpgrades.Trees}/>
+                                    <LeftButtonComponent src={barrierSrc} localeId="tooltip" upgrade={SideUpgrades.SoundBarrier}/>
+                                    <LeftButtonComponent src={quaySrc} localeId="tooltip" upgrade={SideUpgrades.Quay}/>
+                                    <LeftButtonComponent src={retainingWallSrc} localeId="tooltip" upgrade={SideUpgrades.RetainingWall}/>
+                                </>                                
                             </VanillaComponentResolver.instance.Section>
                         </>
                     )}
-                    { showComposition != Composition.None && (
+                    { (rightShowUpgrade != SideUpgrades.None || (replaceRightUpgrade & ButtonState.Hidden) != ButtonState.Hidden) && (
+                        <>
+                            <VanillaComponentResolver.instance.Section title ={"Right"}>
+                                <>
+                                    {(replaceRightUpgrade & ButtonState.Hidden) != ButtonState.Hidden && (
+                                        <VanillaComponentResolver.instance.ToolButton
+                                            src={replaceSrc}
+                                            selected = {(replaceRightUpgrade & ButtonState.On) == ButtonState.On}
+                                            multiSelect = {false}   // I haven't tested any other value here
+                                            disabled = {false}      // I haven't tested any other value here
+                                            tooltip = {"tooltip"}
+                                            className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                            onSelect={() => handleEvent("ReplaceRightUpgrade")}
+                                        />
+                                    )}
+                                    <RightButtonComponent src={wideSidewalkSrc} localeId="tooltip" upgrade={SideUpgrades.WideSidewalk}/>
+                                    <RightButtonComponent src={grassSrc} localeId="tooltip" upgrade={SideUpgrades.GrassStrip}/>
+                                    <RightButtonComponent src={treesSrc} localeId="tooltip" upgrade={SideUpgrades.Trees}/>
+                                    <RightButtonComponent src={barrierSrc} localeId="tooltip" upgrade={SideUpgrades.SoundBarrier}/>
+                                    <RightButtonComponent src={quaySrc} localeId="tooltip" upgrade={SideUpgrades.Quay}/>
+                                    <RightButtonComponent src={retainingWallSrc} localeId="tooltip" upgrade={SideUpgrades.RetainingWall}/>
+                                </>
+                            </VanillaComponentResolver.instance.Section>
+                        </>
+                    )}
+                    { (showComposition != Composition.None || (replaceComposition & ButtonState.Hidden) != ButtonState.Hidden) && ( 
                         <VanillaComponentResolver.instance.Section title={"General"}>
-                            <CompositionButtonComponent src = {groundSrc} localeId = {"tooltip"} upgrade={Composition.Ground} />
-                            <CompositionButtonComponent src = {elevatedSrc} localeId = {"tooltip"} upgrade={Composition.Elevated} />
-                            <CompositionButtonComponent src = {tunnelSrc} localeId = {"tooltip"} upgrade={Composition.Tunnel} />
-                            <CompositionButtonComponent src = {constantSlopeSrc} localeId = {"tooltip"} upgrade={Composition.ConstantSlope} />
-                            <CompositionButtonComponent src = {wideMedianSrc} localeId = {"tooltip"} upgrade={Composition.WideMedian} />
-                            <CompositionButtonComponent src = {treesSrc} localeId = {"tooltip"} upgrade={Composition.Trees} />
-                            <CompositionButtonComponent src = {grassSrc} localeId = {"tooltip"} upgrade={Composition.GrassStrip} />                            
-                            <CompositionButtonComponent src = {lightingSrc} localeId = {"tooltip"} upgrade={Composition.Lighting} />                            
+                            <>
+                                {(replaceComposition & ButtonState.Hidden) != ButtonState.Hidden && (
+                                    <VanillaComponentResolver.instance.ToolButton
+                                        src={replaceSrc}
+                                        selected = {(replaceComposition & ButtonState.On) == ButtonState.On}
+                                        multiSelect = {false}   // I haven't tested any other value here
+                                        disabled = {false}      // I haven't tested any other value here
+                                        tooltip = {"tooltip"}
+                                        className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                                        focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                        onSelect={() => handleEvent("ReplaceComposition")}
+                                    />
+                                )}
+                                <CompositionButtonComponent src = {groundSrc} localeId = {"tooltip"} upgrade={Composition.Ground} />
+                                <CompositionButtonComponent src = {elevatedSrc} localeId = {"tooltip"} upgrade={Composition.Elevated} />
+                                <CompositionButtonComponent src = {tunnelSrc} localeId = {"tooltip"} upgrade={Composition.Tunnel} />
+                                <CompositionButtonComponent src = {constantSlopeSrc} localeId = {"tooltip"} upgrade={Composition.ConstantSlope} />
+                                <CompositionButtonComponent src = {wideMedianSrc} localeId = {"tooltip"} upgrade={Composition.WideMedian} />
+                                <CompositionButtonComponent src = {treesSrc} localeId = {"tooltip"} upgrade={Composition.Trees} />
+                                <CompositionButtonComponent src = {grassSrc} localeId = {"tooltip"} upgrade={Composition.GrassStrip} />                            
+                                <CompositionButtonComponent src = {lightingSrc} localeId = {"tooltip"} upgrade={Composition.Lighting} />     
+                            </>                       
                         </VanillaComponentResolver.instance.Section>
                     )}
                 </>
