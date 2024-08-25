@@ -98,5 +98,14 @@
   "Anarchy.SECTION_TITLE[AnarchyOptions]": "Anarchy Options",
   "Anarchy.TOOLTIP_DESCRIPTION[AnarchyOptions]": "Opens a panel for controlling which error checks are never disabled, disabled with Anarchy, or always disabled.",
   "Anarchy.UI_TEXT[Never]": "Never",
-  "Anarchy.UI_TEXT[Always]": "Always"
+  "Anarchy.UI_TEXT[Always]": "Always",
+  "Anarchy.SECTION_TITLE[Left]": "Left",
+  "Anarchy.SECTION_TITLE[Right]": "Right",
+  "Anarchy.SECTION_TITLE[General]": "General",
+  "Anarchy.TOOLTIP_TITLE[ConstantSlope]": "Constant Slope",
+  "Anarchy.TOOLTIP_DESCRIPTION[ConstantSlope]": "Forces newly placed networks to have a constant slope or grade from starting point to end point (A -> B).",
+  "Anarchy.TOOLTIP_TITLE[Ground]": "Ground",
+  "Anarchy.TOOLTIP_DESCRIPTION[Ground]": "Forces terrain to follow newly placed network. Zoned roads should always produces zones.",
+  "Anarchy.TOOLTIP_TITLE[WideMedian]": "Wide Median",
+  "Anarchy.TOOLTIP_DESCRIPTION[WideMedian]": "Applies Wide Sidewalk upgrade to the median to produce a wide concrete median."
 }

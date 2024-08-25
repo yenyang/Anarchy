@@ -12,7 +12,7 @@ function handleClick(event: string, mode: SideUpgrades | Composition) {
 const composition$ = bindValue<Composition>(mod.id, "Composition");
 const showComposition$ = bindValue<Composition>(mod.id, "ShowComposition");
 
-export const CompositionButtonComponent = (props: { src : string,  localeId : string, upgrade: Composition }) => {
+export const CompositionButtonComponent = (props: { src : string,  localeId : string | JSX.Element, upgrade: Composition }) => {
     const { translate } = useLocalization();
 
     const composition = useValue(composition$);    

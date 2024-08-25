@@ -127,6 +127,15 @@ namespace Anarchy.Settings
                 { TooltipDescriptionKey("AnarchyOptions"), "Opens a panel for controlling which error checks are never disabled, disabled with Anarchy, or always disabled." },
                 { UIText("Never"), "Never" },
                 { UIText("Always"), "Always" },
+                { SectionLabel("Left"), "Left" },
+                { SectionLabel("Right"), "Right" },
+                { SectionLabel("General"), "General" },
+                { TooltipTitleKey("ConstantSlope"), "Constant Slope" },
+                { TooltipDescriptionKey("ConstantSlope"), "Forces newly placed networks to have a constant slope or grade from starting point to end point (A -> B)." },
+                { TooltipTitleKey("Ground"), "Ground" },
+                { TooltipDescriptionKey("Ground"), "Forces terrain to follow newly placed network. Zoned roads should produce zones under normal circumstances." },
+                { TooltipTitleKey("WideMedian"), "Wide Median" },
+                { TooltipDescriptionKey("WideMedian"), "Applies Wide Sidewalk upgrade to the median to produce a wide concrete median." },
             };
         }
 

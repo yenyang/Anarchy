@@ -11,7 +11,7 @@ function handleClick(event: string, mode: SideUpgrades | Composition) {
 const rightUpgrade$ = bindValue<SideUpgrades>(mod.id, "RightUpgrade");
 const showUpgrade$ = bindValue<SideUpgrades>(mod.id, "RightShowUpgrade");
 
-export const RightButtonComponent = (props: { src : string,  localeId : string, upgrade: SideUpgrades }) => {
+export const RightButtonComponent = (props: { src : string,  localeId : string | JSX.Element, upgrade: SideUpgrades }) => {
     const { translate } = useLocalization();
 
     const rightUpgrade = useValue(rightUpgrade$);

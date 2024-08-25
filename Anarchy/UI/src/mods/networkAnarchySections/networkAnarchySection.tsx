@@ -7,6 +7,8 @@ import { tool } from "cs2/bindings";
 import { CompositionButtonComponent } from "mods/NetworkAnarchyButtons/compositionButtonComponent";
 import { LeftButtonComponent } from "mods/NetworkAnarchyButtons/leftButtonComponent";
 import { RightButtonComponent } from "mods/NetworkAnarchyButtons/rightButtonComponent";
+import { descriptionTooltip } from "mods/elevationControlSections/elevationControlSections";
+import locale from "../../lang/en-US.json";
 
 /// <summary>
 /// An enum for network cross section modes.
@@ -202,12 +204,12 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
                                             onSelect={() => handleEvent("ReplaceLeftUpgrade")}
                                         />
                                     )}
-                                    <LeftButtonComponent src={wideSidewalkSrc} localeId="tooltip" upgrade={SideUpgrades.WideSidewalk}/>
-                                    <LeftButtonComponent src={grassSrc} localeId="tooltip" upgrade={SideUpgrades.GrassStrip}/>
-                                    <LeftButtonComponent src={treesSrc} localeId="tooltip" upgrade={SideUpgrades.Trees}/>
-                                    <LeftButtonComponent src={barrierSrc} localeId="tooltip" upgrade={SideUpgrades.SoundBarrier}/>
-                                    <LeftButtonComponent src={quaySrc} localeId="tooltip" upgrade={SideUpgrades.Quay}/>
-                                    <LeftButtonComponent src={retainingWallSrc} localeId="tooltip" upgrade={SideUpgrades.RetainingWall}/>
+                                    <LeftButtonComponent src={wideSidewalkSrc} localeId={descriptionTooltip(translate("Assets.NAME[Wide Sidewalk]"), translate("Assets.DESCRIPTION[Wide Sidewalk]"))} upgrade={SideUpgrades.WideSidewalk}/>
+                                    <LeftButtonComponent src={grassSrc} localeId={descriptionTooltip(translate("Assets.NAME[Grass]"), translate("Assets.DESCRIPTION[Grass]"))} upgrade={SideUpgrades.GrassStrip}/>
+                                    <LeftButtonComponent src={treesSrc} localeId={descriptionTooltip(translate("Assets.NAME[Trees]"), translate("Assets.DESCRIPTION[Trees]"))} upgrade={SideUpgrades.Trees}/>
+                                    <LeftButtonComponent src={barrierSrc} localeId={descriptionTooltip(translate("Assets.NAME[Sound Barrier]"), translate("Assets.DESCRIPTION[Sound Barrier]"))} upgrade={SideUpgrades.SoundBarrier}/>
+                                    <LeftButtonComponent src={quaySrc} localeId={descriptionTooltip(translate("Assets.NAME[Quay]"), translate("Assets.DESCRIPTION[Quay]"))} upgrade={SideUpgrades.Quay}/>
+                                    <LeftButtonComponent src={retainingWallSrc} localeId={descriptionTooltip(translate("Assets.NAME[RetainingWall]"), translate("Assets.DESCRIPTION[RetainingWall]"))} upgrade={SideUpgrades.RetainingWall}/>
                                 </>                                
                             </VanillaComponentResolver.instance.Section>
                         </>
@@ -228,12 +230,12 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
                                             onSelect={() => handleEvent("ReplaceRightUpgrade")}
                                         />
                                     )}
-                                    <RightButtonComponent src={wideSidewalkSrc} localeId="tooltip" upgrade={SideUpgrades.WideSidewalk}/>
-                                    <RightButtonComponent src={grassSrc} localeId="tooltip" upgrade={SideUpgrades.GrassStrip}/>
-                                    <RightButtonComponent src={treesSrc} localeId="tooltip" upgrade={SideUpgrades.Trees}/>
-                                    <RightButtonComponent src={barrierSrc} localeId="tooltip" upgrade={SideUpgrades.SoundBarrier}/>
-                                    <RightButtonComponent src={quaySrc} localeId="tooltip" upgrade={SideUpgrades.Quay}/>
-                                    <RightButtonComponent src={retainingWallSrc} localeId="tooltip" upgrade={SideUpgrades.RetainingWall}/>
+                                    <RightButtonComponent src={wideSidewalkSrc} localeId={descriptionTooltip(translate("Assets.NAME[Wide Sidewalk]"), translate("Assets.DESCRIPTION[Wide Sidewalk]"))} upgrade={SideUpgrades.WideSidewalk}/>
+                                    <RightButtonComponent src={grassSrc} localeId={descriptionTooltip(translate("Assets.NAME[Grass]"), translate("Assets.DESCRIPTION[Grass]"))} upgrade={SideUpgrades.GrassStrip}/>
+                                    <RightButtonComponent src={treesSrc} localeId={descriptionTooltip(translate("Assets.NAME[Trees]"), translate("Assets.DESCRIPTION[Trees]"))} upgrade={SideUpgrades.Trees}/>
+                                    <RightButtonComponent src={barrierSrc} localeId={descriptionTooltip(translate("Assets.NAME[Sound Barrier]"), translate("Assets.DESCRIPTION[Sound Barrier]"))} upgrade={SideUpgrades.SoundBarrier}/>
+                                    <RightButtonComponent src={quaySrc} localeId={descriptionTooltip(translate("Assets.NAME[Quay]"), translate("Assets.DESCRIPTION[Quay]"))} upgrade={SideUpgrades.Quay}/>
+                                    <RightButtonComponent src={retainingWallSrc} localeId={descriptionTooltip(translate("Assets.NAME[RetainingWall]"), translate("Assets.DESCRIPTION[RetainingWall]"))} upgrade={SideUpgrades.RetainingWall}/>
                                 </>
                             </VanillaComponentResolver.instance.Section>
                         </>
@@ -253,14 +255,14 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
                                         onSelect={() => handleEvent("ReplaceComposition")}
                                     />
                                 )}
-                                <CompositionButtonComponent src = {groundSrc} localeId = {"tooltip"} upgrade={Composition.Ground} />
-                                <CompositionButtonComponent src = {elevatedSrc} localeId = {"tooltip"} upgrade={Composition.Elevated} />
-                                <CompositionButtonComponent src = {tunnelSrc} localeId = {"tooltip"} upgrade={Composition.Tunnel} />
-                                <CompositionButtonComponent src = {constantSlopeSrc} localeId = {"tooltip"} upgrade={Composition.ConstantSlope} />
-                                <CompositionButtonComponent src = {wideMedianSrc} localeId = {"tooltip"} upgrade={Composition.WideMedian} />
-                                <CompositionButtonComponent src = {treesSrc} localeId = {"tooltip"} upgrade={Composition.Trees} />
-                                <CompositionButtonComponent src = {grassSrc} localeId = {"tooltip"} upgrade={Composition.GrassStrip} />                            
-                                <CompositionButtonComponent src = {lightingSrc} localeId = {"tooltip"} upgrade={Composition.Lighting} />     
+                                <CompositionButtonComponent src = {groundSrc} localeId = {descriptionTooltip(translate("Anarchy.TOOLTIP_TITLE[Ground]", locale["Anarchy.TOOLTIP_TITLE[Ground]"]), translate("Anarchy.TOOLTIP_DESCRIPTION[Ground]", locale["Anarchy.TOOLTIP_DESCRIPTION[Ground]"]))} upgrade={Composition.Ground} />
+                                <CompositionButtonComponent src = {elevatedSrc} localeId = {descriptionTooltip(translate("Assets.NAME[Elevated]"), translate("Assets.DESCRIPTION[Elevated]"))} upgrade={Composition.Elevated} />
+                                <CompositionButtonComponent src = {tunnelSrc} localeId = {descriptionTooltip(translate("Assets.NAME[Tunnel]"), translate("Assets.DESCRIPTION[Tunnel]"))} upgrade={Composition.Tunnel} />
+                                <CompositionButtonComponent src = {constantSlopeSrc} localeId = {descriptionTooltip(translate("Anarchy.TOOLTIP_TITLE[ConstantSlope]", locale["Anarchy.TOOLTIP_TITLE[ConstantSlope]"]), translate("Anarchy.TOOLTIP_DESCRIPTION[ConstantSlope]", locale["Anarchy.TOOLTIP_DESCRIPTION[ConstantSlope]"]))} upgrade={Composition.ConstantSlope} />
+                                <CompositionButtonComponent src = {wideMedianSrc} localeId = {descriptionTooltip(translate("Anarchy.TOOLTIP_TITLE[WideMedian]", locale["Anarchy.TOOLTIP_TITLE[WideMedian]"]), translate("Anarchy.TOOLTIP_DESCRIPTION[WideMedian]", locale["Anarchy.TOOLTIP_DESCRIPTION[WideMedian]"]))} upgrade={Composition.WideMedian} />
+                                <CompositionButtonComponent src = {treesSrc} localeId = {descriptionTooltip(translate("Assets.NAME[Trees]"), translate("Assets.DESCRIPTION[Trees]"))} upgrade={Composition.Trees} />
+                                <CompositionButtonComponent src = {grassSrc} localeId = {descriptionTooltip(translate("Assets.NAME[Grass]"), translate("Assets.DESCRIPTION[Grass]"))} upgrade={Composition.GrassStrip} />                            
+                                <CompositionButtonComponent src = {lightingSrc} localeId = {descriptionTooltip(translate("Assets.NAME[Lighting]"), translate("Assets.DESCRIPTION[Lighting]"))} upgrade={Composition.Lighting} />     
                             </>                       
                         </VanillaComponentResolver.instance.Section>
                     )}
