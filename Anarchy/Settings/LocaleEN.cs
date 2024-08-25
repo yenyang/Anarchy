@@ -136,6 +136,8 @@ namespace Anarchy.Settings
                 { TooltipDescriptionKey("Ground"), "Forces terrain to follow newly placed network. Zoned roads should produce zones under normal circumstances." },
                 { TooltipTitleKey("WideMedian"), "Wide Median" },
                 { TooltipDescriptionKey("WideMedian"), "Applies Wide Sidewalk upgrade to the median to produce a wide concrete median." },
+                { TooltipTitleKey("ReplaceUpgrade"), "Replace Upgrades" },
+                { TooltipDescriptionKey("ReplaceUpgrade"), "When toggled, replace tool mode will add or remove network upgrades to match the selected upgrades. If not toggled, replace tool mode will preserve network upgrades, if possible." },
             };
         }
 

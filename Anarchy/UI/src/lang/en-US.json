@@ -105,7 +105,9 @@
   "Anarchy.TOOLTIP_TITLE[ConstantSlope]": "Constant Slope",
   "Anarchy.TOOLTIP_DESCRIPTION[ConstantSlope]": "Forces newly placed networks to have a constant slope or grade from starting point to end point (A -> B).",
   "Anarchy.TOOLTIP_TITLE[Ground]": "Ground",
-  "Anarchy.TOOLTIP_DESCRIPTION[Ground]": "Forces terrain to follow newly placed network. Zoned roads should always produces zones.",
+  "Anarchy.TOOLTIP_DESCRIPTION[Ground]": "Forces terrain to follow newly placed network. Zoned roads should produce zones under normal circumstances.",
   "Anarchy.TOOLTIP_TITLE[WideMedian]": "Wide Median",
-  "Anarchy.TOOLTIP_DESCRIPTION[WideMedian]": "Applies Wide Sidewalk upgrade to the median to produce a wide concrete median."
+  "Anarchy.TOOLTIP_DESCRIPTION[WideMedian]": "Applies Wide Sidewalk upgrade to the median to produce a wide concrete median.",
+  "Anarchy.TOOLTIP_TITLE[ReplaceUpgrade]": "Replace Upgrades",
+  "Anarchy.TOOLTIP_DESCRIPTION[ReplaceUpgrade]": "When toggled, replace tool mode will add or remove network upgrades to match the selected upgrades. If not toggled, replace tool mode will preserve network upgrades, if possible."
 }

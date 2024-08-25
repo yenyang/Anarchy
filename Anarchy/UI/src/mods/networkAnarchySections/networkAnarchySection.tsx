@@ -190,7 +190,7 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
                <>
                     { (leftShowUpgrade != SideUpgrades.None || (replaceLeftUpgrade & ButtonState.Hidden) != ButtonState.Hidden) && (
                         <>
-                            <VanillaComponentResolver.instance.Section title={"Left"}>
+                            <VanillaComponentResolver.instance.Section title={translate("Anarchy.SECTION_TITLE[Left]",locale["Anarchy.SECTION_TITLE[Left]"])}>
                                 <>
                                     {(replaceLeftUpgrade & ButtonState.Hidden) != ButtonState.Hidden && (
                                         <VanillaComponentResolver.instance.ToolButton
@@ -198,7 +198,7 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
                                             selected = {(replaceLeftUpgrade & ButtonState.On) == ButtonState.On}
                                             multiSelect = {false}   // I haven't tested any other value here
                                             disabled = {false}      // I haven't tested any other value here
-                                            tooltip = {"tooltip"}
+                                            tooltip = {descriptionTooltip(translate("Anarchy.TOOLTIP_TITLE[ReplaceUpgrade]", locale["Anarchy.TOOLTIP_TITLE[ReplaceUpgrade]"]), translate("Anarchy.TOOLTIP_DESCRIPTION[ReplaceUpgrade]", locale["Anarchy.TOOLTIP_DESCRIPTION[ReplaceUpgrade]"]))}
                                             className = {VanillaComponentResolver.instance.toolButtonTheme.button}
                                             focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
                                             onSelect={() => handleEvent("ReplaceLeftUpgrade")}
@@ -216,7 +216,7 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
                     )}
                     { (rightShowUpgrade != SideUpgrades.None || (replaceRightUpgrade & ButtonState.Hidden) != ButtonState.Hidden) && (
                         <>
-                            <VanillaComponentResolver.instance.Section title ={"Right"}>
+                            <VanillaComponentResolver.instance.Section title ={translate("Anarchy.SECTION_TITLE[Right]",locale["Anarchy.SECTION_TITLE[Right]"])}>
                                 <>
                                     {(replaceRightUpgrade & ButtonState.Hidden) != ButtonState.Hidden && (
                                         <VanillaComponentResolver.instance.ToolButton
@@ -224,7 +224,7 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
                                             selected = {(replaceRightUpgrade & ButtonState.On) == ButtonState.On}
                                             multiSelect = {false}   // I haven't tested any other value here
                                             disabled = {false}      // I haven't tested any other value here
-                                            tooltip = {"tooltip"}
+                                            tooltip = {descriptionTooltip(translate("Anarchy.TOOLTIP_TITLE[ReplaceUpgrade]", locale["Anarchy.TOOLTIP_TITLE[ReplaceUpgrade]"]), translate("Anarchy.TOOLTIP_DESCRIPTION[ReplaceUpgrade]", locale["Anarchy.TOOLTIP_DESCRIPTION[ReplaceUpgrade]"]))}
                                             className = {VanillaComponentResolver.instance.toolButtonTheme.button}
                                             focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
                                             onSelect={() => handleEvent("ReplaceRightUpgrade")}
@@ -241,7 +241,7 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
                         </>
                     )}
                     { (showComposition != Composition.None || (replaceComposition & ButtonState.Hidden) != ButtonState.Hidden) && ( 
-                        <VanillaComponentResolver.instance.Section title={"General"}>
+                        <VanillaComponentResolver.instance.Section title={translate("Anarchy.SECTION_TITLE[General]",locale["Anarchy.SECTION_TITLE[General]"])}>
                             <>
                                 {(replaceComposition & ButtonState.Hidden) != ButtonState.Hidden && (
                                     <VanillaComponentResolver.instance.ToolButton
@@ -249,7 +249,7 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
                                         selected = {(replaceComposition & ButtonState.On) == ButtonState.On}
                                         multiSelect = {false}   // I haven't tested any other value here
                                         disabled = {false}      // I haven't tested any other value here
-                                        tooltip = {"tooltip"}
+                                        tooltip = {descriptionTooltip(translate("Anarchy.TOOLTIP_TITLE[ReplaceUpgrade]", locale["Anarchy.TOOLTIP_TITLE[ReplaceUpgrade]"]), translate("Anarchy.TOOLTIP_DESCRIPTION[ReplaceUpgrade]", locale["Anarchy.TOOLTIP_DESCRIPTION[ReplaceUpgrade]"]))}
                                         className = {VanillaComponentResolver.instance.toolButtonTheme.button}
                                         focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
                                         onSelect={() => handleEvent("ReplaceComposition")}
