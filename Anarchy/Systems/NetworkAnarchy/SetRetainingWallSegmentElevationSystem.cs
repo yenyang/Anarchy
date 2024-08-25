@@ -49,7 +49,7 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_NetToolSystem;
             m_UpgradedAndAppliedQuery = SystemAPI.QueryBuilder()
                             .WithAll<Applied, Game.Net.Upgraded, Game.Net.Edge>()
-                            .WithNone<Deleted, Overridden, Temp>()
+                            .WithNone<Deleted, Overridden, Temp, Owner>()
                             .Build();
 
             RequireAnyForUpdate(m_UpgradedAndAppliedQuery);

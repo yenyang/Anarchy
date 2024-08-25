@@ -86,7 +86,7 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_Log.Info($"[{nameof(TempNetworkSystem)}] {nameof(OnCreate)}");
             m_TempNetworksQuery = SystemAPI.QueryBuilder()
                 .WithAll<Updated, Temp, Game.Net.Edge>()
-                .WithNone<Deleted, Overridden>()
+                .WithNone<Deleted, Overridden, Owner>()
                 .Build();
 
             RequireForUpdate(m_TempNetworksQuery);
