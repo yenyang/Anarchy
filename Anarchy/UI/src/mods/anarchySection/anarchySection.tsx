@@ -3,6 +3,8 @@ import {ModuleRegistryExtend} from "cs2/modding";
 import { bindValue, trigger, useValue } from "cs2/api";
 import { VanillaComponentResolver } from "../VanillaComponentResolver/VanillaComponentResolver";
 import mod from "../../../mod.json";
+import { descriptionTooltip } from "mods/elevationControlSections/elevationControlSections";
+import locale from "../../lang/en-US.json";
 
 // These establishes the binding with C# side. Without C# side game ui will crash.
 const anarchyEnabled$ = bindValue<boolean>(mod.id, 'AnarchyEnabled');
@@ -65,7 +67,7 @@ export const AnarchyRowComponent: ModuleRegistryExtend = (Component : any) => {
                         src={toolSrc}
                         multiSelect = {false}   // I haven't tested any other value here
                         disabled = {false}      // I haven't tested any other value here
-                        tooltip = {"Anarchy Components Tool"}
+                        tooltip = {descriptionTooltip(translate("Anarchy.TOOLTIP_TITLE[AnarchyComponentsTool]", locale["Anarchy.TOOLTIP_TITLE[AnarchyComponentsTool]"]), translate("Anarchy.TOOLTIP_DESCRIPTION[AnarchyComponentsTool]", locale["Anarchy.TOOLTIP_DESCRIPTION[AnarchyComponentsTool]"]))}
                         className = {VanillaComponentResolver.instance.toolButtonTheme.button}
                         focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
                         onSelect={() => handleClick("ActivateAnarchyComponentsTool")}

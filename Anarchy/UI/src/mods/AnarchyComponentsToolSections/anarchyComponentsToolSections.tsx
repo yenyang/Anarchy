@@ -91,17 +91,17 @@ export const AnarchyComponentsToolComponent: ModuleRegistryExtend = (Component :
             result.props.children?.unshift(
                 <>
                     { selectionMode == SelectionMode.Radius && (
-                        <VanillaComponentResolver.instance.Section title={"Radius"}>
-                            <VanillaComponentResolver.instance.ToolButton tooltip={"Descrease Radius"} onSelect={() => handleClick("DecreaseRadius")} src={arrowDownSrc} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED} className={VanillaComponentResolver.instance.mouseToolOptionsTheme.startButton}></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.Section title={translate("Anarchy.SECTION_TITLE[Radius]", locale["Anarchy.SECTION_TITLE[Radius]"])}>
+                            <VanillaComponentResolver.instance.ToolButton tooltip={translate("Anarchy.TOOLTIP_DESCRIPTION[DecreaseRadius]", locale["Anarchy.TOOLTIP_DESCRIPTION[DecreaseRadius]"])} onSelect={() => handleClick("DecreaseRadius")} src={arrowDownSrc} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED} className={VanillaComponentResolver.instance.mouseToolOptionsTheme.startButton}></VanillaComponentResolver.instance.ToolButton>
                             <div className={VanillaComponentResolver.instance.mouseToolOptionsTheme.numberField}>{ selectionRadius + " m"}</div>
-                            <VanillaComponentResolver.instance.ToolButton tooltip={"Increase Radius"} onSelect={() => handleClick("IncreaseRadius")} src={arrowUpSrc} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED} className={VanillaComponentResolver.instance.mouseToolOptionsTheme.endButton} ></VanillaComponentResolver.instance.ToolButton>
+                            <VanillaComponentResolver.instance.ToolButton tooltip={translate("Anarchy.TOOLTIP_DESCRIPTION[IncreaseRadius]", locale["Anarchy.TOOLTIP_DESCRIPTION[IncreaseRadius]"])} onSelect={() => handleClick("IncreaseRadius")} src={arrowUpSrc} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED} className={VanillaComponentResolver.instance.mouseToolOptionsTheme.endButton} ></VanillaComponentResolver.instance.ToolButton>
                         </VanillaComponentResolver.instance.Section>
                     )}
-                    <VanillaComponentResolver.instance.Section title={"Selection"}>
-                                <VanillaComponentResolver.instance.ToolButton className={VanillaComponentResolver.instance.toolButtonTheme.button} selected={selectionMode == SelectionMode.Single}       tooltip={"Single"}                          onSelect={() => handleClickWithValue("SelectionMode", SelectionMode.Single)}              src={singleSrc}         focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}  ></VanillaComponentResolver.instance.ToolButton>
-                                <VanillaComponentResolver.instance.ToolButton className={VanillaComponentResolver.instance.toolButtonTheme.button} selected={selectionMode == SelectionMode.Radius}       tooltip={"Radius"}                          onSelect={() => handleClickWithValue("SelectionMode", SelectionMode.Radius)}              src={radiusSrc}                 focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}  ></VanillaComponentResolver.instance.ToolButton>
+                    <VanillaComponentResolver.instance.Section title={translate("Anarchy.SECTION_TITLE[Selection]", locale["Anarchy.SECTION_TITLE[Selection]"])}>
+                                <VanillaComponentResolver.instance.ToolButton className={VanillaComponentResolver.instance.toolButtonTheme.button} selected={selectionMode == SelectionMode.Single}       tooltip={descriptionTooltip( translate("Anarchy.TOOLTIP_TITLE[SingleSelection]", locale["Anarchy.TOOLTIP_TITLE[SingleSelection]"]), translate("Anarchy.TOOLTIP_DESCRIPTION[SingleSelection]", locale["Anarchy.TOOLTIP_DESCRIPTION[SingleSelection]"]))}                          onSelect={() => handleClickWithValue("SelectionMode", SelectionMode.Single)}              src={singleSrc}         focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}  ></VanillaComponentResolver.instance.ToolButton>
+                                <VanillaComponentResolver.instance.ToolButton className={VanillaComponentResolver.instance.toolButtonTheme.button} selected={selectionMode == SelectionMode.Radius}       tooltip={descriptionTooltip( translate("Anarchy.TOOLTIP_TITLE[RadiusSelection]", locale["Anarchy.TOOLTIP_TITLE[RadiusSelection]"]), translate("Anarchy.TOOLTIP_DESCRIPTION[RadiusSelection]", locale["Anarchy.TOOLTIP_DESCRIPTION[RadiusSelection]"]))}                          onSelect={() => handleClickWithValue("SelectionMode", SelectionMode.Radius)}              src={radiusSrc}                 focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}  ></VanillaComponentResolver.instance.ToolButton>
                     </VanillaComponentResolver.instance.Section>
-                    <VanillaComponentResolver.instance.Section title={"Components"}>
+                    <VanillaComponentResolver.instance.Section title={translate("Anarchy.SECTION_TITLE[Components]", locale["Anarchy.SECTION_TITLE[Components]"])}>
                         <VanillaComponentResolver.instance.ToolButton
                             src={heightLockSrc}
                             selected={(anarchyComponentType & AnarchyComponentType.TransformRecord) == AnarchyComponentType.TransformRecord}
@@ -117,7 +117,7 @@ export const AnarchyComponentsToolComponent: ModuleRegistryExtend = (Component :
                             selected = {(anarchyComponentType & AnarchyComponentType.PreventOverride) == AnarchyComponentType.PreventOverride}
                             multiSelect = {false}   // I haven't tested any other value here
                             disabled = {false}      // I haven't tested any other value here
-                            tooltip = {tooltipText}
+                            tooltip = {descriptionTooltip(anarchySectionTitle, tooltipText)}
                             className = {VanillaComponentResolver.instance.toolButtonTheme.button}                        
                             focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
                             onSelect={() => handleClickWithValue("AnarchyComponentType", AnarchyComponentType.PreventOverride)}

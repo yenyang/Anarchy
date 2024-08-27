@@ -173,6 +173,7 @@ namespace Anarchy
             updateSystem.UpdateBefore<TempNetworkSystem>(SystemUpdatePhase.Modification3);
             updateSystem.UpdateAt<NetworkAnarchyUISystem>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateAt<AnarchyComponentsToolSystem>(SystemUpdatePhase.ToolUpdate);
+            updateSystem.UpdateAt<AnarchyComponentsToolUISystem>(SystemUpdatePhase.UIUpdate);
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Completed.");
         }
 

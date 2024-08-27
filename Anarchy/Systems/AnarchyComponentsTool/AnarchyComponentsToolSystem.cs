@@ -54,6 +54,8 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         private EntityQuery m_NotTransformRecordQuery;
         private EntityQuery m_HighlightedQuery;
         private Entity m_PreviousRaycastedEntity = Entity.Null;
+        private ToolBaseSystem m_PreviousToolSystem;
+        private bool m_SetToolToPreviousTool;
 
         /// <inheritdoc/>
         public override string toolID => "AnarchyComponentsTool";
@@ -98,7 +100,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         /// </summary>
         public void RequestDisable()
         {
-            m_ToolSystem.activeTool = m_DefaultToolSystem;
+            m_PreviousToolSystem = m_PreviousToolSystem;
         }
 
         /// <inheritdoc/>
@@ -111,14 +113,21 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         protected override void OnCreate()
         {
             Enabled = false;
+            base.OnCreate();
             m_Log = AnarchyMod.Instance.Log;
             m_Log.Info($"[{nameof(AnarchyComponentsToolSystem)}] {nameof(OnCreate)}");
             m_Barrier = World.GetOrCreateSystemManaged<ToolOutputBarrier>();
             m_RenderingSystem = World.GetOrCreateSystemManaged<RenderingSystem>();
             m_OverlayRenderSystem = World.GetOrCreateSystemManaged<OverlayRenderSystem>();
+            m_PreviousToolSystem = m_DefaultToolSystem;
             m_UISystem = World.GetOrCreateSystemManaged<AnarchyComponentsToolUISystem>();
-            base.OnCreate();
-
+            m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) =>
+            {
+                if (tool != this)
+                {
+                    m_PreviousToolSystem = tool;
+                }
+            };
             m_OverridenQuery = SystemAPI.QueryBuilder()
                 .WithAll<Overridden, Game.Objects.Object, Game.Objects.Static, Game.Objects.Transform, CullingInfo>()
                 .WithNone<Deleted, Temp>()

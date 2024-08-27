@@ -130,6 +130,9 @@ namespace Anarchy.Settings
                 { SectionLabel("Left"), "Left" },
                 { SectionLabel("Right"), "Right" },
                 { SectionLabel("General"), "General" },
+                { SectionLabel("Radius"), "Radius" },
+                { SectionLabel("Selection"), "Selection" },
+                { SectionLabel("Components"), "Components" },
                 { TooltipTitleKey("ConstantSlope"), "Constant Slope" },
                 { TooltipDescriptionKey("ConstantSlope"), "Forces newly placed networks to have a constant slope or grade from starting point to end point (A -> B)." },
                 { TooltipTitleKey("Ground"), "Ground" },
@@ -138,6 +141,14 @@ namespace Anarchy.Settings
                 { TooltipDescriptionKey("WideMedian"), "Applies Wide Sidewalk upgrade to the median to produce a wide concrete median." },
                 { TooltipTitleKey("ReplaceUpgrade"), "Replace Upgrades" },
                 { TooltipDescriptionKey("ReplaceUpgrade"), "When toggled, replace tool mode will add or remove network upgrades to match the selected upgrades. If not toggled, replace tool mode will preserve network upgrades, if possible." },
+                { TooltipTitleKey("AnarchyComponentsTool"), "Anarchy Components Tool" },
+                { TooltipDescriptionKey("AnarchyComponentsTool"), "Add or remove elevation lock or anarchy components using a tool with radius or single selection. Returns to previous tool when closed with Escape. Radius is recommended for Anarchy component since you can see overridden objects and interact with them. Single selection cannot select overriden objects and they are not visible." },
+                { TooltipDescriptionKey("IncreaseRadius"), "Increase the radius." },
+                { TooltipDescriptionKey("DecreaseRadius"), "Decrease the radius." },
+                { TooltipTitleKey("SingleSelection"), "Single Selection" },
+                { TooltipDescriptionKey("SingleSelection"), "Left Mouse Button to add selected component(s). Right Mouse Button to remove selected component(s). Single selection cannot select overriden objects and they are not visible." },
+                { TooltipTitleKey("RadiusSelection"), "Radius Selection" },
+                { TooltipDescriptionKey("RadiusSelection"), "Left Mouse Button to add selected component(s) within radius. Right Mouse Button to remove selected component(s) within radius. Radius is recommended for Anarchy component since you can see overridden objects and interact with them." },
             };
         }
 

@@ -24,6 +24,9 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         private ValueBindingHelper<SelectionMode> m_SelectionMode;
         private ValueBindingHelper<int> m_SelectionRadius;
         private RenderingSystem m_RenderingSystem;
+        private ToolBaseSystem m_PreviousToolSystem;
+        private bool m_SwitchToPreviousToolSystem;
+        private DefaultToolSystem m_DefaultToolSystem;
 
         /// <summary>
         /// Enum for different component types the tool can add or remove.
@@ -89,7 +92,25 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             m_Log.Info($"{nameof(AnarchyComponentsToolUISystem)}.{nameof(OnCreate)}");
             m_AnarchyComponentsTool = World.GetOrCreateSystemManaged<AnarchyComponentsToolSystem>();
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
-            m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_AnarchyComponentsTool;
+            m_DefaultToolSystem = World.GetOrCreateSystemManaged<DefaultToolSystem>();
+            m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) =>
+            {
+                if (tool != m_AnarchyComponentsTool)
+                {
+                    if (m_SwitchToPreviousToolSystem && tool == m_DefaultToolSystem)
+                    {
+                        Enabled = true;
+                    }
+                    else
+                    {
+                        m_PreviousToolSystem = tool;
+                    }
+                }
+                else
+                {
+                    m_SwitchToPreviousToolSystem = true;
+                }
+            };
             m_RenderingSystem = World.GetOrCreateSystemManaged<RenderingSystem>();
             m_AnarchyComponentType = CreateBinding("AnarchyComponentType", AnarchyComponentType.TransformRecord);
             m_SelectionMode = CreateBinding("SelectionMode", SelectionMode.Radius);
@@ -144,6 +165,19 @@ namespace Anarchy.Systems.AnarchyComponentsTool
 
             CreateTrigger("IncreaseRadius", () => m_SelectionRadius.Value = Math.Min(m_SelectionRadius.Value + 10, 100));
             CreateTrigger("DecreaseRadius", () => m_SelectionRadius.Value = Math.Max(m_SelectionRadius.Value - 10, 10));
+            Enabled = false;
+        }
+
+        /// <inheritdoc/>
+        protected override void OnUpdate()
+        {
+            if (m_SwitchToPreviousToolSystem)
+            {
+                m_ToolSystem.activeTool = m_PreviousToolSystem;
+                m_SwitchToPreviousToolSystem = false;
+            }
+
+            Enabled = false;
         }
     }
 }
