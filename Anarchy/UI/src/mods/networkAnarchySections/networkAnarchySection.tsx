@@ -10,6 +10,8 @@ import { RightButtonComponent } from "mods/NetworkAnarchyButtons/rightButtonComp
 import { descriptionTooltip } from "mods/elevationControlSections/elevationControlSections";
 import locale from "../../lang/en-US.json";
 import grassSrc from "./A_GrassWhite.svg";
+import styles from "./networkAnarchySection.module.scss";
+import { useState } from "react";
 
 /// <summary>
 /// An enum for network cross section modes.
@@ -165,7 +167,8 @@ function handleEvent(event: string) {
     trigger(mod.id, event);
 }
 
-const FloatSliderField : any = getModule("game-ui/editor/widgets/fields/number-slider-field.tsx", "FloatSliderField");
+
+const SliderField : any = getModule("game-ui/editor/widgets/fields/number-slider-field.tsx", "FloatSliderField");
 
 export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) => {
     // I believe you should not put anything here.
@@ -178,24 +181,26 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
         const replaceLeftUpgrade = useValue(replaceLeftUpgrade$);
         const replaceRightUpgrade = useValue(replaceRightUpgrade$);
         const replaceComposition = useValue(replaceComposition$);
+        const elevationStep = useValue(tool.elevationStep$);
 
         // translation handling. Translates using locale keys that are defined in C# or fallback string here.
         const { translate } = useLocalization();
         
+        let [digits, setDigits] = useState(elevationStep);
       
         // This defines aspects of the components.
         const {children, ...otherProps} = props || {};
-
+        
         // This gets the original component that we may alter and return.
         var result : JSX.Element = Component();
         if (netToolActive) {
             result.props.children?.push(
                <>
-                    { (false &&
-                        <VanillaComponentResolver.instance.Section title="Elevation Step">
-                            <FloatSliderField value={10} start={0.01} end={25} disabled={false} onChange={(e :number)=>console.log(e)}></FloatSliderField>
-                        </VanillaComponentResolver.instance.Section>
-                    )}
+                    <VanillaComponentResolver.instance.Section title="Elevation Step">
+                        <div className={styles.elevationStepSliderField}>
+                            <SliderField label={""}value={elevationStep} min={0.01} max={25} fractionDigits={digits} onChange={(e: number) => {(e>=10)? tool.setElevationStep(Math.round(e*10)/10) : tool.setElevationStep(e);  setDigits((e >= 10)? 1 : 2)}}></SliderField>
+                        </div>
+                    </VanillaComponentResolver.instance.Section>
                     { (leftShowUpgrade != SideUpgrades.None || (replaceLeftUpgrade & ButtonState.Hidden) != ButtonState.Hidden) && (
                         <>
                             <VanillaComponentResolver.instance.Section title={translate("Anarchy.SECTION_TITLE[Left]",locale["Anarchy.SECTION_TITLE[Left]"])}>

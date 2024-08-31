@@ -421,6 +421,11 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_ReplaceLeftUpgrade.Value |= ButtonState.Hidden;
             m_ReplaceRightUpgrade.Value |= ButtonState.Hidden;
 
+            if (!AnarchyMod.Instance.Settings.NetworkAnarchyToolOptions && !AnarchyMod.Instance.Settings.NetworkUpgradesToolOptions)
+            {
+                return;
+            }
+
             if (prefabBase is null || m_ToolSystem.activeTool != m_NetToolSystem)
             {
                 return;
@@ -436,12 +441,25 @@ namespace Anarchy.Systems.NetworkAnarchy
                 return;
             }
 
-            foreach (KeyValuePair<SideUpgrades, CompositionFlags.Side> keyValuePair in m_TempNetworkSystem.SideUpgradesDictionary)
+            if (!EntityManager.TryGetComponent(prefabEntity, out NetGeometryData netGeometryData))
             {
-                if ((netData.m_SideFlagMask & keyValuePair.Value) == keyValuePair.Value)
+                return;
+            }
+
+            if (!EntityManager.TryGetComponent(prefabEntity, out PlaceableNetData placeableNetData))
+            {
+                return;
+            }
+
+            if (AnarchyMod.Instance.Settings.NetworkUpgradesToolOptions) 
+            {
+                foreach (KeyValuePair<SideUpgrades, CompositionFlags.Side> keyValuePair in m_TempNetworkSystem.SideUpgradesDictionary)
                 {
-                    m_LeftShowUpgrade.Value |= keyValuePair.Key;
-                    m_RightShowUpgrade.Value |= keyValuePair.Key;
+                    if ((netData.m_SideFlagMask & keyValuePair.Value) == keyValuePair.Value)
+                    {
+                        m_LeftShowUpgrade.Value |= keyValuePair.Key;
+                        m_RightShowUpgrade.Value |= keyValuePair.Key;
+                    }
                 }
             }
 
@@ -451,16 +469,6 @@ namespace Anarchy.Systems.NetworkAnarchy
                 {
                     m_ShowComposition.Value |= generalUpgradePairs.Key;
                 }
-            }
-
-            if (!EntityManager.TryGetComponent(prefabEntity, out NetGeometryData netGeometryData))
-            {
-                return;
-            }
-
-            if (!EntityManager.TryGetComponent(prefabEntity, out PlaceableNetData placeableNetData))
-            {
-                return;
             }
 
             if ((netGeometryData.m_Flags & Game.Net.GeometryFlags.RequireElevated) == Game.Net.GeometryFlags.RequireElevated)
@@ -530,6 +538,18 @@ namespace Anarchy.Systems.NetworkAnarchy
                 }
 
                 m_ShowComposition.Value &= ~(Composition.ConstantSlope | Composition.Ground);
+            }
+
+            if (!AnarchyMod.Instance.Settings.NetworkAnarchyToolOptions)
+            {
+                m_ShowComposition.Value &= ~(Composition.ConstantSlope | Composition.Tunnel | Composition.Ground | Composition.Elevated);
+            }
+
+            if (!AnarchyMod.Instance.Settings.NetworkUpgradesToolOptions)
+            {
+                m_LeftShowUpgrade.Value = SideUpgrades.None;
+                m_RightShowUpgrade.Value = SideUpgrades.None;
+                m_ShowComposition.Value &= ~(Composition.WideMedian | Composition.Trees | Composition.GrassStrip | Composition.Lighting);
             }
         }
     }

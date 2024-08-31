@@ -5,6 +5,7 @@
 namespace Anarchy.Settings
 {
     using Anarchy.Systems.Common;
+    using Anarchy.Systems.NetworkAnarchy;
     using Anarchy.Systems.OverridePrevention;
     using Colossal.IO.AssetDatabase;
     using Game.Input;
@@ -127,6 +128,18 @@ namespace Anarchy.Settings
         /// </summary>
         [SettingsUISection(UI, Stable)]
         public bool DisableAnarchyWhileBrushing { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to show network anarchy in tool options menu.
+        /// </summary>
+        [SettingsUISection(UI, Stable)]
+        public bool NetworkAnarchyToolOptions { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to show network upgrades in tool options menu.
+        /// </summary>
+        [SettingsUISection(UI, Stable)]
+        public bool NetworkUpgradesToolOptions { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the minimum clearance below elevated network.
@@ -325,6 +338,8 @@ namespace Anarchy.Settings
             DisableAnarchyWhileBrushing = false;
             ShowElevationToolOption = true;
             ResetElevationWhenChangingPrefab = true;
+            NetworkAnarchyToolOptions = true;
+            NetworkUpgradesToolOptions = true;
         }
 
 
