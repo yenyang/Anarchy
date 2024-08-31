@@ -336,6 +336,23 @@ namespace Anarchy.Systems.Common
                 }
             }
 
+            if (m_ToolSystem.activeTool == m_NetToolSystem)
+            {
+                if (m_ResetElevation.WasPerformedThisFrame())
+                {
+                    m_NetToolSystem.elevation = 0;
+                }
+
+                if (m_ElevationStepToggle.WasPerformedThisFrame())
+                {
+                    m_NetToolSystem.elevationStep /= 2f;
+                    if (m_NetToolSystem.elevationStep < 1.25f)
+                    {
+                        m_NetToolSystem.elevationStep = 10f;
+                    }
+                }
+            }
+
             if (m_AnarchyEnabled != m_AnarchyBinding.Value)
             {
                 m_AnarchyBinding.Value = m_AnarchyEnabled;
@@ -420,11 +437,14 @@ namespace Anarchy.Systems.Common
                 }
             }
 
-            if ((tool == m_ObjectToolSystem || tool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
+            if (((tool == m_ObjectToolSystem || tool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab) || tool == m_NetToolSystem)
             {
                 m_ResetElevation.shouldBeEnabled = true;
                 m_ElevationStepToggle.shouldBeEnabled = true;
-                m_ElevationKey.shouldBeEnabled = true;
+                if (tool == m_ObjectToolSystem)
+                {
+                    m_ElevationKey.shouldBeEnabled = true;
+                }
             }
             else
             {

@@ -6,6 +6,7 @@
 namespace Anarchy.Systems.NetworkAnarchy
 {
     using Anarchy.Components;
+    using Colossal.Entities;
     using Colossal.Logging;
     using Game;
     using Game.Common;
@@ -48,7 +49,7 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_NetToolSystem;
             m_UpgradedAndAppliedQuery = SystemAPI.QueryBuilder()
-                            .WithAll<Applied, Game.Net.Upgraded, Game.Net.Edge>()
+                            .WithAll<Updated, Game.Net.Upgraded, Game.Net.Edge>()
                             .WithNone<Deleted, Overridden, Temp, Owner>()
                             .Build();
 
@@ -67,6 +68,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                 buffer = m_Barrier.CreateCommandBuffer(),
                 m_ReplaceMode = m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace,
                 m_EdgeType = SystemAPI.GetComponentTypeHandle<Game.Net.Edge>(isReadOnly: true),
+                m_EdgeLookup = SystemAPI.GetComponentLookup<Game.Net.Edge>(isReadOnly: true),
             };
 
             JobHandle segmentElevationsJobHandle = setSegmentElevationsJob.Schedule(m_UpgradedAndAppliedQuery, Dependency);
@@ -90,6 +92,8 @@ namespace Anarchy.Systems.NetworkAnarchy
             public ComponentLookup<Game.Net.Elevation> m_ElevationLookup;
             [ReadOnly]
             public BufferLookup<Game.Net.ConnectedEdge> m_ConnectedEdgeLookup;
+            [ReadOnly]
+            public ComponentLookup<Game.Net.Edge> m_EdgeLookup;
             public bool m_ReplaceMode;
 
             public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
@@ -220,7 +224,15 @@ namespace Anarchy.Systems.NetworkAnarchy
                             buffer.AddComponent<UpdateNextFrame>(edge.m_End);
                             foreach (ConnectedEdge connectedEdge in endConnectedEdges)
                             {
-                                buffer.AddComponent<UpdateNextFrame>(connectedEdge.m_Edge);
+                                if (connectedEdge.m_Edge != entity)
+                                {
+                                    buffer.AddComponent<UpdateNextFrame>(connectedEdge.m_Edge);
+                                    if (m_EdgeLookup.TryGetComponent(connectedEdge.m_Edge, out Edge distantEdge))
+                                    {
+                                        buffer.AddComponent<Updated>(distantEdge.m_Start);
+                                        buffer.AddComponent<Updated>(distantEdge.m_End);
+                                    }
+                                }
                             }
                         }
 
@@ -229,7 +241,15 @@ namespace Anarchy.Systems.NetworkAnarchy
                             buffer.AddComponent<UpdateNextFrame>(edge.m_Start);
                             foreach (ConnectedEdge connectedEdge in startConnectedEdges)
                             {
-                                buffer.AddComponent<UpdateNextFrame>(connectedEdge.m_Edge);
+                                if (connectedEdge.m_Edge != entity)
+                                {
+                                    buffer.AddComponent<UpdateNextFrame>(connectedEdge.m_Edge);
+                                    if (m_EdgeLookup.TryGetComponent(connectedEdge.m_Edge, out Edge distantEdge))
+                                    {
+                                        buffer.AddComponent<Updated>(distantEdge.m_Start);
+                                        buffer.AddComponent<Updated>(distantEdge.m_End);
+                                    }
+                                }
                             }
                         }
                     }

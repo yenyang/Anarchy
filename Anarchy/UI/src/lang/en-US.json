@@ -114,7 +114,7 @@
   "Anarchy.TOOLTIP_TITLE[ReplaceUpgrade]": "Replace Upgrades",
   "Anarchy.TOOLTIP_DESCRIPTION[ReplaceUpgrade]": "When toggled, replace tool mode will add or remove network upgrades to match the selected upgrades. If not toggled, replace tool mode will preserve network upgrades, if possible.",
   "Anarchy.TOOLTIP_TITLE[AnarchyComponentsTool]": "Anarchy Components Tool",
-  "Anarchy.TOOLTIP_DESCRIPTION[AnarchyComponentsTool]": "Add or remove elevation lock or anarchy components using a tool with radius or single selection. Radius is recommended for Anarchy component since you can see overridden objects and interact with them. Single selection cannot select overriden objects and they are not visible.",
+  "Anarchy.TOOLTIP_DESCRIPTION[AnarchyComponentsTool]": "Add or remove elevation lock or anarchy components using a tool with radius or single selection. Returns to previous tool when closed with Escape. Radius is recommended for Anarchy component since you can see overridden objects and interact with them. Single selection cannot select overriden objects and they are not visible.",
   "Anarchy.TOOLTIP_DESCRIPTION[IncreaseRadius]": "Increase the radius.",
   "Anarchy.TOOLTIP_DESCRIPTION[DecreaseRadius]": "Decrease the radius.",
   "Anarchy.TOOLTIP_TITLE[SingleSelection]": "Single Selection",

@@ -1,5 +1,5 @@
 import { useLocalization } from "cs2/l10n";
-import {ModuleRegistryExtend} from "cs2/modding";
+import {getModule, ModuleRegistryExtend} from "cs2/modding";
 import { bindValue, trigger, useValue } from "cs2/api";
 import { VanillaComponentResolver } from "../VanillaComponentResolver/VanillaComponentResolver";
 import mod from "../../../mod.json";
@@ -9,6 +9,7 @@ import { LeftButtonComponent } from "mods/NetworkAnarchyButtons/leftButtonCompon
 import { RightButtonComponent } from "mods/NetworkAnarchyButtons/rightButtonComponent";
 import { descriptionTooltip } from "mods/elevationControlSections/elevationControlSections";
 import locale from "../../lang/en-US.json";
+import grassSrc from "./A_GrassWhite.svg";
 
 /// <summary>
 /// An enum for network cross section modes.
@@ -140,7 +141,7 @@ const uilColored =                           "coui://uil/Colored/";
 const quaySrc =                     uilStandard + "RoadUpgradeQuay.svg";
 const retainingWallSrc =                uilStandard + "RoadUpgradeRetainingWall.svg";
 const treesSrc =                    uilStandard + "Trees.svg";
-const grassSrc =                    uilStandard + "Bush.svg";
+// const grassSrc =                    uilStandard + "Bush.svg";
 const wideSidewalkSrc =             uilStandard + "PedestrianPath.svg";
 const lightingSrc =                 uilStandard + "LampProps.svg";
 const barrierSrc =                  uilStandard + "Lanes.svg";
@@ -163,6 +164,8 @@ function handleClick(event: string, mode: SideUpgrades | Composition) {
 function handleEvent(event: string) {
     trigger(mod.id, event);
 }
+
+const FloatSliderField : any = getModule("game-ui/editor/widgets/fields/number-slider-field.tsx", "FloatSliderField");
 
 export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) => {
     // I believe you should not put anything here.
@@ -188,6 +191,11 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
         if (netToolActive) {
             result.props.children?.push(
                <>
+                    { (false &&
+                        <VanillaComponentResolver.instance.Section title="Elevation Step">
+                            <FloatSliderField value={10} start={0.01} end={25} disabled={false} onChange={(e :number)=>console.log(e)}></FloatSliderField>
+                        </VanillaComponentResolver.instance.Section>
+                    )}
                     { (leftShowUpgrade != SideUpgrades.None || (replaceLeftUpgrade & ButtonState.Hidden) != ButtonState.Hidden) && (
                         <>
                             <VanillaComponentResolver.instance.Section title={translate("Anarchy.SECTION_TITLE[Left]",locale["Anarchy.SECTION_TITLE[Left]"])}>

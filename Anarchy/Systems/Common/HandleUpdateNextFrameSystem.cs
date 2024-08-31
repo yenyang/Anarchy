@@ -18,6 +18,7 @@ namespace Anarchy.Systems.Common
     {
         private ILog m_Log;
         private EntityQuery m_UpdateNextFrameQuery;
+        private EntityQuery m_UpdateNextFrameAndNotTransformRecordQuery;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HandleUpdateNextFrameSystem"/> class.
@@ -36,11 +37,25 @@ namespace Anarchy.Systems.Common
                 All = new ComponentType[]
                {
                     ComponentType.ReadOnly<UpdateNextFrame>(),
+                    ComponentType.ReadOnly<TransformRecord>(),
                },
                 None = new ComponentType[]
                {
                     ComponentType.ReadOnly<Deleted>(),
                     ComponentType.ReadOnly<Updated>(),
+               },
+            });
+            m_UpdateNextFrameAndNotTransformRecordQuery = GetEntityQuery(new EntityQueryDesc
+            {
+                All = new ComponentType[]
+               {
+                    ComponentType.ReadOnly<UpdateNextFrame>(),
+               },
+                None = new ComponentType[]
+               {
+                    ComponentType.ReadOnly<Deleted>(),
+                    ComponentType.ReadOnly<Updated>(),
+                    ComponentType.ReadOnly<TransformRecord>(),
                },
             });
             RequireForUpdate(m_UpdateNextFrameQuery);
@@ -51,6 +66,8 @@ namespace Anarchy.Systems.Common
         protected override void OnUpdate()
         {
             EntityManager.AddComponent<Updated>(m_UpdateNextFrameQuery);
+            EntityManager.AddComponent<Updated>(m_UpdateNextFrameAndNotTransformRecordQuery);
+            EntityManager.RemoveComponent<UpdateNextFrame>(m_UpdateNextFrameAndNotTransformRecordQuery);
         }
     }
 }

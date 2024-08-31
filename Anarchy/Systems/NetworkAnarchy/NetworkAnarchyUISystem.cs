@@ -14,6 +14,7 @@ namespace Anarchy.Systems.NetworkAnarchy
     using Game.Tools;
     using Game.UI.InGame;
     using Unity.Entities;
+    using UnityEngine.InputSystem;
 
     /// <summary>
     /// A UI System for CS:1 Network Anarchy type UI.
@@ -35,6 +36,7 @@ namespace Anarchy.Systems.NetworkAnarchy
         private NetToolSystem m_NetToolSystem;
         private TempNetworkSystem m_TempNetworkSystem;
         private NetToolSystem.Mode m_PreviousMode;
+        private float m_RecordedElevationStep;
 
         /// <summary>
         /// An enum for network cross section modes.
@@ -242,6 +244,22 @@ namespace Anarchy.Systems.NetworkAnarchy
                 UpdateButtonDisplay(m_ToolSystem.activePrefab);
                 m_PreviousMode = m_NetToolSystem.actualMode;
             }
+
+            /*
+            bool ctrlKeyPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
+            if (!ctrlKeyPressed)
+            {
+                if (m_NetToolSystem.elevationStep == 0.01f)
+                {
+                    m_NetToolSystem.elevationStep = m_RecordedElevationStep;
+                }
+
+                m_RecordedElevationStep = m_NetToolSystem.elevationStep;
+            }
+            else
+            {
+                m_NetToolSystem.elevationStep = 0.01f;
+            }*/
         }
 
         private void LeftUpgradeClicked(int mode)
@@ -269,6 +287,17 @@ namespace Anarchy.Systems.NetworkAnarchy
             else
             {
                 m_LeftUpgrade.Value = sideUpgrade;
+            }
+
+            if (((SideUpgrades.WideSidewalk | SideUpgrades.Trees | SideUpgrades.GrassStrip) & sideUpgrade) == sideUpgrade)
+            {
+                m_Composition.Value &= ~(Composition.WideMedian | Composition.GrassStrip | Composition.Trees);
+            }
+
+            if (((SideUpgrades.Quay | SideUpgrades.RetainingWall) & sideUpgrade) == sideUpgrade &&
+                ((m_RightUpgrade.Value & SideUpgrades.Quay) == SideUpgrades.Quay || (m_RightUpgrade.Value & SideUpgrades.RetainingWall) == SideUpgrades.RetainingWall))
+            {
+                m_Composition.Value &= ~Composition.Ground;
             }
         }
 
@@ -303,6 +332,12 @@ namespace Anarchy.Systems.NetworkAnarchy
             {
                 m_Composition.Value &= ~(Composition.WideMedian | Composition.GrassStrip | Composition.Trees);
             }
+
+            if (((SideUpgrades.Quay | SideUpgrades.RetainingWall) & sideUpgrade) == sideUpgrade &&
+                ((m_LeftUpgrade.Value & SideUpgrades.Quay) == SideUpgrades.Quay || (m_LeftUpgrade.Value & SideUpgrades.RetainingWall) == SideUpgrades.RetainingWall))
+            {
+                m_Composition.Value &= ~Composition.Ground;
+            }
         }
 
         private void CompositionModeClicked(int composition)
@@ -336,6 +371,14 @@ namespace Anarchy.Systems.NetworkAnarchy
             else
             {
                 m_Composition.Value |= newComposition;
+            }
+
+            if (((m_LeftUpgrade.Value & SideUpgrades.Quay) == SideUpgrades.Quay || (m_LeftUpgrade.Value & SideUpgrades.RetainingWall) == SideUpgrades.RetainingWall)
+                && ((m_RightUpgrade.Value & SideUpgrades.Quay) == SideUpgrades.Quay || (m_RightUpgrade.Value & SideUpgrades.RetainingWall) == SideUpgrades.RetainingWall)
+                && newComposition == Composition.Ground)
+            {
+                m_LeftUpgrade.Value &= ~(SideUpgrades.Quay | SideUpgrades.RetainingWall);
+                m_RightUpgrade.Value &= ~(SideUpgrades.Quay | SideUpgrades.RetainingWall);
             }
 
             UpdateButtonDisplay(m_ToolSystem.activePrefab);
@@ -442,6 +485,12 @@ namespace Anarchy.Systems.NetworkAnarchy
                 m_ShowComposition.Value &= ~(Composition.Trees | Composition.GrassStrip);
                 m_LeftShowUpgrade.Value &= ~(SideUpgrades.Trees | SideUpgrades.GrassStrip | SideUpgrades.SoundBarrier | SideUpgrades.WideSidewalk);
                 m_RightShowUpgrade.Value &= ~(SideUpgrades.Trees | SideUpgrades.GrassStrip | SideUpgrades.SoundBarrier | SideUpgrades.WideSidewalk);
+            }
+
+            if ((m_Composition & Composition.Tunnel) == Composition.Tunnel)
+            {
+                m_LeftShowUpgrade.Value &= ~(SideUpgrades.RetainingWall | SideUpgrades.Quay);
+                m_RightShowUpgrade.Value &= ~(SideUpgrades.RetainingWall | SideUpgrades.Quay);
             }
 
             if ((netGeometryData.m_Flags & Game.Net.GeometryFlags.SmoothSlopes) != Game.Net.GeometryFlags.SmoothSlopes

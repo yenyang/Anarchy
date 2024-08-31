@@ -68,7 +68,6 @@ namespace Anarchy.Systems.OverridePrevention
                 All = new ComponentType[]
                 {
                     ComponentType.ReadOnly<Applied>(),
-                    ComponentType.ReadOnly<Updated>(),
                 },
                 Any = new ComponentType[]
                 {
@@ -147,7 +146,7 @@ namespace Anarchy.Systems.OverridePrevention
                 PrefabBase prefabBase = null;
                 if (EntityManager.TryGetComponent(entity, out PrefabRef prefabRef))
                 {
-                    if (m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase) && EntityManager.HasComponent<Static>(entity) && !EntityManager.HasComponent<Building>(entity) && !EntityManager.HasComponent<Owner>(entity) && !EntityManager.HasComponent<Crane>(entity))
+                    if (m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase) && EntityManager.HasComponent<Static>(entity) && !EntityManager.HasComponent<Building>(entity) && !EntityManager.HasComponent<Owner>(entity))
                     {
                         if (prefabBase is StaticObjectPrefab && EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData))
                         {
