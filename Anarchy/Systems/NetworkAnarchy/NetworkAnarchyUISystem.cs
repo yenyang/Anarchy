@@ -36,7 +36,7 @@ namespace Anarchy.Systems.NetworkAnarchy
         private NetToolSystem m_NetToolSystem;
         private TempNetworkSystem m_TempNetworkSystem;
         private NetToolSystem.Mode m_PreviousMode;
-        private float m_RecordedElevationStep;
+        private ValueBindingHelper<bool> m_ShowElevationStepSlider;
 
         /// <summary>
         /// An enum for network cross section modes.
@@ -202,6 +202,15 @@ namespace Anarchy.Systems.NetworkAnarchy
             get { return (m_ReplaceComposition & ButtonState.On) == ButtonState.On; }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to show elevation step slider.
+        /// </summary>
+        public bool ShowElevationStepSlider
+        {
+            get { return m_ShowElevationStepSlider.Value; }
+            set { m_ShowElevationStepSlider.Value = value; }
+        }
+
         /// <inheritdoc/>
         protected override void OnCreate()
         {
@@ -225,6 +234,7 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_ReplaceRightUpgrade = CreateBinding("ReplaceRightUpgrade", ButtonState.Hidden | ButtonState.Off);
             m_ReplaceLeftUpgrade = CreateBinding("ReplaceLeftUpgrade", ButtonState.Hidden | ButtonState.Off);
             m_ReplaceComposition = CreateBinding("ReplaceComposition", ButtonState.Hidden | ButtonState.Off);
+            m_ShowElevationStepSlider = CreateBinding("ShowElevationStepSlider", AnarchyMod.Instance.Settings.ElevationStepSlider);
             m_PreviousMode = m_NetToolSystem.actualMode;
 
             // Creates triggers for C# methods based on UI events.
@@ -244,22 +254,6 @@ namespace Anarchy.Systems.NetworkAnarchy
                 UpdateButtonDisplay(m_ToolSystem.activePrefab);
                 m_PreviousMode = m_NetToolSystem.actualMode;
             }
-
-            /*
-            bool ctrlKeyPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
-            if (!ctrlKeyPressed)
-            {
-                if (m_NetToolSystem.elevationStep == 0.01f)
-                {
-                    m_NetToolSystem.elevationStep = m_RecordedElevationStep;
-                }
-
-                m_RecordedElevationStep = m_NetToolSystem.elevationStep;
-            }
-            else
-            {
-                m_NetToolSystem.elevationStep = 0.01f;
-            }*/
         }
 
         private void LeftUpgradeClicked(int mode)
@@ -549,6 +543,8 @@ namespace Anarchy.Systems.NetworkAnarchy
             {
                 m_LeftShowUpgrade.Value = SideUpgrades.None;
                 m_RightShowUpgrade.Value = SideUpgrades.None;
+                m_ReplaceLeftUpgrade.Value |= ButtonState.Hidden;
+                m_ReplaceRightUpgrade.Value |= ButtonState.Hidden;
                 m_ShowComposition.Value &= ~(Composition.WideMedian | Composition.Trees | Composition.GrassStrip | Composition.Lighting);
             }
         }

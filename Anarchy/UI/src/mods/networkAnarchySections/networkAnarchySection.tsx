@@ -134,6 +134,7 @@ const leftShowUpgrade$ = bindValue<SideUpgrades>(mod.id, "LeftShowUpgrade");
 const rightShowUpgrade$ = bindValue<SideUpgrades>(mod.id, "RightShowUpgrade");
 const showComposition$ = bindValue<Composition>(mod.id, "ShowComposition");
 const replaceComposition$ = bindValue<ButtonState>(mod.id, "ReplaceComposition");
+const showElevationStepSlider$ = bindValue<boolean>(mod.id, "ShowElevationStepSlider");
 
 // These contain the coui paths to Unified Icon Library svg assets
 const uilStandard =                          "coui://uil/Standard/";
@@ -182,6 +183,7 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
         const replaceRightUpgrade = useValue(replaceRightUpgrade$);
         const replaceComposition = useValue(replaceComposition$);
         const elevationStep = useValue(tool.elevationStep$);
+        const showElevationStepSlider = useValue(showElevationStepSlider$);
 
         // translation handling. Translates using locale keys that are defined in C# or fallback string here.
         const { translate } = useLocalization();
@@ -196,11 +198,13 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
         if (netToolActive) {
             result.props.children?.push(
                <>
-                    <VanillaComponentResolver.instance.Section title="Elevation Step">
-                        <div className={styles.elevationStepSliderField}>
-                            <SliderField label={""}value={elevationStep} min={0.01} max={25} fractionDigits={digits} onChange={(e: number) => {(e>=10)? tool.setElevationStep(Math.round(e*10)/10) : tool.setElevationStep(e);  setDigits((e >= 10)? 1 : 2)}}></SliderField>
-                        </div>
-                    </VanillaComponentResolver.instance.Section>
+                    {showElevationStepSlider && (
+                        <VanillaComponentResolver.instance.Section title="Elevation Step">
+                            <div className={styles.elevationStepSliderField}>
+                                <SliderField value={elevationStep} min={0.01} max={25} fractionDigits={digits} onChange={(e: number) => {(e>=10)? tool.setElevationStep(Math.round(e*10)/10) : tool.setElevationStep(e);  setDigits((e >= 10)? 1 : 2)}}></SliderField>
+                            </div>
+                        </VanillaComponentResolver.instance.Section>
+                    )}
                     { (leftShowUpgrade != SideUpgrades.None || (replaceLeftUpgrade & ButtonState.Hidden) != ButtonState.Hidden) && (
                         <>
                             <VanillaComponentResolver.instance.Section title={translate("Anarchy.SECTION_TITLE[Left]",locale["Anarchy.SECTION_TITLE[Left]"])}>

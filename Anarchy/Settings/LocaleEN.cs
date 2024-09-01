@@ -100,6 +100,8 @@ namespace Anarchy.Settings
                 { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.NetworkAnarchyToolOptions)), "With this option enabled and while drawing networks, options for ground, elevated, tunnel, and constant slope will appear when applicable in the tool options panel." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.NetworkUpgradesToolOptions)), "Network Upgrades Tool Options" },
                 { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.NetworkUpgradesToolOptions)), "With this option enabled and while drawing networks, options for various network upgrades will appear when applicable in the tool options panel. (i.e. street trees, retaining walls, quays, etc.)" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.ElevationStepSlider)), "Elevation Step Slider Tool Option" },
+                { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.ElevationStepSlider)), "Adds a slider for Elevation Step to tool options panel while drawing networks." },
                 { ErrorCheckKey(ErrorType.AlreadyExists), "Already Exists" },
                 { ErrorCheckKey(ErrorType.AlreadyUpgraded), "Already Upgraded" },
                 { ErrorCheckKey(ErrorType.ExceedsCityLimits), "Exceeds City Limits" },
