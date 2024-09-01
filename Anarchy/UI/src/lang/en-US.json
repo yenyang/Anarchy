@@ -72,6 +72,8 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.NetworkAnarchyToolOptions]": "With this option enabled and while drawing networks, options for ground, elevated, tunnel, and constant slope will appear when applicable in the tool options panel.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.NetworkUpgradesToolOptions]": "Network Upgrades Tool Options",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.NetworkUpgradesToolOptions]": "With this option enabled and while drawing networks, options for various network upgrades will appear when applicable in the tool options panel. (i.e. street trees, retaining walls, quays, etc.)",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationStepSlider]": "Elevation Step Slider Tool Option",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationStepSlider]": "Adds a slider for Elevation Step to tool options panel while drawing networks.",
   "Anarchy.ErrorType[AlreadyExists]": "Already Exists",
   "Anarchy.ErrorType[AlreadyUpgraded]": "Already Upgraded",
   "Anarchy.ErrorType[ExceedsCityLimits]": "Exceeds City Limits",
@@ -124,5 +126,13 @@
   "Anarchy.TOOLTIP_TITLE[SingleSelection]": "Single Selection",
   "Anarchy.TOOLTIP_DESCRIPTION[SingleSelection]": "Left Mouse Button to add selected component(s). Right Mouse Button to remove selected component(s). Single selection cannot select overriden objects and they are not visible.",
   "Anarchy.TOOLTIP_TITLE[RadiusSelection]": "Radius Selection",
-  "Anarchy.TOOLTIP_DESCRIPTION[RadiusSelection]": "Left Mouse Button to add selected component(s) within radius. Right Mouse Button to remove selected component(s) within radius. Radius is recommended for Anarchy component since you can see overridden objects and interact with them."
+  "Anarchy.TOOLTIP_DESCRIPTION[RadiusSelection]": "Left Mouse Button to add selected component(s) within radius. Right Mouse Button to remove selected component(s) within radius. Radius is recommended for Anarchy component since you can see overridden objects and interact with them.",
+  "Assets.NAME[Quay01]": "Quay",
+  "Assets.DESCRIPTION[Quay01]": "Network raised above terrain with ore or two walls along one or both sides. Can be applied to left or right side of applicable networks.",
+  "Assets.NAME[RetainingWall01]": "Retaining Wall",
+  "Assets.DESCRIPTION[RetainingWall01]": "Network lowered below terrain with ore or two walls along one or both sides. Can be applied to left or right side of applicable networks.",
+  "Assets.NAME[Elevated01]": "Elevated",
+  "Assets.DESCRIPTION[Elevated01]": "Forces a network to utilize the elevated mode (i.e. bridge, overpass, crossover).",
+  "Assets.NAME[Tunnel01]": "Tunnel",
+  "Assets.DESCRIPTION[Tunnel01]": "Forces a network to become a tunnel. Visual perfection is not guaranteed."
 }

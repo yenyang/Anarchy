@@ -2,19 +2,20 @@
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
+// #define DUMP_PREFABS
 namespace Anarchy.Systems.NetworkAnarchy
 {
     using System.Collections.Generic;
     using Anarchy;
+    using Anarchy.ExtendedRoadUpgrades;
     using Anarchy.Extensions;
-    using Anarchy.Systems;
     using Colossal.Entities;
     using Colossal.Logging;
+    using Colossal.Serialization.Entities;
+    using Game;
     using Game.Prefabs;
     using Game.Tools;
-    using Game.UI.InGame;
     using Unity.Entities;
-    using UnityEngine.InputSystem;
 
     /// <summary>
     /// A UI System for CS:1 Network Anarchy type UI.
@@ -255,6 +256,45 @@ namespace Anarchy.Systems.NetworkAnarchy
                 m_PreviousMode = m_NetToolSystem.actualMode;
             }
         }
+
+        /// <inheritdoc/>
+        protected override void OnGamePreload(Purpose purpose, GameMode mode)
+        {
+            base.OnGamePreload(purpose, mode);
+            UpgradesManager.Install();
+        }
+
+#if DUMP_PREFABS
+        /// <inheritdoc/>
+        protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
+        {
+            base.OnGameLoadingComplete(purpose, mode);
+
+            EntityQuery prefabQuery = SystemAPI.QueryBuilder()
+                          .WithAll<PrefabData>()
+                          .Build();
+            NativeArray<Entity> prefabEntities = prefabQuery.ToEntityArray(Allocator.Temp);
+            foreach (Entity e in prefabEntities)
+            {
+                if (!EntityManager.TryGetComponent(e, out PrefabData prefabData))
+                {
+                    return;
+                }
+
+                if (!m_PrefabSystem.TryGetPrefab(prefabData, out PrefabBase prefabBase))
+                {
+                    return;
+                }
+
+                if (prefabBase != null)
+                {
+                    m_Log.Info(prefabBase.GetPrefabID());
+                }
+            }
+
+            prefabEntities.Dispose();
+        }
+#endif
 
         private void LeftUpgradeClicked(int mode)
         {

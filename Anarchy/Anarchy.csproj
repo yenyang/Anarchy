@@ -25,6 +25,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Folder Include="ExtendedRoadUpgrades\" />
 		<Folder Include="lang" />
 		<Content Include="lang\**">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
