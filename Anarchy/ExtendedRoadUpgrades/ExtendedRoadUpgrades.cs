@@ -13,7 +13,7 @@ namespace Anarchy.ExtendedRoadUpgrades
     /// This is not intended as an example of how to design a proper C# project so I'll
     /// just dump everything I need into a static variable and call it a day.
     ///
-    /// Please don't use my code to learn how to program! :).
+    /// Please don't use my code to learn how to program! :). -ST-Apps
     /// </summary>
     internal class ExtendedRoadUpgrades
     {

@@ -15,7 +15,9 @@ namespace Anarchy.Systems.NetworkAnarchy
     using Game;
     using Game.Prefabs;
     using Game.Tools;
+    using Unity.Collections;
     using Unity.Entities;
+    using static Colossal.AssetPipeline.Diagnostic.Report;
 
     /// <summary>
     /// A UI System for CS:1 Network Anarchy type UI.
@@ -38,6 +40,7 @@ namespace Anarchy.Systems.NetworkAnarchy
         private TempNetworkSystem m_TempNetworkSystem;
         private NetToolSystem.Mode m_PreviousMode;
         private ValueBindingHelper<bool> m_ShowElevationStepSlider;
+        private bool m_InfoviewsFixed = false;
 
         /// <summary>
         /// An enum for network cross section modes.
@@ -203,15 +206,6 @@ namespace Anarchy.Systems.NetworkAnarchy
             get { return (m_ReplaceComposition & ButtonState.On) == ButtonState.On; }
         }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether to show elevation step slider.
-        /// </summary>
-        public bool ShowElevationStepSlider
-        {
-            get { return m_ShowElevationStepSlider.Value; }
-            set { m_ShowElevationStepSlider.Value = value; }
-        }
-
         /// <inheritdoc/>
         protected override void OnCreate()
         {
@@ -261,15 +255,18 @@ namespace Anarchy.Systems.NetworkAnarchy
         protected override void OnGamePreload(Purpose purpose, GameMode mode)
         {
             base.OnGamePreload(purpose, mode);
-            UpgradesManager.Install();
+            if (AnarchyMod.Instance.Settings.NetworkUpgradesPrefabs)
+            {
+                UpgradesManager.Install();
+            }
         }
 
-#if DUMP_PREFABS
         /// <inheritdoc/>
         protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
         {
             base.OnGameLoadingComplete(purpose, mode);
 
+#if DUMP_PREFABS && DEBUG
             EntityQuery prefabQuery = SystemAPI.QueryBuilder()
                           .WithAll<PrefabData>()
                           .Build();
@@ -293,8 +290,37 @@ namespace Anarchy.Systems.NetworkAnarchy
             }
 
             prefabEntities.Dispose();
-        }
 #endif
+
+            // This fixes the placeable info view items defaulting to fire and rescue for these custom prefabs.
+            if (m_InfoviewsFixed || (mode == GameMode.Game || mode == GameMode.Editor) == false)
+            {
+                return;
+            }
+
+            foreach (PrefabID prefabID in m_TempNetworkSystem.UpgradePrefabIDs)
+            {
+                if (m_PrefabSystem.TryGetPrefab(prefabID, out PrefabBase prefabBase)
+                    && m_PrefabSystem.TryGetEntity(prefabBase, out Entity entity)
+                    && EntityManager.TryGetBuffer(entity, isReadOnly: false, out DynamicBuffer<PlaceableInfoviewItem> placeableInfoViewItems)
+                    && m_PrefabSystem.TryGetPrefab(new PrefabID("InfoviewPrefab", "None"), out PrefabBase noneInfoviewPrefabBase)
+                    && m_PrefabSystem.TryGetEntity(noneInfoviewPrefabBase, out Entity noneInfoviewPrefabEntity))
+                {
+                    placeableInfoViewItems[0] = new PlaceableInfoviewItem() { m_Item = noneInfoviewPrefabEntity, m_Priority = 0 };
+                    m_Log.Debug($"{nameof(NetworkAnarchyUISystem)}.{nameof(OnGameLoadingComplete)} fixed placeable Info view for {prefabID}.");
+                }
+                else
+                {
+                    m_Log.Debug($"{nameof(NetworkAnarchyUISystem)}.{nameof(OnGameLoadingComplete)} could not fix placeable Info view for {prefabID}.");
+                }
+            }
+
+            if (mode == GameMode.Game || mode == GameMode.Editor)
+            {
+                m_InfoviewsFixed = true;
+                m_Log.Debug($"{nameof(NetworkAnarchyUISystem)}.{nameof(OnGameLoadingComplete)} PlaceableInfo Views fixed.");
+            }
+        }
 
         private void LeftUpgradeClicked(int mode)
         {
@@ -454,11 +480,7 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_ReplaceComposition.Value |= ButtonState.Hidden;
             m_ReplaceLeftUpgrade.Value |= ButtonState.Hidden;
             m_ReplaceRightUpgrade.Value |= ButtonState.Hidden;
-
-            if (!AnarchyMod.Instance.Settings.NetworkAnarchyToolOptions && !AnarchyMod.Instance.Settings.NetworkUpgradesToolOptions)
-            {
-                return;
-            }
+            m_ShowElevationStepSlider.Value = false;
 
             if (prefabBase is null || m_ToolSystem.activeTool != m_NetToolSystem)
             {
@@ -484,6 +506,17 @@ namespace Anarchy.Systems.NetworkAnarchy
             {
                 return;
             }
+
+            if (placeableNetData.m_ElevationRange.max != 0 || placeableNetData.m_ElevationRange.min != 0)
+            {
+                m_ShowElevationStepSlider.Value = AnarchyMod.Instance.Settings.ElevationStepSlider;
+            }
+
+            if (!AnarchyMod.Instance.Settings.NetworkAnarchyToolOptions && !AnarchyMod.Instance.Settings.NetworkUpgradesToolOptions)
+            {
+                return;
+            }
+
 
             if (AnarchyMod.Instance.Settings.NetworkUpgradesToolOptions) 
             {
@@ -521,15 +554,15 @@ namespace Anarchy.Systems.NetworkAnarchy
                 m_ShowComposition.Value &= ~(Composition.Elevated | Composition.Tunnel);
             }
 
-            if ((m_Composition & Composition.Tunnel) == Composition.Tunnel
-                || (m_Composition & Composition.Elevated) == Composition.Elevated)
+            if ((NetworkComposition & Composition.Tunnel) == Composition.Tunnel
+                || (NetworkComposition & Composition.Elevated) == Composition.Elevated)
             {
                 m_ShowComposition.Value &= ~(Composition.Trees | Composition.GrassStrip);
                 m_LeftShowUpgrade.Value &= ~(SideUpgrades.Trees | SideUpgrades.GrassStrip | SideUpgrades.SoundBarrier | SideUpgrades.WideSidewalk);
                 m_RightShowUpgrade.Value &= ~(SideUpgrades.Trees | SideUpgrades.GrassStrip | SideUpgrades.SoundBarrier | SideUpgrades.WideSidewalk);
             }
 
-            if ((m_Composition & Composition.Tunnel) == Composition.Tunnel)
+            if ((NetworkComposition & Composition.Tunnel) == Composition.Tunnel)
             {
                 m_LeftShowUpgrade.Value &= ~(SideUpgrades.RetainingWall | SideUpgrades.Quay);
                 m_RightShowUpgrade.Value &= ~(SideUpgrades.RetainingWall | SideUpgrades.Quay);

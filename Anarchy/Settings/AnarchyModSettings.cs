@@ -145,8 +145,13 @@ namespace Anarchy.Settings
         /// Gets or sets a value indicating whether to show elevation step slider.
         /// </summary>
         [SettingsUISection(UI, Stable)]
-        [SettingsUISetter(typeof(AnarchyModSettings), nameof(SetElevationStepSlider))]
         public bool ElevationStepSlider { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to show network upgrade prefabs.
+        /// </summary>
+        [SettingsUISection(UI, Stable)]
+        public bool NetworkUpgradesPrefabs { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the minimum clearance below elevated network.
@@ -311,6 +316,7 @@ namespace Anarchy.Settings
                 NetworkAnarchyToolOptions = true;
                 NetworkUpgradesToolOptions = true;
                 ElevationStepSlider = true;
+                NetworkUpgradesPrefabs = true;
                 ApplyAndSave();
             }
         }
@@ -350,6 +356,7 @@ namespace Anarchy.Settings
             ResetElevationWhenChangingPrefab = true;
             NetworkAnarchyToolOptions = true;
             NetworkUpgradesToolOptions = true;
+            NetworkUpgradesPrefabs = true;
             ElevationStepSlider = true;
         }
 
@@ -392,16 +399,6 @@ namespace Anarchy.Settings
         {
             AnarchyUISystem anarchyReactUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyUISystem>();
             anarchyReactUISystem.SetMultipleUniques(value);
-        }
-
-        /// <summary>
-        /// Sets property in Network Anarchy UI System for showing elevation step slider.
-        /// </summary>
-        /// <param name="value">The value being set to.</param>
-        public void SetElevationStepSlider(bool value)
-        {
-            NetworkAnarchyUISystem anarchyReactUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<NetworkAnarchyUISystem>();
-            anarchyReactUISystem.ShowElevationStepSlider = value;
         }
     }
 }

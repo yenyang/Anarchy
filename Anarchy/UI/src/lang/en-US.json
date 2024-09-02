@@ -53,7 +53,7 @@
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ToggleAnarchy]": "Toggle Anarchy",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ToggleAnarchy]": "A keybind to switch the Anarchy toggle on or off.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevation]": "Reset Elevation",
-  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevation]": "A keybind to reset the elevation value of objects during placement.",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevation]": "A keybind to reset the elevation value during placement.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationStep]": "Change Elevation Step",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationStep]": "A keybind to change the rate in which the elevation value changes.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.IncreaseElevation]": "Increase Elevation",
@@ -74,6 +74,8 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.NetworkUpgradesToolOptions]": "With this option enabled and while drawing networks, options for various network upgrades will appear when applicable in the tool options panel. (i.e. street trees, retaining walls, quays, etc.)",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationStepSlider]": "Elevation Step Slider Tool Option",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationStepSlider]": "Adds a slider for Elevation Step to tool options panel while drawing networks.",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.NetworkUpgradesPrefabs]": "Network Upgrades Prefabs (Requires Restart)",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.NetworkUpgradesPrefabs]": "Adds assets for Retaining Wall, Quay, Elevated, and Tunnel as road upgrades in the vanilla asset menu. These were originally part of Extended Road Upgrades by ST-Apps and have been incoporated into this mod with permission.",
   "Anarchy.ErrorType[AlreadyExists]": "Already Exists",
   "Anarchy.ErrorType[AlreadyUpgraded]": "Already Upgraded",
   "Anarchy.ErrorType[ExceedsCityLimits]": "Exceeds City Limits",
@@ -111,6 +113,7 @@
   "Anarchy.SECTION_TITLE[Radius]": "Radius",
   "Anarchy.SECTION_TITLE[Selection]": "Selection",
   "Anarchy.SECTION_TITLE[Components]": "Components",
+  "Anarchy.SECTION_TITLE[ElevationStep]": "Elevation Step",
   "Anarchy.TOOLTIP_TITLE[ConstantSlope]": "Constant Slope",
   "Anarchy.TOOLTIP_DESCRIPTION[ConstantSlope]": "Forces newly placed networks to have a constant slope or grade from starting point to end point (A -> B).",
   "Anarchy.TOOLTIP_TITLE[Ground]": "Ground",
@@ -134,5 +137,5 @@
   "Assets.NAME[Elevated01]": "Elevated",
   "Assets.DESCRIPTION[Elevated01]": "Forces a network to utilize the elevated mode (i.e. bridge, overpass, crossover).",
   "Assets.NAME[Tunnel01]": "Tunnel",
-  "Assets.DESCRIPTION[Tunnel01]": "Forces a network to become a tunnel. Visual perfection is not guaranteed."
+  "Assets.DESCRIPTION[Tunnel01]": "Forces a network to become a tunnel. Forced tunnel visuals are often undesirable. Use only, if necessary."
 }

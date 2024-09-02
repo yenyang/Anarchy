@@ -199,7 +199,7 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
             result.props.children?.push(
                <>
                     {showElevationStepSlider && (
-                        <VanillaComponentResolver.instance.Section title="Elevation Step">
+                        <VanillaComponentResolver.instance.Section title={translate("Anarchy.SECTION_TITLE[ElevationStep]", locale["Anarchy.SECTION_TITLE[ElevationStep]"])}>
                             <div className={styles.elevationStepSliderField}>
                                 <SliderField value={elevationStep} min={0.01} max={25} fractionDigits={digits} onChange={(e: number) => {(e>=10)? tool.setElevationStep(Math.round(e*10)/10) : tool.setElevationStep(e);  setDigits((e >= 10)? 1 : 2)}}></SliderField>
                             </div>

@@ -48,6 +48,18 @@ namespace Anarchy.Systems.NetworkAnarchy
             { NetworkAnarchyUISystem.Composition.Trees | NetworkAnarchyUISystem.Composition.GrassStrip, CompositionFlags.General.SecondaryMiddleBeautification | CompositionFlags.General.PrimaryMiddleBeautification },
         };
 
+        private readonly List<PrefabID> UpgradeLookup = new List<PrefabID>()
+        {
+             new PrefabID("FencePrefab", "RetainingWall"),
+             new PrefabID("FencePrefab", "RetainingWall01"),
+             new PrefabID("FencePrefab", "Quay"),
+             new PrefabID("FencePrefab", "Quay01"),
+             new PrefabID("FencePrefab", "Elevated"),
+             new PrefabID("FencePrefab", "Elevated01"),
+             new PrefabID("FencePrefab", "Tunnel"),
+             new PrefabID("FencePrefab", "Tunnel01"),
+        };
+
         private ToolSystem m_ToolSystem;
         private NetToolSystem m_NetToolSystem;
         private PrefabSystem m_PrefabSystem;
@@ -70,6 +82,14 @@ namespace Anarchy.Systems.NetworkAnarchy
         public Dictionary<NetworkAnarchyUISystem.Composition, CompositionFlags.General> GeneralCompositionDictionary
         {
             get { return GeneralCompositionLookup; }
+        }
+
+        /// <summary>
+        /// Gets the list of upgrade prefab IDs.
+        /// </summary>
+        public List<PrefabID> UpgradePrefabIDs
+        {
+            get { return UpgradeLookup; }
         }
 
         /// <inheritdoc/>
@@ -120,16 +140,50 @@ namespace Anarchy.Systems.NetworkAnarchy
                     continue;
                 }
 
-                if ((placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.IsUpgrade) == Game.Net.PlacementFlags.IsUpgrade
+                if (((placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.IsUpgrade) == Game.Net.PlacementFlags.IsUpgrade
                     || (placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.UpgradeOnly) == Game.Net.PlacementFlags.UpgradeOnly)
+                    && !UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID()))
                 {
                     continue;
                 }
 
-                if (((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
-                    || (m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay
-                    || (m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
-                    || (m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
+                // This is a somewhat roundabout way to adapt Extended Road upgrades method of applying upgrades to the way Network Anarchy applies upgrades.
+                NetworkAnarchyUISystem.SideUpgrades effectiveLeftUpgrades = m_UISystem.LeftUpgrade;
+                NetworkAnarchyUISystem.SideUpgrades effectiveRightUpgrades = m_UISystem.RightUpgrade;
+                NetworkAnarchyUISystem.Composition effectiveComposition = m_UISystem.NetworkComposition;                
+                if (UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID()) && EntityManager.TryGetComponent(entity, out Upgraded upgraded))
+                {
+                    if ((upgraded.m_Flags.m_Left & CompositionFlags.Side.Raised) == CompositionFlags.Side.Raised)
+                    {
+                        effectiveLeftUpgrades |= NetworkAnarchyUISystem.SideUpgrades.Quay;
+                    }
+                    else if ((upgraded.m_Flags.m_Left & CompositionFlags.Side.Lowered) == CompositionFlags.Side.Lowered)
+                    {
+                        effectiveLeftUpgrades |= NetworkAnarchyUISystem.SideUpgrades.RetainingWall;
+                    }
+
+                    if ((upgraded.m_Flags.m_Right & CompositionFlags.Side.Raised) == CompositionFlags.Side.Raised)
+                    {
+                        effectiveRightUpgrades |= NetworkAnarchyUISystem.SideUpgrades.Quay;
+                    }
+                    else if ((upgraded.m_Flags.m_Right & CompositionFlags.Side.Lowered) == CompositionFlags.Side.Lowered)
+                    {
+                        effectiveRightUpgrades |= NetworkAnarchyUISystem.SideUpgrades.RetainingWall;
+                    }
+
+                    if ((upgraded.m_Flags.m_General & CompositionFlags.General.Elevated) == CompositionFlags.General.Elevated)
+                    {
+                        effectiveComposition |= NetworkAnarchyUISystem.Composition.Elevated;
+                    } else if ((upgraded.m_Flags.m_General & CompositionFlags.General.Tunnel) == CompositionFlags.General.Tunnel)
+                    {
+                        effectiveComposition |= NetworkAnarchyUISystem.Composition.Tunnel;
+                    }
+                }
+
+                if (((effectiveLeftUpgrades & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
+                    || (effectiveLeftUpgrades & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay
+                    || (effectiveRightUpgrades & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
+                    || (effectiveRightUpgrades & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
                     && (temp.m_Flags != TempFlags.IsLast))
                 {
                     if (!EntityManager.TryGetComponent(entity, out Game.Net.Elevation elevation))
@@ -137,11 +191,11 @@ namespace Anarchy.Systems.NetworkAnarchy
                         EntityManager.AddComponent<Elevation>(entity);
                     }
 
-                    if ((m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall)
+                    if ((effectiveRightUpgrades & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall)
                     {
                         elevation.m_Elevation.y = Mathf.Min(elevation.m_Elevation.y, m_NetToolSystem.elevation, NetworkDefinitionSystem.RetainingWallThreshold);
                     }
-                    else if ((m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
+                    else if ((effectiveRightUpgrades & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
                     {
                         elevation.m_Elevation.y = Mathf.Max(elevation.m_Elevation.y, m_NetToolSystem.elevation, NetworkDefinitionSystem.QuayThreshold);
                     }
@@ -150,11 +204,11 @@ namespace Anarchy.Systems.NetworkAnarchy
                         elevation.m_Elevation.y = 0;
                     }
 
-                    if ((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall)
+                    if ((effectiveLeftUpgrades & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall)
                     {
                         elevation.m_Elevation.x = Mathf.Min(elevation.m_Elevation.x, m_NetToolSystem.elevation, NetworkDefinitionSystem.RetainingWallThreshold);
                     }
-                    else if ((m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
+                    else if ((effectiveLeftUpgrades & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
                     {
                         elevation.m_Elevation.x = Mathf.Max(elevation.m_Elevation.x, m_NetToolSystem.elevation, NetworkDefinitionSystem.QuayThreshold);
                     }
@@ -173,7 +227,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                     EntityManager.SetComponentData(entity, temp);
                     m_Log.Debug($"{nameof(TempNetworkSystem)}{nameof(OnUpdate)} added replace to temp.");
 
-                    if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Tunnel) != NetworkAnarchyUISystem.Composition.Tunnel && EntityManager.TryGetComponent<Edge>(entity, out Edge edge))
+                    if ((effectiveComposition & NetworkAnarchyUISystem.Composition.Tunnel) != NetworkAnarchyUISystem.Composition.Tunnel && EntityManager.TryGetComponent(entity, out Edge edge))
                     {
                         EntityManager.RemoveComponent<Elevation>(edge.m_Start);
                         EntityManager.RemoveComponent<Elevation>(edge.m_End);
@@ -190,18 +244,18 @@ namespace Anarchy.Systems.NetworkAnarchy
 
                 if (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace || m_UISystem.ReplaceComposition)
                 {
-                    compositionFlags.m_General = GetCompositionGeneralFlags();
+                    compositionFlags.m_General = GetCompositionGeneralFlags(effectiveComposition);
                 }
 
-                if (SideUpgradeLookup.ContainsKey(m_UISystem.LeftUpgrade) && (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace || m_UISystem.ReplaceLeftUpgrade))
+                if (SideUpgradeLookup.ContainsKey(effectiveLeftUpgrades) && (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace || m_UISystem.ReplaceLeftUpgrade))
                 {
-                    compositionFlags.m_Left = SideUpgradeLookup[m_UISystem.LeftUpgrade];
+                    compositionFlags.m_Left = SideUpgradeLookup[effectiveLeftUpgrades];
                     m_Log.Debug($"{nameof(TempNetworkSystem)}.{nameof(OnUpdate)} m_NetToolSystem.actualMode = {m_NetToolSystem.actualMode} m_UISystem.ReplaceLeftUpgrade {m_UISystem.ReplaceLeftUpgrade}");
                 }
 
-                if (SideUpgradeLookup.ContainsKey(m_UISystem.RightUpgrade) && (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace || m_UISystem.ReplaceRightUpgrade))
+                if (SideUpgradeLookup.ContainsKey(effectiveRightUpgrades) && (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace || m_UISystem.ReplaceRightUpgrade))
                 {
-                    compositionFlags.m_Right = SideUpgradeLookup[m_UISystem.RightUpgrade];
+                    compositionFlags.m_Right = SideUpgradeLookup[effectiveRightUpgrades];
                 }
 
                 if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace)
@@ -243,9 +297,8 @@ namespace Anarchy.Systems.NetworkAnarchy
         /// Gets the composition general flags.
         /// </summary>
         /// <returns>Compsoition General flags.</returns>
-        private CompositionFlags.General GetCompositionGeneralFlags()
+        private CompositionFlags.General GetCompositionGeneralFlags(NetworkAnarchyUISystem.Composition composition)
         {
-            NetworkAnarchyUISystem.Composition composition = m_UISystem.NetworkComposition;
             composition &= ~NetworkAnarchyUISystem.Composition.ConstantSlope;
             composition &= ~NetworkAnarchyUISystem.Composition.Ground;
 
