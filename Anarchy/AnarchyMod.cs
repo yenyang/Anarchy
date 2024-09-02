@@ -164,7 +164,8 @@ namespace Anarchy
             updateSystem.UpdateAfter<ResetNetCompositionDataSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<ResetTransformSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<CheckTransformSystem>(SystemUpdatePhase.Modification1);
-            updateSystem.UpdateBefore<HandleUpdateNextFrameSystem>(SystemUpdatePhase.Modification1);
+            updateSystem.UpdateAt<HandleUpdateNextFrameSystem>(SystemUpdatePhase.Modification1);
+            updateSystem.UpdateAt<HandleClearUpdateNextFrameSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<SelectedInfoPanelTogglesSystem>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateBefore<ElevateObjectDefinitionSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateAt<ElevateTempObjectSystem>(SystemUpdatePhase.Modification1);

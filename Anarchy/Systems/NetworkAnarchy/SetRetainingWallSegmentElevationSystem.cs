@@ -25,11 +25,12 @@ namespace Anarchy.Systems.NetworkAnarchy
     /// </summary>
     public partial class SetRetainingWallSegmentElevationSystem : GameSystemBase
     {
-        private EntityQuery m_UpgradedAndAppliedQuery;
+        private EntityQuery m_UpgradedAndUpgradedQuery;
         private ILog m_Log;
         private ModificationEndBarrier m_Barrier;
         private ToolSystem m_ToolSystem;
         private NetToolSystem m_NetToolSystem;
+        private EntityQuery m_AppliedQuery;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SetRetainingWallSegmentElevationSystem"/> class.
@@ -48,12 +49,12 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_NetToolSystem;
-            m_UpgradedAndAppliedQuery = SystemAPI.QueryBuilder()
+            m_UpgradedAndUpgradedQuery = SystemAPI.QueryBuilder()
                             .WithAll<Updated, Game.Net.Upgraded, Game.Net.Edge>()
-                            .WithNone<Deleted, Overridden, Temp, Owner>()
+                            .WithNone<Deleted, Overridden, Temp, Owner, UpdateNextFrame, ClearUpdateNextFrame>()
                             .Build();
 
-            RequireAnyForUpdate(m_UpgradedAndAppliedQuery);
+            RequireForUpdate(m_UpgradedAndUpgradedQuery);
         }
 
         /// <inheritdoc/>
@@ -71,7 +72,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                 m_EdgeLookup = SystemAPI.GetComponentLookup<Game.Net.Edge>(isReadOnly: true),
             };
 
-            JobHandle segmentElevationsJobHandle = setSegmentElevationsJob.Schedule(m_UpgradedAndAppliedQuery, Dependency);
+            JobHandle segmentElevationsJobHandle = setSegmentElevationsJob.Schedule(m_UpgradedAndUpgradedQuery, Dependency);
             m_Barrier.AddJobHandleForProducer(segmentElevationsJobHandle);
             Dependency = segmentElevationsJobHandle;
         }
@@ -229,8 +230,8 @@ namespace Anarchy.Systems.NetworkAnarchy
                                     buffer.AddComponent<UpdateNextFrame>(connectedEdge.m_Edge);
                                     if (m_EdgeLookup.TryGetComponent(connectedEdge.m_Edge, out Edge distantEdge))
                                     {
-                                        buffer.AddComponent<Updated>(distantEdge.m_Start);
-                                        buffer.AddComponent<Updated>(distantEdge.m_End);
+                                        buffer.AddComponent<UpdateNextFrame>(distantEdge.m_Start);
+                                        buffer.AddComponent<UpdateNextFrame>(distantEdge.m_End);
                                     }
                                 }
                             }
@@ -246,8 +247,8 @@ namespace Anarchy.Systems.NetworkAnarchy
                                     buffer.AddComponent<UpdateNextFrame>(connectedEdge.m_Edge);
                                     if (m_EdgeLookup.TryGetComponent(connectedEdge.m_Edge, out Edge distantEdge))
                                     {
-                                        buffer.AddComponent<Updated>(distantEdge.m_Start);
-                                        buffer.AddComponent<Updated>(distantEdge.m_End);
+                                        buffer.AddComponent<UpdateNextFrame>(distantEdge.m_Start);
+                                        buffer.AddComponent<UpdateNextFrame>(distantEdge.m_End);
                                     }
                                 }
                             }

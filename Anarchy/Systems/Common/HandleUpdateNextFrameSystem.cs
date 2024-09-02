@@ -19,6 +19,7 @@ namespace Anarchy.Systems.Common
         private ILog m_Log;
         private EntityQuery m_UpdateNextFrameQuery;
         private EntityQuery m_UpdateNextFrameAndNotTransformRecordQuery;
+        private ModificationBarrier1 m_Barrier;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HandleUpdateNextFrameSystem"/> class.
@@ -56,18 +57,21 @@ namespace Anarchy.Systems.Common
                     ComponentType.ReadOnly<Deleted>(),
                     ComponentType.ReadOnly<Updated>(),
                     ComponentType.ReadOnly<TransformRecord>(),
+                    ComponentType.ReadOnly<ClearUpdateNextFrame>(),
                },
             });
-            RequireForUpdate(m_UpdateNextFrameQuery);
+            m_Barrier = World.GetOrCreateSystemManaged<ModificationBarrier1>();
+            RequireAnyForUpdate(m_UpdateNextFrameQuery, m_UpdateNextFrameAndNotTransformRecordQuery);
             base.OnCreate();
         }
 
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            EntityManager.AddComponent<Updated>(m_UpdateNextFrameQuery);
-            EntityManager.AddComponent<Updated>(m_UpdateNextFrameAndNotTransformRecordQuery);
-            EntityManager.RemoveComponent<UpdateNextFrame>(m_UpdateNextFrameAndNotTransformRecordQuery);
+            EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
+            buffer.AddComponent<Updated>(m_UpdateNextFrameQuery, EntityQueryCaptureMode.AtRecord);
+            buffer.AddComponent<ClearUpdateNextFrame>(m_UpdateNextFrameAndNotTransformRecordQuery, EntityQueryCaptureMode.AtRecord);
+            buffer.AddComponent<Updated>(m_UpdateNextFrameAndNotTransformRecordQuery, EntityQueryCaptureMode.AtRecord);
         }
     }
 }

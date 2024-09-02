@@ -100,7 +100,6 @@ namespace Anarchy.Systems.OverridePrevention
                     ComponentType.ReadOnly<Owner>(),
                     ComponentType.ReadOnly<Temp>(),
                     ComponentType.ReadOnly<Building>(),
-                    ComponentType.ReadOnly<Crane>(),
                     ComponentType.ReadOnly<Animal>(),
                     ComponentType.ReadOnly<Game.Creatures.Pet>(),
                     ComponentType.ReadOnly<Creature>(),
