@@ -10,6 +10,7 @@ import locale from "../../lang/en-US.json";
 const anarchyEnabled$ = bindValue<boolean>(mod.id, 'AnarchyEnabled');
 const showToolIcon$ = bindValue<boolean>(mod.id, 'ShowToolIcon');
 const ShowPanel$ = bindValue<boolean>(mod.id, "ShowAnarchyToggleOptionsPanel");
+const disableAnarchyComponentsTool$ = bindValue<boolean>(mod.id, 'DisableElevationLock');
 
 // These contain the coui paths to Unified Icon Library svg assets
 const uilStandard =                          "coui://uil/Standard/";
@@ -31,6 +32,7 @@ export const AnarchyRowComponent: ModuleRegistryExtend = (Component : any) => {
         const anarchyEnabled : boolean = useValue(anarchyEnabled$);
         const showToolIcon : boolean = useValue(showToolIcon$);
         const showPanel : boolean = useValue(ShowPanel$);
+        const disableAnarchyComponentsTool = useValue(disableAnarchyComponentsTool$);
         
         // translation handling. Translates using locale keys that are defined in C# or fallback string here.
         const { translate } = useLocalization();
@@ -57,7 +59,7 @@ export const AnarchyRowComponent: ModuleRegistryExtend = (Component : any) => {
                         src={optionSrc}
                         selected = {showPanel}
                         multiSelect = {false}   // I haven't tested any other value here
-                        disabled = {false}      // I haven't tested any other value here
+                        disabled = {false}     
                         tooltip = {translate(mod.id + ".TOOLTIP_DESCRIPTION[AnarchyOptions]", "Opens a panel for controlling which error checks are never disabled, disabled with Anarchy, or always disabled.")}
                         className = {VanillaComponentResolver.instance.toolButtonTheme.button}
                         focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
@@ -66,7 +68,7 @@ export const AnarchyRowComponent: ModuleRegistryExtend = (Component : any) => {
                     <VanillaComponentResolver.instance.ToolButton
                         src={toolSrc}
                         multiSelect = {false}   // I haven't tested any other value here
-                        disabled = {false}      // I haven't tested any other value here
+                        disabled = {disableAnarchyComponentsTool}      
                         tooltip = {descriptionTooltip(translate("Anarchy.TOOLTIP_TITLE[AnarchyComponentsTool]", locale["Anarchy.TOOLTIP_TITLE[AnarchyComponentsTool]"]), translate("Anarchy.TOOLTIP_DESCRIPTION[AnarchyComponentsTool]", locale["Anarchy.TOOLTIP_DESCRIPTION[AnarchyComponentsTool]"]))}
                         className = {VanillaComponentResolver.instance.toolButtonTheme.button}
                         focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
@@ -76,7 +78,7 @@ export const AnarchyRowComponent: ModuleRegistryExtend = (Component : any) => {
                         src={anarchyEnabled ? anarchyEnabledSrc : anarchyDisabledSrc}
                         selected = {anarchyEnabled}
                         multiSelect = {false}   // I haven't tested any other value here
-                        disabled = {false}      // I haven't tested any other value here
+                        disabled = {false}      
                         tooltip = {tooltipText}
                         className = {VanillaComponentResolver.instance.toolButtonTheme.button}                        
                         focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}

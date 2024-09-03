@@ -112,7 +112,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                 }
             };
             m_RenderingSystem = World.GetOrCreateSystemManaged<RenderingSystem>();
-            m_AnarchyComponentType = CreateBinding("AnarchyComponentType", AnarchyComponentType.TransformRecord);
+            m_AnarchyComponentType = CreateBinding("AnarchyComponentType", AnarchyComponentType.PreventOverride);
             m_SelectionMode = CreateBinding("SelectionMode", SelectionMode.Radius);
             m_SelectionRadius = CreateBinding("SelectionRadius", 10);
 

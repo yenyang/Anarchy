@@ -1,8 +1,8 @@
-﻿## Patch V1.7.0
+﻿## Update V1.7.0
 * Added Optional Network Anarchy Tool options: Force Ground, Force Elevated, Force Tunnel, and Constant Slope.
 * Added Optional Network Upgrade Overhaul so network upgrades can be applied during placement or replacement. Includes retaining walls, quays, trees, grass, wide sidewalks, lighting, medians, etc.
 * Added Anarchy Components Tool which lets you Add or remove elevation lock or anarchy components using a tool with radius or single selection.
-* Added Option Network Upgrade assets from Extended Road Upgrades with permission from ST-Apps.
+* Added Optional Network Upgrade assets from Extended Road Upgrades with permission from ST-Apps. Compatible with ERU if you choose not to unsubscribe.
 * Fixes to Extended Road Upgrades including: retaining wall node issues and fire and rescue info view issue.
 * Added Optional Elevation Step Slider.
 * Reset Elevation and Elevation Step keybinds work while drawing networks.
