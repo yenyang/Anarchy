@@ -48,11 +48,7 @@ namespace Anarchy.Systems.ClearanceViolation
                     All = new ComponentType[]
                     {
                         ComponentType.ReadWrite<HeightRangeRecord>(),
-                    },
-                    Any = new ComponentType[]
-                    {
                         ComponentType.ReadWrite<NetCompositionData>(),
-                        ComponentType.ReadWrite<NetGeometryData>(),
                     },
                 },
             });

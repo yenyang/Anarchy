@@ -160,6 +160,8 @@ namespace Anarchy.Settings
                 { TooltipDescriptionKey("SingleSelection"), "Left Mouse Button to add selected component(s). Right Mouse Button to remove selected component(s). Single selection cannot select overriden objects and they are not visible." },
                 { TooltipTitleKey("RadiusSelection"), "Radius Selection" },
                 { TooltipDescriptionKey("RadiusSelection"), "Left Mouse Button to add selected component(s) within radius. Right Mouse Button to remove selected component(s) within radius. Radius is recommended for Anarchy component since you can see overridden objects and interact with them." },
+                { TooltipTitleKey("ExpandedElevationRange"), "Expanded Elevation Range" },
+                { TooltipDescriptionKey("ExpandedElevationRange"), "Expands the elevation range for networks to -1000 minimum and 1000 maximum." },
                 { "Assets.NAME[Quay01]", "Quay" },
                 { "Assets.DESCRIPTION[Quay01]", "Network raised above terrain with one or two walls along one or both sides. Can be applied to left or right side of applicable networks." },
                 { "Assets.NAME[RetainingWall01]", "Retaining Wall" },

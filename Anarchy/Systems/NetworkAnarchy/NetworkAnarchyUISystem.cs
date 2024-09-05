@@ -7,12 +7,14 @@ namespace Anarchy.Systems.NetworkAnarchy
 {
     using System.Collections.Generic;
     using Anarchy;
+    using Anarchy.Components;
     using Anarchy.ExtendedRoadUpgrades;
     using Anarchy.Extensions;
     using Colossal.Entities;
     using Colossal.Logging;
     using Colossal.Serialization.Entities;
     using Game;
+    using Game.Common;
     using Game.Prefabs;
     using Game.Tools;
     using Unity.Collections;
@@ -41,6 +43,7 @@ namespace Anarchy.Systems.NetworkAnarchy
         private NetToolSystem.Mode m_PreviousMode;
         private ValueBindingHelper<bool> m_ShowElevationStepSlider;
         private bool m_InfoviewsFixed = false;
+        private EntityQuery m_HeightRangePlaceableNetQuery;
 
         /// <summary>
         /// An enum for network cross section modes.
@@ -132,6 +135,11 @@ namespace Anarchy.Systems.NetworkAnarchy
             /// Lighting
             /// </summary>
             Lighting = 128,
+
+            /// <summary>
+            /// Expands elevation range to large amounts.
+            /// </summary>
+            ExpanedElevationRange = 256,
         }
 
         /// <summary>
@@ -226,7 +234,8 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_LeftShowUpgrade = CreateBinding("LeftShowUpgrade", SideUpgrades.None);
             m_RightShowUpgrade = CreateBinding("RightShowUpgrade", SideUpgrades.None);
             m_ShowComposition = CreateBinding("ShowComposition", Composition.None);
-            if (!AnarchyMod.Instance.Settings.ReplaceUpgradesBehavior) {
+            if (!AnarchyMod.Instance.Settings.ReplaceUpgradesBehavior)
+            {
                 m_ReplaceRightUpgrade = CreateBinding("ReplaceRightUpgrade", ButtonState.Hidden | ButtonState.Off);
                 m_ReplaceLeftUpgrade = CreateBinding("ReplaceLeftUpgrade", ButtonState.Hidden | ButtonState.Off);
                 m_ReplaceComposition = CreateBinding("ReplaceComposition", ButtonState.Hidden | ButtonState.Off);
@@ -248,6 +257,10 @@ namespace Anarchy.Systems.NetworkAnarchy
             CreateTrigger("ReplaceComposition", () => InvertButtonState(ref m_ReplaceComposition));
             CreateTrigger("ReplaceLeftUpgrade", () => InvertButtonState(ref m_ReplaceLeftUpgrade));
             CreateTrigger("ReplaceRightUpgrade", () => InvertButtonState(ref m_ReplaceRightUpgrade));
+
+            m_HeightRangePlaceableNetQuery = SystemAPI.QueryBuilder()
+                           .WithAll<HeightRangeRecord, PlaceableNetData>()
+                           .Build();
         }
 
         /// <inheritdoc/>
@@ -481,6 +494,48 @@ namespace Anarchy.Systems.NetworkAnarchy
             CheckPrefabAndUpdateButtonDisplay(m_ToolSystem.activeTool);
         }
 
+        private void ResetExpandedElevationRanges()
+        {
+            if (m_HeightRangePlaceableNetQuery.IsEmptyIgnoreFilter)
+            {
+                return;
+            }
+
+            NativeArray<Entity> entities = m_HeightRangePlaceableNetQuery.ToEntityArray(Allocator.Temp);
+            foreach (Entity entity in entities)
+            {
+                if (EntityManager.TryGetComponent(entity, out PlaceableNetData placeableNetData) && EntityManager.TryGetComponent(entity, out HeightRangeRecord heightRangeRecord)) 
+                {
+                    placeableNetData.m_ElevationRange = new Colossal.Mathematics.Bounds1(heightRangeRecord.min, heightRangeRecord.max);
+                    EntityManager.SetComponentData(entity, placeableNetData);
+                    EntityManager.RemoveComponent<HeightRangeRecord>(entity);
+#if DEBUG
+                    if (m_PrefabSystem.TryGetPrefab(entity, out PrefabBase prefabBase))
+                    {
+                        m_Log.Debug($"{nameof(NetworkAnarchyUISystem)}.{nameof(ResetExpandedElevationRanges)} Reset {prefabBase.GetPrefabID().GetName()} elevation range back to {placeableNetData.m_ElevationRange.min} to {placeableNetData.m_ElevationRange.max}.");
+                    }
+#endif
+                }
+            }
+        }
+
+        private void ExpandPrefabElevationRange(Entity prefabEntity, PlaceableNetData placeableNetData, PrefabID prefabID)
+        {
+            if (prefabEntity != Entity.Null)
+            {
+                HeightRangeRecord heightRangeRecord = new HeightRangeRecord()
+                {
+                    min = placeableNetData.m_ElevationRange.min,
+                    max = placeableNetData.m_ElevationRange.max,
+                };
+                EntityManager.AddComponent<HeightRangeRecord>(prefabEntity);
+                EntityManager.SetComponentData(prefabEntity, heightRangeRecord);
+                placeableNetData.m_ElevationRange = new Colossal.Mathematics.Bounds1(-1000f, 1000f);
+                EntityManager.SetComponentData(prefabEntity, placeableNetData);
+                m_Log.Debug($"{nameof(NetworkAnarchyUISystem)}.{nameof(ExpandPrefabElevationRange)} Expanded {prefabID.GetName()} elevation range to -1000 to 1000.");
+            }
+        }
+
         private void UpdateButtonDisplay(PrefabBase prefabBase)
         {
             m_LeftShowUpgrade.Value = SideUpgrades.None;
@@ -501,6 +556,13 @@ namespace Anarchy.Systems.NetworkAnarchy
                 return;
             }
 
+            if (!EntityManager.TryGetComponent(prefabEntity, out PlaceableNetData placeableNetData))
+            {
+                return;
+            }
+
+            ResetExpandedElevationRanges();
+
             if (!EntityManager.TryGetComponent(prefabEntity, out NetData netData))
             {
                 return;
@@ -511,14 +573,18 @@ namespace Anarchy.Systems.NetworkAnarchy
                 return;
             }
 
-            if (!EntityManager.TryGetComponent(prefabEntity, out PlaceableNetData placeableNetData))
-            {
-                return;
-            }
-
             if (placeableNetData.m_ElevationRange.max != 0 || placeableNetData.m_ElevationRange.min != 0)
             {
                 m_ShowElevationStepSlider.Value = AnarchyMod.Instance.Settings.ElevationStepSlider;
+                if (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace)
+                {
+                    m_ShowComposition.Value |= Composition.ExpanedElevationRange;
+
+                    if ((m_Composition.Value & Composition.ExpanedElevationRange) == Composition.ExpanedElevationRange)
+                    {
+                        ExpandPrefabElevationRange(prefabEntity, placeableNetData, prefabBase.GetPrefabID());
+                    }
+                }
             }
 
             if (!AnarchyMod.Instance.Settings.NetworkAnarchyToolOptions && !AnarchyMod.Instance.Settings.NetworkUpgradesToolOptions)
