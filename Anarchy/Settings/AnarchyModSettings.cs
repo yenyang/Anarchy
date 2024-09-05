@@ -154,6 +154,12 @@ namespace Anarchy.Settings
         public bool NetworkUpgradesPrefabs { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to replace upgrades or not.
+        /// </summary>
+        [SettingsUISection(UI, Stable)]
+        public bool ReplaceUpgradesBehavior { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating the minimum clearance below elevated network.
         /// </summary>
         [SettingsUISection(General, Stable)]
@@ -317,6 +323,7 @@ namespace Anarchy.Settings
                 NetworkUpgradesToolOptions = true;
                 ElevationStepSlider = true;
                 NetworkUpgradesPrefabs = true;
+                ReplaceUpgradesBehavior = true;
                 ApplyAndSave();
             }
         }
@@ -358,6 +365,7 @@ namespace Anarchy.Settings
             NetworkUpgradesToolOptions = true;
             NetworkUpgradesPrefabs = true;
             ElevationStepSlider = true;
+            ReplaceUpgradesBehavior = true;
         }
 
 

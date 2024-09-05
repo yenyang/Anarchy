@@ -226,9 +226,18 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_LeftShowUpgrade = CreateBinding("LeftShowUpgrade", SideUpgrades.None);
             m_RightShowUpgrade = CreateBinding("RightShowUpgrade", SideUpgrades.None);
             m_ShowComposition = CreateBinding("ShowComposition", Composition.None);
-            m_ReplaceRightUpgrade = CreateBinding("ReplaceRightUpgrade", ButtonState.Hidden | ButtonState.Off);
-            m_ReplaceLeftUpgrade = CreateBinding("ReplaceLeftUpgrade", ButtonState.Hidden | ButtonState.Off);
-            m_ReplaceComposition = CreateBinding("ReplaceComposition", ButtonState.Hidden | ButtonState.Off);
+            if (!AnarchyMod.Instance.Settings.ReplaceUpgradesBehavior) {
+                m_ReplaceRightUpgrade = CreateBinding("ReplaceRightUpgrade", ButtonState.Hidden | ButtonState.Off);
+                m_ReplaceLeftUpgrade = CreateBinding("ReplaceLeftUpgrade", ButtonState.Hidden | ButtonState.Off);
+                m_ReplaceComposition = CreateBinding("ReplaceComposition", ButtonState.Hidden | ButtonState.Off);
+            }
+            else
+            {
+                m_ReplaceRightUpgrade = CreateBinding("ReplaceRightUpgrade", ButtonState.Hidden | ButtonState.On);
+                m_ReplaceLeftUpgrade = CreateBinding("ReplaceLeftUpgrade", ButtonState.Hidden | ButtonState.On);
+                m_ReplaceComposition = CreateBinding("ReplaceComposition", ButtonState.Hidden | ButtonState.On);
+            }
+
             m_ShowElevationStepSlider = CreateBinding("ShowElevationStepSlider", AnarchyMod.Instance.Settings.ElevationStepSlider);
             m_PreviousMode = m_NetToolSystem.actualMode;
 
