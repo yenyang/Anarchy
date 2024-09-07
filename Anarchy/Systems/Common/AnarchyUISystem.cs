@@ -477,7 +477,7 @@ namespace Anarchy.Systems.Common
                 }
             }
 
-            if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && prefabBase is not BuildingPrefab)
+            if (((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && prefabBase is not BuildingPrefab) || m_ToolSystem.activeTool == m_NetToolSystem)
             {
                 m_ResetElevation.shouldBeEnabled = true;
                 m_ElevationStepToggle.shouldBeEnabled = true;
