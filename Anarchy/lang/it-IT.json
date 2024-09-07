@@ -9,7 +9,6 @@
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ShowTooltip]": "Mostra Suggerimenti",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ShowTooltip]": "Con questa opzione, un suggerimento con Ⓐ verrà mostrato quando Anarchy è attivo per gli strumenti appropriati.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ToolIcon]": "Icona Strumento",
-  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ToolIcon]": "Con questa, una riga di icone con un pulsante singolo per Anarchy verrà visualizzata quando si utilizzano strumenti appropriati.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetGeneralModSettings]": "Reimposta Le Impostazioni Generali di Anarchy",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetGeneralModSettings]": "Dopo la conferma verranno ripristinate le impostazioni generali per Anarchy Mod.",
   "Options.WARNING[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetGeneralModSettings]": "Reimposto Le Impostazioni Generali di Anarchy?",
