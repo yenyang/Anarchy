@@ -113,16 +113,8 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.9" />
   <Dependency Id="75426" DisplayName="I18n EveryWhere" Version="1.1.3" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog>## Update V1.7.0
-* Added Optional Network Anarchy Tool options: Force Ground, Force Elevated, Force Tunnel, Constant Slope, and Expanded Elevation Range.
-* Added Optional Network Upgrade Overhaul so network upgrades can be applied during placement or replacement. Includes retaining walls, quays, trees, grass, wide sidewalks, lighting, medians, etc.
-  Note: Replace tool mode will by default remove/add upgrades based on tool options instead of preserving upgrades when possible. Option to have the opposite behavior be default.
-* Added Anarchy Components Tool which lets you Add or remove elevation lock or anarchy components using a tool with radius or single selection.
-* Added Optional Network Upgrade assets from Extended Road Upgrades with permission from ST-Apps. Compatible with ERU if you choose not to unsubscribe.
-* Fixes to Extended Road Upgrades including: retaining wall node issues and fire and rescue info view issue.
-* Added Optional Elevation Step Slider.
-* Reset Elevation and Elevation Step keybinds work while drawing networks.
-* Multiple fixes specific to Cranes.</ChangeLog>
+  <ChangeLog>## Patch V1.7.1
+* Fix some problems with replacing elevated networks and tunnels. There may still be issues with these.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
