@@ -1,7 +1,7 @@
 Anarchy disables error checks for tools in a way that the errors are not shown at all.
 This mod allows you to place vegetation and props (using DevUI 'Add Object' menu or other mods) overlapping or inside the boundaries of other objects and close together.
 This mod includes a network upgrades (re)placement overhaul (quay, retaining walls, grass strips, street trees, etc.) and additional network placement options such as constant slope, force ground, and force elevated.
-Sully has prepared an Amazing! demo video about detailing with Anarchy on Youtube.
+Sully has prepared an Amazing! demo video about detailing with Anarchy on Youtube. I made a no frills demo YouTube video about network anarchy and the network upgrades overhaul.
 
 ## Dependencies
 Unified Icon Library
@@ -28,7 +28,7 @@ The mod also has:
 * Elevation lock to prevent game systems from changing position of props, trees, plants, and decals. You can still change position with mods.
 * Anarchy and Elevation lock can be added or removed after placement via the selected info panel.
 * In Game panel for controlling which error checks are never disabled, disabled with Anarchy, or always disabled.
-* Optional Network Anarchy options: constant slope, force ground, force elevated, and force tunnel (if needed, looks undesirable).
+* Optional Network Anarchy options: constant slope, force ground, force elevated, force tunnel (if needed, looks undesirable), and expanded elevation range.
 * Optional Network upgrades overhaul that lets you apply network upgrades left, right, or general during placement or replacement. Includes retaining walls, quays, trees, grass, wide sidewalks, lighting, medians, etc.
 * Optional Elevation Step slider.
 * Anarchy Components tool for quickly adding or removing Anarchy and Elevation Lock components from applicable objects. Radius selection is recommended for Anarchy component since you can see and interact with overriden (invisible) objects and bring them back to normal.
@@ -77,11 +77,11 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 
 ## Credits 
 * yenyang - Mod Author
-* ST-Apps - Original Author of Extended Road Upgrades which has been incoporated with permission.
+* ST-Apps - Original Author of Extended Road Upgrades which has been incorporated with permission.
 * Chameleon TBN - Testing, Feedback, Icons, and Logo
 * Sully - Testing, Feedback, and Promotional Material.
 * Klyte45, Algernon, T.D.W. - Help with UI, Cooperative Development and Code Sharing
 * Bad Peanut - Image Credit for Flaming Chirper, and grass icon.
 * krzychu124, Triton Supreme, and Quboid - Cooperative Development and Code Sharing
-* Localization: Nyoko, Citadino, Dome, elGendo87 and Eryalito (Spanish), Hendrix (German), RilkeXS, CBEdwin, and zlhww (Chinese Simplified), Luis Fernando de Paula and felipecollucci (Portuguese), Maxi and raistlin46 (Italian), karmel68 and Lisek (Polish), Tanat and TwotoolusFLY_LSh.st (Korean), OWSEEX and Katsumoto (Russian) and Morgan Toverux, spooky_off, Quoifleur, Karg, CEO of Tabarnak and Edou24 (French), Seraphina (Japanese), allegretic(Chinese Traditional)
+* Localization: Nyoko, Citadino, Dome, elGendo87 and Eryalito (Spanish), Hendrix (German), RilkeXS, CBEdwin, and zlhww (Chinese Simplified), Luis Fernando de Paula and felipecollucci (Portuguese), Maxi and raistlin46 (Italian), karmel68 and Lisek (Polish), Tanat, TwotoolusFLY_LSh.st, and Hinanchovo (Korean), OWSEEX and Katsumoto (Russian) and Morgan Toverux, spooky_off, Quoifleur, Karg, CEO of Tabarnak and Edou24 (French), Seraphina (Japanese), allegretic(Chinese Traditional)
 * Testing, Feedback - Dante, starrysum, HarbourMaster Jay, Dome, Tigon Ologdring, BruceyBoy, RaftermanNZ, Elektrotek, SpaceChad, GamingNerdLeith, CanadianMoosePlays, Teddy Radko

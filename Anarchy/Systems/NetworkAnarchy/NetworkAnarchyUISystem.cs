@@ -576,7 +576,7 @@ namespace Anarchy.Systems.NetworkAnarchy
             if (placeableNetData.m_ElevationRange.max != 0 || placeableNetData.m_ElevationRange.min != 0)
             {
                 m_ShowElevationStepSlider.Value = AnarchyMod.Instance.Settings.ElevationStepSlider;
-                if (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace)
+                if (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace && AnarchyMod.Instance.Settings.NetworkAnarchyToolOptions)
                 {
                     m_ShowComposition.Value |= Composition.ExpanedElevationRange;
 
