@@ -123,6 +123,15 @@ namespace Anarchy.Systems.NetworkAnarchy
                 return;
             }
 
+            if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace
+                && ((!m_UISystem.ReplaceComposition && !m_UISystem.ReplaceLeftUpgrade && !m_UISystem.ReplaceRightUpgrade)
+                || (m_UISystem.NetworkComposition == NetworkAnarchyUISystem.Composition.None
+                && m_UISystem.LeftUpgrade == NetworkAnarchyUISystem.SideUpgrades.None
+                && m_UISystem.RightUpgrade == NetworkAnarchyUISystem.SideUpgrades.None)))
+            {
+                return;
+            }
+
             NativeArray<Entity> entities = m_TempNetworksQuery.ToEntityArray(Allocator.Temp);
             foreach (Entity entity in entities)
             {
@@ -150,7 +159,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                 // This is a somewhat roundabout way to adapt Extended Road upgrades method of applying upgrades to the way Network Anarchy applies upgrades.
                 NetworkAnarchyUISystem.SideUpgrades effectiveLeftUpgrades = m_UISystem.LeftUpgrade;
                 NetworkAnarchyUISystem.SideUpgrades effectiveRightUpgrades = m_UISystem.RightUpgrade;
-                NetworkAnarchyUISystem.Composition effectiveComposition = m_UISystem.NetworkComposition;                
+                NetworkAnarchyUISystem.Composition effectiveComposition = m_UISystem.NetworkComposition;
                 if (UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID()) && EntityManager.TryGetComponent(entity, out Upgraded upgraded))
                 {
                     if ((upgraded.m_Flags.m_Left & CompositionFlags.Side.Raised) == CompositionFlags.Side.Raised)
