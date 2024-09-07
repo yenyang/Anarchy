@@ -7,8 +7,8 @@
   <ShortDescription Value="Disables Error Checks and does not show errors. Place vegetation and props overlapping or inside the boundaries of other objects and close together." />
   <!--Long description of the mod. Single line or multi line. Supports minimal markdown subset-->
   <LongDescription>Anarchy disables error checks for tools in a way that the errors are not shown at all.
-This mod allows you to place vegetation and props (using DevUI 'Add Object' menu or other mods) overlapping or inside the boundaries of other objects and close together.
-This mod includes a network upgrades (re)placement overhaul (quay, retaining walls, grass strips, street trees, etc.) and additional network placement options such as constant slope, force ground, and force elevated.
+This mod allows you to place vegetation and props overlapping or inside the boundaries of other objects and close together.
+This mod includes a network upgrades placement and replacement overhaul (quay, retaining walls, grass strips, street trees, etc.) and additional network placement options such as constant slope, force ground, force elevated, and expaned elevation range.
 Sully has prepared an Amazing! demo video about detailing with Anarchy on Youtube. I made a no frills demo YouTube video about network anarchy and the network upgrades overhaul.
 
 ## Dependencies
@@ -62,8 +62,6 @@ Some suggestions would be to Always enable "Exceeds City Limit" so you can alway
 Some of the error checks that can be disabled are opt-in. Those generally deal with pathfinding related issues.
 
 ## Props and Trees
-Placing standalone props is an unsupported feature of the game. You need DevUI to access the 'Add Object' menu via the home button to place standalone props. Other mods may make it easier to find and place props.
-
 With Anarchy enabled, you can place props and trees overlapping or inside the boundaries of buildings, nets, areas, other trees, other props, etc. Props and trees placed with Anarchy enabled cannot be overriden later (even if later Anarchy is disabled), but can be removed with bulldozer or brush.
 
 Props overlapping with buildings or nets may sometimes be culled by the game, and disappear until reloading or something interacts with or near them.
@@ -77,6 +75,8 @@ This mod does NOT allow you to do everything including:
 * If the vanilla net tool would remove an existing network, it will still do that.
 * Even if the mod disables the error check, the UI may still prevent you from doing something.
 * Not much testing is done on the effects of this mod on maps created using the unfinished editor.
+* Retaining walls and tunnels even in Vanilla can have clipping issues that let you see through the terrain.
+* If the net tool locks up and you cannot create any networks, change to the zoning tool and zone something. Hopefully this bug is uncommon and that I can fix it at some point.
 
 **Please save frequently, in multiple files, and learn to use responsibly.**
 
