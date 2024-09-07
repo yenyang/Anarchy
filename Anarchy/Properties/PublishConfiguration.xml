@@ -77,8 +77,6 @@ This mod does NOT allow you to do everything including:
 * If the vanilla net tool would remove an existing network, it will still do that.
 * Even if the mod disables the error check, the UI may still prevent you from doing something.
 * Not much testing is done on the effects of this mod on maps created using the unfinished editor.
-* Retaining walls and tunnels even in Vanilla can have clipping issues that let you see through the terrain.
-* If the net tool locks up and you cannot create any networks, change to the zoning tool and zone something. Hopefully this bug is uncommon and that I can fix it at some point.
 
 **Please save frequently, in multiple files, and learn to use responsibly.**
 
@@ -93,7 +91,7 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * Klyte45, Algernon, T.D.W. - Help with UI, Cooperative Development and Code Sharing
 * Bad Peanut - Image Credit for Flaming Chirper, and grass icon.
 * krzychu124, Triton Supreme, and Quboid - Cooperative Development and Code Sharing
-* Localization: Nyoko, Citadino, Dome, elGendo87 and Eryalito (Spanish), Hendrix (German), RilkeXS, CBEdwin, and zlhww (Chinese Simplified), Luis Fernando de Paula and felipecollucci (Portuguese), Maxi and raistlin46 (Italian), karmel68 and Lisek (Polish), Tanat and TwotoolusFLY_LSh.st (Korean), OWSEEX and Katsumoto (Russian) and Morgan Toverux, spooky_off, Quoifleur, Karg, CEO of Tabarnak and Edou24 (French), Seraphina (Japanese), allegretic(Chinese Traditional)
+* Localization: Nyoko, Citadino, Dome, elGendo87 and Eryalito (Spanish), Hendrix (German), RilkeXS, CBEdwin, and zlhww (Chinese Simplified), Luis Fernando de Paula and felipecollucci (Portuguese), Maxi and raistlin46 (Italian), karmel68 and Lisek (Polish), Tanat, TwotoolusFLY_LSh.st, and Hinanchovo (Korean), OWSEEX and Katsumoto (Russian) and Morgan Toverux, spooky_off, Quoifleur, Karg, CEO of Tabarnak and Edou24 (French), Seraphina (Japanese), allegretic(Chinese Traditional)
 * Testing, Feedback - Dante, starrysum, HarbourMaster Jay, Dome, Tigon Ologdring, BruceyBoy, RaftermanNZ, Elektrotek, SpaceChad, GamingNerdLeith, CanadianMoosePlays, Teddy Radko</LongDescription>
   <!--Thumbnail-->
   <Thumbnail Value="Properties/Thumbnail.png" />
@@ -116,8 +114,9 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <Dependency Id="75426" DisplayName="I18n EveryWhere" Version="1.1.3" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>## Update V1.7.0
-* Added Optional Network Anarchy Tool options: Force Ground, Force Elevated, Force Tunnel, and Constant Slope.
+* Added Optional Network Anarchy Tool options: Force Ground, Force Elevated, Force Tunnel, Constant Slope, and Expanded Elevation Range.
 * Added Optional Network Upgrade Overhaul so network upgrades can be applied during placement or replacement. Includes retaining walls, quays, trees, grass, wide sidewalks, lighting, medians, etc.
+  Note: Replace tool mode will by default remove/add upgrades based on tool options instead of preserving upgrades when possible. Option to have the opposite behavior be default.
 * Added Anarchy Components Tool which lets you Add or remove elevation lock or anarchy components using a tool with radius or single selection.
 * Added Optional Network Upgrade assets from Extended Road Upgrades with permission from ST-Apps. Compatible with ERU if you choose not to unsubscribe.
 * Fixes to Extended Road Upgrades including: retaining wall node issues and fire and rescue info view issue.
