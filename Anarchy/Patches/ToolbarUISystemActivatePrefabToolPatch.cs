@@ -4,7 +4,6 @@
 
 namespace Anarchy.Patches
 {
-    using Anarchy.Utils;
     using Colossal.Entities;
     using Game.Prefabs;
     using Game.Tools;

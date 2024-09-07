@@ -4,7 +4,7 @@
 
 namespace Anarchy.Patches
 {
-    using Anarchy.Utils;
+    using Anarchy.Extensions;
     using Game.UI.InGame;
     using HarmonyLib;
     using Unity.Entities;

@@ -10,7 +10,6 @@
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ShowTooltip]": "Montrer les infobulles",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ShowTooltip]": "Avec cette option activée, une infobulle avec Ⓐ sera montrée lorsque qu'Anarchy est actif pour les outils appropriés.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ToolIcon]": "Icône de l'outil",
-  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ToolIcon]": "Avec cette option activée, une ligne d'icône avec un seul bouton pour Anarchy sera visible lorsque vous utiliserez les outils appropriés.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetGeneralModSettings]": "Réinitialiser les paramètres généraux d'Anarchy",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetGeneralModSettings]": "Après confirmation, cela réinitialisera les paramètres du mode Anarchy aux paramètres généraux.",
   "Options.WARNING[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetGeneralModSettings]": "Réinitialiser les paramètres généraux d'Anarchy?",
@@ -53,7 +52,6 @@
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ToggleAnarchy]": "Activer/Désactiver Anarchy",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ToggleAnarchy]": "Raccourci clavier pour activer et désactiver le mode anarchie.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevation]": "Réinitialiser l’élévation",
-  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevation]": "Raccourci clavier pour réinitialiser l’élévation des objets pendant le placement.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationStep]": "Changer le pas de modification de l’élévation",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationStep]": "Raccourci clavier pour changer le pas de modification de l’élévation.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.IncreaseElevation]": "Augmenter l’élévation",
@@ -98,5 +96,14 @@
   "Anarchy.SECTION_TITLE[AnarchyOptions]": "Options d'\"Anarchy\"",
   "Anarchy.TOOLTIP_DESCRIPTION[AnarchyOptions]": "Ouvre un panneau pour contrôler quelles vérifications d'erreur ne sont jamais désactivées, désactivées avec Anarchy, ou toujours désactivées.",
   "Anarchy.UI_TEXT[Never]": "Jamais",
-  "Anarchy.UI_TEXT[Always]": "Toujours"
+  "Anarchy.UI_TEXT[Always]": "Toujours",
+  "Anarchy.SECTION_TITLE[Left]": "Gauche",
+  "Anarchy.SECTION_TITLE[Right]": "Droite",
+  "Anarchy.SECTION_TITLE[General]": "Général",
+  "Anarchy.SECTION_TITLE[Radius]": "Rayon",
+  "Anarchy.SECTION_TITLE[Selection]": "Sélection",
+  "Anarchy.SECTION_TITLE[Components]": "Composants",
+  "Anarchy.SECTION_TITLE[ElevationStep]": "Incrément d'élévation",
+  "Assets.NAME[Elevated01]": "Élévation",
+  "Assets.NAME[Tunnel01]": "Tunnel"
 }

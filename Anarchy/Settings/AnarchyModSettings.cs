@@ -4,7 +4,9 @@
 
 namespace Anarchy.Settings
 {
-    using Anarchy.Systems;
+    using Anarchy.Systems.Common;
+    using Anarchy.Systems.NetworkAnarchy;
+    using Anarchy.Systems.OverridePrevention;
     using Colossal.IO.AssetDatabase;
     using Game.Input;
     using Game.Modding;
@@ -19,6 +21,8 @@ namespace Anarchy.Settings
     [SettingsUITabOrder(General, UI)]
     [SettingsUISection(UI, General)]
     [SettingsUIGroupOrder(Stable, Reset, About)]
+    [SettingsUIMouseAction(AnarchyMod.ApplyMimicAction, "AnarchyComponentsTool")]
+    [SettingsUIMouseAction(AnarchyMod.SecondaryApplyMimicAction, "AnarchyComponentsTool")]
     public class AnarchyModSettings : ModSetting
     {
         /// <summary>
@@ -126,6 +130,36 @@ namespace Anarchy.Settings
         public bool DisableAnarchyWhileBrushing { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to show network anarchy in tool options menu.
+        /// </summary>
+        [SettingsUISection(UI, Stable)]
+        public bool NetworkAnarchyToolOptions { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to show network upgrades in tool options menu.
+        /// </summary>
+        [SettingsUISection(UI, Stable)]
+        public bool NetworkUpgradesToolOptions { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to show elevation step slider.
+        /// </summary>
+        [SettingsUISection(UI, Stable)]
+        public bool ElevationStepSlider { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to show network upgrade prefabs.
+        /// </summary>
+        [SettingsUISection(UI, Stable)]
+        public bool NetworkUpgradesPrefabs { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to replace upgrades or not.
+        /// </summary>
+        [SettingsUISection(UI, Stable)]
+        public bool ReplaceUpgradesBehavior { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating the minimum clearance below elevated network.
         /// </summary>
         [SettingsUISection(General, Stable)]
@@ -145,6 +179,23 @@ namespace Anarchy.Settings
         [SettingsUISlider(min = 1, max = 600, step = 1, scalarMultiplier = 1, unit = Unit.kInteger)]
         [SettingsUIHideByCondition(typeof(AnarchyModSettings), nameof(IsCullingNotBeingPrevented))]
         public int PropRefreshFrequency { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets hidden keybinding for apply action.
+        /// </summary>
+        [SettingsUIMouseBinding(AnarchyMod.ApplyMimicAction)]
+        [SettingsUISection(General, Keybinds)]
+        [SettingsUIHidden]
+        public ProxyBinding ApplyMimic { get; set; }
+
+        /// <summary>
+        /// Gets or sets hidden keybinding for secondary apply action.
+        /// </summary>
+        [SettingsUIMouseBinding(AnarchyMod.SecondaryApplyMimicAction)]
+        [SettingsUISection(General, Keybinds)]
+        [SettingsUIHidden]
+        public ProxyBinding SecondaryApplyMimic { get; set; }
 
         /// <summary>
         /// Sets a value indicating whether: to update props now.
@@ -268,6 +319,11 @@ namespace Anarchy.Settings
                 ShowElevationToolOption = true;
                 SetShowElevationToolOption(true);
                 ResetElevationWhenChangingPrefab = true;
+                NetworkAnarchyToolOptions = true;
+                NetworkUpgradesToolOptions = true;
+                ElevationStepSlider = true;
+                NetworkUpgradesPrefabs = true;
+                ReplaceUpgradesBehavior = true;
                 ApplyAndSave();
             }
         }
@@ -305,6 +361,11 @@ namespace Anarchy.Settings
             DisableAnarchyWhileBrushing = false;
             ShowElevationToolOption = true;
             ResetElevationWhenChangingPrefab = true;
+            NetworkAnarchyToolOptions = true;
+            NetworkUpgradesToolOptions = true;
+            NetworkUpgradesPrefabs = true;
+            ElevationStepSlider = true;
+            ReplaceUpgradesBehavior = true;
         }
 
 

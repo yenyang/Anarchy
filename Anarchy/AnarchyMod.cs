@@ -3,6 +3,7 @@
 // </copyright>
 
 // #define VERBOSE
+
 // #define DUMP_VANILLA_LOCALIZATION
 namespace Anarchy
 {
@@ -12,7 +13,13 @@ namespace Anarchy
     using System.Linq;
     using System.Reflection;
     using Anarchy.Settings;
-    using Anarchy.Systems;
+    using Anarchy.Systems.AnarchyComponentsTool;
+    using Anarchy.Systems.ClearanceViolation;
+    using Anarchy.Systems.Common;
+    using Anarchy.Systems.ErrorChecks;
+    using Anarchy.Systems.NetworkAnarchy;
+    using Anarchy.Systems.ObjectElevation;
+    using Anarchy.Systems.OverridePrevention;
     using Colossal;
     using Colossal.IO.AssetDatabase;
     using Colossal.Logging;
@@ -28,6 +35,16 @@ namespace Anarchy
     /// </summary>
     public class AnarchyMod : IMod
     {
+        /// <summary>
+        /// Fake keybind action for apply.
+        /// </summary>
+        public const string ApplyMimicAction = "ApplyMimic";
+
+        /// <summary>
+        /// Fake keybind action for secondary apply.
+        /// </summary>
+        public const string SecondaryApplyMimicAction = "SecondaryApplyMimic";
+
         /// <summary>
         /// An id used for bindings between UI and C#.
         /// </summary>
@@ -147,10 +164,17 @@ namespace Anarchy
             updateSystem.UpdateAfter<ResetNetCompositionDataSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<ResetTransformSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<CheckTransformSystem>(SystemUpdatePhase.Modification1);
-            updateSystem.UpdateBefore<HandleUpdateNextFrameSystem>(SystemUpdatePhase.Modification1);
+            updateSystem.UpdateAt<HandleUpdateNextFrameSystem>(SystemUpdatePhase.Modification1);
+            updateSystem.UpdateAt<HandleClearUpdateNextFrameSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<SelectedInfoPanelTogglesSystem>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateBefore<ElevateObjectDefinitionSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateAt<ElevateTempObjectSystem>(SystemUpdatePhase.Modification1);
+            updateSystem.UpdateBefore<NetworkDefinitionSystem>(SystemUpdatePhase.Modification1);
+            updateSystem.UpdateAt<SetRetainingWallSegmentElevationSystem>(SystemUpdatePhase.ModificationEnd);
+            updateSystem.UpdateBefore<TempNetworkSystem>(SystemUpdatePhase.Modification3);
+            updateSystem.UpdateAt<NetworkAnarchyUISystem>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateAt<AnarchyComponentsToolSystem>(SystemUpdatePhase.ToolUpdate);
+            updateSystem.UpdateAt<AnarchyComponentsToolUISystem>(SystemUpdatePhase.UIUpdate);
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Completed.");
         }
 

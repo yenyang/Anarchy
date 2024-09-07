@@ -7,7 +7,6 @@
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ShowTooltip]": "Mostrar dicas",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ShowTooltip]": "Com esta opção habilitada um botão com Ⓐ será exibido quando a Anarquia estiver ativa para as ferramentas apropriadas.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ToolIcon]": "Ícone da ferramenta",
-  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ToolIcon]": "Com esta opção ativada uma linha de ícone com um único botão para a Anarquia aparecerá quando usar as ferramentas apropriadas.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventAccidentalPropCulling]": "Prevenir a eliminação acidental de Props",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PreventAccidentalPropCulling]": "Isto irá disparar uma atualização gráfica rotineiramente para as Props colocadas com Anarquia, de modo a evitar a eliminação dos Props acidentalmente. Isso afeta o desempenho.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.PropRefreshFrequency]": "Frequência de atualização Prop",
