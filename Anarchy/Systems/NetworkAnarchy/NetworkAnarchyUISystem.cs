@@ -195,7 +195,7 @@ namespace Anarchy.Systems.NetworkAnarchy
         /// </summary>
         public bool ReplaceLeftUpgrade
         {
-            get { return (m_ReplaceLeftUpgrade & ButtonState.On) == ButtonState.On; }
+            get { return (m_ReplaceLeftUpgrade & ButtonState.On) == ButtonState.On && AnarchyMod.Instance.Settings.ReplaceUpgradesBehavior; }
         }
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace Anarchy.Systems.NetworkAnarchy
         /// </summary>
         public bool ReplaceRightUpgrade
         {
-            get { return (m_ReplaceRightUpgrade & ButtonState.On) == ButtonState.On; }
+            get { return (m_ReplaceRightUpgrade & ButtonState.On) == ButtonState.On && AnarchyMod.Instance.Settings.ReplaceUpgradesBehavior; }
         }
 
         /// <summary>
@@ -211,7 +211,7 @@ namespace Anarchy.Systems.NetworkAnarchy
         /// </summary>
         public bool ReplaceComposition
         {
-            get { return (m_ReplaceComposition & ButtonState.On) == ButtonState.On; }
+            get { return (m_ReplaceComposition & ButtonState.On) == ButtonState.On && (AnarchyMod.Instance.Settings.ReplaceUpgradesBehavior || AnarchyMod.Instance.Settings.NetworkAnarchyToolOptions); }
         }
 
         /// <inheritdoc/>

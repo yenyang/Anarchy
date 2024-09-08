@@ -124,10 +124,9 @@ namespace Anarchy.Systems.NetworkAnarchy
             }
 
             if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace
-                && ((!m_UISystem.ReplaceComposition && !m_UISystem.ReplaceLeftUpgrade && !m_UISystem.ReplaceRightUpgrade)
-                || (m_UISystem.NetworkComposition == NetworkAnarchyUISystem.Composition.None
-                && m_UISystem.LeftUpgrade == NetworkAnarchyUISystem.SideUpgrades.None
-                && m_UISystem.RightUpgrade == NetworkAnarchyUISystem.SideUpgrades.None)))
+                && !m_UISystem.ReplaceComposition
+                && !m_UISystem.ReplaceLeftUpgrade
+                && !m_UISystem.ReplaceRightUpgrade)
             {
                 return;
             }
@@ -183,17 +182,52 @@ namespace Anarchy.Systems.NetworkAnarchy
                     if ((upgraded.m_Flags.m_General & CompositionFlags.General.Elevated) == CompositionFlags.General.Elevated)
                     {
                         effectiveComposition |= NetworkAnarchyUISystem.Composition.Elevated;
-                    } else if ((upgraded.m_Flags.m_General & CompositionFlags.General.Tunnel) == CompositionFlags.General.Tunnel)
+                    }
+                    else if ((upgraded.m_Flags.m_General & CompositionFlags.General.Tunnel) == CompositionFlags.General.Tunnel)
                     {
                         effectiveComposition |= NetworkAnarchyUISystem.Composition.Tunnel;
                     }
                 }
 
-                if (((effectiveLeftUpgrades & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
+                if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace
+                    && EntityManager.TryGetComponent(entity, out Elevation segmentElevation)
+                    && EvaluateCompositionUpgradesAndToolOptions(entity, segmentElevation))
+                {
+                    EntityManager.RemoveComponent<Elevation>(entity);
+                    m_Log.Debug("Removed Elevation");
+                    temp.m_Flags |= TempFlags.Replace;
+                    EntityManager.SetComponentData(entity, temp);
+                    m_Log.Debug($"{nameof(TempNetworkSystem)}{nameof(OnUpdate)} added replace to temp.");
+                }
+
+                if ((m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace || (effectiveComposition & NetworkAnarchyUISystem.Composition.Ground) == NetworkAnarchyUISystem.Composition.Ground)
+                    && EntityManager.TryGetComponent(entity, out Edge edge))
+                {
+                    if (EntityManager.TryGetComponent(edge.m_Start, out Elevation startElevation)
+                        && (EvaluateCompositionUpgradesAndToolOptions(edge.m_Start, startElevation) || (effectiveComposition & NetworkAnarchyUISystem.Composition.Ground) == NetworkAnarchyUISystem.Composition.Ground)
+                        && EntityManager.TryGetComponent(edge.m_Start, out Temp startTemp))
+                    {
+                        startTemp.m_Flags |= TempFlags.Replace;
+                        EntityManager.SetComponentData(edge.m_Start, startTemp);
+                        EntityManager.RemoveComponent<Elevation>(edge.m_Start);
+                    }
+
+                    if (EntityManager.TryGetComponent(edge.m_End, out Elevation endElevation)
+                        && (EvaluateCompositionUpgradesAndToolOptions(edge.m_End, endElevation) || (effectiveComposition & NetworkAnarchyUISystem.Composition.Ground) == NetworkAnarchyUISystem.Composition.Ground)
+                        && EntityManager.TryGetComponent(edge.m_End, out Temp endTemp))
+                    {
+                        endTemp.m_Flags |= TempFlags.Replace;
+                        EntityManager.SetComponentData(edge.m_End, endTemp);
+                        EntityManager.RemoveComponent<Elevation>(edge.m_End);
+                    }
+                }
+
+                if ((effectiveLeftUpgrades & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
                     || (effectiveLeftUpgrades & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay
                     || (effectiveRightUpgrades & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
-                    || (effectiveRightUpgrades & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
-                    && (temp.m_Flags != TempFlags.IsLast))
+                    || (effectiveRightUpgrades & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay
+                    || (effectiveComposition & NetworkAnarchyUISystem.Composition.Tunnel) == NetworkAnarchyUISystem.Composition.Tunnel
+                    || (effectiveComposition & NetworkAnarchyUISystem.Composition.Elevated) == NetworkAnarchyUISystem.Composition.Elevated)
                 {
                     if (!EntityManager.TryGetComponent(entity, out Game.Net.Elevation elevation))
                     {
@@ -208,10 +242,6 @@ namespace Anarchy.Systems.NetworkAnarchy
                     {
                         elevation.m_Elevation.y = Mathf.Max(elevation.m_Elevation.y, m_NetToolSystem.elevation, NetworkDefinitionSystem.QuayThreshold);
                     }
-                    else if (elevation.m_Elevation.y == NetworkDefinitionSystem.QuayThreshold || elevation.m_Elevation.y == NetworkDefinitionSystem.RetainingWallThreshold)
-                    {
-                        elevation.m_Elevation.y = 0;
-                    }
 
                     if ((effectiveLeftUpgrades & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall)
                     {
@@ -221,26 +251,19 @@ namespace Anarchy.Systems.NetworkAnarchy
                     {
                         elevation.m_Elevation.x = Mathf.Max(elevation.m_Elevation.x, m_NetToolSystem.elevation, NetworkDefinitionSystem.QuayThreshold);
                     }
-                    else if (elevation.m_Elevation.x == NetworkDefinitionSystem.QuayThreshold || elevation.m_Elevation.x == NetworkDefinitionSystem.RetainingWallThreshold)
+
+                    if ((effectiveComposition & NetworkAnarchyUISystem.Composition.Elevated) == NetworkAnarchyUISystem.Composition.Elevated)
                     {
-                        elevation.m_Elevation.x = 0;
+                        elevation.m_Elevation.x = Mathf.Max(elevation.m_Elevation.x, NetworkDefinitionSystem.ElevatedThreshold);
+                        elevation.m_Elevation.y = Mathf.Max(elevation.m_Elevation.y, NetworkDefinitionSystem.ElevatedThreshold);
+                    }
+                    else if ((effectiveComposition & NetworkAnarchyUISystem.Composition.Tunnel) == NetworkAnarchyUISystem.Composition.Tunnel)
+                    {
+                        elevation.m_Elevation.x = Mathf.Min(elevation.m_Elevation.x, NetworkDefinitionSystem.TunnelThreshold);
+                        elevation.m_Elevation.y = Mathf.Min(elevation.m_Elevation.y, NetworkDefinitionSystem.TunnelThreshold);
                     }
 
                     EntityManager.SetComponentData(entity, elevation);
-                }
-                else if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace && EntityManager.HasComponent<Elevation>(entity))
-                {
-                    EntityManager.RemoveComponent<Elevation>(entity);
-                    m_Log.Debug("Removed Elevation");
-                    temp.m_Flags |= TempFlags.Replace;
-                    EntityManager.SetComponentData(entity, temp);
-                    m_Log.Debug($"{nameof(TempNetworkSystem)}{nameof(OnUpdate)} added replace to temp.");
-
-                    if ((effectiveComposition & NetworkAnarchyUISystem.Composition.Tunnel) != NetworkAnarchyUISystem.Composition.Tunnel && EntityManager.TryGetComponent(entity, out Edge edge))
-                    {
-                        EntityManager.RemoveComponent<Elevation>(edge.m_Start);
-                        EntityManager.RemoveComponent<Elevation>(edge.m_End);
-                    }
                 }
 
                 CompositionFlags compositionFlags = default;
@@ -325,6 +348,48 @@ namespace Anarchy.Systems.NetworkAnarchy
                 elevation.m_Elevation.x == NetworkDefinitionSystem.RetainingWallThreshold || elevation.m_Elevation.y == NetworkDefinitionSystem.RetainingWallThreshold ||
                 elevation.m_Elevation.x == NetworkDefinitionSystem.QuayThreshold || elevation.m_Elevation.y == NetworkDefinitionSystem.QuayThreshold ||
                 (elevation.m_Elevation.x == NetworkDefinitionSystem.TunnelThreshold && elevation.m_Elevation.y == NetworkDefinitionSystem.TunnelThreshold))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool EvaluateCompositionUpgradesAndToolOptions(Entity entity, Elevation elevation)
+        {
+            EntityManager.TryGetComponent(entity, out Upgraded upgraded);
+            bool isTunnel = (upgraded.m_Flags.m_General & CompositionFlags.General.Tunnel) == CompositionFlags.General.Tunnel || (elevation.m_Elevation.x <= NetworkDefinitionSystem.TunnelThreshold && elevation.m_Elevation.y <= NetworkDefinitionSystem.TunnelThreshold);
+            if (m_UISystem.ReplaceComposition && (m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Tunnel) != NetworkAnarchyUISystem.Composition.Tunnel && isTunnel)
+            {
+                return true;
+            }
+
+            bool isElevated = (upgraded.m_Flags.m_General & CompositionFlags.General.Elevated) == CompositionFlags.General.Elevated || (elevation.m_Elevation.x >= NetworkDefinitionSystem.ElevatedThreshold && elevation.m_Elevation.y >= NetworkDefinitionSystem.ElevatedThreshold);
+            if (m_UISystem.ReplaceComposition && (m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Elevated) != NetworkAnarchyUISystem.Composition.Elevated && isElevated)
+            {
+                return true;
+            }
+
+            bool isLeftRetainingWall = (upgraded.m_Flags.m_Left & CompositionFlags.Side.Lowered) == CompositionFlags.Side.Lowered || (elevation.m_Elevation.x < 0 && elevation.m_Elevation.x > NetworkDefinitionSystem.TunnelThreshold);
+            if (m_UISystem.ReplaceLeftUpgrade && (m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) != NetworkAnarchyUISystem.SideUpgrades.RetainingWall && isLeftRetainingWall)
+            {
+                return true;
+            }
+
+            bool isLeftQuayWall = (upgraded.m_Flags.m_Left & CompositionFlags.Side.Raised) == CompositionFlags.Side.Raised || (elevation.m_Elevation.x < NetworkDefinitionSystem.ElevatedThreshold && elevation.m_Elevation.x > 0f);
+            if (m_UISystem.ReplaceLeftUpgrade && (m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) != NetworkAnarchyUISystem.SideUpgrades.Quay && isLeftQuayWall)
+            {
+                return true;
+            }
+
+            bool isRightRetainingWall = (upgraded.m_Flags.m_Right & CompositionFlags.Side.Lowered) == CompositionFlags.Side.Lowered || (elevation.m_Elevation.y < 0f && elevation.m_Elevation.y > NetworkDefinitionSystem.TunnelThreshold);
+            if (m_UISystem.ReplaceRightUpgrade && (m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) != NetworkAnarchyUISystem.SideUpgrades.RetainingWall && isRightRetainingWall)
+            {
+                return true;
+            }
+
+            bool isRightQuayWall = (upgraded.m_Flags.m_Right & CompositionFlags.Side.Raised) == CompositionFlags.Side.Raised || (elevation.m_Elevation.y < NetworkDefinitionSystem.ElevatedThreshold && elevation.m_Elevation.y > 0f);
+            if (m_UISystem.ReplaceRightUpgrade && (m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) != NetworkAnarchyUISystem.SideUpgrades.Quay && isRightQuayWall)
             {
                 return true;
             }
