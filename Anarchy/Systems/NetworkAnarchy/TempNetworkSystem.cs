@@ -10,6 +10,7 @@ namespace Anarchy.Systems.NetworkAnarchy
     using Colossal.Logging;
     using Game;
     using Game.Common;
+    using Game.Input;
     using Game.Net;
     using Game.Prefabs;
     using Game.Simulation;
@@ -124,9 +125,10 @@ namespace Anarchy.Systems.NetworkAnarchy
             }
 
             if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace
-                && !m_UISystem.ReplaceComposition
-                && !m_UISystem.ReplaceLeftUpgrade
-                && !m_UISystem.ReplaceRightUpgrade)
+                && (!m_UISystem.ReplaceComposition || !AnarchyMod.Instance.Settings.NetworkAnarchyToolOptions)
+                && (!m_UISystem.ReplaceLeftUpgrade || !AnarchyMod.Instance.Settings.NetworkUpgradesToolOptions)
+                && (!m_UISystem.ReplaceRightUpgrade || !AnarchyMod.Instance.Settings.NetworkUpgradesToolOptions)
+                && !UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID()))
             {
                 return;
             }
@@ -359,37 +361,37 @@ namespace Anarchy.Systems.NetworkAnarchy
         {
             EntityManager.TryGetComponent(entity, out Upgraded upgraded);
             bool isTunnel = (upgraded.m_Flags.m_General & CompositionFlags.General.Tunnel) == CompositionFlags.General.Tunnel || (elevation.m_Elevation.x <= NetworkDefinitionSystem.TunnelThreshold && elevation.m_Elevation.y <= NetworkDefinitionSystem.TunnelThreshold);
-            if (m_UISystem.ReplaceComposition && (m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Tunnel) != NetworkAnarchyUISystem.Composition.Tunnel && isTunnel)
+            if ((m_UISystem.ReplaceComposition || UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID())) && (m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Tunnel) != NetworkAnarchyUISystem.Composition.Tunnel && isTunnel)
             {
                 return true;
             }
 
             bool isElevated = (upgraded.m_Flags.m_General & CompositionFlags.General.Elevated) == CompositionFlags.General.Elevated || (elevation.m_Elevation.x >= NetworkDefinitionSystem.ElevatedThreshold && elevation.m_Elevation.y >= NetworkDefinitionSystem.ElevatedThreshold);
-            if (m_UISystem.ReplaceComposition && (m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Elevated) != NetworkAnarchyUISystem.Composition.Elevated && isElevated)
+            if ((m_UISystem.ReplaceComposition || UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID())) && (m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Elevated) != NetworkAnarchyUISystem.Composition.Elevated && isElevated)
             {
                 return true;
             }
 
             bool isLeftRetainingWall = (upgraded.m_Flags.m_Left & CompositionFlags.Side.Lowered) == CompositionFlags.Side.Lowered || (elevation.m_Elevation.x < 0 && elevation.m_Elevation.x > NetworkDefinitionSystem.TunnelThreshold);
-            if (m_UISystem.ReplaceLeftUpgrade && (m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) != NetworkAnarchyUISystem.SideUpgrades.RetainingWall && isLeftRetainingWall)
+            if ((m_UISystem.ReplaceLeftUpgrade || UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID())) && (m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) != NetworkAnarchyUISystem.SideUpgrades.RetainingWall && isLeftRetainingWall)
             {
                 return true;
             }
 
             bool isLeftQuayWall = (upgraded.m_Flags.m_Left & CompositionFlags.Side.Raised) == CompositionFlags.Side.Raised || (elevation.m_Elevation.x < NetworkDefinitionSystem.ElevatedThreshold && elevation.m_Elevation.x > 0f);
-            if (m_UISystem.ReplaceLeftUpgrade && (m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) != NetworkAnarchyUISystem.SideUpgrades.Quay && isLeftQuayWall)
+            if ((m_UISystem.ReplaceLeftUpgrade || UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID())) && (m_UISystem.LeftUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) != NetworkAnarchyUISystem.SideUpgrades.Quay && isLeftQuayWall)
             {
                 return true;
             }
 
             bool isRightRetainingWall = (upgraded.m_Flags.m_Right & CompositionFlags.Side.Lowered) == CompositionFlags.Side.Lowered || (elevation.m_Elevation.y < 0f && elevation.m_Elevation.y > NetworkDefinitionSystem.TunnelThreshold);
-            if (m_UISystem.ReplaceRightUpgrade && (m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) != NetworkAnarchyUISystem.SideUpgrades.RetainingWall && isRightRetainingWall)
+            if ((m_UISystem.ReplaceRightUpgrade || UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID())) && (m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) != NetworkAnarchyUISystem.SideUpgrades.RetainingWall && isRightRetainingWall)
             {
                 return true;
             }
 
             bool isRightQuayWall = (upgraded.m_Flags.m_Right & CompositionFlags.Side.Raised) == CompositionFlags.Side.Raised || (elevation.m_Elevation.y < NetworkDefinitionSystem.ElevatedThreshold && elevation.m_Elevation.y > 0f);
-            if (m_UISystem.ReplaceRightUpgrade && (m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) != NetworkAnarchyUISystem.SideUpgrades.Quay && isRightQuayWall)
+            if ((m_UISystem.ReplaceRightUpgrade || UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID())) && (m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) != NetworkAnarchyUISystem.SideUpgrades.Quay && isRightQuayWall)
             {
                 return true;
             }
