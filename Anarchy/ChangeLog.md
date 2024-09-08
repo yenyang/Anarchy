@@ -1,2 +1,5 @@
-﻿## Patch V1.7.1
-* Fix some problems with replacing elevated networks and tunnels. There may still be issues with these.
+﻿## Patch V1.7.2
+* Fixed regression that didn't allow retaining walls and quays to be removed.
+* Improved replace tool mode's ability to swap configurations. 
+* Improved forced ground mode from an elevated/lowered node.
+* Updated Localization

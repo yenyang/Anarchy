@@ -26,7 +26,7 @@ namespace Anarchy.Systems.NetworkAnarchy
         public const float QuayThreshold = 4f;
         public const float RetainingWallThreshold = -4f;
         public const float TunnelThreshold = -12f;
-        public const float ElevatedThreshold = 10f;
+        public const float ElevatedThreshold = 8f;
         public const float ForceGroundElevation = 0f;
 
         private ToolSystem m_ToolSystem;
