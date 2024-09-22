@@ -1,4 +1,4 @@
-﻿// <copyright file="Class1.cs" company="Yenyang's Mods. MIT License">
+﻿// <copyright file="HandleClearUpdateNextFrameSystem.cs" company="Yenyang's Mods. MIT License">
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
