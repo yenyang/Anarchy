@@ -137,5 +137,5 @@ That will take time, research, development, and testing.</ChangeLog>
   <ExternalLink Type="github" Url="https://github.com/yenyang/Anarchy" />
   <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />
   <ExternalLink Type="crowdin" Url="https://crowdin.com/project/csl2-mod-anarchy" />
-  <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=reQFuJozcj4" />
+	<!-- ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=reQFuJozcj4" -->
 </Publish>

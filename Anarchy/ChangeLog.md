@@ -7,7 +7,6 @@ The following features/fixes have been removed to try and prevent new save file 
 * All Network Upgrade Assets from Extended Road Upgrades
 * Fixes to Extended Road Upgrades including retaining wall node issue and fire and rescue info view issue
 * Elevation Step Slider
-* Reset Elevation and Elevation Step Keybinds while drawing networks
 
 Options related to these features have been hidden.
 
