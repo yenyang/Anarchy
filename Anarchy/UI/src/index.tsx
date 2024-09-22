@@ -7,7 +7,7 @@ import mod from "../mod.json";
 import { ElevationControlComponent } from "mods/elevationControlSections/elevationControlSections";
 import { ToolOptionsVisibility } from "mods/ToolOptionsVisible/toolOptionsVisible";
 import { PartialAnarchyMenuComponent } from "mods/partialAnarchyOptions/partialAnarchyMenu";
-import { NetworkAnarchySections } from "mods/networkAnarchySections/networkAnarchySection";
+// import { NetworkAnarchySections } from "mods/networkAnarchySections/networkAnarchySection";
 import { AnarchyComponentsToolComponent } from "mods/AnarchyComponentsToolSections/anarchyComponentsToolSections";
 
 const register: ModRegistrar = (moduleRegistry) => {
@@ -34,7 +34,7 @@ const register: ModRegistrar = (moduleRegistry) => {
      moduleRegistry.append('Editor', PartialAnarchyMenuComponent);
 
      // This extends mouse tooltip options with network Anarchy sections and toggles. It may or may not work with gamepads.
-     moduleRegistry.extend("game-ui/game/components/tool-options/mouse-tool-options/mouse-tool-options.tsx", 'MouseToolOptions', NetworkAnarchySections);
+     // moduleRegistry.extend("game-ui/game/components/tool-options/mouse-tool-options/mouse-tool-options.tsx", 'MouseToolOptions', NetworkAnarchySections);
 
      moduleRegistry.extend("game-ui/game/components/tool-options/mouse-tool-options/mouse-tool-options.tsx", 'MouseToolOptions', AnarchyComponentsToolComponent);
 

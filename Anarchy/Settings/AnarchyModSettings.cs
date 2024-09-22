@@ -5,7 +5,7 @@
 namespace Anarchy.Settings
 {
     using Anarchy.Systems.Common;
-    using Anarchy.Systems.NetworkAnarchy;
+    // using Anarchy.Systems.NetworkAnarchy;
     using Anarchy.Systems.OverridePrevention;
     using Colossal.IO.AssetDatabase;
     using Game.Input;
@@ -132,30 +132,35 @@ namespace Anarchy.Settings
         /// <summary>
         /// Gets or sets a value indicating whether to show network anarchy in tool options menu.
         /// </summary>
+        [SettingsUIHidden]
         [SettingsUISection(UI, Stable)]
         public bool NetworkAnarchyToolOptions { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show network upgrades in tool options menu.
         /// </summary>
+        [SettingsUIHidden]
         [SettingsUISection(UI, Stable)]
         public bool NetworkUpgradesToolOptions { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show elevation step slider.
         /// </summary>
+        [SettingsUIHidden]
         [SettingsUISection(UI, Stable)]
         public bool ElevationStepSlider { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show network upgrade prefabs.
         /// </summary>
+        [SettingsUIHidden]
         [SettingsUISection(UI, Stable)]
         public bool NetworkUpgradesPrefabs { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to replace upgrades or not.
         /// </summary>
+        [SettingsUIHidden]
         [SettingsUISection(UI, Stable)]
         public bool ReplaceUpgradesBehavior { get; set; }
 
