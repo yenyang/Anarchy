@@ -14,7 +14,6 @@ namespace Anarchy.Systems.NetworkAnarchy
     using Game.Tools;
     using Unity.Collections;
     using Unity.Entities;
-    using Unity.Entities.UniversalDelegates;
     using Unity.Mathematics;
     using UnityEngine;
 

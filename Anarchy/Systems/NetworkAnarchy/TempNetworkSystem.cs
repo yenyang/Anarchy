@@ -5,6 +5,7 @@
 namespace Anarchy.Systems.NetworkAnarchy
 {
     using System.Collections.Generic;
+    using Anarchy.Components;
     using Anarchy.Systems.NetworkAnarchy;
     using Colossal.Entities;
     using Colossal.Logging;
@@ -212,6 +213,11 @@ namespace Anarchy.Systems.NetworkAnarchy
                         startTemp.m_Flags |= TempFlags.Replace;
                         EntityManager.SetComponentData(edge.m_Start, startTemp);
                         EntityManager.RemoveComponent<Elevation>(edge.m_Start);
+                        if (EntityManager.HasComponent<Game.Simulation.ElectricityNodeConnection>(startTemp.m_Original)
+                            || EntityManager.HasComponent<Game.Simulation.WaterPipeNodeConnection>(startTemp.m_Original))
+                        {
+                            EntityManager.AddComponent<CheckUtilityNodeConnection>(edge.m_Start);
+                        }
                     }
 
                     if (EntityManager.TryGetComponent(edge.m_End, out Elevation endElevation)
@@ -221,6 +227,11 @@ namespace Anarchy.Systems.NetworkAnarchy
                         endTemp.m_Flags |= TempFlags.Replace;
                         EntityManager.SetComponentData(edge.m_End, endTemp);
                         EntityManager.RemoveComponent<Elevation>(edge.m_End);
+                        if (EntityManager.TryGetComponent(endTemp.m_Original, out Game.Simulation.ElectricityNodeConnection electricityNodeConnection)
+                            || EntityManager.TryGetComponent(endTemp.m_Original, out Game.Simulation.WaterPipeNodeConnection waterPipeNodeConnection))
+                        {
+                            EntityManager.AddComponent<CheckUtilityNodeConnection>(edge.m_End);
+                        }
                     }
                 }
 
