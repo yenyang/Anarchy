@@ -12,7 +12,7 @@ namespace Anarchy.Systems.NetworkAnarchy
     using Unity.Entities;
 
     /// <summary>
-    /// A system that prevents objects from being overriden when placed on each other.
+    /// Removes UpdateNextFrame and ClearUpdateNextFrame components from applicable entities.
     /// </summary>
     public partial class HandleClearUpdateNextFrameSystem : GameSystemBase
     {

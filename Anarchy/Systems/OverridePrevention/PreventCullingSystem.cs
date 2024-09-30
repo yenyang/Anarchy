@@ -138,7 +138,6 @@ namespace Anarchy.Systems.OverridePrevention
             }
 
             RunNow = false;
-            m_Log.Debug($"{nameof(PreventCullingSystem)}.{nameof(OnUpdate)}");
 
             VerifyVisibleJob verifyVisibleJob = new ()
             {

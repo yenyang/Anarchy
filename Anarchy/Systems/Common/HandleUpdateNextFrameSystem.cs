@@ -12,7 +12,7 @@ namespace Anarchy.Systems.Common
     using Unity.Entities;
 
     /// <summary>
-    /// A system that prevents objects from being overriden when placed on each other.
+    /// Adds updated to applicable entities that need a delayed update.
     /// </summary>
     public partial class HandleUpdateNextFrameSystem : GameSystemBase
     {
