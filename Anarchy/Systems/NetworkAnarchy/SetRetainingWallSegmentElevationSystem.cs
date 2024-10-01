@@ -256,7 +256,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                             bool addPillar = true;
                             foreach (ConnectedEdge connectedEdge in startConnectedEdges)
                             {
-                                if (m_UpgradedLookup.TryGetComponent(connectedEdge.m_Edge, out Upgraded upgraded1) && (upgraded1.m_Flags.m_General & CompositionFlags.General.Elevated) != CompositionFlags.General.Elevated)
+                                if (!m_UpgradedLookup.TryGetComponent(connectedEdge.m_Edge, out Upgraded upgraded1) || (upgraded1.m_Flags.m_General & CompositionFlags.General.Elevated) != CompositionFlags.General.Elevated)
                                 {
                                     addPillar = false;
                                     break;
@@ -286,7 +286,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                             bool addPillar = true;
                             foreach (ConnectedEdge connectedEdge in endConnectedEdges)
                             {
-                                if (m_UpgradedLookup.TryGetComponent(connectedEdge.m_Edge, out Upgraded upgraded1) && (upgraded1.m_Flags.m_General & CompositionFlags.General.Elevated) != CompositionFlags.General.Elevated)
+                                if (!m_UpgradedLookup.TryGetComponent(connectedEdge.m_Edge, out Upgraded upgraded1) || (upgraded1.m_Flags.m_General & CompositionFlags.General.Elevated) != CompositionFlags.General.Elevated)
                                 {
                                     addPillar = false;
                                     break;

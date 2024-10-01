@@ -679,7 +679,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                     }
                 }
 
-                m_ShowComposition.Value &= ~Composition.ConstantSlope;
+                m_ShowComposition.Value &= ~(Composition.ConstantSlope | Composition.Ground);
             }
 
             if (!AnarchyMod.Instance.Settings.NetworkAnarchyToolOptions)

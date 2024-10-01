@@ -252,35 +252,57 @@ namespace Anarchy.Systems.NetworkAnarchy
                     {
                         elevation.m_Elevation.x = Mathf.Max(elevation.m_Elevation.x, NetworkDefinitionSystem.ElevatedThreshold);
                         elevation.m_Elevation.y = Mathf.Max(elevation.m_Elevation.y, NetworkDefinitionSystem.ElevatedThreshold);
-                        if (!EntityManager.HasComponent<Game.Net.Elevation>(edge.m_End))
+
+                        if (EntityManager.TryGetBuffer(edge.m_Start, isReadOnly: true, out DynamicBuffer<ConnectedEdge> startConnectedEdges))
                         {
-                            EntityManager.AddComponent<Game.Net.Elevation>(edge.m_End);
+                            bool addPillar = true;
+                            foreach (ConnectedEdge connectedEdge in startConnectedEdges)
+                            {
+                                if (!EntityManager.TryGetComponent(connectedEdge.m_Edge, out Upgraded upgraded1) || (upgraded1.m_Flags.m_General & CompositionFlags.General.Elevated) != CompositionFlags.General.Elevated)
+                                {
+                                    addPillar = false;
+                                    break;
+                                }
+                            }
+
+                            if (addPillar)
+                            {
+                                if (!EntityManager.HasComponent<Game.Net.Elevation>(edge.m_Start))
+                                {
+                                    EntityManager.AddComponent<Game.Net.Elevation>(edge.m_Start);
+                                }
+
+                                EntityManager.SetComponentData(edge.m_Start, elevation);
+                            }
                         }
 
-                        if (!EntityManager.HasComponent<Game.Net.Elevation>(edge.m_Start))
+                        if (EntityManager.TryGetBuffer(edge.m_End, isReadOnly: true, out DynamicBuffer<ConnectedEdge> endConnectedEdges))
                         {
-                            EntityManager.AddComponent<Game.Net.Elevation>(edge.m_Start);
-                        }
+                            bool addPillar = true;
+                            foreach (ConnectedEdge connectedEdge in endConnectedEdges)
+                            {
+                                if (!EntityManager.TryGetComponent(connectedEdge.m_Edge, out Upgraded upgraded1) || (upgraded1.m_Flags.m_General & CompositionFlags.General.Elevated) != CompositionFlags.General.Elevated)
+                                {
+                                    addPillar = false;
+                                    break;
+                                }
+                            }
 
-                        EntityManager.SetComponentData(edge.m_End, elevation);
-                        EntityManager.SetComponentData(edge.m_Start, elevation);
+                            if (addPillar)
+                            {
+                                if (!EntityManager.HasComponent<Game.Net.Elevation>(edge.m_End))
+                                {
+                                    EntityManager.AddComponent<Game.Net.Elevation>(edge.m_End);
+                                }
+
+                                EntityManager.SetComponentData(edge.m_End, elevation);
+                            }
+                        }
                     }
                     else if ((effectiveComposition & NetworkAnarchyUISystem.Composition.Tunnel) == NetworkAnarchyUISystem.Composition.Tunnel)
                     {
                         elevation.m_Elevation.x = Mathf.Min(elevation.m_Elevation.x, NetworkDefinitionSystem.TunnelThreshold);
                         elevation.m_Elevation.y = Mathf.Min(elevation.m_Elevation.y, NetworkDefinitionSystem.TunnelThreshold);
-                        if (!EntityManager.HasComponent<Game.Net.Elevation>(edge.m_End))
-                        {
-                            EntityManager.AddComponent<Game.Net.Elevation>(edge.m_End);
-                        }
-
-                        if (!EntityManager.HasComponent<Game.Net.Elevation>(edge.m_Start))
-                        {
-                            EntityManager.AddComponent<Game.Net.Elevation>(edge.m_Start);
-                        }
-
-                        EntityManager.SetComponentData(edge.m_End, elevation);
-                        EntityManager.SetComponentData(edge.m_Start, elevation);
                     }
 
                     EntityManager.SetComponentData(entity, elevation);
