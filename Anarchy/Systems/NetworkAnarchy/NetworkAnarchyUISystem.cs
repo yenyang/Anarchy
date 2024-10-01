@@ -593,7 +593,7 @@ namespace Anarchy.Systems.NetworkAnarchy
             }
 
 
-            if (AnarchyMod.Instance.Settings.NetworkUpgradesToolOptions) 
+            if (AnarchyMod.Instance.Settings.NetworkUpgradesToolOptions)
             {
                 foreach (KeyValuePair<SideUpgrades, CompositionFlags.Side> keyValuePair in m_TempNetworkSystem.SideUpgradesDictionary)
                 {
@@ -679,7 +679,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                     }
                 }
 
-                m_ShowComposition.Value &= ~(Composition.ConstantSlope | Composition.Ground);
+                m_ShowComposition.Value &= ~Composition.ConstantSlope;
             }
 
             if (!AnarchyMod.Instance.Settings.NetworkAnarchyToolOptions)

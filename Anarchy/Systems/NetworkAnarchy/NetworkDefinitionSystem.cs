@@ -289,6 +289,10 @@ namespace Anarchy.Systems.NetworkAnarchy
             {
                 netCourse.m_Elevation.x = Mathf.Max(netCourse.m_Elevation.x, ElevatedThreshold);
                 netCourse.m_Elevation.y = Mathf.Max(netCourse.m_Elevation.y, ElevatedThreshold);
+                netCourse.m_StartPosition.m_Elevation.x = Mathf.Max(netCourse.m_StartPosition.m_Elevation.x, ElevatedThreshold);
+                netCourse.m_StartPosition.m_Elevation.y = Mathf.Max(netCourse.m_StartPosition.m_Elevation.y, ElevatedThreshold);
+                netCourse.m_EndPosition.m_Elevation.x = Mathf.Max(netCourse.m_StartPosition.m_Elevation.x, ElevatedThreshold);
+                netCourse.m_EndPosition.m_Elevation.y = Mathf.Max(netCourse.m_StartPosition.m_Elevation.y, ElevatedThreshold);
             }
         }
 

@@ -203,9 +203,11 @@ namespace Anarchy.Systems.NetworkAnarchy
                     m_Log.Debug($"{nameof(TempNetworkSystem)}{nameof(OnUpdate)} added replace to temp.");
                 }
 
-                if ((m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace
-                    || (effectiveComposition & NetworkAnarchyUISystem.Composition.Ground) == NetworkAnarchyUISystem.Composition.Ground)
-                    && EntityManager.TryGetComponent(entity, out Edge edge))
+                if (EntityManager.TryGetComponent(entity, out Edge edge)
+                    && (((m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace) && (effectiveComposition & NetworkAnarchyUISystem.Composition.Ground) == NetworkAnarchyUISystem.Composition.Ground)
+                    || (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace &&
+                        ((EntityManager.TryGetComponent(edge.m_Start, out Game.Net.Elevation startElevation) && EvaluateCompositionUpgradesAndToolOptions(entity, startElevation))
+                        || (EntityManager.TryGetComponent(edge.m_End, out Game.Net.Elevation endElevation) && EvaluateCompositionUpgradesAndToolOptions(entity, endElevation))))))
                 {
                     EntityManager.AddComponent<SetEndElevationsToZero>(entity);
                     m_Log.Debug("added custom component to segment");
@@ -250,11 +252,35 @@ namespace Anarchy.Systems.NetworkAnarchy
                     {
                         elevation.m_Elevation.x = Mathf.Max(elevation.m_Elevation.x, NetworkDefinitionSystem.ElevatedThreshold);
                         elevation.m_Elevation.y = Mathf.Max(elevation.m_Elevation.y, NetworkDefinitionSystem.ElevatedThreshold);
+                        if (!EntityManager.HasComponent<Game.Net.Elevation>(edge.m_End))
+                        {
+                            EntityManager.AddComponent<Game.Net.Elevation>(edge.m_End);
+                        }
+
+                        if (!EntityManager.HasComponent<Game.Net.Elevation>(edge.m_Start))
+                        {
+                            EntityManager.AddComponent<Game.Net.Elevation>(edge.m_Start);
+                        }
+
+                        EntityManager.SetComponentData(edge.m_End, elevation);
+                        EntityManager.SetComponentData(edge.m_Start, elevation);
                     }
                     else if ((effectiveComposition & NetworkAnarchyUISystem.Composition.Tunnel) == NetworkAnarchyUISystem.Composition.Tunnel)
                     {
                         elevation.m_Elevation.x = Mathf.Min(elevation.m_Elevation.x, NetworkDefinitionSystem.TunnelThreshold);
                         elevation.m_Elevation.y = Mathf.Min(elevation.m_Elevation.y, NetworkDefinitionSystem.TunnelThreshold);
+                        if (!EntityManager.HasComponent<Game.Net.Elevation>(edge.m_End))
+                        {
+                            EntityManager.AddComponent<Game.Net.Elevation>(edge.m_End);
+                        }
+
+                        if (!EntityManager.HasComponent<Game.Net.Elevation>(edge.m_Start))
+                        {
+                            EntityManager.AddComponent<Game.Net.Elevation>(edge.m_Start);
+                        }
+
+                        EntityManager.SetComponentData(edge.m_End, elevation);
+                        EntityManager.SetComponentData(edge.m_Start, elevation);
                     }
 
                     EntityManager.SetComponentData(entity, elevation);
@@ -384,6 +410,11 @@ namespace Anarchy.Systems.NetworkAnarchy
 
             bool isRightQuayWall = (upgraded.m_Flags.m_Right & CompositionFlags.Side.Raised) == CompositionFlags.Side.Raised || (elevation.m_Elevation.y < NetworkDefinitionSystem.ElevatedThreshold && elevation.m_Elevation.y > 0f);
             if ((m_UISystem.ReplaceRightUpgrade || UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID())) && (m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) != NetworkAnarchyUISystem.SideUpgrades.Quay && isRightQuayWall)
+            {
+                return true;
+            }
+
+            if (m_UISystem.ReplaceComposition && (m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Ground) == NetworkAnarchyUISystem.Composition.Ground)
             {
                 return true;
             }
