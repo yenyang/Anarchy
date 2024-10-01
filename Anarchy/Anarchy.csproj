@@ -138,7 +138,6 @@
 	<ItemGroup>
 		<None Include="$(ModPropsFile)" Link="Properties\Mod.props" />
 		<None Include="$(ModTargetsFile)" Link="Properties\Mod.targets" />
-		<None Include="Systems\NetworkAnarchy\SetRetainingWallSegmentElevationSystem.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -212,10 +211,6 @@
 		<Content Include="lang\**">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Compile Remove="Systems\NetworkAnarchy\SetRetainingWallSegmentElevationSystem.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

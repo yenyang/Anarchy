@@ -53,7 +53,7 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_UISystem = World.GetOrCreateSystemManaged<NetworkAnarchyUISystem>();
             m_UpgradedAndUpgradedQuery = SystemAPI.QueryBuilder()
                             .WithAll<Updated, Game.Net.Edge>()
-                            .WithNone<Deleted, Overridden, Temp, Owner, UpdateNextFrame, ClearUpdateNextFrame>()
+                            .WithNone<Deleted, Overridden, Temp, UpdateNextFrame, ClearUpdateNextFrame>()
                             .Build();
 
             RequireForUpdate(m_UpgradedAndUpgradedQuery);
@@ -72,6 +72,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                 m_EdgeType = SystemAPI.GetComponentTypeHandle<Game.Net.Edge>(isReadOnly: true),
                 m_EdgeLookup = SystemAPI.GetComponentLookup<Game.Net.Edge>(isReadOnly: true),
                 m_UpgradedLookup = SystemAPI.GetComponentLookup<Game.Net.Upgraded>(isReadOnly: true),
+                m_SetEndElevationsToZero = SystemAPI.GetComponentLookup<SetEndElevationsToZero>(isReadOnly: true),
             };
 
             JobHandle segmentElevationsJobHandle = setSegmentElevationsJob.Schedule(m_UpgradedAndUpgradedQuery, Dependency);
@@ -93,6 +94,8 @@ namespace Anarchy.Systems.NetworkAnarchy
             public ComponentLookup<Game.Net.Elevation> m_ElevationLookup;
             [ReadOnly]
             public BufferLookup<Game.Net.ConnectedEdge> m_ConnectedEdgeLookup;
+            [ReadOnly]
+            public ComponentLookup<SetEndElevationsToZero> m_SetEndElevationsToZero;
             [ReadOnly]
             public ComponentLookup<Game.Net.Upgraded> m_UpgradedLookup;
             [ReadOnly]
@@ -130,7 +133,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                     {
                         m_ElevationLookup.TryGetComponent(entity, out elevation);
                     }
-                    else
+                    else if (!m_SetEndElevationsToZero.HasComponent(entity))
                     {
                         continue;
                     }
@@ -174,7 +177,7 @@ namespace Anarchy.Systems.NetworkAnarchy
 
                     if (m_ReplaceMode)
                     {
-                        if ((upgraded.m_Flags.m_General & CompositionFlags.General.Tunnel) == CompositionFlags.General.Tunnel || m_ElevationLookup.HasComponent(edge.m_Start))
+                        if ((upgraded.m_Flags.m_General & CompositionFlags.General.Tunnel) == CompositionFlags.General.Tunnel || m_ElevationLookup.HasComponent(edge.m_End))
                         {
                             bool removeEndElevationComponent = true;
                             if (m_ConnectedEdgeLookup.TryGetBuffer(edge.m_End, out DynamicBuffer<ConnectedEdge> endConnectedEdges))
@@ -298,6 +301,8 @@ namespace Anarchy.Systems.NetworkAnarchy
                             }
                         }
                     }
+
+                    buffer.RemoveComponent<SetEndElevationsToZero>(entity);
                 }
             }
         }

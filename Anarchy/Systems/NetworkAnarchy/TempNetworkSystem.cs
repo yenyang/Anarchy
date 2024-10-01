@@ -203,36 +203,17 @@ namespace Anarchy.Systems.NetworkAnarchy
                     m_Log.Debug($"{nameof(TempNetworkSystem)}{nameof(OnUpdate)} added replace to temp.");
                 }
 
-                if ((m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace || (effectiveComposition & NetworkAnarchyUISystem.Composition.Ground) == NetworkAnarchyUISystem.Composition.Ground)
+                if ((m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace
+                    || (effectiveComposition & NetworkAnarchyUISystem.Composition.Ground) == NetworkAnarchyUISystem.Composition.Ground)
                     && EntityManager.TryGetComponent(entity, out Edge edge))
                 {
-                    if (EntityManager.TryGetComponent(edge.m_Start, out Elevation startElevation)
-                        && (EvaluateCompositionUpgradesAndToolOptions(edge.m_Start, startElevation) || (effectiveComposition & NetworkAnarchyUISystem.Composition.Ground) == NetworkAnarchyUISystem.Composition.Ground)
-                        && EntityManager.TryGetComponent(edge.m_Start, out Temp startTemp))
-                    {
-                        startTemp.m_Flags |= TempFlags.Replace;
-                        EntityManager.SetComponentData(edge.m_Start, startTemp);
-                        EntityManager.RemoveComponent<Elevation>(edge.m_Start);
-                        if (EntityManager.HasComponent<Game.Simulation.ElectricityNodeConnection>(startTemp.m_Original)
-                            || EntityManager.HasComponent<Game.Simulation.WaterPipeNodeConnection>(startTemp.m_Original))
-                        {
-                            EntityManager.AddComponent<CheckUtilityNodeConnection>(edge.m_Start);
-                        }
-                    }
-
-                    if (EntityManager.TryGetComponent(edge.m_End, out Elevation endElevation)
-                        && (EvaluateCompositionUpgradesAndToolOptions(edge.m_End, endElevation) || (effectiveComposition & NetworkAnarchyUISystem.Composition.Ground) == NetworkAnarchyUISystem.Composition.Ground)
-                        && EntityManager.TryGetComponent(edge.m_End, out Temp endTemp))
-                    {
-                        endTemp.m_Flags |= TempFlags.Replace;
-                        EntityManager.SetComponentData(edge.m_End, endTemp);
-                        EntityManager.RemoveComponent<Elevation>(edge.m_End);
-                        if (EntityManager.TryGetComponent(endTemp.m_Original, out Game.Simulation.ElectricityNodeConnection electricityNodeConnection)
-                            || EntityManager.TryGetComponent(endTemp.m_Original, out Game.Simulation.WaterPipeNodeConnection waterPipeNodeConnection))
-                        {
-                            EntityManager.AddComponent<CheckUtilityNodeConnection>(edge.m_End);
-                        }
-                    }
+                    EntityManager.AddComponent<SetEndElevationsToZero>(entity);
+                    m_Log.Debug("added custom component to segment");
+                    temp.m_Flags |= TempFlags.Replace;
+                    EntityManager.SetComponentData(entity, temp);
+                    m_Log.Debug($"{nameof(TempNetworkSystem)}{nameof(OnUpdate)} added replace to temp. if not already.");
+                    EntityManager.RemoveComponent<Elevation>(edge.m_Start);
+                    EntityManager.RemoveComponent<Elevation>(edge.m_End);
                 }
 
                 if ((effectiveLeftUpgrades & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall

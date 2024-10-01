@@ -9,7 +9,7 @@ namespace Anarchy.Components
     /// <summary>
     /// A component used to check the utility connections.
     /// </summary>
-    public struct CheckUtilityNodeConnection : IComponentData, IQueryTypeParameter
+    public struct SetEndElevationsToZero : IComponentData, IQueryTypeParameter
     {
     }
 }
