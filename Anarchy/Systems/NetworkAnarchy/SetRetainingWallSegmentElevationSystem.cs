@@ -249,7 +249,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                         }
                     }
 
-                    if (upgraded.m_Flags.m_General == CompositionFlags.General.Elevated)
+                    if ((upgraded.m_Flags.m_General & CompositionFlags.General.Elevated) == CompositionFlags.General.Elevated)
                     {
                         if (m_ConnectedEdgeLookup.TryGetBuffer(edge.m_Start, out DynamicBuffer<ConnectedEdge> startConnectedEdges))
                         {
