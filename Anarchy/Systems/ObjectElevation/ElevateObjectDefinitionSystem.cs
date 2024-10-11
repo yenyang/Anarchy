@@ -9,6 +9,7 @@ namespace Anarchy.Systems.ObjectElevation
     using Colossal.Logging;
     using Game;
     using Game.Common;
+    using Game.Objects;
     using Game.Prefabs;
     using Game.Tools;
     using Unity.Collections;
@@ -90,7 +91,11 @@ namespace Anarchy.Systems.ObjectElevation
                     continue;
                 }
 
-                if (!m_PrefabSystem.TryGetEntity(prefabBase, out Entity prefabEntity) || EntityManager.HasComponent<TransportStopData>(prefabEntity))
+                if (!m_PrefabSystem.TryGetEntity(prefabBase, out Entity prefabEntity) ||
+                    (EntityManager.TryGetComponent(prefabEntity, out PlaceableObjectData placeableObjectData)
+                    && ((placeableObjectData.m_Flags & PlacementFlags.RoadEdge) == PlacementFlags.RoadEdge
+                    || (placeableObjectData.m_Flags & PlacementFlags.RoadNode) == PlacementFlags.RoadNode
+                    || (placeableObjectData.m_Flags & PlacementFlags.RoadSide) == PlacementFlags.RoadSide)))
                 {
                     continue;
                 }
