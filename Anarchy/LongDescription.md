@@ -1,19 +1,23 @@
 Anarchy disables error checks for tools in a way that the errors are not shown at all.
 This mod allows you to place vegetation and props overlapping or inside the boundaries of other objects and close together.
-This mod includes a network upgrades placement and replacement overhaul (quay, retaining walls, grass strips, street trees, etc.) and additional network placement options such as constant slope, force ground, force elevated, and expaned elevation range.
+This mod includes a network upgrades placement and replacement overhaul (quay, retaining walls, grass strips, street trees, etc.) and additional network placement options such as constant slope, force ground, force elevated, and expanded elevation range.
 Sully has prepared an Amazing! demo video about detailing with Anarchy on Youtube. I made a no frills demo YouTube video about network anarchy and the network upgrades overhaul.
 
 ## Dependencies
 Unified Icon Library
-I18n Everywhere (Soft dependency required for loading languages other than English.)
+I18n Everywhere (Soft dependency required for loading official languages other than English.)
 
 ## Donations
 If you want to say thank you with a donation you can do so on Paypal.
 
 ## Translations
-I am looking for volunteers to help translate the mod into the other languages. For those interested please find the project in the discord link. CSL2:CODEMODS -> mods-wip -> Anarchy: Translations.
-Full or Partial Localization: Spanish, German, Chinese Simplified, Brazilian Portuguese, Italian, Polish, Korean, Russian, French, Japanese, and Chinese Traditional. See credits for list of translators.
-  
+I am looking for volunteers to help translate the mod into the other languages. For those interested please find the project in the crowdin or discord link. CSL2:CODEMODS -> mods-wip -> Anarchy: Translations.
+Full or Partial Localization: Spanish, German, Chinese Simplified, Brazilian Portuguese, Italian, Polish, Korean, Russian, French, Japanese, Chinese Traditional, Arabic, Dutch, European Portuguese, and Finnish. See credits for list of translators.
+
+## Supplemental Mods
+European Portuguese Localization (Only needed for European Portuguese Translations)
+TranslateCS2.Mod (Only needed for other unofficial languages. Make sure to set flavor in TranslateCS2 settings.)
+
 # Detailed Description
 The mod also has: 
 * Optional Tool icon
@@ -83,5 +87,6 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * Klyte45, Algernon, T.D.W. - Help with UI, Cooperative Development and Code Sharing
 * Bad Peanut - Image Credit for Flaming Chirper, and grass icon.
 * krzychu124, Triton Supreme, and Quboid - Cooperative Development and Code Sharing
-* Localization: Nyoko, Citadino, Dome, elGendo87 and Eryalito (Spanish), Hendrix (German), RilkeXS, CBEdwin, and zlhww (Chinese Simplified), Luis Fernando de Paula and felipecollucci (Portuguese), Maxi and raistlin46 (Italian), karmel68 and Lisek (Polish), Tanat, TwotoolusFLY_LSh.st, and Hinanchovo (Korean), OWSEEX and Katsumoto (Russian) and Morgan Toverux, spooky_off, Quoifleur, Karg, CEO of Tabarnak and Edou24 (French), Seraphina (Japanese), allegretic(Chinese Traditional)
-* Testing, Feedback - Dante, starrysum, HarbourMaster Jay, Dome, Tigon Ologdring, BruceyBoy, RaftermanNZ, Elektrotek, SpaceChad, GamingNerdLeith, CanadianMoosePlays, Teddy Radko
+* Localization: Nyoko, Citadino, Dome, elGendo87 and Eryalito (Spanish), Hendrix (German), RilkeXS, CBEdwin, zlhww and GuaGua_ua (Chinese Simplified), Luis Fernando de Paula and felipecollucci (Brazilian Portuguese), Maxi and raistlin46 (Italian), karmel68 and Lisek (Polish), Tanat, TwotoolusFLY_LSh.st, and Hinanchovo (Korean), OWSEEX, Katsumoto, TraceXR (Russian) and Morgan Toverux, spooky_off, Quoifleur, Karg, CEO of Tabarnak and Edou24 (French), Seraphina (Japanese), allegretic (Chinese Traditional), ti4go and ruidias (European Portuguese), Jesyx and scoobysub (Dutch), GamingNerdLeith (Arabic).
+* Testing, Feedback - Dante, starrysum, HarbourMaster Jay, Dome, Tigon Ologdring, BruceyBoy, RaftermanNZ, Elektrotek, SpaceChad, GamingNerdLeith, CanadianMoosePlays, Teddy Radko, Jason_Stephen, Brian Rocha, elGendo87, CEO of Tabarnak, DanielVNZ
+* Those that provided broken to saves to help diagnose and fix the problems with v1.7.2. Especially miguel.mateo who's save was used extensively during development and testing of v1.7.4.
