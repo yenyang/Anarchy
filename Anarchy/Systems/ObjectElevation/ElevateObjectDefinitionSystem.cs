@@ -26,7 +26,7 @@ namespace Anarchy.Systems.ObjectElevation
         private AnarchyUISystem m_AnarchyUISystem;
         private EntityQuery m_ObjectDefinitionQuery;
         private ILog m_Log;
-        private ElevateTempObjectSystem m_ElevateTempObjectSystem;
+
         private float m_ElevationDelta;
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Anarchy.Systems.ObjectElevation
             m_Log = AnarchyMod.Instance.Log;
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
-            m_ElevateTempObjectSystem = World.GetOrCreateSystemManaged<ElevateTempObjectSystem>();
+
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_AnarchyUISystem = World.CreateSystemManaged<AnarchyUISystem>();
             m_Log.Info($"[{nameof(ElevateObjectDefinitionSystem)}] {nameof(OnCreate)}");
@@ -90,6 +90,11 @@ namespace Anarchy.Systems.ObjectElevation
                     continue;
                 }
 
+                if (!m_PrefabSystem.TryGetEntity(prefabBase, out Entity prefabEntity) || EntityManager.HasComponent<TransportStopData>(prefabEntity))
+                {
+                    continue;
+                }
+
                 if (prefabBase is not BuildingPrefab)
                 {
                     if (!EntityManager.HasComponent<StackData>(currentCreationDefinition.m_Prefab))
@@ -108,7 +113,6 @@ namespace Anarchy.Systems.ObjectElevation
 
             entities.Dispose();
 
-            m_ElevateTempObjectSystem.Enabled = false;
         }
 
     }

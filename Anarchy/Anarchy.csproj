@@ -142,6 +142,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Extensions\" />
+	  <Folder Include="UnofficialLocales\" />
 	  <Folder Include="Settings\" />
 	</ItemGroup>
 
@@ -209,6 +210,12 @@
 
 	<ItemGroup>
 		<Content Include="lang\**">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="UnofficialLocales\**">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>

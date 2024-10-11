@@ -15,16 +15,20 @@ namespace Anarchy.Systems.Common
     using Anarchy.Systems.ErrorChecks;
     using Anarchy.Systems.ObjectElevation;
     using Anarchy.Systems.OverridePrevention;
+    using Colossal.Entities;
+    using Colossal.IO.AssetDatabase;
     using Colossal.Logging;
     using Colossal.PSI.Environment;
     using Colossal.Serialization.Entities;
     using Colossal.UI.Binding;
     using Game;
     using Game.Input;
+    using Game.Objects;
     using Game.Prefabs;
     using Game.Tools;
     using Unity.Entities;
     using UnityEngine;
+    using static Game.Prefabs.TriggerPrefabData;
 
     /// <summary>
     /// UI system for Anarchy.
@@ -91,14 +95,14 @@ namespace Anarchy.Systems.Common
         private ValueBindingHelper<float> m_ElevationStep;
         private string m_ContentFolder;
         private ValueBindingHelper<int> m_ElevationScale;
-        private ValueBindingHelper<bool> m_IsBuildingPrefab;
+        private ValueBindingHelper<bool> m_IsInappropriatePrefab;
         private ValueBindingHelper<bool> m_ShowElevationSettingsOption;
         private ValueBindingHelper<bool> m_ObjectToolCreateOrBrushMode;
         private ValueBindingHelper<bool> m_DisableElevationLock;
         private ValueBindingHelper<bool> m_MultipleUniques;
         private ElevateObjectDefinitionSystem m_ElevateObjectDefinitionSystem;
         private ValueBindingHelper<bool> m_LockElevation;
-        private ElevateTempObjectSystem m_ElevateTempObjectSystem;
+        private PrefabSystem m_PrefabSystem;
         private ObjectToolSystem m_ObjectToolSystem;
         private bool m_IsBrushing;
         private bool m_BeforeBrushingAnarchyEnabled;
@@ -113,9 +117,9 @@ namespace Anarchy.Systems.Common
         private Dictionary<ErrorType, ErrorCheck.DisableState> m_DefaultErrorChecks;
 
         /// <summary>
-        /// Gets a value indicating whether the flaming chirper option binding is on/off.
+        /// Gets or sets a value indicating whether the flaming chirper option binding is on/off.
         /// </summary>
-        public bool FlamingChirperOption { get => m_FlamingChirperOption.Value; }
+        public bool FlamingChirperOption { get => m_FlamingChirperOption.Value; set => m_FlamingChirperOption.Value = value; }
 
         /// <summary>
         /// Gets a value indicating whether Anarchy is enabled or not.
@@ -126,16 +130,6 @@ namespace Anarchy.Systems.Common
         /// Gets a value indicating whether the elevation should be locked.
         /// </summary>
         public bool LockElevation { get => m_LockElevation.Value; }
-
-        /// <summary>
-        /// Sets the flaming chirper option binding to value.
-        /// </summary>
-        /// <param name="value">True for option enabled. false if not.</param>
-        public void SetFlamingChirperOption(bool value)
-        {
-            // This updates the flaming chirper option binding. It is triggered in the settings by overriding Apply.
-            m_FlamingChirperOption.Value = value;
-        }
 
         /// <summary>
         /// Sets the prevent Override option binding to value.
@@ -169,7 +163,6 @@ namespace Anarchy.Systems.Common
         {
             m_ShowElevationSettingsOption.Value = value;
             m_ElevateObjectDefinitionSystem.Enabled = value;
-            m_ElevateTempObjectSystem.Enabled = false;
             m_ElevationValue.Value = 0f;
         }
 
@@ -218,7 +211,7 @@ namespace Anarchy.Systems.Common
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_ResetNetCompositionDataSystem = World.GetOrCreateSystemManaged<ResetNetCompositionDataSystem>();
             m_ElevateObjectDefinitionSystem = World.GetOrCreateSystemManaged<ElevateObjectDefinitionSystem>();
-            m_ElevateTempObjectSystem = World.GetOrCreateSystemManaged<ElevateTempObjectSystem>();
+            m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_AnarchyPlopSystem = World.GetOrCreateSystemManaged<AnarchyPlopSystem>();
             m_EnableToolErrorsSystem = World.GetOrCreateSystemManaged<EnableToolErrorsSystem>();
@@ -238,7 +231,7 @@ namespace Anarchy.Systems.Common
             m_ElevationScale = CreateBinding("ElevationScale", 1);
             m_DisableElevationLock = CreateBinding("DisableElevationLock", false);
             m_LockElevation = CreateBinding("LockElevation", AnarchyMod.Instance.Settings.ElevationLock);
-            m_IsBuildingPrefab = CreateBinding("IsBuilding", false);
+            m_IsInappropriatePrefab = CreateBinding("IsInappropriate", false);
             m_MultipleUniques = CreateBinding("MultipleUniques", AnarchyMod.Instance.Settings.AllowPlacingMultipleUniqueBuildings);
             m_ShowElevationSettingsOption = CreateBinding("ShowElevationSettingsOption", AnarchyMod.Instance.Settings.ShowElevationToolOption);
             m_ObjectToolCreateOrBrushMode = CreateBinding("ObjectToolCreateOrBrushMode", m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush);
@@ -419,13 +412,21 @@ namespace Anarchy.Systems.Common
                 m_ResetNetCompositionDataSystem.Enabled = true;
             }
 
-            if (m_ToolSystem.activePrefab is BuildingPrefab && m_IsBuildingPrefab.Value == false)
+            if (m_ToolSystem.activePrefab != null &&
+                (m_ToolSystem.activePrefab is BuildingPrefab ||
+                (m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) && EntityManager.TryGetComponent(prefabEntity, out PlaceableObjectData placeableObjectData)
+                && ((placeableObjectData.m_Flags & PlacementFlags.RoadEdge) == PlacementFlags.RoadEdge
+                || (placeableObjectData.m_Flags & PlacementFlags.RoadNode) == PlacementFlags.RoadNode
+                || (placeableObjectData.m_Flags & PlacementFlags.RoadSide) == PlacementFlags.RoadSide))))
             {
-                m_IsBuildingPrefab.Value = true;
+                if (!m_IsInappropriatePrefab.Value)
+                {
+                    m_IsInappropriatePrefab.Value = true;
+                }
             }
-            else if (m_IsBuildingPrefab.Value == true && m_ToolSystem.activePrefab is not BuildingPrefab)
+            else if (m_IsInappropriatePrefab.Value)
             {
-                m_IsBuildingPrefab.Value = false;
+                m_IsInappropriatePrefab.Value = false;
             }
 
             if (tool.toolID != null && AnarchyMod.Instance.Settings.ResetElevationWhenChangingPrefab)
@@ -459,13 +460,19 @@ namespace Anarchy.Systems.Common
 
         private void OnPrefabChanged(PrefabBase prefabBase)
         {
-            if (prefabBase is BuildingPrefab && m_IsBuildingPrefab.Value == false)
+            if (m_ToolSystem.activePrefab != null &&
+                (m_ToolSystem.activePrefab is BuildingPrefab ||
+                (m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) && EntityManager.HasComponent<TransportStopData>(prefabEntity)) ||
+                (EntityManager.TryGetComponent(prefabEntity, out PlaceableObjectData placeableObjectData) && (placeableObjectData.m_Flags & PlacementFlags.RoadNode) == PlacementFlags.RoadNode)))
             {
-                m_IsBuildingPrefab.Value = true;
+                if (!m_IsInappropriatePrefab.Value)
+                {
+                    m_IsInappropriatePrefab.Value = true;
+                }
             }
-            else if (m_IsBuildingPrefab.Value == true && prefabBase is not BuildingPrefab)
+            else if (m_IsInappropriatePrefab.Value)
             {
-                m_IsBuildingPrefab.Value = false;
+                m_IsInappropriatePrefab.Value = false;
             }
 
             if (m_ToolSystem.activeTool.toolID != null && AnarchyMod.Instance.Settings.ResetElevationWhenChangingPrefab)
@@ -499,14 +506,9 @@ namespace Anarchy.Systems.Common
 
                 // I don't know why this is necessary. There seems to be a disconnect that forms in the binding value between C# and UI when the value is changed during onUpdate.
                 m_ElevateObjectDefinitionSystem.ElevationDelta = m_ElevationValue.Value;
-                m_ElevateTempObjectSystem.ElevationChange = difference;
                 m_AnarchyPlopSystem.ElevationChangeIsNegative = m_ElevationValue < 0f;
 
-                // This prevents a crash in the editor but doesn't actually provide the positive effect of the system.
-                if (m_ToolSystem.actionMode.IsGame())
-                {
-                    m_ElevateTempObjectSystem.Enabled = true;
-                }
+                m_ObjectToolSystem.SetMemberValue("m_ForceUpdate", true);
             }
         }
 

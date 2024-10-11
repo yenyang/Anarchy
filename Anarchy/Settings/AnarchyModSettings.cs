@@ -386,7 +386,7 @@ namespace Anarchy.Settings
         public void SetFlamingChirper(bool value)
         {
             AnarchyUISystem anarchyReactUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<AnarchyUISystem>();
-            anarchyReactUISystem.SetFlamingChirperOption(value);
+            anarchyReactUISystem.FlamingChirperOption = value;
         }
 
         /// <summary>
