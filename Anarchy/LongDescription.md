@@ -5,7 +5,7 @@ Sully has prepared an Amazing! demo video about detailing with Anarchy on Youtub
 
 ## Dependencies
 Unified Icon Library
-I18n Everywhere (Soft dependency required for loading official languages other than English.)
+I18n Everywhere (Soft dependency required for loading most languages other than English.)
 
 ## Donations
 If you want to say thank you with a donation you can do so on Paypal.
