@@ -52,6 +52,7 @@
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ToggleAnarchy]": "Вкл/Выкл Анархию",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ToggleAnarchy]": "Горячая клавиша, чтобы переключать Анархию (вкл/выкл).",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevation]": "Сбросить Высоту",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevation]": "Горячая клавиша для сброса шага подъёма во время размещения.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationStep]": "Изменить Шаг Изменения Высоты",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationStep]": "Горячая клавиша, чтобы менять шаг изменения высоты.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.IncreaseElevation]": "Увеличить Высоту",
@@ -96,5 +97,11 @@
   "Anarchy.SECTION_TITLE[AnarchyOptions]": "Настройки Анархии",
   "Anarchy.TOOLTIP_DESCRIPTION[AnarchyOptions]": "Открывает панель для управления тем, какие ошибки никогда не отключаются, отключаются анархией или всегда отключены.",
   "Anarchy.UI_TEXT[Never]": "Никогда",
-  "Anarchy.UI_TEXT[Always]": "Всегда"
+  "Anarchy.UI_TEXT[Always]": "Всегда",
+  "Anarchy.SECTION_TITLE[Radius]": "Радиус",
+  "Anarchy.SECTION_TITLE[ElevationStep]": "Шаг подъёма",
+  "Anarchy.TOOLTIP_TITLE[ConstantSlope]": "Постоянный наклон",
+  "Anarchy.TOOLTIP_DESCRIPTION[ConstantSlope]": "Вынуждает новые сети иметь постоянный наклон от начальной точки до конечной (A -> B).",
+  "Anarchy.TOOLTIP_DESCRIPTION[IncreaseRadius]": "Увеличить радиус.",
+  "Anarchy.TOOLTIP_DESCRIPTION[DecreaseRadius]": "Уменьшить радиус."
 }

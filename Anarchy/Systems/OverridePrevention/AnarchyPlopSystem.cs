@@ -212,13 +212,16 @@ namespace Anarchy.Systems.OverridePrevention
                             if (prefabBase is StaticObjectPrefab && EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData) && prefabBase is not BuildingPrefab && ((objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable || !EntityManager.HasComponent<Game.Objects.NetObject>(entity)))
                             {
                                 // added for compatibility with EDT.
-                                bool isRoundABout = false;
-                                if (EntityManager.TryGetComponent(prefabRef.m_Prefab, out PlaceableObjectData placeableObjectData) && (placeableObjectData.m_Flags & PlacementFlags.RoadNode) == PlacementFlags.RoadNode)
+                                bool isInappropriate = false;
+                                if (EntityManager.TryGetComponent(prefabRef.m_Prefab, out PlaceableObjectData placeableObjectData) &&
+                                    ((placeableObjectData.m_Flags & PlacementFlags.RoadEdge) == PlacementFlags.RoadEdge
+                                  || (placeableObjectData.m_Flags & PlacementFlags.RoadNode) == PlacementFlags.RoadNode
+                                  || (placeableObjectData.m_Flags & PlacementFlags.RoadSide) == PlacementFlags.RoadSide))
                                 {
-                                    isRoundABout = true;
+                                    isInappropriate = true;
                                 }
 
-                                if (m_ToolSystem.actionMode.IsGame() && EntityManager.TryGetComponent(entity, out Attached attachedComponent) && !isRoundABout)
+                                if (m_ToolSystem.actionMode.IsGame() && EntityManager.TryGetComponent(entity, out Attached attachedComponent) && !isInappropriate)
                                 {
                                     if (EntityManager.TryGetBuffer(attachedComponent.m_Parent, isReadOnly: false, out DynamicBuffer<Game.Objects.SubObject> subObjectBuffer))
                                     {
@@ -255,6 +258,17 @@ namespace Anarchy.Systems.OverridePrevention
                                     EntityManager.AddComponent<TransformRecord>(entity);
                                     TransformRecord transformRecord = new () { m_Position = originalTransform2.m_Position, m_Rotation = originalTransform2.m_Rotation };
                                     EntityManager.SetComponentData(entity, transformRecord);
+
+                                    if (!EntityManager.HasComponent<Game.Objects.Elevation>(entity) && originalTransform2.m_Position.y <= terrainHeight - 0.1f && m_ElevationChangeIsNegative)
+                                    {
+                                        EntityManager.AddComponent<Game.Objects.Elevation>(entity);
+                                        Game.Objects.Elevation elevation = new Game.Objects.Elevation()
+                                        {
+                                            m_Elevation = originalTransform2.m_Position.y - terrainHeight,
+                                            m_Flags = ElevationFlags.Lowered,
+                                        };
+                                        EntityManager.SetComponentData(entity, elevation);
+                                    }
                                 }
 
                                 if (m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID) && (objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable)

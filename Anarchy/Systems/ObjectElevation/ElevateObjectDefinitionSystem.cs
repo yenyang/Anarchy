@@ -9,6 +9,7 @@ namespace Anarchy.Systems.ObjectElevation
     using Colossal.Logging;
     using Game;
     using Game.Common;
+    using Game.Objects;
     using Game.Prefabs;
     using Game.Tools;
     using Unity.Collections;
@@ -26,7 +27,7 @@ namespace Anarchy.Systems.ObjectElevation
         private AnarchyUISystem m_AnarchyUISystem;
         private EntityQuery m_ObjectDefinitionQuery;
         private ILog m_Log;
-        private ElevateTempObjectSystem m_ElevateTempObjectSystem;
+
         private float m_ElevationDelta;
 
         /// <summary>
@@ -44,7 +45,7 @@ namespace Anarchy.Systems.ObjectElevation
             m_Log = AnarchyMod.Instance.Log;
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
-            m_ElevateTempObjectSystem = World.GetOrCreateSystemManaged<ElevateTempObjectSystem>();
+
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_AnarchyUISystem = World.CreateSystemManaged<AnarchyUISystem>();
             m_Log.Info($"[{nameof(ElevateObjectDefinitionSystem)}] {nameof(OnCreate)}");
@@ -90,6 +91,15 @@ namespace Anarchy.Systems.ObjectElevation
                     continue;
                 }
 
+                if (!m_PrefabSystem.TryGetEntity(prefabBase, out Entity prefabEntity) ||
+                    (EntityManager.TryGetComponent(prefabEntity, out PlaceableObjectData placeableObjectData)
+                    && ((placeableObjectData.m_Flags & PlacementFlags.RoadEdge) == PlacementFlags.RoadEdge
+                    || (placeableObjectData.m_Flags & PlacementFlags.RoadNode) == PlacementFlags.RoadNode
+                    || (placeableObjectData.m_Flags & PlacementFlags.RoadSide) == PlacementFlags.RoadSide)))
+                {
+                    continue;
+                }
+
                 if (prefabBase is not BuildingPrefab)
                 {
                     if (!EntityManager.HasComponent<StackData>(currentCreationDefinition.m_Prefab))
@@ -108,7 +118,6 @@ namespace Anarchy.Systems.ObjectElevation
 
             entities.Dispose();
 
-            m_ElevateTempObjectSystem.Enabled = false;
         }
 
     }

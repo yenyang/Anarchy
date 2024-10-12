@@ -5,6 +5,7 @@
 namespace Anarchy.Systems.NetworkAnarchy
 {
     using System.Collections.Generic;
+    using Anarchy.Components;
     using Anarchy.Systems.NetworkAnarchy;
     using Colossal.Entities;
     using Colossal.Logging;
@@ -202,26 +203,19 @@ namespace Anarchy.Systems.NetworkAnarchy
                     m_Log.Debug($"{nameof(TempNetworkSystem)}{nameof(OnUpdate)} added replace to temp.");
                 }
 
-                if ((m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace || (effectiveComposition & NetworkAnarchyUISystem.Composition.Ground) == NetworkAnarchyUISystem.Composition.Ground)
-                    && EntityManager.TryGetComponent(entity, out Edge edge))
+                if (EntityManager.TryGetComponent(entity, out Edge edge)
+                    && (((m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace) && (effectiveComposition & NetworkAnarchyUISystem.Composition.Ground) == NetworkAnarchyUISystem.Composition.Ground)
+                    || (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace &&
+                        ((EntityManager.TryGetComponent(edge.m_Start, out Game.Net.Elevation startElevation) && EvaluateCompositionUpgradesAndToolOptions(entity, startElevation))
+                        || (EntityManager.TryGetComponent(edge.m_End, out Game.Net.Elevation endElevation) && EvaluateCompositionUpgradesAndToolOptions(entity, endElevation))))))
                 {
-                    if (EntityManager.TryGetComponent(edge.m_Start, out Elevation startElevation)
-                        && (EvaluateCompositionUpgradesAndToolOptions(edge.m_Start, startElevation) || (effectiveComposition & NetworkAnarchyUISystem.Composition.Ground) == NetworkAnarchyUISystem.Composition.Ground)
-                        && EntityManager.TryGetComponent(edge.m_Start, out Temp startTemp))
-                    {
-                        startTemp.m_Flags |= TempFlags.Replace;
-                        EntityManager.SetComponentData(edge.m_Start, startTemp);
-                        EntityManager.RemoveComponent<Elevation>(edge.m_Start);
-                    }
-
-                    if (EntityManager.TryGetComponent(edge.m_End, out Elevation endElevation)
-                        && (EvaluateCompositionUpgradesAndToolOptions(edge.m_End, endElevation) || (effectiveComposition & NetworkAnarchyUISystem.Composition.Ground) == NetworkAnarchyUISystem.Composition.Ground)
-                        && EntityManager.TryGetComponent(edge.m_End, out Temp endTemp))
-                    {
-                        endTemp.m_Flags |= TempFlags.Replace;
-                        EntityManager.SetComponentData(edge.m_End, endTemp);
-                        EntityManager.RemoveComponent<Elevation>(edge.m_End);
-                    }
+                    EntityManager.AddComponent<SetEndElevationsToZero>(entity);
+                    m_Log.Debug("added custom component to segment");
+                    temp.m_Flags |= TempFlags.Replace;
+                    EntityManager.SetComponentData(entity, temp);
+                    m_Log.Debug($"{nameof(TempNetworkSystem)}{nameof(OnUpdate)} added replace to temp. if not already.");
+                    EntityManager.RemoveComponent<Elevation>(edge.m_Start);
+                    EntityManager.RemoveComponent<Elevation>(edge.m_End);
                 }
 
                 if ((effectiveLeftUpgrades & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
@@ -258,6 +252,52 @@ namespace Anarchy.Systems.NetworkAnarchy
                     {
                         elevation.m_Elevation.x = Mathf.Max(elevation.m_Elevation.x, NetworkDefinitionSystem.ElevatedThreshold);
                         elevation.m_Elevation.y = Mathf.Max(elevation.m_Elevation.y, NetworkDefinitionSystem.ElevatedThreshold);
+
+                        if (EntityManager.TryGetBuffer(edge.m_Start, isReadOnly: true, out DynamicBuffer<ConnectedEdge> startConnectedEdges))
+                        {
+                            bool addPillar = true;
+                            foreach (ConnectedEdge connectedEdge in startConnectedEdges)
+                            {
+                                if (!EntityManager.TryGetComponent(connectedEdge.m_Edge, out Upgraded upgraded1) || (upgraded1.m_Flags.m_General & CompositionFlags.General.Elevated) != CompositionFlags.General.Elevated)
+                                {
+                                    addPillar = false;
+                                    break;
+                                }
+                            }
+
+                            if (addPillar)
+                            {
+                                if (!EntityManager.HasComponent<Game.Net.Elevation>(edge.m_Start))
+                                {
+                                    EntityManager.AddComponent<Game.Net.Elevation>(edge.m_Start);
+                                }
+
+                                EntityManager.SetComponentData(edge.m_Start, elevation);
+                            }
+                        }
+
+                        if (EntityManager.TryGetBuffer(edge.m_End, isReadOnly: true, out DynamicBuffer<ConnectedEdge> endConnectedEdges))
+                        {
+                            bool addPillar = true;
+                            foreach (ConnectedEdge connectedEdge in endConnectedEdges)
+                            {
+                                if (!EntityManager.TryGetComponent(connectedEdge.m_Edge, out Upgraded upgraded1) || (upgraded1.m_Flags.m_General & CompositionFlags.General.Elevated) != CompositionFlags.General.Elevated)
+                                {
+                                    addPillar = false;
+                                    break;
+                                }
+                            }
+
+                            if (addPillar)
+                            {
+                                if (!EntityManager.HasComponent<Game.Net.Elevation>(edge.m_End))
+                                {
+                                    EntityManager.AddComponent<Game.Net.Elevation>(edge.m_End);
+                                }
+
+                                EntityManager.SetComponentData(edge.m_End, elevation);
+                            }
+                        }
                     }
                     else if ((effectiveComposition & NetworkAnarchyUISystem.Composition.Tunnel) == NetworkAnarchyUISystem.Composition.Tunnel)
                     {
@@ -392,6 +432,11 @@ namespace Anarchy.Systems.NetworkAnarchy
 
             bool isRightQuayWall = (upgraded.m_Flags.m_Right & CompositionFlags.Side.Raised) == CompositionFlags.Side.Raised || (elevation.m_Elevation.y < NetworkDefinitionSystem.ElevatedThreshold && elevation.m_Elevation.y > 0f);
             if ((m_UISystem.ReplaceRightUpgrade || UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID())) && (m_UISystem.RightUpgrade & NetworkAnarchyUISystem.SideUpgrades.Quay) != NetworkAnarchyUISystem.SideUpgrades.Quay && isRightQuayWall)
+            {
+                return true;
+            }
+
+            if (m_UISystem.ReplaceComposition && (m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.Ground) == NetworkAnarchyUISystem.Composition.Ground)
             {
                 return true;
             }

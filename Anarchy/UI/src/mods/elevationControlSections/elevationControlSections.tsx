@@ -19,7 +19,7 @@ const ElevationValue$ =     bindValue<number> (mod.id, 'ElevationValue');
 const ElevationStep$ =      bindValue<number> (mod.id, 'ElevationStep');
 const ElevationScale$ =     bindValue<number> (mod.id, 'ElevationScale');
 const LockElevation$ =     bindValue<boolean> (mod.id, 'LockElevation');
-const IsBuilding$ =         bindValue<boolean>(mod.id, 'IsBuilding');
+const IsInappropriate$ =         bindValue<boolean>(mod.id, 'IsInappropriate');
 const ShowElevationOption$ = bindValue<boolean>(mod.id, 'ShowElevationSettingsOption');
 const ObjectToolCreateOrBrushMode$ = bindValue<boolean>(mod.id, 'ObjectToolCreateOrBrushMode');
 const DisableElevationLock$ = bindValue<boolean>(mod.id, 'DisableElevationLock');
@@ -58,7 +58,7 @@ export const ElevationControlComponent: ModuleRegistryExtend = (Component : any)
         const ElevationStep = useValue(ElevationStep$);
         const ElevationScale = useValue(ElevationScale$);
         const LockElevation = useValue(LockElevation$);
-        const IsBuilding = useValue(IsBuilding$);
+        const IsInappropriate = useValue(IsInappropriate$);
         const ShowElevationOption = useValue(ShowElevationOption$);
         const ObjectToolCreateOrBrushMode = useValue(ObjectToolCreateOrBrushMode$);
         const DisableElevationLock = useValue(DisableElevationLock$);
@@ -80,7 +80,7 @@ export const ElevationControlComponent: ModuleRegistryExtend = (Component : any)
 
         var result = Component();
         
-        if (toolAppropriate && !IsBuilding && ShowElevationOption) 
+        if (toolAppropriate && !IsInappropriate && ShowElevationOption) 
         {
             result.props.children?.push
             (

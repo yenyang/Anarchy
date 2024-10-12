@@ -1,0 +1,17 @@
+{
+  "Options.SECTION[Anarchy.Anarchy.AnarchyMod]": "Anarchy",
+  "Options.TAB[Anarchy.Anarchy.AnarchyMod.General]": "Yleinen",
+  "Options.TAB[Anarchy.Anarchy.AnarchyMod.UI]": "Käyttöliittymä",
+  "Options.TAB[Anarchy.Anarchy.AnarchyMod.Keybinds]": "Pikanäppäimet",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.Version]": "Versio",
+  "Anarchy.ErrorType[ExceedsCityLimits]": "Kaupungin rajojen ulkopuolella",
+  "Anarchy.ErrorType[InvalidShape]": "Virheellinen muoto",
+  "Anarchy.ErrorType[InWater]": "Vedessä",
+  "Anarchy.ErrorType[NoGroundWater]": "Ei pohjavettä",
+  "Anarchy.ErrorType[NotOnBorder]": "Ei rajalla",
+  "Anarchy.ErrorType[OnFire]": "Tulessa",
+  "Anarchy.UI_TEXT[Never]": "Ei koskaan",
+  "Anarchy.UI_TEXT[Always]": "Aina",
+  "Anarchy.SECTION_TITLE[Left]": "Vasen",
+  "Anarchy.SECTION_TITLE[Right]": "Oikea"
+}
