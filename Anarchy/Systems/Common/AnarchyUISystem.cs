@@ -16,7 +16,6 @@ namespace Anarchy.Systems.Common
     using Anarchy.Systems.ObjectElevation;
     using Anarchy.Systems.OverridePrevention;
     using Colossal.Entities;
-    using Colossal.IO.AssetDatabase;
     using Colossal.Logging;
     using Colossal.PSI.Environment;
     using Colossal.Serialization.Entities;
@@ -28,7 +27,6 @@ namespace Anarchy.Systems.Common
     using Game.Tools;
     using Unity.Entities;
     using UnityEngine;
-    using static Game.Prefabs.TriggerPrefabData;
 
     /// <summary>
     /// UI system for Anarchy.
@@ -462,8 +460,10 @@ namespace Anarchy.Systems.Common
         {
             if (m_ToolSystem.activePrefab != null &&
                 (m_ToolSystem.activePrefab is BuildingPrefab ||
-                (m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) && EntityManager.HasComponent<TransportStopData>(prefabEntity)) ||
-                (EntityManager.TryGetComponent(prefabEntity, out PlaceableObjectData placeableObjectData) && (placeableObjectData.m_Flags & PlacementFlags.RoadNode) == PlacementFlags.RoadNode)))
+                (m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) && EntityManager.TryGetComponent(prefabEntity, out PlaceableObjectData placeableObjectData)
+                && ((placeableObjectData.m_Flags & PlacementFlags.RoadEdge) == PlacementFlags.RoadEdge
+                || (placeableObjectData.m_Flags & PlacementFlags.RoadNode) == PlacementFlags.RoadNode
+                || (placeableObjectData.m_Flags & PlacementFlags.RoadSide) == PlacementFlags.RoadSide))))
             {
                 if (!m_IsInappropriatePrefab.Value)
                 {
