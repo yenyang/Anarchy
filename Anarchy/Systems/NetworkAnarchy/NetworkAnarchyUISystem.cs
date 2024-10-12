@@ -682,6 +682,16 @@ namespace Anarchy.Systems.NetworkAnarchy
                 m_ShowComposition.Value &= ~(Composition.ConstantSlope | Composition.Ground);
             }
 
+            if (EntityManager.HasComponent<Game.Prefabs.PipelineData>(prefabEntity))
+            {
+                m_ShowComposition.Value &= ~(Composition.ConstantSlope | Composition.Ground | Composition.ExpanedElevationRange);
+            }
+
+            if (EntityManager.HasComponent<Game.Prefabs.PowerLineData>(prefabEntity))
+            {
+                m_ShowComposition.Value &= ~(Composition.ConstantSlope | Composition.Ground);
+            }
+
             if (!AnarchyMod.Instance.Settings.NetworkAnarchyToolOptions)
             {
                 m_ShowComposition.Value &= ~(Composition.ConstantSlope | Composition.Tunnel | Composition.Ground | Composition.Elevated);
