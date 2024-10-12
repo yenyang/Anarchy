@@ -573,10 +573,10 @@ namespace Anarchy.Systems.NetworkAnarchy
                 return;
             }
 
-            if (placeableNetData.m_ElevationRange.max != 0 || placeableNetData.m_ElevationRange.min != 0)
+            if (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace && (placeableNetData.m_ElevationRange.max != 0 || placeableNetData.m_ElevationRange.min != 0))
             {
                 m_ShowElevationStepSlider.Value = AnarchyMod.Instance.Settings.ElevationStepSlider;
-                if (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace && AnarchyMod.Instance.Settings.NetworkAnarchyToolOptions)
+                if (AnarchyMod.Instance.Settings.NetworkAnarchyToolOptions)
                 {
                     m_ShowComposition.Value |= Composition.ExpanedElevationRange;
 
