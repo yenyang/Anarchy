@@ -40,13 +40,9 @@ The mod also has:
 * Elevation lock to prevent game systems from changing position of props, trees, plants, and decals. You can still change position with mods.
 * Anarchy and Elevation lock can be added or removed after placement via the selected info panel.
 * In Game panel for controlling which error checks are never disabled, disabled with Anarchy, or always disabled.
-* Optional Network Anarchy options: constant slope, force ground, force elevated, force tunnel (if needed, looks undesirable), and expanded elevation range.
-* Optional Network upgrades overhaul that lets you apply network upgrades left, right, or general during placement or replacement. Includes retaining walls, quays, trees, grass, wide sidewalks, lighting, medians, etc.
-* Optional Elevation Step slider.
 * Anarchy Components tool for quickly adding or removing Anarchy and Elevation Lock components from applicable objects. Radius selection is recommended for Anarchy component since you can see and interact with overriden (invisible) objects and bring them back to normal.
-* Optional Network upgrades assets: Oringally part of Extended Road Upgrades and included here with permission from ST-Apps. This option adds Retaining Wall, Quay, Elevated, and Tunnel assets to vanilla menu for asset selection. This mod includes multiple fixes to issues from ERU, and is also compatible with ERU in case you forget to unsubscribe.
- 
-Currently it applies to these tools:
+
+* Currently it applies to these tools:
 * Object Tool (Option to automatically disable Anarchy toggle while brushing objects. and Set relative elevation while plopping single item or brushing.)
 * Net Tool (While using the net tool Anarchy will now let you violate the clearance of other networks. I don't recommend having zoning under low bridges.)
 * Area Tool (Can exceed limits for specialized industry areas)
@@ -79,17 +75,25 @@ This mod does NOT allow you to do everything including:
 * If the vanilla net tool would remove an existing network, it will still do that.
 * Even if the mod disables the error check, the UI may still prevent you from doing something.
 * Not much testing is done on the effects of this mod on maps created using the unfinished editor.
-* Retaining walls and tunnels even in Vanilla can have clipping issues that let you see through the terrain.
-* If the net tool locks up and you cannot create any networks, change to the zoning tool and zone something. Hopefully this bug is uncommon and that I can fix it at some point.
 
 **Please save frequently, in multiple files, and learn to use responsibly.**
+
+The following features/fixes have been removed to try and prevent new save file issues from arising:
+* Optional Network Anarchy options: constant slope, force ground, force elevated, force tunnel (if needed, looks undesirable), and expanded elevation range.
+* Optional Network upgrades overhaul that lets you apply network upgrades left, right, or general during placement or replacement. Includes retaining walls, quays, trees, grass, wide sidewalks, lighting, medians, etc.
+* Optional Elevation Step slider.
+* Optional Network upgrades assets: Oringally part of Extended Road Upgrades and included here with permission from ST-Apps. This option adds Retaining Wall, Quay, Elevated, and Tunnel assets to vanilla menu for asset selection. This mod includes multiple fixes to issues from ERU, and is also compatible with ERU in case you forget to unsubscribe.
+Options related to these features have been hidden.
+The rollback should prevent new issues from arising but previous exposure to v1.7.0 - v1.7.2 could still cause problems even after changing versions.
+I hope to develop a permanent fix and re-publish these features. 
+That will take time, research, development, and testing. 
 
 ## Support
 I will respond on the code modding channels on **Cities: Skylines Modding Discord**
 
 ## Credits 
 * yenyang - Mod Author
-* ST-Apps - Original Author of Extended Road Upgrades which has been incorporated with permission.
+* ST-Apps - Original Author of Extended Road Upgrades which was previously incorporated with permission. Will hopefully be re-published later.
 * Chameleon TBN - Testing, Feedback, Icons, and Logo
 * Sully - Testing, Feedback, and Promotional Material.
 * Klyte45, Algernon, T.D.W. - Help with UI, Cooperative Development and Code Sharing
@@ -127,11 +131,12 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * Removed object elevation while placing objects that snap to roads such as round-a-bouts and transit stops.
 * Lowering object into terrain now has a backup vanilla component and Elevation Lock.
 * Simplified code for elevating temp objects and now works in the editor.</ChangeLog>
+
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
   <ExternalLink Type="github" Url="https://github.com/yenyang/Anarchy" />
   <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />
   <ExternalLink Type="crowdin" Url="https://crowdin.com/project/csl2-mod-anarchy" />
-  <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=reQFuJozcj4" />
+  <!-- ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=reQFuJozcj4" -->
 </Publish>

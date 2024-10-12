@@ -25,7 +25,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="ExtendedRoadUpgrades\" />
 		<Folder Include="lang" />
 		<Content Include="lang\**">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -138,6 +137,16 @@
 	<ItemGroup>
 		<None Include="$(ModPropsFile)" Link="Properties\Mod.props" />
 		<None Include="$(ModTargetsFile)" Link="Properties\Mod.targets" />
+		<None Include="ExtendedRoadUpgrades\ExtendedRoadUpgradeModel.cs" />
+		<None Include="ExtendedRoadUpgrades\ExtendedRoadUpgrades.cs" />
+		<None Include="ExtendedRoadUpgrades\UpgradesManager.cs" />
+		<None Include="Patches\NetToolSystem_InitializeRaycast.cs" />
+		<None Include="Patches\ToolUISystemGetElevationRangePatch.cs" />
+		<None Include="Systems\NetworkAnarchy\HandleClearUpdateNextFrameSystem.cs" />
+		<None Include="Systems\NetworkAnarchy\NetworkAnarchyUISystem.cs" />
+		<None Include="Systems\NetworkAnarchy\NetworkDefinitionSystem.cs" />
+		<None Include="Systems\NetworkAnarchy\SetRetainingWallSegmentElevationSystem.cs" />
+		<None Include="Systems\NetworkAnarchy\TempNetworkSystem.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
