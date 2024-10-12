@@ -17,8 +17,7 @@ namespace Anarchy
     using Anarchy.Systems.ClearanceViolation;
     using Anarchy.Systems.Common;
     using Anarchy.Systems.ErrorChecks;
-
-    // using Anarchy.Systems.NetworkAnarchy;
+    using Anarchy.Systems.NetworkAnarchy;
     using Anarchy.Systems.ObjectElevation;
     using Anarchy.Systems.OverridePrevention;
     using Colossal;
@@ -166,14 +165,13 @@ namespace Anarchy
             updateSystem.UpdateAt<ResetTransformSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<CheckTransformSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateAt<HandleUpdateNextFrameSystem>(SystemUpdatePhase.Modification1);
-            // updateSystem.UpdateAt<HandleClearUpdateNextFrameSystem>(SystemUpdatePhase.ModificationEnd);
+            updateSystem.UpdateAt<HandleClearUpdateNextFrameSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<SelectedInfoPanelTogglesSystem>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateBefore<ElevateObjectDefinitionSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateBefore<NetworkDefinitionSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateAt<SetRetainingWallSegmentElevationSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateBefore<TempNetworkSystem>(SystemUpdatePhase.Modification3);
             updateSystem.UpdateAt<NetworkAnarchyUISystem>(SystemUpdatePhase.UIUpdate);
-            */
             updateSystem.UpdateAt<AnarchyComponentsToolSystem>(SystemUpdatePhase.ToolUpdate);
             updateSystem.UpdateAt<AnarchyComponentsToolUISystem>(SystemUpdatePhase.UIUpdate);
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Completed.");
