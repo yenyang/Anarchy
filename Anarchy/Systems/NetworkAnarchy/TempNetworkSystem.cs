@@ -355,6 +355,8 @@ namespace Anarchy.Systems.NetworkAnarchy
                 if (SideUpgradeLookup.ContainsKey(effectiveLeftUpgrades) && (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace || m_UISystem.ReplaceLeftUpgrade))
                 {
                     if (effectiveLeftUpgrades != 0
+                        || (compositionFlags.m_Left & CompositionFlags.Side.Raised) == CompositionFlags.Side.Raised
+                        || (compositionFlags.m_Left & CompositionFlags.Side.Lowered) == CompositionFlags.Side.Lowered
                         || ((placeableNetData.m_SetUpgradeFlags.m_Right & CompositionFlags.Side.PrimaryTrack) != CompositionFlags.Side.PrimaryTrack
                            && (placeableNetData.m_SetUpgradeFlags.m_Right & CompositionFlags.Side.PrimaryLane) != CompositionFlags.Side.PrimaryLane)
                         || m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace)
@@ -373,6 +375,8 @@ namespace Anarchy.Systems.NetworkAnarchy
                 if (SideUpgradeLookup.ContainsKey(effectiveRightUpgrades) && (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace || m_UISystem.ReplaceRightUpgrade))
                 {
                     if (effectiveRightUpgrades != 0
+                        || (compositionFlags.m_Right & CompositionFlags.Side.Raised) == CompositionFlags.Side.Raised
+                        || (compositionFlags.m_Right & CompositionFlags.Side.Lowered) == CompositionFlags.Side.Lowered
                         || ((placeableNetData.m_SetUpgradeFlags.m_Right & CompositionFlags.Side.PrimaryTrack) != CompositionFlags.Side.PrimaryTrack
                             && (placeableNetData.m_SetUpgradeFlags.m_Right & CompositionFlags.Side.PrimaryLane) != CompositionFlags.Side.PrimaryLane)
                         || m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace)
