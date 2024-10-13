@@ -151,8 +151,8 @@ namespace Anarchy.Systems.NetworkAnarchy
                     continue;
                 }
 
-                if (((placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.IsUpgrade) == Game.Net.PlacementFlags.IsUpgrade
-                    || (placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.UpgradeOnly) == Game.Net.PlacementFlags.UpgradeOnly)
+                if ((placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.IsUpgrade) == Game.Net.PlacementFlags.IsUpgrade
+                    && (placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.UpgradeOnly) == Game.Net.PlacementFlags.UpgradeOnly
                     && !UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID()))
                 {
                     continue;
@@ -321,15 +321,69 @@ namespace Anarchy.Systems.NetworkAnarchy
                     compositionFlags.m_General = GetCompositionGeneralFlags(effectiveComposition);
                 }
 
+                CompositionFlags.Side leftSideTracksAndLanes = 0;
+                CompositionFlags.Side rightSideTracksAndLanes = 0;
+                if (EntityManager.TryGetComponent(entity, out PrefabRef tempPrefabRef) && EntityManager.TryGetComponent(tempPrefabRef.m_Prefab, out NetData netData))
+                {
+                    if ((netData.m_SideFlagMask & CompositionFlags.Side.PrimaryTrack) == CompositionFlags.Side.PrimaryTrack)
+                    {
+                        if ((compositionFlags.m_Left & CompositionFlags.Side.PrimaryTrack) == CompositionFlags.Side.PrimaryTrack)
+                        {
+                            leftSideTracksAndLanes |= CompositionFlags.Side.PrimaryTrack;
+                        }
+
+                        if ((compositionFlags.m_Right & CompositionFlags.Side.PrimaryTrack) == CompositionFlags.Side.PrimaryTrack)
+                        {
+                            rightSideTracksAndLanes |= CompositionFlags.Side.PrimaryTrack;
+                        }
+                    }
+
+                    if ((netData.m_SideFlagMask & CompositionFlags.Side.PrimaryLane) == CompositionFlags.Side.PrimaryLane)
+                    {
+                        if ((compositionFlags.m_Left & CompositionFlags.Side.PrimaryLane) == CompositionFlags.Side.PrimaryLane)
+                        {
+                            leftSideTracksAndLanes |= CompositionFlags.Side.PrimaryLane;
+                        }
+
+                        if ((compositionFlags.m_Right & CompositionFlags.Side.PrimaryLane) == CompositionFlags.Side.PrimaryLane)
+                        {
+                            rightSideTracksAndLanes |= CompositionFlags.Side.PrimaryLane;
+                        }
+                    }
+                }
+
                 if (SideUpgradeLookup.ContainsKey(effectiveLeftUpgrades) && (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace || m_UISystem.ReplaceLeftUpgrade))
                 {
-                    compositionFlags.m_Left = SideUpgradeLookup[effectiveLeftUpgrades];
+                    if (effectiveLeftUpgrades != 0
+                        || ((placeableNetData.m_SetUpgradeFlags.m_Right & CompositionFlags.Side.PrimaryTrack) != CompositionFlags.Side.PrimaryTrack
+                           && (placeableNetData.m_SetUpgradeFlags.m_Right & CompositionFlags.Side.PrimaryLane) != CompositionFlags.Side.PrimaryLane)
+                        || m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace)
+                    {
+                        compositionFlags.m_Left = SideUpgradeLookup[effectiveLeftUpgrades];
+                    }
+
+                    if (leftSideTracksAndLanes != 0 && m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace && m_UISystem.ReplaceLeftUpgrade)
+                    {
+                        compositionFlags.m_Left |= leftSideTracksAndLanes;
+                    }
+
                     m_Log.Debug($"{nameof(TempNetworkSystem)}.{nameof(OnUpdate)} m_NetToolSystem.actualMode = {m_NetToolSystem.actualMode} m_UISystem.ReplaceLeftUpgrade {m_UISystem.ReplaceLeftUpgrade}");
                 }
 
                 if (SideUpgradeLookup.ContainsKey(effectiveRightUpgrades) && (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace || m_UISystem.ReplaceRightUpgrade))
                 {
-                    compositionFlags.m_Right = SideUpgradeLookup[effectiveRightUpgrades];
+                    if (effectiveRightUpgrades != 0
+                        || ((placeableNetData.m_SetUpgradeFlags.m_Right & CompositionFlags.Side.PrimaryTrack) != CompositionFlags.Side.PrimaryTrack
+                            && (placeableNetData.m_SetUpgradeFlags.m_Right & CompositionFlags.Side.PrimaryLane) != CompositionFlags.Side.PrimaryLane)
+                        || m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace)
+                    {
+                        compositionFlags.m_Right = SideUpgradeLookup[effectiveRightUpgrades];
+                    }
+
+                    if (rightSideTracksAndLanes != 0 && m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace && m_UISystem.ReplaceRightUpgrade)
+                    {
+                        compositionFlags.m_Right |= rightSideTracksAndLanes;
+                    }
                 }
 
                 if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace)
