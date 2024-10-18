@@ -19,8 +19,7 @@ namespace Anarchy.Settings
     /// </summary>
     [FileLocation("Mods_Yenyang_Anarchy")]
     [SettingsUITabOrder(General, UI)]
-    [SettingsUISection(UI, General)]
-    [SettingsUIGroupOrder(Stable, Reset, About)]
+    [SettingsUIGroupOrder(Toggle, Elevation, Networks, Stable, Reset, About)]
     [SettingsUIMouseAction(AnarchyMod.ApplyMimicAction, "AnarchyComponentsTool")]
     [SettingsUIMouseAction(AnarchyMod.SecondaryApplyMimicAction, "AnarchyComponentsTool")]
     public class AnarchyModSettings : ModSetting
@@ -34,7 +33,6 @@ namespace Anarchy.Settings
         /// This is for general settings.
         /// </summary>
         public const string General = "General";
-
 
         /// <summary>
         /// This is for general settings.
@@ -55,6 +53,21 @@ namespace Anarchy.Settings
         /// This is for reseting settings button group.
         /// </summary>
         public const string Reset = "Reset";
+
+        /// <summary>
+        /// This is for settings that are stable.
+        /// </summary>
+        public const string Toggle = "Anarchy Toggle";
+
+        /// <summary>
+        /// This is for settings that are stable.
+        /// </summary>
+        public const string Elevation = "Object Elevation";
+
+        /// <summary>
+        /// This is for reseting settings button group.
+        /// </summary>
+        public const string Networks = "Network Anarchy and Upgrades Overhaul";
 
         /// <summary>
         /// The action name for toggle anarchy keybind.
@@ -90,74 +103,80 @@ namespace Anarchy.Settings
         /// <summary>
         /// Gets or sets a value indicating whether Anarchy should always be enabled when using Bulldozer tool.
         /// </summary>
-        [SettingsUISection(UI, Stable)]
+        [SettingsUISection(UI, Toggle)]
         public bool AnarchicBulldozer { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show the tooltip.
         /// </summary>
-        [SettingsUISection(UI, Stable)]
+        [SettingsUISection(UI, Toggle)]
         public bool ShowTooltip { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to have chirper be on fire. This is currently hidden as it is not implemented and hidding it doesn't break people's existing settings.
         /// </summary>
-        [SettingsUISection(UI, Stable)]
+        [SettingsUISection(UI, Toggle)]
         [SettingsUISetter(typeof(AnarchyModSettings), nameof(SetFlamingChirper))]
         public bool FlamingChirper { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to use the tool icon.
-        [SettingsUISection(UI, Stable)]
+        [SettingsUISection(UI, Toggle)]
         public bool ToolIcon { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show Elevation tool option.
-        [SettingsUISection(UI, Stable)]
+        [SettingsUISection(UI, Elevation)]
         [SettingsUISetter(typeof(AnarchyModSettings), nameof(SetShowElevationToolOption))]
         public bool ShowElevationToolOption { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to reset elevation when changing prefab.
-        [SettingsUISection(UI, Stable)]
+        [SettingsUISection(UI, Elevation)]
         [SettingsUIHideByCondition(typeof(AnarchyModSettings), nameof(IsElevationToolOptionNotShown))]
         public bool ResetElevationWhenChangingPrefab { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to disable anarchy while brushing.
         /// </summary>
-        [SettingsUISection(UI, Stable)]
+        [SettingsUISection(UI, Toggle)]
         public bool DisableAnarchyWhileBrushing { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show network anarchy in tool options menu.
         /// </summary>
-        [SettingsUISection(UI, Stable)]
+        [SettingsUISection(UI, Networks)]
         public bool NetworkAnarchyToolOptions { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show network upgrades in tool options menu.
         /// </summary>
-        [SettingsUISection(UI, Stable)]
+        [SettingsUISection(UI, Networks)]
         public bool NetworkUpgradesToolOptions { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show elevation step slider.
         /// </summary>
-        [SettingsUISection(UI, Stable)]
+        [SettingsUISection(UI, Networks)]
         public bool ElevationStepSlider { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show network upgrade prefabs.
         /// </summary>
-        [SettingsUISection(UI, Stable)]
+        [SettingsUISection(UI, Networks)]
         public bool NetworkUpgradesPrefabs { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to replace upgrades or not.
         /// </summary>
-        [SettingsUISection(UI, Stable)]
+        [SettingsUISection(UI, Networks)]
         public bool ReplaceUpgradesBehavior { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to reset network tool options when changing prefab.
+        /// </summary>
+        [SettingsUISection(UI, Networks)]
+        public bool ResetNetworkToolOptionsWhenChangingPrefab { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the minimum clearance below elevated network.
@@ -324,6 +343,7 @@ namespace Anarchy.Settings
                 ElevationStepSlider = true;
                 NetworkUpgradesPrefabs = true;
                 ReplaceUpgradesBehavior = true;
+                ResetNetworkToolOptionsWhenChangingPrefab = false;
                 ApplyAndSave();
             }
         }
@@ -366,6 +386,7 @@ namespace Anarchy.Settings
             NetworkUpgradesPrefabs = true;
             ElevationStepSlider = true;
             ReplaceUpgradesBehavior = true;
+            ResetNetworkToolOptionsWhenChangingPrefab = false;
         }
 
 

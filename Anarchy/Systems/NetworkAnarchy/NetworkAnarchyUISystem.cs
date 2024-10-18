@@ -222,7 +222,7 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_Log.Info($"{nameof(NetworkAnarchyUISystem)}.{nameof(OnCreate)}");
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_ToolSystem.EventToolChanged += CheckPrefabAndUpdateButtonDisplay;
-            m_ToolSystem.EventPrefabChanged += UpdateButtonDisplay;
+            m_ToolSystem.EventPrefabChanged += CheckPrefabAndUpdateButtonDisplay;
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_TempNetworkSystem = World.GetOrCreateSystemManaged<TempNetworkSystem>();
@@ -474,6 +474,25 @@ namespace Anarchy.Systems.NetworkAnarchy
             {
                 Enabled = false;
                 return;
+            }
+
+            Enabled = true;
+            UpdateButtonDisplay(prefabBase);
+        }
+
+        private void CheckPrefabAndUpdateButtonDisplay(PrefabBase prefabBase)
+        {
+            if (m_ToolSystem.activeTool != m_NetToolSystem || prefabBase is null)
+            {
+                Enabled = false;
+                return;
+            }
+
+            if (AnarchyMod.Instance.Settings.ResetNetworkToolOptionsWhenChangingPrefab)
+            {
+                m_Composition.Value = 0;
+                m_LeftUpgrade.Value = 0;
+                m_RightUpgrade.Value = 0;
             }
 
             Enabled = true;

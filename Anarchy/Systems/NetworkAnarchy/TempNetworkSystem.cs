@@ -5,8 +5,8 @@
 namespace Anarchy.Systems.NetworkAnarchy
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Anarchy.Components;
-    using Anarchy.Systems.NetworkAnarchy;
     using Colossal.Entities;
     using Colossal.Logging;
     using Game;
@@ -19,6 +19,7 @@ namespace Anarchy.Systems.NetworkAnarchy
     using Unity.Collections;
     using Unity.Entities;
     using UnityEngine;
+    using UnityEngine.InputSystem;
 
     /// <summary>
     /// Applies upgrades and/or elevation to Temp networks.
@@ -68,6 +69,7 @@ namespace Anarchy.Systems.NetworkAnarchy
         private NetworkAnarchyUISystem m_UISystem;
         private EntityQuery m_TempNetworksQuery;
         private TerrainSystem m_TerrainSystem;
+        private ProxyAction m_SecondaryApplyMimic;
         private ILog m_Log;
 
         /// <summary>
@@ -104,7 +106,11 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_UISystem = World.GetOrCreateSystemManaged<NetworkAnarchyUISystem>();
             m_TerrainSystem = World.GetOrCreateSystemManaged<TerrainSystem>();
-            m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_NetToolSystem;
+            m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) =>
+            {
+                Enabled = tool == m_NetToolSystem;
+                m_SecondaryApplyMimic.shouldBeEnabled = tool == m_NetToolSystem;
+            };
             m_Log.Info($"[{nameof(TempNetworkSystem)}] {nameof(OnCreate)}");
             m_TempNetworksQuery = SystemAPI.QueryBuilder()
                 .WithAll<Updated, Temp, Game.Net.Edge>()
@@ -112,7 +118,15 @@ namespace Anarchy.Systems.NetworkAnarchy
                 .Build();
 
             RequireForUpdate(m_TempNetworksQuery);
+
+            m_SecondaryApplyMimic = AnarchyMod.Instance.Settings.GetAction(AnarchyMod.SecondaryApplyMimicAction);
+            var builtInSecondaryApplyAction = InputManager.instance.FindAction(InputManager.kToolMap, "Secondary Apply");
+            var mimicSecondaryApplyBinding = m_SecondaryApplyMimic.bindings.FirstOrDefault(b => b.group == nameof(Mouse));
+            var builtInSecondaryApplyBinding = builtInSecondaryApplyAction.bindings.FirstOrDefault(b => b.group == nameof(Mouse));
+            var secondaryApplyWatcher = new ProxyBinding.Watcher(builtInSecondaryApplyBinding, binding => SetMimic(mimicSecondaryApplyBinding, binding));
+            SetMimic(mimicSecondaryApplyBinding, secondaryApplyWatcher.binding);
         }
+
 
         /// <inheritdoc/>
         protected override void OnUpdate()
@@ -134,28 +148,45 @@ namespace Anarchy.Systems.NetworkAnarchy
                 return;
             }
 
+            if (m_ToolSystem.activePrefab == null || !m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) || !EntityManager.TryGetComponent(prefabEntity, out PlaceableNetData placeableNetData))
+            {
+                return;
+            }
+
+            if ((placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.IsUpgrade) == Game.Net.PlacementFlags.IsUpgrade
+                && (placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.UpgradeOnly) == Game.Net.PlacementFlags.UpgradeOnly
+                && !UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID()))
+            {
+                return;
+            }
+
+
+            if ((m_SecondaryApplyMimic.IsPressed() || m_SecondaryApplyMimic.WasPerformedThisFrame())
+                && (placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.IsUpgrade) != Game.Net.PlacementFlags.IsUpgrade)
+            {
+                m_Log.Debug($"{nameof(TempNetworkSystem)}.{nameof(OnUpdate)} secondary apply was pressed. return early.");
+                return;
+            }
+
             NativeArray<Entity> entities = m_TempNetworksQuery.ToEntityArray(Allocator.Temp);
             foreach (Entity entity in entities)
             {
                 if (EntityManager.TryGetComponent(entity, out Temp temp))
                 {
-                    if ((m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace && (temp.m_Original != Entity.Null || (temp.m_Flags & TempFlags.Create) != TempFlags.Create))
-                        || (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace && (temp.m_Flags & TempFlags.Essential) != TempFlags.Essential))
+                    if (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace && (temp.m_Original != Entity.Null || (temp.m_Flags & TempFlags.Create) != TempFlags.Create))
                     {
                         continue;
                     }
-                }
 
-                if (m_ToolSystem.activePrefab == null || !m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) || !EntityManager.TryGetComponent(prefabEntity, out PlaceableNetData placeableNetData))
-                {
-                    continue;
-                }
+                    if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace && (temp.m_Flags & TempFlags.Essential) != TempFlags.Essential)
+                    {
+                        if (EntityManager.HasComponent<Game.Net.Elevation>(entity) && !EntityManager.HasComponent<Game.Net.Elevation>(temp.m_Original))
+                        {
+                            EntityManager.RemoveComponent<Game.Net.Elevation>(entity);
+                        }
 
-                if ((placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.IsUpgrade) == Game.Net.PlacementFlags.IsUpgrade
-                    && (placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.UpgradeOnly) == Game.Net.PlacementFlags.UpgradeOnly
-                    && !UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID()))
-                {
-                    continue;
+                        continue;
+                    }
                 }
 
                 // This is a somewhat roundabout way to adapt Extended Road upgrades method of applying upgrades to the way Network Anarchy applies upgrades.
@@ -436,6 +467,14 @@ namespace Anarchy.Systems.NetworkAnarchy
                 EntityManager.SetComponentData(entity, upgrades);
                 m_Log.Debug($"{nameof(TempNetworkSystem)}{nameof(OnUpdate)} upgraded.");
             }
+        }
+
+        private void SetMimic(ProxyBinding mimic, ProxyBinding buildIn)
+        {
+            var newMimicBinding = mimic.Copy();
+            newMimicBinding.path = buildIn.path;
+            newMimicBinding.modifiers = buildIn.modifiers;
+            InputManager.instance.SetBinding(newMimicBinding, out _);
         }
 
         /// <summary>
