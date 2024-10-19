@@ -5,7 +5,6 @@
 #define BURST
 namespace Anarchy.Systems.AnarchyComponentsTool
 {
-    using System.Linq;
     using Anarchy.Components;
     using Colossal.Entities;
     using Colossal.Logging;
@@ -29,7 +28,6 @@ namespace Anarchy.Systems.AnarchyComponentsTool
     using Unity.Jobs;
     using Unity.Mathematics;
     using UnityEngine;
-    using UnityEngine.InputSystem;
     using static Anarchy.Systems.AnarchyComponentsTool.AnarchyComponentsToolUISystem;
 
 

@@ -5,7 +5,6 @@
 namespace Anarchy.Settings
 {
     using Anarchy.Systems.Common;
-    using Anarchy.Systems.NetworkAnarchy;
     using Anarchy.Systems.OverridePrevention;
     using Colossal.IO.AssetDatabase;
     using Game.Input;
