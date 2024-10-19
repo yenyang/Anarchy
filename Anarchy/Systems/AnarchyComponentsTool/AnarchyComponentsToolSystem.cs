@@ -5,9 +5,7 @@
 #define BURST
 namespace Anarchy.Systems.AnarchyComponentsTool
 {
-    using System.Linq;
     using Anarchy.Components;
-    using Anarchy.Systems.Common;
     using Colossal.Entities;
     using Colossal.Logging;
     using Colossal.Mathematics;
@@ -30,7 +28,6 @@ namespace Anarchy.Systems.AnarchyComponentsTool
     using Unity.Jobs;
     using Unity.Mathematics;
     using UnityEngine;
-    using UnityEngine.InputSystem;
     using static Anarchy.Systems.AnarchyComponentsTool.AnarchyComponentsToolUISystem;
 
 
@@ -222,18 +219,8 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                 .Build();
 
             m_ApplyAction = AnarchyMod.Instance.Settings.GetAction(AnarchyMod.ApplyMimicAction);
-            var builtInApplyAction = InputManager.instance.FindAction(InputManager.kToolMap, "Apply");
-            var mimicApplyBinding = m_ApplyAction.bindings.FirstOrDefault(b => b.group == nameof(Mouse));
-            var builtInApplyBinding = builtInApplyAction.bindings.FirstOrDefault(b => b.group == nameof(Mouse));
-            var applyWatcher = new ProxyBinding.Watcher(builtInApplyBinding, binding => SetMimic(mimicApplyBinding, binding));
-            SetMimic(mimicApplyBinding, applyWatcher.binding);
 
-            m_SecondaryApplyMimic = AnarchyMod.Instance.Settings.GetAction(AnarchyMod.SecondaryApplyMimicAction);
-            var builtInSecondaryApplyAction = InputManager.instance.FindAction(InputManager.kToolMap, "Secondary Apply");
-            var mimicSecondaryApplyBinding = m_SecondaryApplyMimic.bindings.FirstOrDefault(b => b.group == nameof(Mouse));
-            var builtInSecondaryApplyBinding = builtInSecondaryApplyAction.bindings.FirstOrDefault(b => b.group == nameof(Mouse));
-            var secondaryApplyWatcher = new ProxyBinding.Watcher(builtInSecondaryApplyBinding, binding => SetMimic(mimicSecondaryApplyBinding, binding));
-            SetMimic(mimicSecondaryApplyBinding, secondaryApplyWatcher.binding);
+            m_SecondaryApplyMimic = AnarchyMod.Instance.Settings.GetAction(AnarchyMod.SecondaryMimicAction);
         }
 
         /// <inheritdoc/>
@@ -514,14 +501,6 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         protected override void OnDestroy()
         {
             base.OnDestroy();
-        }
-
-        private void SetMimic(ProxyBinding mimic, ProxyBinding buildIn)
-        {
-            var newMimicBinding = mimic.Copy();
-            newMimicBinding.path = buildIn.path;
-            newMimicBinding.modifiers = buildIn.modifiers;
-            InputManager.instance.SetBinding(newMimicBinding, out _);
         }
 
         /// <summary>

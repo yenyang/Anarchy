@@ -66,6 +66,8 @@ namespace Anarchy.Settings
                 { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.ShowElevationToolOption)), "Allows trees, plants, and props to be placed at different vertical elevations with Object Tool or Line Tool. Also shows a button during placement for locking elevation. Keybinds are configurable in the Keybinds tab." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.ResetElevationWhenChangingPrefab)), "Reset Elevation When Selecting New Asset" },
                 { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.ResetElevationWhenChangingPrefab)), "Automatically resets object Elevation tool option when you change to a new asset selection." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.ResetNetworkToolOptionsWhenChangingPrefab)), "Reset Network Tool Options When Selecting New Asset" },
+                { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.ResetNetworkToolOptionsWhenChangingPrefab)), "Automatically resets Network Anarchy and Network Upgrades tool options when you change to a new asset selection." },
                 { "YY_ANARCHY.Anarchy", "Anarchy" },
                 { "YY_ANARCHY.AnarchyButton", "Anarchy" },
                 { "YY_ANARCHY_DESCRIPTION.AnarchyButton", "Disables error checks for tools and does not display errors. When applicable, you can place vegetation and props (with DevUI 'Add Object' menu) overlapping or inside the boundaries of other objects and close together." },

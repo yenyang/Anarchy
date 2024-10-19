@@ -222,7 +222,7 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_Log.Info($"{nameof(NetworkAnarchyUISystem)}.{nameof(OnCreate)}");
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_ToolSystem.EventToolChanged += CheckPrefabAndUpdateButtonDisplay;
-            m_ToolSystem.EventPrefabChanged += UpdateButtonDisplay;
+            m_ToolSystem.EventPrefabChanged += CheckPrefabAndUpdateButtonDisplay;
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_TempNetworkSystem = World.GetOrCreateSystemManaged<TempNetworkSystem>();
@@ -480,6 +480,25 @@ namespace Anarchy.Systems.NetworkAnarchy
             UpdateButtonDisplay(prefabBase);
         }
 
+        private void CheckPrefabAndUpdateButtonDisplay(PrefabBase prefabBase)
+        {
+            if (m_ToolSystem.activeTool != m_NetToolSystem || prefabBase is null)
+            {
+                Enabled = false;
+                return;
+            }
+
+            if (AnarchyMod.Instance.Settings.ResetNetworkToolOptionsWhenChangingPrefab)
+            {
+                m_Composition.Value = 0;
+                m_LeftUpgrade.Value = 0;
+                m_RightUpgrade.Value = 0;
+            }
+
+            Enabled = true;
+            UpdateButtonDisplay(prefabBase);
+        }
+
         private void InvertButtonState(ref ValueBindingHelper<ButtonState> button)
         {
             if ((button.Value &= ButtonState.On) == ButtonState.On)
@@ -619,8 +638,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                 m_LeftShowUpgrade.Value &= ~(SideUpgrades.Trees | SideUpgrades.GrassStrip | SideUpgrades.SoundBarrier | SideUpgrades.WideSidewalk);
                 m_RightShowUpgrade.Value &= ~(SideUpgrades.Trees | SideUpgrades.GrassStrip | SideUpgrades.SoundBarrier | SideUpgrades.WideSidewalk);
             }
-            else if ((placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.IsUpgrade) != Game.Net.PlacementFlags.IsUpgrade
-                && (placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.UpgradeOnly) != Game.Net.PlacementFlags.UpgradeOnly)
+            else if ((placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.UpgradeOnly) != Game.Net.PlacementFlags.UpgradeOnly)
             {
                 m_ShowComposition.Value |= Composition.Ground;
             }
@@ -644,7 +662,6 @@ namespace Anarchy.Systems.NetworkAnarchy
             }
 
             if ((netGeometryData.m_Flags & Game.Net.GeometryFlags.SmoothSlopes) != Game.Net.GeometryFlags.SmoothSlopes
-                && (placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.IsUpgrade) != Game.Net.PlacementFlags.IsUpgrade
                 && (placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.UpgradeOnly) != Game.Net.PlacementFlags.UpgradeOnly
                 && m_NetToolSystem.actualMode != NetToolSystem.Mode.Grid)
             {
