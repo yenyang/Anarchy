@@ -7,3 +7,4 @@
 * Fix right clicking applies upgrades when active prefab is not an upgrade
 * Redid action mimics.
 * Some Code cleanup.
+* Updated Localization.

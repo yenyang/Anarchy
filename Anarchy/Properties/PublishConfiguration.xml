@@ -127,7 +127,8 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * Fix elevation component not removed from temp entities that are not essential
 * Fix right clicking applies upgrades when active prefab is not an upgrade
 * Redid action mimics.
-* Some Code cleanup.</ChangeLog>
+* Some Code cleanup.
+* Updated Localizatoin.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
