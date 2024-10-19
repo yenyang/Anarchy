@@ -21,7 +21,11 @@ namespace Anarchy.Settings
     [SettingsUITabOrder(General, UI)]
     [SettingsUIGroupOrder(Toggle, Elevation, Networks, Stable, Reset, About)]
     [SettingsUIMouseAction(AnarchyMod.ApplyMimicAction, "AnarchyComponentsTool")]
-    [SettingsUIMouseAction(AnarchyMod.SecondaryApplyMimicAction, "AnarchyComponentsTool")]
+    [SettingsUIMouseAction(AnarchyMod.SecondaryMimicAction, "AnarchyComponentsTool")]
+    [SettingsUIKeyboardAction(ToggleAnarchyActionName, ActionType.Button, usages: new string[] { "Anarchy" })]
+    [SettingsUIKeyboardAction(ElevationStepActionName, ActionType.Button, usages: new string[] { Usages.kToolUsage })]
+    [SettingsUIKeyboardAction(ResetElevationActionName, ActionType.Button, usages: new string[] { Usages.kToolUsage })]
+    [SettingsUIKeyboardAction(ElevationActionName, ActionType.Button, usages: new string[] { Usages.kToolUsage })]
     public class AnarchyModSettings : ModSetting
     {
         /// <summary>
@@ -205,14 +209,16 @@ namespace Anarchy.Settings
         /// </summary>
         [SettingsUIMouseBinding(AnarchyMod.ApplyMimicAction)]
         [SettingsUISection(General, Keybinds)]
+        [SettingsUIBindingMimic(InputManager.kToolMap, "Apply")]
         [SettingsUIHidden]
         public ProxyBinding ApplyMimic { get; set; }
 
         /// <summary>
         /// Gets or sets hidden keybinding for secondary apply action.
         /// </summary>
-        [SettingsUIMouseBinding(AnarchyMod.SecondaryApplyMimicAction)]
+        [SettingsUIMouseBinding(AnarchyMod.SecondaryMimicAction)]
         [SettingsUISection(General, Keybinds)]
+        [SettingsUIBindingMimic(InputManager.kToolMap, "Secondary Apply")]
         [SettingsUIHidden]
         public ProxyBinding SecondaryApplyMimic { get; set; }
 

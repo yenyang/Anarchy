@@ -119,7 +119,7 @@ namespace Anarchy.Systems.NetworkAnarchy
 
             RequireForUpdate(m_TempNetworksQuery);
 
-            m_SecondaryApplyMimic = AnarchyMod.Instance.Settings.GetAction(AnarchyMod.SecondaryApplyMimicAction);
+            m_SecondaryApplyMimic = AnarchyMod.Instance.Settings.GetAction(AnarchyMod.SecondaryMimicAction);
             var builtInSecondaryApplyAction = InputManager.instance.FindAction(InputManager.kToolMap, "Secondary Apply");
             var mimicSecondaryApplyBinding = m_SecondaryApplyMimic.bindings.FirstOrDefault(b => b.group == nameof(Mouse));
             var builtInSecondaryApplyBinding = builtInSecondaryApplyAction.bindings.FirstOrDefault(b => b.group == nameof(Mouse));

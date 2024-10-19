@@ -43,17 +43,12 @@ namespace Anarchy
         /// <summary>
         /// Fake keybind action for secondary apply.
         /// </summary>
-        public const string SecondaryApplyMimicAction = "SecondaryApplyMimic";
+        public const string SecondaryMimicAction = "SecondaryApplyMimic";
 
         /// <summary>
         /// An id used for bindings between UI and C#.
         /// </summary>
         public static readonly string Id = "Anarchy";
-
-        /// <summary>
-        /// Gets the install folder for the mod.
-        /// </summary>
-        private static string m_modInstallFolder;
 
         private Harmony m_Harmony;
 
@@ -64,24 +59,6 @@ namespace Anarchy
         {
             get;
             private set;
-        }
-
-        /// <summary>
-        /// Gets the Install Folder for the mod as a string.
-        /// </summary>
-        public static string ModInstallFolder
-        {
-            get
-            {
-                if (m_modInstallFolder is null)
-                {
-                    var thisFullName = Instance.GetType().Assembly.FullName;
-                    ExecutableAsset thisInfo = AssetDatabase.global.GetAsset(SearchFilter<ExecutableAsset>.ByCondition(x => x.definition?.FullName == thisFullName)) ?? throw new Exception("This mod info was not found!!!!");
-                    m_modInstallFolder = Path.GetDirectoryName(thisInfo.GetMeta().path);
-                }
-
-                return m_modInstallFolder;
-            }
         }
 
         /// <summary>
@@ -113,7 +90,6 @@ namespace Anarchy
 #else
             Log.effectivenessLevel = Level.Info;
 #endif
-            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} ModInstallFolder = " + ModInstallFolder);
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Initializing settings");
             Settings = new (this);
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Loading localization");
