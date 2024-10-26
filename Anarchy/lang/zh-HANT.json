@@ -38,6 +38,8 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ShowElevationToolOption]": "允許在使用物件工具或線條工具時，將樹木、植物和 Prop 放置在不同的垂直高度。放置過程中也會顯示一個按鈕來鎖定高度。快速鍵可在快速鍵頁面進行設置。",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevationWhenChangingPrefab]": "當選擇新資產時重設高度",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevationWhenChangingPrefab]": "當選擇新的資產時會自動將物件高度重設至 0。",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetNetworkToolOptionsWhenChangingPrefab]": "當選擇新資產時重設網路工具",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetNetworkToolOptionsWhenChangingPrefab]": "當選擇新的資產時會自動將網路無碰撞以及網路升級工具的設定重設。",
   "YY_ANARCHY.Anarchy": "Anarchy",
   "YY_ANARCHY.AnarchyButton": "Anarchy",
   "YY_ANARCHY_DESCRIPTION.AnarchyButton": "禁用工具的錯誤檢查，並不顯示錯誤。當合適時，您可以在其他物件的邊界內或重疊處放置植被和 prop（通過開發者工具的 Add Object 選單），甚至放置得很靠近。",

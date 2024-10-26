@@ -38,6 +38,8 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ShowElevationToolOption]": "启用此选项后，允许植被和摆件放置在不同的高度，包括使用对象工具和线性摆放工具放置的植被与摆件。同时在左下角面板里显示锁定高度选项。可以在“快捷键”选项中自定义绑定按键。",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevationWhenChangingPrefab]": "选择新资产时重置物体的高度",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevationWhenChangingPrefab]": "启用此选项后，当选择新的资产时，自动重置物体的高度为0。",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetNetworkToolOptionsWhenChangingPrefab]": "选择新资产时重置道路工具的选项",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetNetworkToolOptionsWhenChangingPrefab]": "启用此选项后，当选择新的资产时，自动重置网络无限制与道路升级工具选项。",
   "YY_ANARCHY.Anarchy": "Anarchy",
   "YY_ANARCHY.AnarchyButton": "Anarchy",
   "YY_ANARCHY_DESCRIPTION.AnarchyButton": "禁用物体重叠检查，打开 Anarchy 功能。启用该功能后，您可以将植被和摆件（摆件需要使用 DevUI“添加物体”菜单查找）重叠放置或放置在建筑、道路的边界内或者将它们紧靠在一起。",
