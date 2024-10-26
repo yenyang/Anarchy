@@ -38,6 +38,8 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ShowElevationToolOption]": "Pozwala umieszczać drzewa, rośliny i rekwizyty na różnych wysokościach za pomocą trybu Pojedynczy obiekt lub Linia. Pokazuje także przycisk podczas umieszczania do blokowania wysokości. Skróty klawiszowe można ustawić w zakładce sterowanie.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevationWhenChangingPrefab]": "Zresetuj wysokość po wybraniu nowego obiektu",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevationWhenChangingPrefab]": "Automatycznie resetuje wysokości obiektu po wybraniu nowego obiektu.",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetNetworkToolOptionsWhenChangingPrefab]": "Zresetuj opcje narzędzia Ulepszania Sieci po wybraniu nowego obiektu",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetNetworkToolOptionsWhenChangingPrefab]": "Automatycznie resetuje opcje narzędzi Anarchii Sieci i Ulepszania Sieci po wybraniu nowego obiektu.",
   "YY_ANARCHY.Anarchy": "Anarchia",
   "YY_ANARCHY.AnarchyButton": "Anarchia",
   "YY_ANARCHY_DESCRIPTION.AnarchyButton": "Wyłącza sprawdzanie kolizji narzędzi i nie wyświetla błędów kolizji. Gdy aktywne, możesz umieścić roślinność i rekwizyty (za pomocą menu DevUI „Dodaj obiekt”) na siebie lub wewnątrz granic innych obiektów i blisko siebie.",

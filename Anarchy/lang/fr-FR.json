@@ -38,6 +38,8 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ShowElevationToolOption]": "Autoriser les arbres, plantes et props à être placés à différentes altitudes verticales à l'aide de l'outil Objet ou de l'outil de ligne (Line Tool). Affiche également un bouton pendant le placement pour verrouiller l'élévation. Les raccourcis clavier sont configurables dans l'onglet Raccourcis.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevationWhenChangingPrefab]": "Réinitialiser l'altitude lors de la sélection d'un nouvel asset",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevationWhenChangingPrefab]": "Réinitialise automatiquement l'option de l'outil Élévation des objets lorsque vous passez à une nouvelle sélection d'assets.",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetNetworkToolOptionsWhenChangingPrefab]": "Réinitialisation des options de l'outil réseau lors de la sélection d'un nouvel asset",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetNetworkToolOptionsWhenChangingPrefab]": "Réinitialise automatiquement les options des outils Anarchie du réseau et d'amélioration du réseau lorsque vous passez à une nouvelle sélection d'assets.",
   "YY_ANARCHY.Anarchy": "Anarchie",
   "YY_ANARCHY.AnarchyButton": "Anarchie",
   "YY_ANARCHY_DESCRIPTION.AnarchyButton": "Désactive la vérification des erreurs des outils et n'affiche pas les erreurs. Le cas échéant, vous pouvez placer de la végétation et des props (avec le menu du DevUI 'Ajouter un objet') se chevauchant ou à l'intérieur des limites d'autres objets et proches les uns des autres.",

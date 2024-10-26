@@ -267,14 +267,14 @@ namespace Anarchy.Settings
         /// Gets or sets a value indicating the keybinding for Reset Elevation.
         /// </summary>
         [SettingsUISection(Keybinds, Stable)]
-        [SettingsUIKeyboardBinding(BindingKeyboard.R, actionName: ResetElevationActionName, shift: true)]
+        [SettingsUIKeyboardBinding(BindingKeyboard.R, actionName: ResetElevationActionName, alt: true)]
         public ProxyBinding ResetElevation { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the keybinding for Elevation Step.
         /// </summary>
         [SettingsUISection(Keybinds, Stable)]
-        [SettingsUIKeyboardBinding(BindingKeyboard.E, actionName: ElevationStepActionName, shift: true)]
+        [SettingsUIKeyboardBinding(BindingKeyboard.E, actionName: ElevationStepActionName, alt: true)]
         public ProxyBinding ElevationStep { get; set; }
 
         /// <summary>

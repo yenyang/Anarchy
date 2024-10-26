@@ -38,6 +38,8 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ShowElevationToolOption]": "Permite que árvores, plantas e props sejam colocados em diferentes elevações verticais com a Ferramenta de Objetos ou a Ferramenta de Linha. Também mostra um botão durante a colocação para bloquear a elevação. Os atalhos do teclado são configuráveis no separador teclas de atalho.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevationWhenChangingPrefab]": "Repor elevação ao selecionar um novo asset",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevationWhenChangingPrefab]": "Reinicia automaticamente a opção de elevação de objetos quando selecionas um novo asset.",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetNetworkToolOptionsWhenChangingPrefab]": "Repor a definições da ferramenta de rede ao selecionar um novo asset",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetNetworkToolOptionsWhenChangingPrefab]": "Repõe automaticamente as definições das ferramentas Anarchy da rede e de melhoria da rede quando selecionas um novo asset.",
   "YY_ANARCHY.Anarchy": "Anarchy",
   "YY_ANARCHY.AnarchyButton": "Mod Anarchy",
   "YY_ANARCHY_DESCRIPTION.AnarchyButton": "Desativa as verificações de erro para ferramentas e não exibe erros. Quando aplicável, podes colocar vegetação e props (com o menu 'Adicionar Objeto' do DevUI) sobrepondo-se ou dentro dos limites de outros objetos e em proximidade.",
