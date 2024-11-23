@@ -436,11 +436,11 @@ namespace Anarchy.Systems.Common
                 }
             }
 
-            if (((tool == m_ObjectToolSystem || tool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab) || tool == m_NetToolSystem)
+            if (((tool == m_ObjectToolSystem || tool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab && AnarchyMod.Instance.Settings.ShowElevationToolOption) || tool == m_NetToolSystem)
             {
                 m_ResetElevation.shouldBeEnabled = true;
                 m_ElevationStepToggle.shouldBeEnabled = true;
-                if (tool == m_ObjectToolSystem)
+                if (tool == m_ObjectToolSystem || tool.toolID == "Line Tool")
                 {
                     m_ElevationKey.shouldBeEnabled = true;
                 }
@@ -484,11 +484,14 @@ namespace Anarchy.Systems.Common
                 }
             }
 
-            if (((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && prefabBase is not BuildingPrefab) || m_ToolSystem.activeTool == m_NetToolSystem)
+            if (((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab && AnarchyMod.Instance.Settings.ShowElevationToolOption) || m_ToolSystem.activeTool == m_NetToolSystem)
             {
                 m_ResetElevation.shouldBeEnabled = true;
                 m_ElevationStepToggle.shouldBeEnabled = true;
-                m_ElevationKey.shouldBeEnabled = true;
+                if (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool")
+                {
+                    m_ElevationKey.shouldBeEnabled = true;
+                }
             }
             else
             {

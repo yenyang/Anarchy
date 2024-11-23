@@ -24,7 +24,7 @@ namespace Anarchy.Settings
     [SettingsUIKeyboardAction(ToggleAnarchyActionName, ActionType.Button, usages: new string[] { "Anarchy" })]
     [SettingsUIKeyboardAction(ElevationStepActionName, ActionType.Button, usages: new string[] { Usages.kToolUsage })]
     [SettingsUIKeyboardAction(ResetElevationActionName, ActionType.Button, usages: new string[] { Usages.kToolUsage })]
-    [SettingsUIKeyboardAction(ElevationActionName, ActionType.Button, usages: new string[] { Usages.kToolUsage })]
+    [SettingsUIKeyboardAction(ElevationActionName, ActionType.Button, usages: new string[] { "Anarchy" })]
     public class AnarchyModSettings : ModSetting
     {
         /// <summary>
@@ -281,14 +281,18 @@ namespace Anarchy.Settings
         /// Gets or sets a value indicating the keybinding for Increase Elevation.
         /// </summary>
         [SettingsUISection(Keybinds, Stable)]
-        [SettingsUIKeyboardBinding(BindingKeyboard.UpArrow, AxisComponent.Positive, actionName: ElevationActionName)]
+        [SettingsUIKeyboardBinding(AxisComponent.Positive, actionName: ElevationActionName)]
+        [SettingsUIBindingMimic(InputManager.kShortcutsMap, "Change Elevation")]
+        [SettingsUIHidden]
         public ProxyBinding IncreaseElevation { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the keybinding for Decrease Elevation.
         /// </summary>
         [SettingsUISection(Keybinds, Stable)]
-        [SettingsUIKeyboardBinding(BindingKeyboard.DownArrow, AxisComponent.Negative, actionName: ElevationActionName)]
+        [SettingsUIKeyboardBinding(AxisComponent.Negative, actionName: ElevationActionName)]
+        [SettingsUIBindingMimic(InputManager.kShortcutsMap, "Change Elevation")]
+        [SettingsUIHidden]
         public ProxyBinding DecreaseElevation { get; set; }
 
         /// <summary>
