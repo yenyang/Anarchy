@@ -24,7 +24,8 @@ namespace Anarchy.Settings
     [SettingsUIKeyboardAction(ToggleAnarchyActionName, ActionType.Button, usages: new string[] { "Anarchy" })]
     [SettingsUIKeyboardAction(ElevationStepActionName, ActionType.Button, usages: new string[] { Usages.kToolUsage })]
     [SettingsUIKeyboardAction(ResetElevationActionName, ActionType.Button, usages: new string[] { Usages.kToolUsage })]
-    [SettingsUIKeyboardAction(ElevationActionName, ActionType.Button, usages: new string[] { Usages.kToolUsage })]
+    [SettingsUIKeyboardAction(ElevationActionName, ActionType.Button, usages: new string[] { "Anarchy" })]
+    [SettingsUIKeyboardAction(ElevationMimicActionName, ActionType.Button, usages: new string[] { "AnarchyMimic" })]
     public class AnarchyModSettings : ModSetting
     {
         /// <summary>
@@ -86,6 +87,11 @@ namespace Anarchy.Settings
         /// The action name for Elevation Step key bind.
         /// </summary>
         public const string ElevationStepActionName = "ElevationStep";
+
+        /// <summary>
+        /// The action name for Elevation Mimic key bind.
+        /// </summary>
+        public const string ElevationMimicActionName = "ElevationMimic";
 
         /// <summary>
         /// The action name for Elevation keybind.
@@ -278,17 +284,43 @@ namespace Anarchy.Settings
         public ProxyBinding ElevationStep { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating the keybinding for Increase Elevation mimic.
+        /// </summary>
+        [SettingsUISection(Keybinds, Stable)]
+        [SettingsUIKeyboardBinding(AxisComponent.Positive, actionName: ElevationMimicActionName)]
+        [SettingsUIBindingMimic(InputManager.kShortcutsMap, "Change Elevation")]
+        [SettingsUIHidden]
+        public ProxyBinding IncreaseElevationMimic { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the keybinding for Decrease Elevation mimic.
+        /// </summary>
+        [SettingsUISection(Keybinds, Stable)]
+        [SettingsUIKeyboardBinding(AxisComponent.Negative, actionName: ElevationMimicActionName)]
+        [SettingsUIBindingMimic(InputManager.kShortcutsMap, "Change Elevation")]
+        [SettingsUIHidden]
+        public ProxyBinding DecreaseElevationMimic { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to use the elevation mimics.
+        /// </summary>
+        [SettingsUISection(Keybinds, Stable)]
+        public bool UseElevationMimics { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating the keybinding for Increase Elevation.
         /// </summary>
         [SettingsUISection(Keybinds, Stable)]
-        [SettingsUIKeyboardBinding(BindingKeyboard.UpArrow, AxisComponent.Positive, actionName: ElevationActionName)]
+        [SettingsUIKeyboardBinding(BindingKeyboard.PageUp, AxisComponent.Positive, actionName: ElevationActionName)]
+        [SettingsUIDisableByCondition(typeof(AnarchyModSettings), nameof(UseElevationMimics))]
         public ProxyBinding IncreaseElevation { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the keybinding for Decrease Elevation.
         /// </summary>
         [SettingsUISection(Keybinds, Stable)]
-        [SettingsUIKeyboardBinding(BindingKeyboard.DownArrow, AxisComponent.Negative, actionName: ElevationActionName)]
+        [SettingsUIKeyboardBinding(BindingKeyboard.PageDown, AxisComponent.Negative, actionName: ElevationActionName)]
+        [SettingsUIDisableByCondition(typeof(AnarchyModSettings), nameof(UseElevationMimics))]
         public ProxyBinding DecreaseElevation { get; set; }
 
         /// <summary>
@@ -301,7 +333,9 @@ namespace Anarchy.Settings
         {
             set
             {
+                UseElevationMimics = true;
                 ResetKeyBindings();
+                ApplyAndSave();
             }
         }
 
@@ -392,6 +426,7 @@ namespace Anarchy.Settings
             ElevationStepSlider = true;
             ReplaceUpgradesBehavior = true;
             ResetNetworkToolOptionsWhenChangingPrefab = false;
+            UseElevationMimics = true;
         }
 
 

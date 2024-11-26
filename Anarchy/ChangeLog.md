@@ -1,3 +1,2 @@
-﻿## Patch V1.7.7
-* Updated Localization.
-* Changed default keybind for elevation step and elevation reset.
+﻿## Patch V1.7.8
+* Keybinds for increase and decrease object elevation can and will by default mimic vanilla keybinds. Does not work with some snapping options from EDT.
