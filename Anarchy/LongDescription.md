@@ -36,7 +36,7 @@ The mod also has:
 * Optional Network upgrades overhaul that lets you apply network upgrades left, right, or general during placement or replacement. Includes retaining walls, quays, trees, grass, wide sidewalks, lighting, medians, etc.
 * Optional Elevation Step slider.
 * Anarchy Components tool for quickly adding or removing Anarchy and Elevation Lock components from applicable objects. Radius selection is recommended for Anarchy component since you can see and interact with overriden (invisible) objects and bring them back to normal.
-* Optional Network upgrades assets: Oringally part of Extended Road Upgrades and included here with permission from ST-Apps. This option adds Retaining Wall, Quay, Elevated, and Tunnel assets to vanilla menu for asset selection. This mod includes multiple fixes to issues from ERU, and is also compatible with ERU in case you forget to unsubscribe.
+* Optional Network upgrades assets: Originally part of Extended Road Upgrades and included here with permission from ST-Apps. This option adds Retaining Wall, Quay, Elevated, and Tunnel assets to vanilla menu for asset selection. This mod includes multiple fixes to issues from ERU.
  
 Currently it applies to these tools:
 * Object Tool (Option to automatically disable Anarchy toggle while brushing objects. and Set relative elevation while plopping single item or brushing.)
