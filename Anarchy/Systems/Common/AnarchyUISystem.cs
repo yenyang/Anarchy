@@ -449,16 +449,8 @@ namespace Anarchy.Systems.Common
                 m_ElevationStepToggle.shouldBeEnabled = true;
                 if (tool == m_ObjectToolSystem || tool.toolID == "Line Tool")
                 {
-                    if (AnarchyMod.Instance.Settings.UseElevationMimics)
-                    {
-                        m_ElevationMimicKeys.shouldBeEnabled = true;
-                        m_ElevationKey.shouldBeEnabled = false;
-                    }
-                    else
-                    {
-                        m_ElevationKey.shouldBeEnabled = true;
-                        m_ElevationMimicKeys.shouldBeEnabled = false;
-                    }
+                    m_ElevationMimicKeys.shouldBeEnabled = AnarchyMod.Instance.Settings.UseElevationMimics;
+                    m_ElevationKey.shouldBeEnabled = !AnarchyMod.Instance.Settings.UseElevationMimics;
                 }
             }
             else
@@ -507,16 +499,8 @@ namespace Anarchy.Systems.Common
                 m_ElevationStepToggle.shouldBeEnabled = true;
                 if (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool")
                 {
-                    if (AnarchyMod.Instance.Settings.UseElevationMimics)
-                    {
-                        m_ElevationMimicKeys.shouldBeEnabled = true;
-                        m_ElevationKey.shouldBeEnabled = false;
-                    }
-                    else
-                    {
-                        m_ElevationMimicKeys.shouldBeEnabled = false;
-                        m_ElevationKey.shouldBeEnabled = true;
-                    }
+                    m_ElevationMimicKeys.shouldBeEnabled = AnarchyMod.Instance.Settings.UseElevationMimics;
+                    m_ElevationKey.shouldBeEnabled = !AnarchyMod.Instance.Settings.UseElevationMimics;
                 }
             }
             else
