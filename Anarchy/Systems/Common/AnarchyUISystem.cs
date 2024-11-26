@@ -109,6 +109,7 @@ namespace Anarchy.Systems.Common
         private ProxyAction m_ResetElevation;
         private ProxyAction m_ElevationStepToggle;
         private ProxyAction m_ElevationKey;
+        private ProxyAction m_ElevationMimicKeys;
         private ValueBindingHelper<ErrorCheck[]> m_ErrorChecksBinding;
         private bool m_UpdateErrorChecks;
         private ValueBindingHelper<bool> m_ShowAnarchyToggleOptionsPanel;
@@ -258,6 +259,7 @@ namespace Anarchy.Systems.Common
             m_ResetElevation = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ResetElevationActionName);
             m_ElevationStepToggle = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ElevationStepActionName);
             m_ElevationKey = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ElevationActionName);
+            m_ElevationMimicKeys = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ElevationMimicActionName);
             CreateTrigger("ResetElevationToggled", () => ChangeElevation(-1f * m_ElevationValue.Value));
             CreateTrigger<int, int>("ChangeDisabledState", ChangeDisabledState);
             CreateTrigger("ToggleAnarchyOptionsPanel", () => m_ShowAnarchyToggleOptionsPanel.Value = !m_ShowAnarchyToggleOptionsPanel.Value);
@@ -324,6 +326,11 @@ namespace Anarchy.Systems.Common
                 if (m_ElevationKey.WasPerformedThisFrame())
                 {
                     ChangeElevation(m_ElevationStep.Value * m_ElevationKey.ReadValue<float>());
+                }
+
+                if (m_ElevationMimicKeys.WasPerformedThisFrame())
+                {
+                    ChangeElevation(m_ElevationStep.Value * m_ElevationMimicKeys.ReadValue<float>());
                 }
             }
 
@@ -442,7 +449,16 @@ namespace Anarchy.Systems.Common
                 m_ElevationStepToggle.shouldBeEnabled = true;
                 if (tool == m_ObjectToolSystem || tool.toolID == "Line Tool")
                 {
-                    m_ElevationKey.shouldBeEnabled = true;
+                    if (AnarchyMod.Instance.Settings.UseElevationMimics)
+                    {
+                        m_ElevationMimicKeys.shouldBeEnabled = true;
+                        m_ElevationKey.shouldBeEnabled = false;
+                    }
+                    else
+                    {
+                        m_ElevationKey.shouldBeEnabled = true;
+                        m_ElevationMimicKeys.shouldBeEnabled = false;
+                    }
                 }
             }
             else
@@ -450,6 +466,7 @@ namespace Anarchy.Systems.Common
                 m_ResetElevation.shouldBeEnabled = false;
                 m_ElevationStepToggle.shouldBeEnabled = false;
                 m_ElevationKey.shouldBeEnabled = false;
+                m_ElevationMimicKeys.shouldBeEnabled = false;
             }
 
             m_EnableToolErrorsSystem.Enabled = true;
@@ -490,7 +507,16 @@ namespace Anarchy.Systems.Common
                 m_ElevationStepToggle.shouldBeEnabled = true;
                 if (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool")
                 {
-                    m_ElevationKey.shouldBeEnabled = true;
+                    if (AnarchyMod.Instance.Settings.UseElevationMimics)
+                    {
+                        m_ElevationMimicKeys.shouldBeEnabled = true;
+                        m_ElevationKey.shouldBeEnabled = false;
+                    }
+                    else
+                    {
+                        m_ElevationMimicKeys.shouldBeEnabled = false;
+                        m_ElevationKey.shouldBeEnabled = true;
+                    }
                 }
             }
             else
@@ -498,6 +524,7 @@ namespace Anarchy.Systems.Common
                 m_ResetElevation.shouldBeEnabled = false;
                 m_ElevationStepToggle.shouldBeEnabled = false;
                 m_ElevationKey.shouldBeEnabled = false;
+                m_ElevationMimicKeys.shouldBeEnabled = false;
             }
         }
 

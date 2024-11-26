@@ -86,6 +86,8 @@ namespace Anarchy.Settings
                 { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.ResetElevation)), "A keybind to reset the elevation value during placement." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.ElevationStep)), "Change Elevation Step" },
                 { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.ElevationStep)), "A keybind to change the rate in which the elevation value changes." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.UseElevationMimics)), "Mimic Vanilla Increase and Decrease Elevation Keybinds" },
+                { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.UseElevationMimics)), "The keybinds for Increase and Decrease network elevations from the vanilla game will be used for increasing and decreasing object elevations." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.IncreaseElevation)), "Increase Elevation" },
                 { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.IncreaseElevation)), "A keybind to increase the elevation value of objects during placement." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.DecreaseElevation)), "Decrease Elevation" },
