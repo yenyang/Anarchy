@@ -39,7 +39,7 @@ The mod also has:
 * Optional Network upgrades assets: Originally part of Extended Road Upgrades and included here with permission from ST-Apps. This option adds Retaining Wall, Quay, Elevated, and Tunnel assets to vanilla menu for asset selection. This mod includes multiple fixes to issues from ERU.
  
 Currently it applies to these tools:
-* Object Tool (Option to automatically disable Anarchy toggle while brushing objects. and Set relative elevation while plopping single item or brushing.)
+* Object Tool (Option to automatically disable Anarchy toggle while brushing objects. and Set relative elevation while plopping single item, brushing, line and curve mode.)
 * Net Tool (While using the net tool Anarchy will now let you violate the clearance of other networks. I don't recommend having zoning under low bridges.)
 * Area Tool (Can exceed limits for specialized industry areas)
 * Bulldoze Tool (Option to default Anarchy to ON when activated)
@@ -87,7 +87,7 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * Klyte45, Algernon, T.D.W. - Help with UI, Cooperative Development and Code Sharing
 * Bad Peanut - Image Credit for Flaming Chirper, and grass icon.
 * krzychu124, Triton Supreme, and Quboid - Cooperative Development and Code Sharing
-* Localization: Nyoko, Citadino, Dome, elGendo87 and Eryalito (Spanish), Hendrix (German), RilkeXS, CBEdwin, zlhww and GuaGua_ua (Chinese Simplified), Luis Fernando de Paula and felipecollucci (Brazilian Portuguese), Maxi and raistlin46 (Italian), karmel68 and Lisek (Polish), Tanat, TwotoolusFLY_LSh.st, and Hinanchovo (Korean), OWSEEX, Katsumoto, TraceXR (Russian) and Morgan Toverux, spooky_off, Quoifleur, Karg, CEO of Tabarnak and Edou24 (French), Seraphina (Japanese), allegretic (Chinese Traditional), ti4go and ruidias (European Portuguese), Jesyx and scoobysub (Dutch), GamingNerdLeith (Arabic).
+* Localization: Nyoko, Citadino, Dome, elGendo87 and Eryalito (Spanish), Hendrix (German), RilkeXS, CBEdwin, zlhww and GuaGua_ua (Chinese Simplified), Luis Fernando de Paula, dvzz, and felipecollucci (Brazilian Portuguese), Maxi and raistlin46 (Italian), karmel68 and Lisek (Polish), Tanat, TwotoolusFLY_LSh.st, and Hinanchovo (Korean), OWSEEX, Katsumoto, TraceXR (Russian) and Morgan Toverux, spooky_off, Quoifleur, Karg, CEO of Tabarnak and Edou24 (French), Seraphina (Japanese), allegretic (Chinese Traditional), ti4go and ruidias (European Portuguese), Jesyx and scoobysub (Dutch), GamingNerdLeith (Arabic).
 * StarQ - Technical support, and helping recover people's saves.
 * Testing, Feedback - Dante, starrysum, HarbourMaster Jay, Dome, Tigon Ologdring, BruceyBoy, RaftermanNZ, Elektrotek, SpaceChad, GamingNerdLeith, CanadianMoosePlays, Teddy Radko, Jason_Stephen, Brian Rocha, elGendo87, CEO of Tabarnak, DanielVNZ
 * Those that provided broken saves to help diagnose and fix the problems with v1.7.2. Especially miguel.mateo who's save was used extensively during development and testing of v1.7.4.

@@ -58,6 +58,8 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevation]": "用于在放置物体的过程中重置高度的快捷键。",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationStep]": "更改抬高降低的幅度",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationStep]": "用于更改抬高降低的幅度的快捷键。",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.UseElevationMimics]": "模仿游戏原版抬高和降低物体的快捷键。",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.UseElevationMimics]": "启用此选项后，原版游戏中抬高和降低网络的快捷键将用于抬高和降低物体。",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.IncreaseElevation]": "增加高度",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.IncreaseElevation]": "用于在放置物体的过程中增加高度的快捷键。",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.DecreaseElevation]": "降低高度",

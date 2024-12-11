@@ -10,9 +10,9 @@
 		
 		<!--The file where mod information which is required for publishing mod on PDX mods are stored-->
 		<PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
-		<AssemblyVersion>1.7.8</AssemblyVersion>
-		<FileVersion>1.7.8</FileVersion>
-		<Version>1.7.8</Version>
+		<AssemblyVersion>1.7.9</AssemblyVersion>
+		<FileVersion>1.7.9</FileVersion>
+		<Version>1.7.9</Version>
 	</PropertyGroup>
 	<!--Imports must be after PropertyGroup block-->
 	<Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props" />

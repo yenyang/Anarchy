@@ -38,6 +38,8 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ShowElevationToolOption]": "오브젝트 툴과 라인 툴로 나무, 식물, 프롭들을 다양한 높이에서 배치 할 수 있습니다. 또한 배치하는 동안 높이 잠금도 표시됩니다. 단축키는 단축키 탭에서 설정 할 수 있습니다",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevationWhenChangingPrefab]": "새 에셋 선택시 높이 초기화",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevationWhenChangingPrefab]": "새 에셋을 선택하면 자동적으로 객체의 높이를 초기화합니다.",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetNetworkToolOptionsWhenChangingPrefab]": "새 에셋 선택시 네트워크 도구 설정 초기화",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetNetworkToolOptionsWhenChangingPrefab]": "새로운 에셋을 선택하면 아나키 네트워크 도구 및 업그레이드 옵션이 자동으로 재설정됩니다.",
   "YY_ANARCHY.Anarchy": "아나키 모드",
   "YY_ANARCHY.AnarchyButton": "아나키 모드",
   "YY_ANARCHY_DESCRIPTION.AnarchyButton": "도구에 대한 오류 검사를 비활성화하고 오류를 표시하지 않습니다. 해당되는 경우 식생과 소품(DevUI '객체 추가' 메뉴 포함) 을 다른 개체의 경계와 겹치거나 안쪽에 배치하고 함께 닫을 수 있습니다.",

@@ -58,6 +58,8 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevation]": "Uma tecla de atalho para repor o valor de elevação durante a colocação.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationStep]": "Alterar passo de elevação",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationStep]": "Uma tecla de atalho para alterar a velocidade com que o valor de elevação muda.",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.UseElevationMimics]": "Atalhos de teclas de elevação padrão",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.UseElevationMimics]": "Os atalhos de teclado padrão para aumentar e diminuir as elevações da rede no jogo original também serão usadas para ajustar as elevações dos objetos. Se quiseres ajustar estas elevações, basta utilizar as mesmas combinações de teclas que já conheces do jogo vanilla.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.IncreaseElevation]": "Aumentar elevação",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.IncreaseElevation]": "Uma tecla de atalho para aumentar o valor de elevação dos objetos durante a colocação.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.DecreaseElevation]": "Diminuir elevação",

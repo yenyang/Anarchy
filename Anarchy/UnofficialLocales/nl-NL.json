@@ -38,6 +38,8 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ShowElevationToolOption]": "Laat het plaatsen van bomen, planten en props toe op verschillende hoogtes met de Object Tool of Line Tool. Toon ook een knop bij het plaatsen om de hoogte vast te zeggen. Toetsen zijn instelbaar in de Toetsen-tabblad.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevationWhenChangingPrefab]": "Hoogte Resetten Bij Het Selecteren Van Een Nieuwe Asset",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevationWhenChangingPrefab]": "Automatisch Elevation tool opties resetten wanneer je naar een nieuwe assetselectie gaat.",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetNetworkToolOptionsWhenChangingPrefab]": "Reset netwerk hulpmiddel opties bij het selecteren van een nieuw asset",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetNetworkToolOptionsWhenChangingPrefab]": "Reset automatisch de opties van de Netwerk Anarchy en Netwerk Upgrades hulpmiddelen wanneer je een nieuwe asset selecteert.",
   "YY_ANARCHY.Anarchy": "Anarchy",
   "YY_ANARCHY.AnarchyButton": "Anarchy",
   "YY_ANARCHY_DESCRIPTION.AnarchyButton": "Schakelt foutcontroles uit voor tools en geeft geen fouten weer. Indien van toepassing, kan je vegetatie en props plaatsen (met DevUI 'Add Object' menu) op, of, dicht bij elkaar.",
