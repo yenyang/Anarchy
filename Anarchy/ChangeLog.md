@@ -1,2 +1,3 @@
-﻿## Patch V1.7.8
-* Keybinds for increase and decrease object elevation can and will by default mimic vanilla keybinds. Does not work with some snapping options from EDT.
+﻿## Patch V1.7.9
+* Updated Localization
+* Anarchy Elevations works with Line and Curve modes for vanilla object tool.

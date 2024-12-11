@@ -58,6 +58,8 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevation]": "Skrót klawiszowy do zresetowania wartości wysokości podczas umieszczania.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationStep]": "Zmień stopień zmiany wysokości",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationStep]": "Skrót klawiszowy do zmiany stopnia zmiany wartości wysokości.",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.UseElevationMimics]": "Odwzoruj skróty klawiszowe zwiększenia i zmniejszenia wysokości z gry podstawowej",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.UseElevationMimics]": "Skróty klawiszowe do zwiększania i zmniejszania wysokości sieci z gry podstawowej będą używane do zwiększania i zmniejszania wysokości obiektów.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.IncreaseElevation]": "Zwiększ wysokość",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.IncreaseElevation]": "Skrót klawiszowy do zwiększenia wartości wysokości obiektu podczas umieszczania.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.DecreaseElevation]": "Zmniejsz wysokość",

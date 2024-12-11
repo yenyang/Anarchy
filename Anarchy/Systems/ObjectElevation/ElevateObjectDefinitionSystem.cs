@@ -67,7 +67,7 @@ namespace Anarchy.Systems.ObjectElevation
                 return;
             }
 
-            if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode != ObjectToolSystem.Mode.Create && m_ObjectToolSystem.actualMode != ObjectToolSystem.Mode.Brush)
+            if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode != ObjectToolSystem.Mode.Create && m_ObjectToolSystem.actualMode != ObjectToolSystem.Mode.Brush && m_ObjectToolSystem.actualMode != ObjectToolSystem.Mode.Line && m_ObjectToolSystem.actualMode != ObjectToolSystem.Mode.Curve)
             {
                 return;
             }

@@ -21,7 +21,7 @@ const ElevationScale$ =     bindValue<number> (mod.id, 'ElevationScale');
 const LockElevation$ =     bindValue<boolean> (mod.id, 'LockElevation');
 const IsInappropriate$ =         bindValue<boolean>(mod.id, 'IsInappropriate');
 const ShowElevationOption$ = bindValue<boolean>(mod.id, 'ShowElevationSettingsOption');
-const ObjectToolCreateOrBrushMode$ = bindValue<boolean>(mod.id, 'ObjectToolCreateOrBrushMode');
+const ObjectToolValidMode$ = bindValue<boolean>(mod.id, 'ObjectToolValidMode');
 const DisableElevationLock$ = bindValue<boolean>(mod.id, 'DisableElevationLock');
 
 // Stores the default values for the step arrays. Must be descending order.
@@ -60,10 +60,10 @@ export const ElevationControlComponent: ModuleRegistryExtend = (Component : any)
         const LockElevation = useValue(LockElevation$);
         const IsInappropriate = useValue(IsInappropriate$);
         const ShowElevationOption = useValue(ShowElevationOption$);
-        const ObjectToolCreateOrBrushMode = useValue(ObjectToolCreateOrBrushMode$);
+        const ObjectToolValidMode = useValue(ObjectToolValidMode$);
         const DisableElevationLock = useValue(DisableElevationLock$);
 
-        if (toolId == tool.OBJECT_TOOL && !ObjectToolCreateOrBrushMode) 
+        if (toolId == tool.OBJECT_TOOL && !ObjectToolValidMode) 
         {
             toolAppropriate = false;
         }

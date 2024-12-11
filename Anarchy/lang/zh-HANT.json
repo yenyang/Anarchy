@@ -58,6 +58,8 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevation]": "在擺放時重設高度的快速鍵。",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationStep]": "更改高度間距",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationStep]": "更改高度變化幅程度的快速鍵。",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.UseElevationMimics]": "模仿香草模式增加和減少高度的快速鍵",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.UseElevationMimics]": "啟用此選項後，調整物件高度時將使用香草模式的快速鍵來增加或減少高度。",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.IncreaseElevation]": "增加高度",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.IncreaseElevation]": "用在擺放物件時增加物件高度的快速\n鍵。",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.DecreaseElevation]": "降低高度",
