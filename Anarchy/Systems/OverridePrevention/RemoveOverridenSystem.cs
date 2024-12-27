@@ -117,7 +117,7 @@ namespace Anarchy.Systems.OverridePrevention
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            if (m_ToolSystem.activeTool.toolID == null || m_ToolSystem.actionMode.IsEditor() && !AnarchyMod.Instance.Settings.PreventOverrideInEditor || m_ToolSystem.activePrefab == null)
+            if (m_ToolSystem.activeTool.toolID == null || (m_ToolSystem.actionMode.IsEditor() && !AnarchyMod.Instance.Settings.PreventOverrideInEditor))
             {
                 return;
             }
@@ -128,7 +128,7 @@ namespace Anarchy.Systems.OverridePrevention
             }
 
             if (m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID)
-                || m_AppropriateToolsWithAnarchy.Contains(m_ToolSystem.activeTool.toolID) && m_AnarchyUISystem.AnarchyEnabled
+                || (m_AppropriateToolsWithAnarchy.Contains(m_ToolSystem.activeTool.toolID) && m_AnarchyUISystem.AnarchyEnabled)
                 || !m_HasAnarchyAndUpdatedQuery.IsEmptyIgnoreFilter)
             {
                 EntityManager.RemoveComponent(m_OwnedAndOverridenQuery, ComponentType.ReadWrite<Overridden>());

@@ -119,7 +119,7 @@ namespace Anarchy.Systems.Common
         private bool ScreenSelectedEntity()
         {
             PrefabBase prefabBase = null;
-            if (EntityManager.TryGetComponent(selectedEntity, out PrefabRef prefabRef) && !EntityManager.HasComponent<Owner>(selectedEntity))
+            if (EntityManager.TryGetComponent(selectedEntity, out PrefabRef prefabRef))
             {
                 if (m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase))
                 {

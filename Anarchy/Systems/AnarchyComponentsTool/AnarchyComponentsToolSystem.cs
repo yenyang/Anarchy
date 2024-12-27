@@ -88,7 +88,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             else
             {
                 m_ToolRaycastSystem.typeMask = TypeMask.StaticObjects;
-                m_ToolRaycastSystem.raycastFlags |= RaycastFlags.Markers | RaycastFlags.Placeholders;
+                m_ToolRaycastSystem.raycastFlags |= RaycastFlags.Markers | RaycastFlags.Placeholders | RaycastFlags.SubElements;
             }
         }
 
@@ -153,7 +153,6 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                     ComponentType.ReadOnly<Building>(),
                     ComponentType.ReadOnly<Deleted>(),
                     ComponentType.ReadOnly<Temp>(),
-                    ComponentType.ReadOnly<Owner>(),
                     ComponentType.ReadOnly<Animal>(),
                     ComponentType.ReadOnly<Game.Creatures.Pet>(),
                     ComponentType.ReadOnly<Creature>(),
@@ -190,7 +189,6 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                     ComponentType.ReadOnly<Building>(),
                     ComponentType.ReadOnly<Deleted>(),
                     ComponentType.ReadOnly<Temp>(),
-                    ComponentType.ReadOnly<Owner>(),
                     ComponentType.ReadOnly<Animal>(),
                     ComponentType.ReadOnly<Game.Creatures.Pet>(),
                     ComponentType.ReadOnly<Creature>(),
@@ -510,7 +508,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         private bool ScreenEntity(Entity entity)
         {
             PrefabBase prefabBase = null;
-            if (EntityManager.TryGetComponent(entity, out PrefabRef prefabRef) && !EntityManager.HasComponent<Owner>(entity) && m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase))
+            if (EntityManager.TryGetComponent(entity, out PrefabRef prefabRef) && m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase))
             {
                 if (prefabBase is StaticObjectPrefab && EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData) && prefabBase is not BuildingPrefab)
                 {
