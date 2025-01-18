@@ -139,7 +139,7 @@ namespace Anarchy.Systems.NetworkAnarchy
             /// <summary>
             /// Expands elevation range to large amounts.
             /// </summary>
-            ExpanedElevationRange = 256,
+            ExpandedElevationRange = 256,
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace Anarchy.Systems.NetworkAnarchy
         /// </summary>
         public bool ReplaceLeftUpgrade
         {
-            get { return (m_ReplaceLeftUpgrade & ButtonState.On) == ButtonState.On && AnarchyMod.Instance.Settings.ReplaceUpgradesBehavior; }
+            get { return m_ReplaceLeftUpgrade == ButtonState.On && AnarchyMod.Instance.Settings.ReplaceUpgradesBehavior ; }
         }
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace Anarchy.Systems.NetworkAnarchy
         /// </summary>
         public bool ReplaceRightUpgrade
         {
-            get { return (m_ReplaceRightUpgrade & ButtonState.On) == ButtonState.On && AnarchyMod.Instance.Settings.ReplaceUpgradesBehavior; }
+            get { return m_ReplaceRightUpgrade == ButtonState.On && AnarchyMod.Instance.Settings.ReplaceUpgradesBehavior; }
         }
 
         /// <summary>
@@ -211,7 +211,7 @@ namespace Anarchy.Systems.NetworkAnarchy
         /// </summary>
         public bool ReplaceComposition
         {
-            get { return (m_ReplaceComposition & ButtonState.On) == ButtonState.On && (AnarchyMod.Instance.Settings.ReplaceUpgradesBehavior || AnarchyMod.Instance.Settings.NetworkAnarchyToolOptions); }
+            get { return m_ReplaceComposition == ButtonState.On && (AnarchyMod.Instance.Settings.ReplaceUpgradesBehavior || AnarchyMod.Instance.Settings.NetworkAnarchyToolOptions); }
         }
 
         /// <inheritdoc/>
@@ -597,9 +597,9 @@ namespace Anarchy.Systems.NetworkAnarchy
                 m_ShowElevationStepSlider.Value = AnarchyMod.Instance.Settings.ElevationStepSlider;
                 if (AnarchyMod.Instance.Settings.NetworkAnarchyToolOptions)
                 {
-                    m_ShowComposition.Value |= Composition.ExpanedElevationRange;
+                    m_ShowComposition.Value |= Composition.ExpandedElevationRange;
 
-                    if ((m_Composition.Value & Composition.ExpanedElevationRange) == Composition.ExpanedElevationRange)
+                    if ((m_Composition.Value & Composition.ExpandedElevationRange) == Composition.ExpandedElevationRange)
                     {
                         ExpandPrefabElevationRange(prefabEntity, placeableNetData, prefabBase.GetPrefabID());
                     }
@@ -668,6 +668,30 @@ namespace Anarchy.Systems.NetworkAnarchy
                 m_ShowComposition.Value |= Composition.ConstantSlope;
             }
 
+            if (EntityManager.HasComponent<Game.Prefabs.PipelineData>(prefabEntity))
+            {
+                m_ShowComposition.Value &= ~(Composition.ConstantSlope | Composition.Ground | Composition.ExpandedElevationRange);
+            }
+
+            if (EntityManager.HasComponent<Game.Prefabs.PowerLineData>(prefabEntity))
+            {
+                m_ShowComposition.Value &= ~(Composition.ConstantSlope | Composition.Ground);
+            }
+
+            if (!AnarchyMod.Instance.Settings.NetworkAnarchyToolOptions)
+            {
+                m_ShowComposition.Value &= ~(Composition.ConstantSlope | Composition.Tunnel | Composition.Ground | Composition.Elevated);
+            }
+
+            if (!AnarchyMod.Instance.Settings.NetworkUpgradesToolOptions)
+            {
+                m_LeftShowUpgrade.Value = SideUpgrades.None;
+                m_RightShowUpgrade.Value = SideUpgrades.None;
+                m_ReplaceLeftUpgrade.Value |= ButtonState.Hidden;
+                m_ReplaceRightUpgrade.Value |= ButtonState.Hidden;
+                m_ShowComposition.Value &= ~(Composition.WideMedian | Composition.Trees | Composition.GrassStrip | Composition.Lighting);
+            }
+
             if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace)
             {
                 if (m_LeftShowUpgrade.Value != 0)
@@ -697,30 +721,6 @@ namespace Anarchy.Systems.NetworkAnarchy
                 }
 
                 m_ShowComposition.Value &= ~(Composition.ConstantSlope | Composition.Ground);
-            }
-
-            if (EntityManager.HasComponent<Game.Prefabs.PipelineData>(prefabEntity))
-            {
-                m_ShowComposition.Value &= ~(Composition.ConstantSlope | Composition.Ground | Composition.ExpanedElevationRange);
-            }
-
-            if (EntityManager.HasComponent<Game.Prefabs.PowerLineData>(prefabEntity))
-            {
-                m_ShowComposition.Value &= ~(Composition.ConstantSlope | Composition.Ground);
-            }
-
-            if (!AnarchyMod.Instance.Settings.NetworkAnarchyToolOptions)
-            {
-                m_ShowComposition.Value &= ~(Composition.ConstantSlope | Composition.Tunnel | Composition.Ground | Composition.Elevated);
-            }
-
-            if (!AnarchyMod.Instance.Settings.NetworkUpgradesToolOptions)
-            {
-                m_LeftShowUpgrade.Value = SideUpgrades.None;
-                m_RightShowUpgrade.Value = SideUpgrades.None;
-                m_ReplaceLeftUpgrade.Value |= ButtonState.Hidden;
-                m_ReplaceRightUpgrade.Value |= ButtonState.Hidden;
-                m_ShowComposition.Value &= ~(Composition.WideMedian | Composition.Trees | Composition.GrassStrip | Composition.Lighting);
             }
         }
     }
