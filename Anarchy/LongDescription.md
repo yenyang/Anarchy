@@ -5,7 +5,6 @@ Sully has prepared an Amazing! demo video about detailing with Anarchy on Youtub
 
 ## Dependencies
 Unified Icon Library
-I18n Everywhere (Soft dependency required for loading most languages other than English.)
 
 ## Donations
 If you want to say thank you with a donation you can do so on Paypal.
@@ -15,7 +14,7 @@ I am looking for volunteers to help translate the mod into the other languages. 
 Full or Partial Localization: Spanish, German, Chinese Simplified, Brazilian Portuguese, Italian, Polish, Korean, Russian, French, Japanese, Chinese Traditional, Arabic, Dutch, European Portuguese, and Finnish. See credits for list of translators.
 
 ## Supplemental Mods
-European Portuguese Localization (Only needed for European Portuguese Translations)
+European Portuguese Localization and I18N Everywhere (Only needed for European Portuguese Translations)
 TranslateCS2.Mod (Only needed for other unofficial languages. Make sure to set flavor in TranslateCS2 settings.)
 
 # Detailed Description
