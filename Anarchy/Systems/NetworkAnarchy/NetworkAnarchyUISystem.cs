@@ -19,6 +19,7 @@ namespace Anarchy.Systems.NetworkAnarchy
     using Game.Tools;
     using Unity.Collections;
     using Unity.Entities;
+    using static Anarchy.Systems.NetworkAnarchy.NetworkAnarchyUISystem;
     using static Colossal.AssetPipeline.Diagnostic.Report;
 
     /// <summary>
@@ -346,6 +347,12 @@ namespace Anarchy.Systems.NetworkAnarchy
 
         private void LeftUpgradeClicked(int mode)
         {
+            if (!m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) ||
+                !EntityManager.TryGetComponent(prefabEntity, out NetGeometryData netGeometryData))
+            {
+                return;
+            }
+
             SideUpgrades sideUpgrade = (SideUpgrades)mode;
             if ((m_LeftUpgrade.Value & sideUpgrade) == sideUpgrade)
             {
@@ -371,36 +378,51 @@ namespace Anarchy.Systems.NetworkAnarchy
                 m_LeftUpgrade.Value = sideUpgrade;
             }
 
-            if (((SideUpgrades.WideSidewalk | SideUpgrades.Trees | SideUpgrades.GrassStrip) & sideUpgrade) == sideUpgrade)
-            {
-                m_Composition.Value &= ~(Composition.WideMedian | Composition.GrassStrip | Composition.Trees);
-            }
-
             if (((SideUpgrades.Quay | SideUpgrades.RetainingWall) & sideUpgrade) == sideUpgrade &&
                 ((m_RightUpgrade.Value & SideUpgrades.Quay) == SideUpgrades.Quay || (m_RightUpgrade.Value & SideUpgrades.RetainingWall) == SideUpgrades.RetainingWall))
             {
                 m_Composition.Value &= ~Composition.Ground;
             }
+
+            if (netGeometryData.m_DefaultWidth < 40f)
+            {
+                if (((SideUpgrades.WideSidewalk | SideUpgrades.Trees | SideUpgrades.GrassStrip) & sideUpgrade) == sideUpgrade)
+                {
+                    m_Composition.Value &= ~(Composition.WideMedian | Composition.GrassStrip | Composition.Trees);
+                }
+            }
         }
 
         private void RightUpgradeClicked(int mode)
         {
+            if (!m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) ||
+                !EntityManager.TryGetComponent(prefabEntity, out NetGeometryData netGeometryData))
+            {
+                return;
+            }
+
             SideUpgrades sideUpgrade = (SideUpgrades)mode;
             if ((m_RightUpgrade.Value & sideUpgrade) == sideUpgrade)
             {
                 m_RightUpgrade.Value &= ~sideUpgrade;
             }
-            else if ((sideUpgrade == SideUpgrades.Trees && (m_RightUpgrade.Value == SideUpgrades.WideSidewalk || m_RightUpgrade.Value == SideUpgrades.GrassStrip))
-                || (m_RightUpgrade == SideUpgrades.Trees && (sideUpgrade == SideUpgrades.WideSidewalk || sideUpgrade == SideUpgrades.GrassStrip)))
+            else if ((sideUpgrade == SideUpgrades.Trees &&
+                     (m_RightUpgrade.Value == SideUpgrades.WideSidewalk ||
+                      m_RightUpgrade.Value == SideUpgrades.GrassStrip)) ||
+                     (m_RightUpgrade == SideUpgrades.Trees &&
+                     (sideUpgrade == SideUpgrades.WideSidewalk ||
+                      sideUpgrade == SideUpgrades.GrassStrip)))
             {
                 m_RightUpgrade.Value |= sideUpgrade;
             }
-            else if ((m_RightUpgrade.Value & SideUpgrades.WideSidewalk) == SideUpgrades.WideSidewalk && sideUpgrade == SideUpgrades.GrassStrip)
+            else if ((m_RightUpgrade.Value & SideUpgrades.WideSidewalk) == SideUpgrades.WideSidewalk &&
+                      sideUpgrade == SideUpgrades.GrassStrip)
             {
                 m_RightUpgrade.Value &= ~SideUpgrades.WideSidewalk;
                 m_RightUpgrade.Value |= sideUpgrade;
             }
-            else if ((m_RightUpgrade.Value & SideUpgrades.GrassStrip) == SideUpgrades.GrassStrip && sideUpgrade == SideUpgrades.WideSidewalk)
+            else if ((m_RightUpgrade.Value & SideUpgrades.GrassStrip) == SideUpgrades.GrassStrip &&
+                      sideUpgrade == SideUpgrades.WideSidewalk)
             {
                 m_RightUpgrade.Value &= ~SideUpgrades.GrassStrip;
                 m_RightUpgrade.Value |= sideUpgrade;
@@ -410,9 +432,12 @@ namespace Anarchy.Systems.NetworkAnarchy
                 m_RightUpgrade.Value = sideUpgrade;
             }
 
-            if (((SideUpgrades.WideSidewalk | SideUpgrades.Trees | SideUpgrades.GrassStrip) & sideUpgrade) == sideUpgrade)
+            if (netGeometryData.m_DefaultWidth < 40f)
             {
-                m_Composition.Value &= ~(Composition.WideMedian | Composition.GrassStrip | Composition.Trees);
+                if (((SideUpgrades.WideSidewalk | SideUpgrades.Trees | SideUpgrades.GrassStrip) & sideUpgrade) == sideUpgrade)
+                {
+                    m_Composition.Value &= ~(Composition.WideMedian | Composition.GrassStrip | Composition.Trees);
+                }
             }
 
             if (((SideUpgrades.Quay | SideUpgrades.RetainingWall) & sideUpgrade) == sideUpgrade &&
@@ -432,18 +457,31 @@ namespace Anarchy.Systems.NetworkAnarchy
                 m_Composition.Value &= ~(Composition.Tunnel | Composition.Ground | Composition.Elevated);
             }
 
-            if (((Composition.GrassStrip | Composition.Trees) & newComposition) == newComposition)
+            if (!m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) ||
+                !EntityManager.TryGetComponent(prefabEntity, out NetGeometryData netGeometryData) ||
+                netGeometryData.m_DefaultWidth < 40f)
+            {
+                if ((Composition.WideMedian & newComposition) == newComposition)
+                {
+                    m_Composition.Value &= ~Composition.GrassStrip;
+                    m_LeftUpgrade.Value &= ~(SideUpgrades.GrassStrip | SideUpgrades.WideSidewalk | SideUpgrades.Trees);
+                    m_RightUpgrade.Value &= ~(SideUpgrades.GrassStrip | SideUpgrades.WideSidewalk | SideUpgrades.Trees);
+                }
+
+                if ((Composition.GrassStrip & newComposition) == newComposition)
+                {
+                    m_Composition.Value &= ~Composition.WideMedian;
+                    m_LeftUpgrade.Value &= ~(SideUpgrades.GrassStrip | SideUpgrades.WideSidewalk | SideUpgrades.Trees);
+                    m_RightUpgrade.Value &= ~(SideUpgrades.GrassStrip | SideUpgrades.WideSidewalk | SideUpgrades.Trees);
+                }
+            }
+            else if ((Composition.GrassStrip & newComposition) == newComposition)
             {
                 m_Composition.Value &= ~Composition.WideMedian;
-                m_LeftUpgrade.Value &= ~(SideUpgrades.GrassStrip | SideUpgrades.WideSidewalk | SideUpgrades.Trees);
-                m_RightUpgrade.Value &= ~(SideUpgrades.GrassStrip | SideUpgrades.WideSidewalk | SideUpgrades.Trees);
             }
-
-            if ((Composition.WideMedian & newComposition) == newComposition)
+            else if ((Composition.WideMedian & newComposition) == newComposition)
             {
-                m_Composition.Value &= ~(Composition.GrassStrip | Composition.Trees);
-                m_LeftUpgrade.Value &= ~(SideUpgrades.GrassStrip | SideUpgrades.WideSidewalk | SideUpgrades.Trees);
-                m_RightUpgrade.Value &= ~(SideUpgrades.GrassStrip | SideUpgrades.WideSidewalk | SideUpgrades.Trees);
+                m_Composition.Value &= ~Composition.GrassStrip;
             }
 
             if ((oldComposition & newComposition) == newComposition)
@@ -590,6 +628,17 @@ namespace Anarchy.Systems.NetworkAnarchy
             if (!EntityManager.TryGetComponent(prefabEntity, out NetGeometryData netGeometryData))
             {
                 return;
+            }
+
+            if (netGeometryData.m_DefaultWidth < 40f &&
+               ((m_LeftUpgrade.Value & SideUpgrades.WideSidewalk) == SideUpgrades.WideSidewalk ||
+                (m_LeftUpgrade.Value & SideUpgrades.Trees) == SideUpgrades.Trees ||
+                (m_LeftUpgrade.Value & SideUpgrades.GrassStrip) == SideUpgrades.GrassStrip ||
+                (m_RightUpgrade.Value & SideUpgrades.WideSidewalk) == SideUpgrades.WideSidewalk ||
+                (m_RightUpgrade.Value & SideUpgrades.Trees) == SideUpgrades.Trees ||
+                (m_RightUpgrade.Value & SideUpgrades.GrassStrip) == SideUpgrades.GrassStrip))
+            {
+                m_Composition.Value &= ~(Composition.WideMedian | Composition.GrassStrip | Composition.Trees);
             }
 
             if (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace && (placeableNetData.m_ElevationRange.max != 0 || placeableNetData.m_ElevationRange.min != 0))

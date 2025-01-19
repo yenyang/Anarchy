@@ -49,6 +49,7 @@ namespace Anarchy.Systems.NetworkAnarchy
             { NetworkAnarchyUISystem.Composition.GrassStrip, CompositionFlags.General.PrimaryMiddleBeautification },
             { NetworkAnarchyUISystem.Composition.Trees, CompositionFlags.General.SecondaryMiddleBeautification },
             { NetworkAnarchyUISystem.Composition.Trees | NetworkAnarchyUISystem.Composition.GrassStrip, CompositionFlags.General.SecondaryMiddleBeautification | CompositionFlags.General.PrimaryMiddleBeautification },
+            { NetworkAnarchyUISystem.Composition.Trees | NetworkAnarchyUISystem.Composition.WideMedian, CompositionFlags.General.SecondaryMiddleBeautification | CompositionFlags.General.WideMedian },
         };
 
         private readonly List<PrefabID> UpgradeLookup = new List<PrefabID>()
