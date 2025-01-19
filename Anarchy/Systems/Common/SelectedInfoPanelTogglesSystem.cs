@@ -5,6 +5,7 @@ namespace Anarchy.Systems.Common
 {
     using Anarchy.Components;
     using Anarchy.Extensions;
+    using Anarchy.Systems.NetworkAnarchy;
     using Colossal.Entities;
     using Colossal.Logging;
     using Colossal.UI.Binding;
@@ -13,16 +14,19 @@ namespace Anarchy.Systems.Common
     using Game.Prefabs;
     using Game.Tools;
     using Unity.Entities;
+    using UnityEngine;
 
     /// <summary>
-    /// Addes toggles to selected info panel for entites that can receive Anarchy mod components.
+    /// Adds toggles to selected info panel for entites that can receive Anarchy mod components.
     /// </summary>
     public partial class SelectedInfoPanelTogglesSystem : ExtendedInfoSectionBase
     {
         private ILog m_Log;
-        private ValueBindingHelper<bool> m_HasPreventOverride;
-        private ValueBindingHelper<bool> m_HasTransformRecord;
+        private ValueBindingHelper<NetworkAnarchyUISystem.ButtonState> m_HasPreventOverride;
+        private ValueBindingHelper<NetworkAnarchyUISystem.ButtonState> m_HasTransformRecord;
         private ToolSystem m_ToolSystem;
+        private Game.Objects.Transform m_RecentTransform;
+        private Entity m_PreviouslySelectedEntity;
 
         /// <inheritdoc/>
         protected override string group => "Anarchy";
@@ -51,8 +55,8 @@ namespace Anarchy.Systems.Common
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
 
             // These create bindings to the UI via Extension methods.
-            m_HasPreventOverride = CreateBinding("HasPreventOverride", false);
-            m_HasTransformRecord = CreateBinding("HasTransformRecord", false);
+            m_HasPreventOverride = CreateBinding("HasPreventOverride", NetworkAnarchyUISystem.ButtonState.Off);
+            m_HasTransformRecord = CreateBinding("HasTransformRecord", NetworkAnarchyUISystem.ButtonState.Off);
 
             // Thse create listeners for events from UI that trigger actions here.
             CreateTrigger("PreventOverrideButtonToggled", PreventOverrideButtonToggled);
@@ -63,21 +67,89 @@ namespace Anarchy.Systems.Common
         protected override void OnUpdate()
         {
             base.OnUpdate();
-            visible = ScreenSelectedEntity();
-            if (visible)
+            bool overridable = CheckOverridable(selectedEntity);
+            bool disturbable = CheckDisturbable(selectedEntity);
+            visible = overridable || disturbable;
+            if (!visible)
             {
-                if (m_HasPreventOverride.Value != EntityManager.HasComponent<PreventOverride>(selectedEntity))
-                {
-                    m_HasPreventOverride.UpdateCallback(EntityManager.HasComponent<PreventOverride>(selectedEntity));
-                }
-
-                if (m_HasTransformRecord.Value != EntityManager.HasComponent<TransformRecord>(selectedEntity))
-                {
-                    m_HasTransformRecord.UpdateCallback(EntityManager.HasComponent<TransformRecord>(selectedEntity));
-                }
+                return;
             }
 
-            RequestUpdate();
+            if (m_PreviouslySelectedEntity != selectedEntity)
+            {
+                m_PreviouslySelectedEntity = selectedEntity;
+                EntityManager.TryGetComponent(selectedEntity, out m_RecentTransform);
+            }
+
+            if (overridable &&
+                EntityManager.HasComponent<PreventOverride>(selectedEntity) &&
+                m_HasPreventOverride.Value != NetworkAnarchyUISystem.ButtonState.On)
+            {
+                m_HasPreventOverride.Value = NetworkAnarchyUISystem.ButtonState.On;
+            }
+            else if (overridable &&
+                    !EntityManager.HasComponent<PreventOverride>(selectedEntity) &&
+                     m_HasPreventOverride.Value != NetworkAnarchyUISystem.ButtonState.Off)
+            {
+                m_HasPreventOverride.Value = NetworkAnarchyUISystem.ButtonState.Off;
+            }
+            else if (!overridable)
+            {
+                m_HasPreventOverride.Value = NetworkAnarchyUISystem.ButtonState.Hidden;
+            }
+
+            if (disturbable &&
+                EntityManager.HasComponent<TransformRecord>(selectedEntity) &&
+                m_HasTransformRecord.Value != NetworkAnarchyUISystem.ButtonState.On)
+            {
+                m_HasTransformRecord.Value = NetworkAnarchyUISystem.ButtonState.On;
+            }
+            else if (disturbable &&
+                    !EntityManager.HasComponent<TransformRecord>(selectedEntity) &&
+                     m_HasTransformRecord.Value != NetworkAnarchyUISystem.ButtonState.Off)
+            {
+                m_HasTransformRecord.Value = NetworkAnarchyUISystem.ButtonState.Off;
+            }
+            else if (!disturbable)
+            {
+                m_HasTransformRecord.Value = NetworkAnarchyUISystem.ButtonState.Hidden;
+            }
+
+            if (!EntityManager.HasComponent<Game.Common.Owner>(selectedEntity) ||
+                 EntityManager.HasComponent<TransformRecord>(selectedEntity))
+            {
+                return;
+            }
+
+            if (EntityManager.TryGetComponent(selectedEntity, out Game.Objects.Transform transform) &&
+               !m_RecentTransform.Equals(transform))
+            {
+                EntityManager.AddComponent<TransformRecord>(selectedEntity);
+                TransformRecord transformRecord = new TransformRecord()
+                {
+                    m_Position = transform.m_Position,
+                    m_Rotation = transform.m_Rotation,
+                };
+                EntityManager.SetComponentData(selectedEntity, transformRecord);
+                EntityManager.AddComponent<PreventOverride>(selectedEntity);
+                RequestUpdate();
+            }
+        }
+
+        private bool ApproximateTransforms(Game.Objects.Transform original, Game.Objects.Transform comparision)
+        {
+            if (Mathf.Approximately(original.m_Position.x, comparision.m_Position.x) &&
+                Mathf.Approximately(original.m_Position.y, comparision.m_Position.y) &&
+                Mathf.Approximately(original.m_Position.z, comparision.m_Position.z) &&
+                Mathf.Approximately(original.m_Rotation.value.x, comparision.m_Rotation.value.x) &&
+                Mathf.Approximately(original.m_Rotation.value.y, comparision.m_Rotation.value.y) &&
+                Mathf.Approximately(original.m_Rotation.value.z, comparision.m_Rotation.value.z) &&
+                Mathf.Approximately(original.m_Rotation.value.w, comparision.m_Rotation.value.w))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -93,6 +165,8 @@ namespace Anarchy.Systems.Common
             {
                 EntityManager.AddComponent<PreventOverride>(selectedEntity);
             }
+
+            RequestUpdate();
         }
 
         /// <summary>
@@ -110,38 +184,55 @@ namespace Anarchy.Systems.Common
                 TransformRecord transformRecord = new TransformRecord() { m_Position = transform.m_Position, m_Rotation = transform.m_Rotation };
                 EntityManager.SetComponentData(selectedEntity, transformRecord);
             }
+
+            RequestUpdate();
         }
 
         /// <summary>
-        /// Validates whether selected entity should receive anarchy components.
+        /// Validates whether selected entity can receive prevent override component.
         /// </summary>
         /// <returns>True if entity can receive anarchy components. False if not approved.</returns>
-        private bool ScreenSelectedEntity()
+        private bool CheckOverridable(Entity instanceEntity)
         {
             PrefabBase prefabBase = null;
-            if (EntityManager.TryGetComponent(selectedEntity, out PrefabRef prefabRef))
+            if (EntityManager.TryGetComponent(instanceEntity, out PrefabRef prefabRef) &&
+                m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase) &&
+              ((prefabBase is StaticObjectPrefab &&
+                EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData) &&
+                prefabBase is not BuildingPrefab &&
+               (objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable) ||
+               (m_ToolSystem.actionMode.IsGame() &&
+                prefabBase.GetPrefabID().ToString() == "NetPrefab:Lane Editor Container" &&
+                EntityManager.HasBuffer<Game.Net.SubLane>(instanceEntity))))
             {
-                if (m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase))
-                {
-                    if (prefabBase is StaticObjectPrefab && EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData) && prefabBase is not BuildingPrefab)
-                    {
-                        if ((objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable)
-                        {
-                            m_Log.Debug($"{nameof(SelectedInfoPanelTogglesSystem)}.{nameof(ScreenSelectedEntity)} Acceptable selected entity.");
-                            return true;
-                        }
-                    }
-                    else if (m_ToolSystem.actionMode.IsGame() && prefabBase.GetPrefabID().ToString() == "NetPrefab:Lane Editor Container" && EntityManager.TryGetBuffer(selectedEntity, isReadOnly: true, out DynamicBuffer<Game.Net.SubLane> subLaneBuffer))
-                    {
-                        m_Log.Debug($"{nameof(SelectedInfoPanelTogglesSystem)}.{nameof(ScreenSelectedEntity)} Acceptable selected entity.");
-                        return true;
-                    }
-                }
+                m_Log.Debug($"{nameof(SelectedInfoPanelTogglesSystem)}.{nameof(CheckOverridable)} Acceptable selected entity.");
+                return true;
             }
 
             if (prefabBase != null)
             {
-                m_Log.Debug($"{nameof(SelectedInfoPanelTogglesSystem)}.{nameof(ScreenSelectedEntity)}  selected entity {prefabBase.name} is not acceptable for anarchy components.");
+                m_Log.Debug($"{nameof(SelectedInfoPanelTogglesSystem)}.{nameof(CheckOverridable)}  selected entity {prefabBase.name} is not acceptable for anarchy components.");
+            }
+
+            return false;
+        }
+
+        private bool CheckDisturbable(Entity instanceEntity)
+        {
+            if (CheckOverridable(instanceEntity))
+            {
+                return true;
+            }
+
+            if (EntityManager.HasComponent<Owner>(instanceEntity) &&
+                EntityManager.HasComponent<Game.Objects.Transform>(instanceEntity) &&
+                EntityManager.TryGetComponent(instanceEntity, out PrefabRef prefabRef) &&
+                m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out PrefabBase prefabBase) &&
+               (prefabBase is StaticObjectPrefab ||
+                prefabBase is MarkerObjectPrefab) &&
+                prefabBase is not BuildingPrefab)
+            {
+                return true;
             }
 
             return false;

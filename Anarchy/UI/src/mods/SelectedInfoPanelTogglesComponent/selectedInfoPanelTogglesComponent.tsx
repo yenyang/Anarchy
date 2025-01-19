@@ -1,10 +1,11 @@
 import { getModule } from "cs2/modding";
-import { Theme, FocusKey, UniqueFocusKey } from "cs2/bindings";
+import { Theme } from "cs2/bindings";
 import { bindValue, trigger, useValue } from "cs2/api";
 import { useLocalization } from "cs2/l10n";
 import { VanillaComponentResolver } from "mods/VanillaComponentResolver/VanillaComponentResolver";
 import mod from "../../../mod.json";
 import locale from "../../lang/en-US.json";
+import { ButtonState } from "mods/networkAnarchySections/networkAnarchySection";
 
 interface InfoSectionComponent {
 	group: string;
@@ -19,13 +20,8 @@ const anarchyEnabledSrc =      uilColored +  "Anarchy.svg";
 const anarchyDisabledSrc =     uilStandard + "Anarchy.svg";
 const heightLockSrc = uilStandard + "ArrowsHeightLocked.svg";
 
-const hasPreventOverride$ = bindValue<boolean>(mod.id, 'HasPreventOverride');
-const hasTransformRecord$ = bindValue<boolean>(mod.id, 'HasTransformRecord');
-
-const InfoSectionTheme: Theme | any = getModule(
-	"game-ui/game/components/selected-info-panel/shared-components/info-section/info-section.module.scss",
-	"classes"
-);
+const hasPreventOverride$ = bindValue<ButtonState>(mod.id, 'HasPreventOverride');
+const hasTransformRecord$ = bindValue<ButtonState>(mod.id, 'HasTransformRecord');
 
 const InfoRowTheme: Theme | any = getModule(
 	"game-ui/game/components/selected-info-panel/shared-components/info-row/info-row.module.scss",
@@ -47,11 +43,6 @@ function handleClick(eventName : string) {
     trigger(mod.id, eventName);
 }
 
-const FocusDisabled$: FocusKey = getModule(
-	"game-ui/common/focus/focus-key.ts",
-	"FOCUS_DISABLED"
-);
-
 const descriptionToolTipStyle = getModule("game-ui/common/tooltip/description-tooltip/description-tooltip.module.scss", "classes");
     
 
@@ -69,8 +60,8 @@ export const SelectedInfoPanelTogglesComponent = (componentList: any): any => {
     // I believe you should not put anything here.
 	componentList["Anarchy.Systems.Common.SelectedInfoPanelTogglesSystem"] = (e: InfoSectionComponent) => {
         // These get the value of the bindings.
-        const hasPreventOverride : boolean = useValue(hasPreventOverride$);
-        const hasTransformRecord : boolean = useValue(hasTransformRecord$);
+        const hasPreventOverride = useValue(hasPreventOverride$);
+        const hasTransformRecord = useValue(hasTransformRecord$);
         // translation handling. Translates using locale keys that are defined in C# or fallback string here.
         const { translate } = useLocalization();
         const anarchySectionTitle = translate("YY_ANARCHY.Anarchy", locale["YY_ANARCHY.Anarchy"]);
@@ -82,47 +73,49 @@ export const SelectedInfoPanelTogglesComponent = (componentList: any): any => {
         const elevationSectionTitle = translate("Toolbar.ELEVATION_TITLE" , "Elevation");
 
 
-        return 	<InfoSection focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED} disableFocus={true} className={InfoSectionTheme.infoSection}>
-                        <InfoRow 
-                            left={anarchySectionTitle}
-                            right=
-                            {
-                                <VanillaComponentResolver.instance.ToolButton
-                                    src={hasPreventOverride ? anarchyEnabledSrc : anarchyDisabledSrc}
-                                    selected = {hasPreventOverride}
-                                    multiSelect = {false}   // I haven't tested any other value here
-                                    disabled = {false}      // I haven't tested any other value here
-                                    tooltip = {descriptionTooltip(preventOverrideTooltipKey, preventOverrideTooltipDescription)}
-                                    className = {VanillaComponentResolver.instance.toolButtonTheme.button}
-                                    onSelect={() => handleClick("PreventOverrideButtonToggled")}
-                                />
+        return 	<InfoSection focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED} disableFocus={true}>
+                        <>
+                            {hasPreventOverride != ButtonState.Hidden &&
+                                <InfoRow 
+                                    left={anarchySectionTitle}
+                                    right=
+                                    {
+                                        <VanillaComponentResolver.instance.ToolButton
+                                            src={hasPreventOverride ? anarchyEnabledSrc : anarchyDisabledSrc}
+                                            selected = {hasPreventOverride == ButtonState.On}
+                                            tooltip = {descriptionTooltip(preventOverrideTooltipKey, preventOverrideTooltipDescription)}
+                                            className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                                            onSelect={() => handleClick("PreventOverrideButtonToggled")}
+                                        />
+                                    }
+                                    tooltip={anarchyModComponentsTooltipKey}
+                                    uppercase={true}
+                                    disableFocus={true}
+                                    subRow={false}
+                                    className={InfoRowTheme.infoRow}
+                                ></InfoRow>
                             }
-                            tooltip={anarchyModComponentsTooltipKey}
-                            uppercase={true}
-                            disableFocus={true}
-                            subRow={false}
-                            className={InfoRowTheme.infoRow}
-                        ></InfoRow>
-                        <InfoRow 
-                            left={elevationSectionTitle}
-                            right=
-                            {
-                                <VanillaComponentResolver.instance.ToolButton
-                                    src={heightLockSrc}
-                                    selected = {hasTransformRecord}
-                                    multiSelect = {false}   // I haven't tested any other value here
-                                    disabled = {false}      // I haven't tested any other value here
-                                    tooltip = {descriptionTooltip(transformRecordTooltipKey, transformRecordTooltipDescription)}
-                                    className = {VanillaComponentResolver.instance.toolButtonTheme.button}
-                                    onSelect={() => handleClick("TransformRecordButtonToggled")}
-                                />
+                            { hasTransformRecord != ButtonState.Hidden && 
+                                <InfoRow 
+                                    left={elevationSectionTitle}
+                                    right=
+                                    {
+                                        <VanillaComponentResolver.instance.ToolButton
+                                            src={heightLockSrc}
+                                            selected = {hasTransformRecord == ButtonState.On}
+                                            tooltip = {descriptionTooltip(transformRecordTooltipKey, transformRecordTooltipDescription)}
+                                            className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                                            onSelect={() => handleClick("TransformRecordButtonToggled")}
+                                        />
+                                    }
+                                    tooltip={anarchyModComponentsTooltipKey}
+                                    uppercase={true}
+                                    disableFocus={true}
+                                    subRow={false}
+                                    className={InfoRowTheme.infoRow}
+                                ></InfoRow>
                             }
-                            tooltip={anarchyModComponentsTooltipKey}
-                            uppercase={true}
-                            disableFocus={true}
-                            subRow={false}
-                            className={InfoRowTheme.infoRow}
-                        ></InfoRow>
+                        </>
                 </InfoSection>
 				;
     }

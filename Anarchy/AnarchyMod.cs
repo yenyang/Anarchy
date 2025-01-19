@@ -29,6 +29,7 @@ namespace Anarchy
     using Game.SceneFlow;
     using HarmonyLib;
     using Newtonsoft.Json;
+    using Unity.Entities;
     using UnityEngine;
 
     /// <summary>
@@ -144,7 +145,7 @@ namespace Anarchy
             updateSystem.UpdateAt<CheckTransformSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateAt<HandleUpdateNextFrameSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateAt<HandleClearUpdateNextFrameSystem>(SystemUpdatePhase.ModificationEnd);
-            updateSystem.UpdateAt<SelectedInfoPanelTogglesSystem>(SystemUpdatePhase.UIUpdate);
+            SelectedInfoPanelTogglesSystem selectedInfoPanelTogglesSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<SelectedInfoPanelTogglesSystem>();
             updateSystem.UpdateBefore<ElevateObjectDefinitionSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateBefore<NetworkDefinitionSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateAt<SetRetainingWallSegmentElevationSystem>(SystemUpdatePhase.ModificationEnd);
