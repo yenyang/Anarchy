@@ -11,6 +11,7 @@ namespace Anarchy.Systems.Common
     using Colossal.UI.Binding;
     using Game;
     using Game.Common;
+    using Game.Objects;
     using Game.Prefabs;
     using Game.Tools;
     using Unity.Entities;
@@ -30,6 +31,63 @@ namespace Anarchy.Systems.Common
 
         /// <inheritdoc/>
         protected override string group => "Anarchy";
+
+        /// <summary>
+        /// Validates whether entity can receive prevent override component.
+        /// </summary>
+        /// <param name="instanceEntity">Instance entity to check.</param>
+        /// <returns>True if entity can receive anarchy components. False if not approved.</returns>
+        public bool CheckOverridable(Entity instanceEntity)
+        {
+            PrefabBase prefabBase = null;
+            if (EntityManager.TryGetComponent(instanceEntity, out PrefabRef prefabRef) &&
+                m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase) &&
+              ((prefabBase is StaticObjectPrefab &&
+                EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData) &&
+                prefabBase is not BuildingPrefab &&
+               (objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable) ||
+               (m_ToolSystem.actionMode.IsGame() &&
+                prefabBase.GetPrefabID().ToString() == "NetPrefab:Lane Editor Container" &&
+                EntityManager.HasBuffer<Game.Net.SubLane>(instanceEntity))))
+            {
+                m_Log.Debug($"{nameof(SelectedInfoPanelTogglesSystem)}.{nameof(CheckOverridable)} Acceptable selected entity.");
+                return true;
+            }
+
+            if (prefabBase != null)
+            {
+                m_Log.Debug($"{nameof(SelectedInfoPanelTogglesSystem)}.{nameof(CheckOverridable)}  selected entity {prefabBase.name} is not acceptable for anarchy components.");
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Validates whether entity can eceive transform record component.
+        /// </summary>
+        /// <param name="instanceEntity">Instance entity to check.</param>
+        /// <returns>True if can receive component. False if not.</returns>
+        public bool CheckDisturbable(Entity instanceEntity)
+        {
+            if (CheckOverridable(instanceEntity))
+            {
+                return true;
+            }
+
+            if (EntityManager.HasComponent<Owner>(instanceEntity) &&
+               !EntityManager.HasComponent<Stack>(instanceEntity) &&
+                EntityManager.HasComponent<Game.Objects.Transform>(instanceEntity) &&
+                EntityManager.TryGetComponent(instanceEntity, out PrefabRef prefabRef) &&
+                m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out PrefabBase prefabBase) &&
+               (prefabBase is StaticObjectPrefab ||
+                prefabBase is MarkerObjectPrefab) &&
+                prefabBase is not BuildingPrefab)
+            {
+                return true;
+            }
+
+            return false;
+        }
 
         /// <inheritdoc/>
         public override void OnWriteProperties(IJsonWriter writer)
@@ -115,20 +173,21 @@ namespace Anarchy.Systems.Common
                 m_HasTransformRecord.Value = NetworkAnarchyUISystem.ButtonState.Hidden;
             }
 
-            if (!EntityManager.HasComponent<Game.Common.Owner>(selectedEntity) ||
-                 EntityManager.HasComponent<TransformRecord>(selectedEntity))
+            if (!EntityManager.TryGetComponent(selectedEntity, out Game.Common.Owner owner) ||
+                EntityManager.HasComponent<TransformRecord>(selectedEntity))
             {
                 return;
             }
 
             if (EntityManager.TryGetComponent(selectedEntity, out Game.Objects.Transform transform) &&
-               !m_RecentTransform.Equals(transform))
+               !ApproximateTransforms(transform, m_RecentTransform) &&
+                EntityManager.TryGetComponent(owner.m_Owner, out Game.Objects.Transform ownerTransform))
             {
                 EntityManager.AddComponent<TransformRecord>(selectedEntity);
                 TransformRecord transformRecord = new TransformRecord()
                 {
-                    m_Position = transform.m_Position,
-                    m_Rotation = transform.m_Rotation,
+                    m_Position = ownerTransform.m_Position - transform.m_Position,
+                    m_Rotation = ownerTransform.m_Rotation.value - transform.m_Rotation.value,
                 };
                 EntityManager.SetComponentData(selectedEntity, transformRecord);
                 EntityManager.AddComponent<PreventOverride>(selectedEntity);
@@ -177,65 +236,28 @@ namespace Anarchy.Systems.Common
             if (EntityManager.HasComponent<TransformRecord>(selectedEntity))
             {
                 EntityManager.RemoveComponent<TransformRecord>(selectedEntity);
+                m_PreviouslySelectedEntity = Entity.Null;
             }
             else if (EntityManager.TryGetComponent(selectedEntity, out Game.Objects.Transform transform))
             {
                 EntityManager.AddComponent<TransformRecord>(selectedEntity);
-                TransformRecord transformRecord = new TransformRecord() { m_Position = transform.m_Position, m_Rotation = transform.m_Rotation };
+                TransformRecord transformRecord = new ();
+                if (!EntityManager.TryGetComponent(selectedEntity, out Game.Common.Owner owner) ||
+                    !EntityManager.TryGetComponent(owner.m_Owner, out Game.Objects.Transform ownerTransform))
+                {
+                    transformRecord.m_Position = transform.m_Position;
+                    transformRecord.m_Rotation = transform.m_Rotation;
+                }
+                else
+                {
+                    transformRecord.m_Position = ownerTransform.m_Position - transform.m_Position;
+                    transformRecord.m_Rotation = ownerTransform.m_Rotation.value - transform.m_Rotation.value;
+                }
+
                 EntityManager.SetComponentData(selectedEntity, transformRecord);
             }
 
             RequestUpdate();
-        }
-
-        /// <summary>
-        /// Validates whether selected entity can receive prevent override component.
-        /// </summary>
-        /// <returns>True if entity can receive anarchy components. False if not approved.</returns>
-        private bool CheckOverridable(Entity instanceEntity)
-        {
-            PrefabBase prefabBase = null;
-            if (EntityManager.TryGetComponent(instanceEntity, out PrefabRef prefabRef) &&
-                m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase) &&
-              ((prefabBase is StaticObjectPrefab &&
-                EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData) &&
-                prefabBase is not BuildingPrefab &&
-               (objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable) ||
-               (m_ToolSystem.actionMode.IsGame() &&
-                prefabBase.GetPrefabID().ToString() == "NetPrefab:Lane Editor Container" &&
-                EntityManager.HasBuffer<Game.Net.SubLane>(instanceEntity))))
-            {
-                m_Log.Debug($"{nameof(SelectedInfoPanelTogglesSystem)}.{nameof(CheckOverridable)} Acceptable selected entity.");
-                return true;
-            }
-
-            if (prefabBase != null)
-            {
-                m_Log.Debug($"{nameof(SelectedInfoPanelTogglesSystem)}.{nameof(CheckOverridable)}  selected entity {prefabBase.name} is not acceptable for anarchy components.");
-            }
-
-            return false;
-        }
-
-        private bool CheckDisturbable(Entity instanceEntity)
-        {
-            if (CheckOverridable(instanceEntity))
-            {
-                return true;
-            }
-
-            if (EntityManager.HasComponent<Owner>(instanceEntity) &&
-                EntityManager.HasComponent<Game.Objects.Transform>(instanceEntity) &&
-                EntityManager.TryGetComponent(instanceEntity, out PrefabRef prefabRef) &&
-                m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out PrefabBase prefabBase) &&
-               (prefabBase is StaticObjectPrefab ||
-                prefabBase is MarkerObjectPrefab) &&
-                prefabBase is not BuildingPrefab)
-            {
-                return true;
-            }
-
-            return false;
         }
     }
 }

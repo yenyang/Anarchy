@@ -127,13 +127,40 @@ namespace Anarchy.Systems.ObjectElevation
                 Dependency = jobHandle;
                 nativeMoveItSelectedEntities.Dispose(jobHandle);
             }
-            else if (EntityManager.TryGetComponent(m_ToolSystem.selected, out TransformRecord transformRecord) && EntityManager.TryGetComponent(m_ToolSystem.selected, out Game.Objects.Transform originalTransform) && EntityManager.HasComponent<Updated>(m_ToolSystem.selected))
+            else if (EntityManager.TryGetComponent(m_ToolSystem.selected, out TransformRecord transformRecord) &&
+                     EntityManager.TryGetComponent(m_ToolSystem.selected, out Game.Objects.Transform originalTransform) &&
+                     EntityManager.HasComponent<Updated>(m_ToolSystem.selected))
             {
-                transformRecord.m_Position = originalTransform.m_Position;
-                transformRecord.m_Rotation = originalTransform.m_Rotation;
+                if (!EntityManager.TryGetComponent(m_ToolSystem.selected, out Game.Common.Owner owner) ||
+                    !EntityManager.TryGetComponent(owner.m_Owner, out Game.Objects.Transform ownerTransform))
+                {
+                    transformRecord.m_Position = originalTransform.m_Position;
+                    transformRecord.m_Rotation = originalTransform.m_Rotation;
+                }
+                else
+                {
+                    transformRecord.m_Position = originalTransform.m_Position - ownerTransform.m_Position;
+                    transformRecord.m_Rotation = originalTransform.m_Rotation.value - ownerTransform.m_Rotation.value;
+                }
+
                 EntityManager.SetComponentData(m_ToolSystem.selected, transformRecord);
             }
         }
+
+        private void ProcessSubObject(Game.Objects.SubObject subObject)
+        {
+            if (EntityManager.TryGetComponent(subObject.m_SubObject, out TransformRecord transformRecord) &&
+                EntityManager.TryGetComponent(subObject.m_SubObject, out Game.Objects.Transform originalTransform) &&
+                EntityManager.HasComponent<Updated>(subObject.m_SubObject) &&
+                EntityManager.TryGetComponent(subObject.m_SubObject, out Owner owner) &&
+                EntityManager.TryGetComponent(owner.m_Owner, out Game.Objects.Transform ownerTransform))
+            {
+                transformRecord.m_Position = originalTransform.m_Position - ownerTransform.m_Position;
+                transformRecord.m_Rotation = originalTransform.m_Rotation.value - ownerTransform.m_Rotation.value;
+                EntityManager.SetComponentData(subObject.m_SubObject, transformRecord);
+            }
+        }
+
 
 #if BURST
         [BurstCompile]

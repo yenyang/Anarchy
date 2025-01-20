@@ -98,7 +98,6 @@ namespace Anarchy.Settings
         /// </summary>
         public const string ElevationActionName = "Elevation";
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AnarchyModSettings"/> class.
         /// </summary>

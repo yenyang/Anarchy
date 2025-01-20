@@ -93,7 +93,8 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             m_AnarchyComponentsTool = World.GetOrCreateSystemManaged<AnarchyComponentsToolSystem>();
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_DefaultToolSystem = World.GetOrCreateSystemManaged<DefaultToolSystem>();
-            m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) =>
+
+            /*m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) =>
             {
                 if (tool != m_AnarchyComponentsTool)
                 {
@@ -110,7 +111,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                 {
                     m_SwitchToPreviousToolSystem = true;
                 }
-            };
+            };*/
             m_RenderingSystem = World.GetOrCreateSystemManaged<RenderingSystem>();
             m_AnarchyComponentType = CreateBinding("AnarchyComponentType", AnarchyComponentType.PreventOverride);
             m_SelectionMode = CreateBinding("SelectionMode", SelectionMode.Radius);
@@ -168,6 +169,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             Enabled = false;
         }
 
+        /*
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
@@ -178,6 +180,6 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             }
 
             Enabled = false;
-        }
+        }*/
     }
 }
