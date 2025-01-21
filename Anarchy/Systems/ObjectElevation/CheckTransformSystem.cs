@@ -6,6 +6,7 @@
 namespace Anarchy.Systems.ObjectElevation
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
     using Anarchy;
     using Anarchy.Components;
@@ -33,12 +34,47 @@ namespace Anarchy.Systems.ObjectElevation
         private ToolSystem m_ToolSystem;
         private ToolBaseSystem m_MoveItTool;
         private ModificationBarrier1 m_ModificationBarrier1;
+        private JobHandle m_writeDeps;
+        private JobHandle m_readDeps;
+        private NativeHashSet<Entity> m_MoveItSelectedEntities = new (0, Allocator.Persistent);
+        private PropertyInfo m_MoveItSelectedEntitiesPropertyInfo;
+        private HashSet<Entity> m_MoveItSelectedEntitiesHashSet = new HashSet<Entity>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CheckTransformSystem"/> class.
         /// </summary>
         public CheckTransformSystem()
         {
+        }
+
+        /// <summary>
+        /// Get data, can be used inside or outside of system
+        /// </summary>
+        /// <param name="readOnly">true.</param>
+        /// <param name="deps">dependency.</param>
+        /// <returns>MoveItSelectedEntities.</returns>
+        public NativeHashSet<Entity> GetEntities(bool readOnly, out JobHandle deps)
+        {
+            deps = readOnly ? m_writeDeps : JobHandle.CombineDependencies(m_readDeps, m_writeDeps);
+            return m_MoveItSelectedEntities;
+        }
+
+        /// <summary>
+        /// Register jobhandle as read dependency.
+        /// </summary>
+        /// <param name="jobHandle">jobhandle to add.</param>
+        public void AddEntitiesReader(JobHandle jobHandle)
+        {
+            m_readDeps = JobHandle.CombineDependencies(m_readDeps, jobHandle);
+        }
+
+        /// <summary>
+        /// Registers jobhandle as write dependency.
+        /// </summary>
+        /// <param name="jobHandle">jobhandle to add.</param>
+        public void AddEntitiesWriter(JobHandle jobHandle)
+        {
+            m_writeDeps = JobHandle.CombineDependencies(m_writeDeps, jobHandle);
         }
 
         /// <inheritdoc/>
@@ -78,6 +114,7 @@ namespace Anarchy.Systems.ObjectElevation
                 if (moveItSelectedEntities is not null)
                 {
                     m_MoveItTool = moveItTool;
+                    m_MoveItSelectedEntitiesPropertyInfo = moveItSelectedEntities;
                     m_Log.Info($"{nameof(ResetTransformSystem)}.{nameof(OnGameLoadingComplete)} saved moveItTool");
                 }
             }
@@ -95,37 +132,37 @@ namespace Anarchy.Systems.ObjectElevation
                 return;
             }
 
-            HashSet<Entity> moveItToolSelectedEntities = new HashSet<Entity>();
-            if (m_ToolSystem.activeTool.toolID == MoveItToolID && m_MoveItTool is not null)
+            if (m_ToolSystem.activeTool.toolID == MoveItToolID &&
+                m_MoveItTool is not null &&
+                m_MoveItSelectedEntitiesPropertyInfo is not null)
             {
-                PropertyInfo moveItSelectedEntities = m_MoveItTool.GetType().GetProperty("SelectedEntities");
-                if (moveItSelectedEntities is not null)
+                HashSet<Entity> moveItToolSelectedEntities = (HashSet<Entity>)m_MoveItSelectedEntitiesPropertyInfo.GetValue(m_MoveItTool);
+                if (!moveItToolSelectedEntities.SetEquals(m_MoveItSelectedEntitiesHashSet))
                 {
-                    moveItToolSelectedEntities = (HashSet<Entity>)moveItSelectedEntities.GetValue(m_MoveItTool);
+                    m_MoveItSelectedEntitiesHashSet = moveItToolSelectedEntities;
+                    NativeArray<Entity> moveItSelectedEntities = new NativeArray<Entity>(moveItToolSelectedEntities.ToArray(), Allocator.TempJob);
+                    WriteMoveItSelectedEntities writeMoveItSelectedEntities = new WriteMoveItSelectedEntities()
+                    {
+                        m_Entities = m_MoveItSelectedEntities,
+                        m_MoveItToolSelectedEntities = moveItSelectedEntities,
+                    };
+                    JobHandle writerJobHandle = writeMoveItSelectedEntities.Schedule(Dependency);
+                    AddEntitiesWriter(writerJobHandle);
+                    moveItSelectedEntities.Dispose(writerJobHandle);
                     m_Log.Debug($"{nameof(CheckTransformSystem)}.{nameof(OnUpdate)} saved moveItTool selected entities");
-                }
-            }
-
-            if (moveItToolSelectedEntities.Count > 0)
-            {
-                NativeHashSet<Entity> nativeMoveItSelectedEntities = new NativeHashSet<Entity>(moveItToolSelectedEntities.Count, Allocator.TempJob);
-                foreach (Entity entity in moveItToolSelectedEntities)
-                {
-                    nativeMoveItSelectedEntities.Add(entity);
                 }
 
                 UpdateTransformRecordJob updateTransformRecordJob = new UpdateTransformRecordJob()
                 {
                     m_EntityType = SystemAPI.GetEntityTypeHandle(),
-                    m_MoveItSelectedEntities = nativeMoveItSelectedEntities,
+                    m_MoveItSelectedEntities = GetEntities(readOnly: true, out JobHandle readerDeps),
                     m_TransformRecordType = SystemAPI.GetComponentTypeHandle<TransformRecord>(),
                     m_TransformType = SystemAPI.GetComponentTypeHandle<Transform>(),
                     buffer = m_ModificationBarrier1.CreateCommandBuffer().AsParallelWriter(),
                 };
-                JobHandle jobHandle = updateTransformRecordJob.ScheduleParallel(m_TransformRecordQuery, Dependency);
+                JobHandle jobHandle = updateTransformRecordJob.ScheduleParallel(m_TransformRecordQuery, JobHandle.CombineDependencies(Dependency, readerDeps));
                 m_ModificationBarrier1.AddJobHandleForProducer(jobHandle);
                 Dependency = jobHandle;
-                nativeMoveItSelectedEntities.Dispose(jobHandle);
             }
             else if (EntityManager.TryGetComponent(m_ToolSystem.selected, out TransformRecord transformRecord) &&
                      EntityManager.TryGetComponent(m_ToolSystem.selected, out Game.Objects.Transform originalTransform) &&
@@ -147,6 +184,13 @@ namespace Anarchy.Systems.ObjectElevation
             }
         }
 
+        /// <inheritdoc/>
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            m_MoveItSelectedEntities.Dispose();
+        }
+
         private void ProcessSubObject(Game.Objects.SubObject subObject)
         {
             if (EntityManager.TryGetComponent(subObject.m_SubObject, out TransformRecord transformRecord) &&
@@ -158,6 +202,28 @@ namespace Anarchy.Systems.ObjectElevation
                 transformRecord.m_Position = originalTransform.m_Position - ownerTransform.m_Position;
                 transformRecord.m_Rotation = originalTransform.m_Rotation.value - ownerTransform.m_Rotation.value;
                 EntityManager.SetComponentData(subObject.m_SubObject, transformRecord);
+            }
+        }
+
+
+        private struct WriteMoveItSelectedEntities : IJob
+        {
+            public NativeHashSet<Entity> m_Entities;
+            [ReadOnly]
+            public NativeArray<Entity> m_MoveItToolSelectedEntities;
+
+            public void Execute()
+            {
+                if (m_MoveItToolSelectedEntities.Length == 0)
+                {
+                    return;
+                }
+
+                m_Entities.Clear();
+                foreach (Entity entity in m_MoveItToolSelectedEntities)
+                {
+                    m_Entities.Add(entity);
+                }
             }
         }
 

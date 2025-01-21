@@ -434,7 +434,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                     m_PreviousRaycastedEntity = currentRaycastEntity;
                 }
 
-                if (applyAction.WasPressedThisFrame() &&
+                if (applyAction.WasReleasedThisFrame() &&
                     ScreenEntity(currentRaycastEntity))
                 {
                     if (ScreenEntity(currentRaycastEntity, AnarchyComponentType.TransformRecord) &&
@@ -475,7 +475,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                        // tooltip as to why can't add component.
                     }
                 }
-                else if (secondaryApplyAction.WasPressedThisFrame() && ScreenEntity(currentRaycastEntity))
+                else if (secondaryApplyAction.WasReleasedThisFrame() && ScreenEntity(currentRaycastEntity))
                 {
                     if ((m_UISystem.CurrentComponentType & AnarchyComponentType.TransformRecord) == AnarchyComponentType.TransformRecord &&
                          EntityManager.HasComponent<TransformRecord>(currentRaycastEntity))
