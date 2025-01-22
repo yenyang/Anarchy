@@ -19,8 +19,7 @@ namespace Anarchy.Settings
     [FileLocation("Mods_Yenyang_Anarchy")]
     [SettingsUITabOrder(General, UI)]
     [SettingsUIGroupOrder(Toggle, Elevation, Networks, Stable, Reset, About)]
-    [SettingsUIMouseAction(AnarchyMod.ApplyMimicAction, "AnarchyComponentsTool")]
-    [SettingsUIMouseAction(AnarchyMod.SecondaryMimicAction, "AnarchyComponentsTool")]
+    [SettingsUIMouseAction(AnarchyMod.SecondaryMimicAction, "AnarchySecondaryApplyMimic")]
     [SettingsUIKeyboardAction(ToggleAnarchyActionName, ActionType.Button, usages: new string[] { "Anarchy" })]
     [SettingsUIKeyboardAction(ElevationStepActionName, ActionType.Button, usages: new string[] { Usages.kToolUsage })]
     [SettingsUIKeyboardAction(ResetElevationActionName, ActionType.Button, usages: new string[] { Usages.kToolUsage })]
@@ -206,16 +205,6 @@ namespace Anarchy.Settings
         [SettingsUISlider(min = 1, max = 600, step = 1, scalarMultiplier = 1, unit = Unit.kInteger)]
         [SettingsUIHideByCondition(typeof(AnarchyModSettings), nameof(IsCullingNotBeingPrevented))]
         public int PropRefreshFrequency { get; set; }
-
-
-        /// <summary>
-        /// Gets or sets hidden keybinding for apply action.
-        /// </summary>
-        [SettingsUIMouseBinding(AnarchyMod.ApplyMimicAction)]
-        [SettingsUISection(General, Keybinds)]
-        [SettingsUIBindingMimic(InputManager.kToolMap, "Apply")]
-        [SettingsUIHidden]
-        public ProxyBinding ApplyMimic { get; set; }
 
         /// <summary>
         /// Gets or sets hidden keybinding for secondary apply action.

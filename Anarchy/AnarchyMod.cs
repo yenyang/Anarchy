@@ -38,11 +38,6 @@ namespace Anarchy
     public class AnarchyMod : IMod
     {
         /// <summary>
-        /// Fake keybind action for apply.
-        /// </summary>
-        public const string ApplyMimicAction = "ApplyMimic";
-
-        /// <summary>
         /// Fake keybind action for secondary apply.
         /// </summary>
         public const string SecondaryMimicAction = "SecondaryApplyMimic";
