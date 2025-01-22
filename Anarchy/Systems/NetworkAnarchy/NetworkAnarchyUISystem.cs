@@ -474,6 +474,12 @@ namespace Anarchy.Systems.NetworkAnarchy
                     m_LeftUpgrade.Value &= ~(SideUpgrades.GrassStrip | SideUpgrades.WideSidewalk | SideUpgrades.Trees);
                     m_RightUpgrade.Value &= ~(SideUpgrades.GrassStrip | SideUpgrades.WideSidewalk | SideUpgrades.Trees);
                 }
+
+                if ((Composition.Trees & newComposition) == newComposition)
+                {
+                    m_LeftUpgrade.Value &= ~(SideUpgrades.GrassStrip | SideUpgrades.WideSidewalk | SideUpgrades.Trees);
+                    m_RightUpgrade.Value &= ~(SideUpgrades.GrassStrip | SideUpgrades.WideSidewalk | SideUpgrades.Trees);
+                }
             }
             else if ((Composition.GrassStrip & newComposition) == newComposition)
             {

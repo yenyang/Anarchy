@@ -205,7 +205,9 @@ namespace Anarchy.Systems.ObjectElevation
             }
         }
 
-
+#if BURST
+        [BurstCompile]
+#endif
         private struct WriteMoveItSelectedEntities : IJob
         {
             public NativeHashSet<Entity> m_Entities;
@@ -214,11 +216,6 @@ namespace Anarchy.Systems.ObjectElevation
 
             public void Execute()
             {
-                if (m_MoveItToolSelectedEntities.Length == 0)
-                {
-                    return;
-                }
-
                 m_Entities.Clear();
                 foreach (Entity entity in m_MoveItToolSelectedEntities)
                 {
@@ -226,7 +223,6 @@ namespace Anarchy.Systems.ObjectElevation
                 }
             }
         }
-
 
 #if BURST
         [BurstCompile]
