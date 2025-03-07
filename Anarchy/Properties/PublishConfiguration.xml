@@ -125,7 +125,10 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * Removed I18N Everywhere dependency. 
 * Translations for officially supported languages are handled internally with embedded resource files. 
 * Fix Eight Lane road with median cannot have upgrades to left, right, and general applied in some configurations supported by vanilla.
-* Fix replacing water and sewer mains with combined services or vice versa breaks the utility network.</ChangeLog>
+* Fix replacing water and sewer mains with combined services or vice versa breaks the utility network.
+* Ensures Anarchy Components Tool is activated properly which is needed on v1.2.4 when switching from Bulldoze tool.
+* Regression: When closed Anarchy components tool returns to default tool instead of previous tool. 
+* Anarchy keybinding set to Tool Usage. This will display a conflict warning with Activating/Deactivating Buildings if bindings are not changed.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />

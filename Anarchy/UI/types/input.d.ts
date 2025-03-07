@@ -437,6 +437,7 @@ declare module "cs2/input" {
   	"Change Time Scale": Action1D;
   	"Switch Page": Action1D;
   	"Default Tool": Action;
+  	"Default Tool UI": Action;
   	"Tool Options": Action;
   	"Switch Toolmode": Action;
   	"Toggle Snapping": Action;

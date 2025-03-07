@@ -7,8 +7,10 @@ namespace Anarchy.Systems.AnarchyComponentsTool
     using Anarchy;
     using Anarchy.Extensions;
     using Colossal.Logging;
+    using Game.Prefabs;
     using Game.Rendering;
     using Game.Tools;
+    using Game.UI.InGame;
     using System;
     using Unity.Entities;
 
@@ -22,11 +24,15 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         private AnarchyComponentsToolSystem m_AnarchyComponentsTool;
         private ValueBindingHelper<AnarchyComponentType> m_AnarchyComponentType;
         private ValueBindingHelper<SelectionMode> m_SelectionMode;
+        private PrefabSystem m_PrefabSystem;
         private ValueBindingHelper<int> m_SelectionRadius;
         private RenderingSystem m_RenderingSystem;
-        private ToolBaseSystem m_PreviousToolSystem;
-        private bool m_SwitchToPreviousToolSystem;
+
+        // private ToolBaseSystem m_PreviousToolSystem;
+        // private PrefabBase m_PreviousPrefab;
+        // private bool m_SwitchToPreviousToolSystem;
         private DefaultToolSystem m_DefaultToolSystem;
+        private ToolbarUISystem m_ToolbarUISystem;
 
         /// <summary>
         /// Enum for different component types the tool can add or remove.
@@ -93,32 +99,21 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             m_AnarchyComponentsTool = World.GetOrCreateSystemManaged<AnarchyComponentsToolSystem>();
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_DefaultToolSystem = World.GetOrCreateSystemManaged<DefaultToolSystem>();
-
-            /*m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) =>
-            {
-                if (tool != m_AnarchyComponentsTool)
-                {
-                    if (m_SwitchToPreviousToolSystem && tool == m_DefaultToolSystem)
-                    {
-                        Enabled = true;
-                    }
-                    else
-                    {
-                        m_PreviousToolSystem = tool;
-                    }
-                }
-                else
-                {
-                    m_SwitchToPreviousToolSystem = true;
-                }
-            };*/
+            m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
+            m_ToolbarUISystem = World.GetOrCreateSystemManaged<ToolbarUISystem>();
+            m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_DefaultToolSystem;
             m_RenderingSystem = World.GetOrCreateSystemManaged<RenderingSystem>();
             m_AnarchyComponentType = CreateBinding("AnarchyComponentType", AnarchyComponentType.PreventOverride);
             m_SelectionMode = CreateBinding("SelectionMode", SelectionMode.Radius);
             m_SelectionRadius = CreateBinding("SelectionRadius", 10);
 
             // Creates triggers for C# methods based on UI events.
-            CreateTrigger("ActivateAnarchyComponentsTool", () => m_ToolSystem.activeTool = m_AnarchyComponentsTool);
+            CreateTrigger("ActivateAnarchyComponentsTool", () =>
+            {
+                m_AnarchyComponentsTool.MustStartRunning = true;
+                m_ToolSystem.activeTool = m_AnarchyComponentsTool;
+            });
+
             CreateTrigger("SelectionMode", (int mode) =>
             {
                 m_SelectionMode.Value = (SelectionMode)mode;
@@ -169,17 +164,16 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             Enabled = false;
         }
 
-        /*
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            if (m_SwitchToPreviousToolSystem)
+            if (m_AnarchyComponentsTool.MustStartRunning &&
+                m_ToolSystem.activeTool != m_AnarchyComponentsTool)
             {
-                m_ToolSystem.activeTool = m_PreviousToolSystem;
-                m_SwitchToPreviousToolSystem = false;
+                m_ToolSystem.activeTool = m_AnarchyComponentsTool;
             }
 
             Enabled = false;
-        }*/
+        }
     }
 }

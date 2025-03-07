@@ -20,7 +20,7 @@ namespace Anarchy.Settings
     [SettingsUITabOrder(General, UI)]
     [SettingsUIGroupOrder(Toggle, Elevation, Networks, Stable, Reset, About)]
     [SettingsUIMouseAction(AnarchyMod.SecondaryMimicAction, "AnarchySecondaryApplyMimic")]
-    [SettingsUIKeyboardAction(ToggleAnarchyActionName, ActionType.Button, usages: new string[] { "Anarchy" })]
+    [SettingsUIKeyboardAction(ToggleAnarchyActionName, ActionType.Button, usages: new string[] { Usages.kToolUsage })]
     [SettingsUIKeyboardAction(ElevationStepActionName, ActionType.Button, usages: new string[] { Usages.kToolUsage })]
     [SettingsUIKeyboardAction(ResetElevationActionName, ActionType.Button, usages: new string[] { Usages.kToolUsage })]
     [SettingsUIKeyboardAction(ElevationActionName, ActionType.Button, usages: new string[] { "Anarchy" })]

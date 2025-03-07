@@ -7,3 +7,4 @@
 * Translations for officially supported languages are handled internally with embedded resource files. 
 * Fix Eight Lane road with median cannot have upgrades to left, right, and general applied in some configurations supported by vanilla.
 * Fix replacing water and sewer mains with combined services or vice versa breaks the utility network.
+* Anarchy keybinding set to Tool Usage. This will display a conflict warning with Activating/Deactivating Buildings if bindings are not changed.

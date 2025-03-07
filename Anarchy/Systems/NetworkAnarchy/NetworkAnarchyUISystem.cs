@@ -14,13 +14,10 @@ namespace Anarchy.Systems.NetworkAnarchy
     using Colossal.Logging;
     using Colossal.Serialization.Entities;
     using Game;
-    using Game.Common;
     using Game.Prefabs;
     using Game.Tools;
     using Unity.Collections;
     using Unity.Entities;
-    using static Anarchy.Systems.NetworkAnarchy.NetworkAnarchyUISystem;
-    using static Colossal.AssetPipeline.Diagnostic.Report;
 
     /// <summary>
     /// A UI System for CS:1 Network Anarchy type UI.

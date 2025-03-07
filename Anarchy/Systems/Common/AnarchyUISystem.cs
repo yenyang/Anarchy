@@ -16,6 +16,7 @@ namespace Anarchy.Systems.Common
     using Anarchy.Systems.ObjectElevation;
     using Anarchy.Systems.OverridePrevention;
     using Colossal.Entities;
+    using Colossal.Json;
     using Colossal.Logging;
     using Colossal.PSI.Environment;
     using Colossal.Serialization.Entities;
@@ -270,6 +271,42 @@ namespace Anarchy.Systems.Common
         {
             base.OnGameLoadingComplete(purpose, mode);
 
+            /*
+            m_Log.Debug("Shortcuts Action Map:");
+            ProxyActionMap shortcutsMap = InputManager.instance.FindActionMap(InputManager.kShortcutsMap);
+            foreach (KeyValuePair<string, ProxyAction> keyValue in shortcutsMap.actions)
+            {
+                m_Log.Debug(keyValue.Key);
+            }
+
+            m_Log.Debug("Tool Action Map:");
+            ProxyActionMap toolMap = InputManager.instance.FindActionMap(InputManager.kToolMap);
+            foreach (KeyValuePair<string, ProxyAction> keyValue in toolMap.actions)
+            {
+                m_Log.Debug(keyValue.Key);
+            }
+
+            m_Log.Debug("kEngagementMap Action Map:");
+            ProxyActionMap kEngagementMap = InputManager.instance.FindActionMap(InputManager.kEngagementMap);
+            foreach (KeyValuePair<string, ProxyAction> keyValue in kEngagementMap.actions)
+            {
+                m_Log.Debug(keyValue.Key);
+            }
+
+            m_Log.Debug("kMenuMap Action Map:");
+            ProxyActionMap kMenuMap = InputManager.instance.FindActionMap(InputManager.kMenuMap);
+            foreach (KeyValuePair<string, ProxyAction> keyValue in kEngagementMap.actions)
+            {
+                m_Log.Debug(keyValue.Key);
+            }
+
+            m_Log.Debug("kNavigationMap Action Map:");
+            ProxyActionMap kNavigationMap = InputManager.instance.FindActionMap(InputManager.kNavigationMap);
+            foreach (KeyValuePair<string, ProxyAction> keyValue in kEngagementMap.actions)
+            {
+                m_Log.Debug(keyValue.Key);
+            }*/
+
             m_ToggleAnarchy.shouldBeEnabled = mode.IsGameOrEditor();
 
             if (mode.IsEditor() && !AnarchyMod.Instance.Settings.PreventOverrideInEditor)
@@ -279,6 +316,8 @@ namespace Anarchy.Systems.Common
             }
 
             m_DisableElevationLock.Value = false;
+
+
         }
 
         /// <inheritdoc/>

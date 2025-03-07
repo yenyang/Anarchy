@@ -31,7 +31,6 @@ namespace Anarchy.Systems.AnarchyComponentsTool
     using UnityEngine;
     using static Anarchy.Systems.AnarchyComponentsTool.AnarchyComponentsToolUISystem;
 
-
     /// <summary>
     /// Tool for controlling adding and removing Anarchy mod components.
     /// </summary>
@@ -53,6 +52,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         private Entity m_PreviousRaycastedEntity = Entity.Null;
         private ToolBaseSystem m_PreviousToolSystem;
         private bool m_SetToolToPreviousTool;
+        private bool m_MustStartRunning = false;
 
         /// <inheritdoc/>
         public override string toolID => "AnarchyComponentsTool";
@@ -63,6 +63,15 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         public bool PreviousShowMarkers
         {
             get { return m_PreviousShowMarkers; }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the tool must start running.
+        /// </summary>
+        public bool MustStartRunning
+        {
+            get { return m_MustStartRunning; }
+            set { m_MustStartRunning = value; }
         }
 
         /// <inheritdoc/>
@@ -93,7 +102,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         }
 
         /// <summary>
-        /// For stopping the tool. Probably with esc key.
+        /// For stopping the tool. Probably with esc key. No longer appears to work as expected.
         /// </summary>
         public void RequestDisable()
         {
@@ -225,6 +234,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             base.OnStartRunning();
             applyAction.enabled = true;
             secondaryApplyAction.enabled = true;
+            m_MustStartRunning = false;
             m_Log.Debug($"{nameof(AnarchyComponentsToolSystem)}.{nameof(OnStartRunning)}");
             m_PreviousShowMarkers = m_RenderingSystem.markersVisible;
             if ((m_UISystem.CurrentComponentType & AnarchyComponentType.PreventOverride) == AnarchyComponentType.PreventOverride

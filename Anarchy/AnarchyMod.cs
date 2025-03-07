@@ -149,6 +149,7 @@ namespace Anarchy
             updateSystem.UpdateAt<AnarchyComponentsToolSystem>(SystemUpdatePhase.ToolUpdate);
             updateSystem.UpdateAt<AnarchyComponentsToolUISystem>(SystemUpdatePhase.UIUpdate);
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Completed.");
+
         }
 
         /// <inheritdoc/>

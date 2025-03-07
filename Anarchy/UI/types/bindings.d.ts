@@ -799,6 +799,7 @@ declare module "cs2/bindings" {
   	"Change Time Scale": Action1D;
   	"Switch Page": Action1D;
   	"Default Tool": Action;
+  	"Default Tool UI": Action;
   	"Tool Options": Action;
   	"Switch Toolmode": Action;
   	"Toggle Snapping": Action;
@@ -951,6 +952,9 @@ declare module "cs2/bindings" {
   	selected: boolean;
   	disabled: boolean;
   }
+  export interface WarningSign {
+  	warning?: boolean;
+  }
   export enum TooltipPos {
   	Title = 0,
   	Container = 1
@@ -965,7 +969,8 @@ declare module "cs2/bindings" {
   	min?: T;
   	max?: T;
   }
-  export type ToggleField = Field<boolean>;
+  export interface ToggleField extends Field<boolean>, WarningSign {
+  }
   export interface IntInputFieldBase<T> extends Field<T> {
   	min?: number;
   	max?: number;
@@ -982,7 +987,7 @@ declare module "cs2/bindings" {
   	updateOnDragEnd: boolean;
   }
   export type IntInputField = IntInputFieldBase<number>;
-  export interface IntSliderField extends IntSliderFieldBase<number> {
+  export interface IntSliderField extends IntSliderFieldBase<number>, WarningSign {
   	separateThousands?: boolean;
   	signed?: boolean;
   }
@@ -1002,7 +1007,7 @@ declare module "cs2/bindings" {
   	scaleDragVolume?: boolean;
   	updateOnDragEnd: boolean;
   }
-  export interface FloatSliderField extends FloatSliderFieldBase<number> {
+  export interface FloatSliderField extends FloatSliderFieldBase<number>, WarningSign {
   	separateThousands?: boolean;
   	maxValueWithFraction?: number;
   	signed?: boolean;
@@ -1011,7 +1016,7 @@ declare module "cs2/bindings" {
   	hdr?: boolean;
   	showAlpha: boolean;
   }
-  export interface EnumField extends Field<LongNumber> {
+  export interface EnumField extends Field<LongNumber>, WarningSign {
   	enumMembers: EnumMember<LongNumber>[];
   }
   export interface EnumMember<T> {
@@ -1019,7 +1024,7 @@ declare module "cs2/bindings" {
   	displayName: LocElement;
   	disabled?: boolean;
   }
-  export interface DropdownField<T> extends Field<T> {
+  export interface DropdownField<T> extends Field<T>, WarningSign {
   	items: DropdownItem<T>[];
   }
   export interface DropdownItem<T> {
@@ -2907,7 +2912,7 @@ declare module "cs2/bindings" {
   const setSelectedAssetPacks: (packs: Entity[]) => void;
   const selectAssetMenu: (assetMenu: Entity) => void;
   const selectAssetCategory: (assetCategory: Entity) => void;
-  const selectAsset: (asset: Entity) => void;
+  const selectAsset: (asset: Entity, updateTool: boolean) => void;
   const clearAssetSelection: () => void;
   const toggleToolOptions: (isActive: boolean) => void;
   const population$$1: ValueBinding<number>;
