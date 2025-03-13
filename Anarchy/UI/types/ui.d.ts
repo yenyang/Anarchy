@@ -138,7 +138,8 @@ declare module "cs2/ui" {
   	openPanel = "open-panel",
   	closePanel = "close-panel",
   	openMenu = "open-menu",
-  	closeMenu = "close-menu"
+  	closeMenu = "close-menu",
+  	clickDisableButton = "click-disable-button"
   }
   export interface Number2 {
   	readonly x: number;
@@ -152,6 +153,7 @@ declare module "cs2/ui" {
   	"Change Tool Option": Action1D;
   	"Change Value": Action1D;
   	"Change Line Schedule": Action1D;
+  	"Select Popup Button": Action1D;
   	"Move Vertical": Action1D;
   	"Switch Radio Station": Action1D;
   	"Scroll Vertical": Action1D;
@@ -161,6 +163,7 @@ declare module "cs2/ui" {
   	"Select Chirp Sender": Action;
   	"Save Game": Action;
   	"Overwrite Save": Action;
+  	"Confirm": Action;
   	"Expand Group": Action;
   	"Collapse Group": Action;
   	"Select Route": Action;
@@ -259,6 +262,7 @@ declare module "cs2/ui" {
   	"Select Directory": Action;
   	"Search Options": Action;
   	"Clear Search": Action;
+  	"Credit Speed": Action1D;
   	"Debug UI": Action;
   	"Debug Prefab Tool": Action;
   	"Debug Change Field": Action1D;
@@ -440,8 +444,9 @@ declare module "cs2/ui" {
   	src: string;
   	tinted?: boolean;
   	className?: string;
+  	children?: ReactNode;
   }
-  export export const Icon: ({ tinted, className, src }: IconProps) => JSX.Element;
+  export export const Icon: ({ tinted, className, src, children }: IconProps) => JSX.Element;
   export const PortalContainerProvider: ({ children }: {
   	children: RefReactElement<HTMLElement>;
   }) => JSX.Element;
@@ -527,8 +532,9 @@ declare module "cs2/ui" {
   	theme?: Partial<FormattedTextTheme>;
   	renderer?: FormattedTextRenderer;
   	onLinkSelect?: (data: string) => void;
+  	selectAction?: InputAction;
   }
-  export export const FormattedText: ({ focusKey, text, theme: partialTheme, renderer, className, onLinkSelect, ...props }: FormattedTextProps) => JSX.Element;
+  export export const FormattedText: ({ focusKey, text, theme: partialTheme, renderer, className, onLinkSelect, selectAction, ...props }: FormattedTextProps) => JSX.Element;
   export interface FormattedParagraphsTheme extends FormattedTextTheme {
   	paragraphs: string;
   }
@@ -539,10 +545,11 @@ declare module "cs2/ui" {
   	theme?: Partial<FormattedParagraphsTheme>;
   	renderer?: FormattedTextRenderer;
   	onLinkSelect?: (data: string) => void;
+  	selectAction?: InputAction;
   	maxLineLength?: number;
   	splitLineLength?: number;
   }
-  export export const FormattedParagraphs: ({ focusKey, text, theme: partialTheme, renderer, className, children, onLinkSelect, maxLineLength, splitLineLength, ...props }: PropsWithChildren<FormattedParagraphsProps>) => JSX.Element;
+  export export const FormattedParagraphs: ({ focusKey, text, theme: partialTheme, renderer, className, children, onLinkSelect, selectAction, maxLineLength, splitLineLength, ...props }: PropsWithChildren<FormattedParagraphsProps>) => JSX.Element;
   export export class MarkdownRenderer implements FormattedTextRenderer {
   	render(str: string): FormattedTextRenderResult;
   }

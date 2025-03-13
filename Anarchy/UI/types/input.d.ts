@@ -213,7 +213,7 @@ declare module "cs2/input" {
   	allowFocusExit?: boolean;
   	forceFocus?: UniqueFocusKey | null;
   	debugName?: string;
-  	allowLooping?: boolean;
+  	allowLooping?: boolean | "x" | "y";
   	jumpSections?: boolean;
   }
   /**
@@ -291,7 +291,8 @@ declare module "cs2/input" {
   	openPanel = "open-panel",
   	closePanel = "close-panel",
   	openMenu = "open-menu",
-  	closeMenu = "close-menu"
+  	closeMenu = "close-menu",
+  	clickDisableButton = "click-disable-button"
   }
   export interface PassiveFocusDivProps extends React$1.HTMLAttributes<HTMLDivElement> {
   	onFocusChange?: (focused: boolean) => void;
@@ -366,7 +367,7 @@ declare module "cs2/input" {
   	onChange: (key: UniqueFocusKey | null) => void;
   	onRefocus?: (controller: MultiChildFocusController, lastElement: FocusController | null) => UniqueFocusKey | null;
   	allowFocusExit?: boolean;
-  	allowLooping?: boolean;
+  	allowLooping?: boolean | "x" | "y";
   	jumpSections?: boolean;
   }
   /**
@@ -395,6 +396,7 @@ declare module "cs2/input" {
   	"Change Tool Option": Action1D;
   	"Change Value": Action1D;
   	"Change Line Schedule": Action1D;
+  	"Select Popup Button": Action1D;
   	"Move Vertical": Action1D;
   	"Switch Radio Station": Action1D;
   	"Scroll Vertical": Action1D;
@@ -404,6 +406,7 @@ declare module "cs2/input" {
   	"Select Chirp Sender": Action;
   	"Save Game": Action;
   	"Overwrite Save": Action;
+  	"Confirm": Action;
   	"Expand Group": Action;
   	"Collapse Group": Action;
   	"Select Route": Action;
@@ -502,6 +505,7 @@ declare module "cs2/input" {
   	"Select Directory": Action;
   	"Search Options": Action;
   	"Clear Search": Action;
+  	"Credit Speed": Action1D;
   	"Debug UI": Action;
   	"Debug Prefab Tool": Action;
   	"Debug Change Field": Action1D;
