@@ -22,12 +22,14 @@ namespace Anarchy
     using Anarchy.Systems.OverridePrevention;
     using Colossal;
     using Colossal.IO.AssetDatabase;
+    using Colossal.Localization;
     using Colossal.Logging;
     using Game;
     using Game.Modding;
     using Game.SceneFlow;
     using HarmonyLib;
     using Newtonsoft.Json;
+    using Unity.Entities;
     using UnityEngine;
 
     /// <summary>
@@ -35,11 +37,6 @@ namespace Anarchy
     /// </summary>
     public class AnarchyMod : IMod
     {
-        /// <summary>
-        /// Fake keybind action for apply.
-        /// </summary>
-        public const string ApplyMimicAction = "ApplyMimic";
-
         /// <summary>
         /// Fake keybind action for secondary apply.
         /// </summary>
@@ -92,9 +89,10 @@ namespace Anarchy
 #endif
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Initializing settings");
             Settings = new (this);
-            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Loading localization");
+            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Loading en-US localization");
             GameManager.instance.localizationManager.AddSource("en-US", new LocaleEN(Settings));
-
+            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Loading other languages");
+            LoadNonEnglishLocalizations();
 #if DEBUG
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Exporting localization");
             var localeDict = new LocaleEN(Settings).ReadEntries(new List<IDictionaryEntryError>(), new Dictionary<string, int>()).ToDictionary(pair => pair.Key, pair => pair.Value);
@@ -142,7 +140,7 @@ namespace Anarchy
             updateSystem.UpdateAt<CheckTransformSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateAt<HandleUpdateNextFrameSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateAt<HandleClearUpdateNextFrameSystem>(SystemUpdatePhase.ModificationEnd);
-            updateSystem.UpdateAt<SelectedInfoPanelTogglesSystem>(SystemUpdatePhase.UIUpdate);
+            SelectedInfoPanelTogglesSystem selectedInfoPanelTogglesSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<SelectedInfoPanelTogglesSystem>();
             updateSystem.UpdateBefore<ElevateObjectDefinitionSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateBefore<NetworkDefinitionSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateAt<SetRetainingWallSegmentElevationSystem>(SystemUpdatePhase.ModificationEnd);
@@ -151,6 +149,7 @@ namespace Anarchy
             updateSystem.UpdateAt<AnarchyComponentsToolSystem>(SystemUpdatePhase.ToolUpdate);
             updateSystem.UpdateAt<AnarchyComponentsToolUISystem>(SystemUpdatePhase.UIUpdate);
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Completed.");
+
         }
 
         /// <inheritdoc/>
@@ -162,6 +161,52 @@ namespace Anarchy
             {
                 Settings.UnregisterInOptionsUI();
                 Settings = null;
+            }
+        }
+
+        private void LoadNonEnglishLocalizations()
+        {
+            Assembly thisAssembly = Assembly.GetExecutingAssembly();
+            string[] resourceNames = thisAssembly.GetManifestResourceNames();
+
+            try
+            {
+                Log.Debug($"Reading localizations");
+
+                foreach (string localeID in GameManager.instance.localizationManager.GetSupportedLocales())
+                {
+                    string resourceName = $"{thisAssembly.GetName().Name}.l10n.{localeID}.json";
+                    if (resourceNames.Contains(resourceName))
+                    {
+                        Log.Debug($"Found localization file {resourceName}");
+                        try
+                        {
+                            Log.Debug($"Reading embedded translation file {resourceName}");
+
+                            // Read embedded file.
+                            using StreamReader reader = new(thisAssembly.GetManifestResourceStream(resourceName));
+                            {
+                                string entireFile = reader.ReadToEnd();
+                                Colossal.Json.Variant varient = Colossal.Json.JSON.Load(entireFile);
+                                Dictionary<string, string> translations = varient.Make<Dictionary<string, string>>();
+                                GameManager.instance.localizationManager.AddSource(localeID, new MemorySource(translations));
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            // Don't let a single failure stop us.
+                            Log.Error(e, $"Exception reading localization from embedded file {resourceName}");
+                        }
+                    }
+                    else
+                    {
+                        Log.Debug($"Did not find localization file {resourceName}");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Exception reading embedded settings localization files");
             }
         }
     }

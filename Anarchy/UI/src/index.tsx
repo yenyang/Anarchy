@@ -9,6 +9,7 @@ import { ToolOptionsVisibility } from "mods/ToolOptionsVisible/toolOptionsVisibl
 import { PartialAnarchyMenuComponent } from "mods/partialAnarchyOptions/partialAnarchyMenu";
 import { NetworkAnarchySections } from "mods/networkAnarchySections/networkAnarchySection";
 import { AnarchyComponentsToolComponent } from "mods/AnarchyComponentsToolSections/anarchyComponentsToolSections";
+import { GamepadAnarchyRowComponent } from "mods/gamepadAnarchySection/gamepadAnarchySection";
 
 const register: ModRegistrar = (moduleRegistry) => {
      // To find modules in the registry un comment the next line and go to the console on localhost:9444. You must have -uiDeveloperMode launch option enabled.
@@ -19,6 +20,9 @@ const register: ModRegistrar = (moduleRegistry) => {
 
      // This extends mouse tool options with Anarchy section and toggle. It may or may not work with gamepads.
      moduleRegistry.extend("game-ui/game/components/tool-options/mouse-tool-options/mouse-tool-options.tsx", 'MouseToolOptions', AnarchyRowComponent);
+
+     
+     moduleRegistry.extend("game-ui/game/components/tool-options/gamepad-tool-options/gamepad-tool-options.tsx", 'GamepadToolOptions', GamepadAnarchyRowComponent);
 
      moduleRegistry.extend("game-ui/game/components/tool-options/mouse-tool-options/mouse-tool-options.tsx", 'MouseToolOptions', ElevationControlComponent);
 

@@ -58,6 +58,8 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ResetElevation]": "높이를 초기화하는 단축키입니다.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationStep]": "높이 단계 변경",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationStep]": "높이 단계값을 변경하는 단축키입니다.",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.UseElevationMimics]": "높이 증가 및 감소 키 설정 복제",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.UseElevationMimics]": "바닐라 상태의 게임 네트워크 높이 증가 및 감소 키 설정을 물체 높이 증가 및 감소에도 사용할 것입니다.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.IncreaseElevation]": "높이 증가",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.IncreaseElevation]": "배치하는 개체의 높이 값을 높이는 단축키입니다.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.DecreaseElevation]": "높이 감소",

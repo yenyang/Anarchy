@@ -6,6 +6,7 @@
 namespace Anarchy.Systems.AnarchyComponentsTool
 {
     using Anarchy.Components;
+    using Anarchy.Systems.Common;
     using Colossal.Entities;
     using Colossal.Logging;
     using Colossal.Mathematics;
@@ -30,14 +31,11 @@ namespace Anarchy.Systems.AnarchyComponentsTool
     using UnityEngine;
     using static Anarchy.Systems.AnarchyComponentsTool.AnarchyComponentsToolUISystem;
 
-
     /// <summary>
     /// Tool for controlling adding and removing Anarchy mod components.
     /// </summary>
     public partial class AnarchyComponentsToolSystem : ToolBaseSystem
     {
-        private ProxyAction m_ApplyAction;
-        private ProxyAction m_SecondaryApplyMimic;
         private OverlayRenderSystem m_OverlayRenderSystem;
         private ToolOutputBarrier m_Barrier;
         private RenderingSystem m_RenderingSystem;
@@ -47,12 +45,14 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         private EntityQuery m_PreventOverrideQuery;
         private EntityQuery m_ElevationLockedQuery;
         private AnarchyComponentsToolUISystem m_UISystem;
+        private SelectedInfoPanelTogglesSystem m_SelectedInfoPanelTogglesSystem;
         private EntityQuery m_NotPreventOverrideQuery;
         private EntityQuery m_NotTransformRecordQuery;
         private EntityQuery m_HighlightedQuery;
         private Entity m_PreviousRaycastedEntity = Entity.Null;
         private ToolBaseSystem m_PreviousToolSystem;
         private bool m_SetToolToPreviousTool;
+        private bool m_MustStartRunning = false;
 
         /// <inheritdoc/>
         public override string toolID => "AnarchyComponentsTool";
@@ -63,6 +63,15 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         public bool PreviousShowMarkers
         {
             get { return m_PreviousShowMarkers; }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the tool must start running.
+        /// </summary>
+        public bool MustStartRunning
+        {
+            get { return m_MustStartRunning; }
+            set { m_MustStartRunning = value; }
         }
 
         /// <inheritdoc/>
@@ -88,16 +97,16 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             else
             {
                 m_ToolRaycastSystem.typeMask = TypeMask.StaticObjects;
-                m_ToolRaycastSystem.raycastFlags |= RaycastFlags.Markers | RaycastFlags.Placeholders;
+                m_ToolRaycastSystem.raycastFlags |= RaycastFlags.Markers | RaycastFlags.Placeholders | RaycastFlags.SubElements;
             }
         }
 
         /// <summary>
-        /// For stopping the tool. Probably with esc key.
+        /// For stopping the tool. Probably with esc key. No longer appears to work as expected.
         /// </summary>
         public void RequestDisable()
         {
-            m_PreviousToolSystem = m_PreviousToolSystem;
+            m_ToolSystem.activeTool = m_PreviousToolSystem;
         }
 
         /// <inheritdoc/>
@@ -116,6 +125,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             m_Barrier = World.GetOrCreateSystemManaged<ToolOutputBarrier>();
             m_RenderingSystem = World.GetOrCreateSystemManaged<RenderingSystem>();
             m_OverlayRenderSystem = World.GetOrCreateSystemManaged<OverlayRenderSystem>();
+            m_SelectedInfoPanelTogglesSystem = World.GetOrCreateSystemManaged<SelectedInfoPanelTogglesSystem>();
             m_PreviousToolSystem = m_DefaultToolSystem;
             m_UISystem = World.GetOrCreateSystemManaged<AnarchyComponentsToolUISystem>();
             m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) =>
@@ -153,7 +163,6 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                     ComponentType.ReadOnly<Building>(),
                     ComponentType.ReadOnly<Deleted>(),
                     ComponentType.ReadOnly<Temp>(),
-                    ComponentType.ReadOnly<Owner>(),
                     ComponentType.ReadOnly<Animal>(),
                     ComponentType.ReadOnly<Game.Creatures.Pet>(),
                     ComponentType.ReadOnly<Creature>(),
@@ -190,7 +199,6 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                     ComponentType.ReadOnly<Building>(),
                     ComponentType.ReadOnly<Deleted>(),
                     ComponentType.ReadOnly<Temp>(),
-                    ComponentType.ReadOnly<Owner>(),
                     ComponentType.ReadOnly<Animal>(),
                     ComponentType.ReadOnly<Game.Creatures.Pet>(),
                     ComponentType.ReadOnly<Creature>(),
@@ -218,16 +226,15 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                 .WithNone<Deleted, Temp>()
                 .Build();
 
-            m_ApplyAction = AnarchyMod.Instance.Settings.GetAction(AnarchyMod.ApplyMimicAction);
-
-            m_SecondaryApplyMimic = AnarchyMod.Instance.Settings.GetAction(AnarchyMod.SecondaryMimicAction);
         }
 
         /// <inheritdoc/>
         protected override void OnStartRunning()
         {
-            m_ApplyAction.shouldBeEnabled = true;
-            m_SecondaryApplyMimic.shouldBeEnabled = true;
+            base.OnStartRunning();
+            applyAction.enabled = true;
+            secondaryApplyAction.enabled = true;
+            m_MustStartRunning = false;
             m_Log.Debug($"{nameof(AnarchyComponentsToolSystem)}.{nameof(OnStartRunning)}");
             m_PreviousShowMarkers = m_RenderingSystem.markersVisible;
             if ((m_UISystem.CurrentComponentType & AnarchyComponentType.PreventOverride) == AnarchyComponentType.PreventOverride
@@ -240,8 +247,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         /// <inheritdoc/>
         protected override void OnStopRunning()
         {
-            m_ApplyAction.shouldBeEnabled = false;
-            m_SecondaryApplyMimic.shouldBeEnabled = false;
+            base.OnStopRunning();
             m_RenderingSystem.markersVisible = m_PreviousShowMarkers;
             if (!m_HighlightedQuery.IsEmptyIgnoreFilter)
             {
@@ -314,12 +320,14 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             float radius = m_UISystem.SelectionRadius;
             if (m_UISystem.CurrentSelectionMode == AnarchyComponentsToolUISystem.SelectionMode.Radius)
             {
-                if (hit.m_HitPosition.x == 0 && hit.m_HitPosition.y == 0 && hit.m_HitPosition.z == 0)
+                if (hit.m_HitPosition.x == 0 &&
+                    hit.m_HitPosition.y == 0 &&
+                    hit.m_HitPosition.z == 0)
                 {
                     return inputDeps;
                 }
 
-                ToolRadiusJob toolRadiusJob = new()
+                ToolRadiusJob toolRadiusJob = new ()
                 {
                     m_OverlayBuffer = m_OverlayRenderSystem.GetBuffer(out JobHandle outJobHandle),
                     m_Position = new Vector3(hit.m_HitPosition.x, hit.m_Position.y, hit.m_HitPosition.z),
@@ -328,10 +336,10 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                 inputDeps = IJobExtensions.Schedule(toolRadiusJob, JobHandle.CombineDependencies(inputDeps, outJobHandle));
                 m_OverlayRenderSystem.AddBufferWriter(inputDeps);
 
-                if (m_ApplyAction.IsPressed()
-                && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride) == AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride)
+                if (applyAction.IsPressed() &&
+                   (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride) == AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride)
                 {
-                    AddOrRemoveComponentWithinRadiusJob addPreventOverrideJob = new()
+                    AddOrRemoveComponentWithinRadiusJob addPreventOverrideJob = new ()
                     {
                         m_EntityType = SystemAPI.GetEntityTypeHandle(),
                         m_Position = hit.m_HitPosition,
@@ -342,14 +350,16 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                         m_ComponentType = ComponentType.ReadOnly<PreventOverride>(),
                         m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(),
                         m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
+                        m_OwnerLookup = SystemAPI.GetComponentLookup<Owner>(),
+                        m_TransformLookup = SystemAPI.GetComponentLookup<Game.Objects.Transform>(),
                     };
                     inputDeps = JobChunkExtensions.Schedule(addPreventOverrideJob, m_NotPreventOverrideQuery, inputDeps);
                     m_Barrier.AddJobHandleForProducer(inputDeps);
                 }
-                else if (m_SecondaryApplyMimic.IsPressed()
-                    && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride) == AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride)
+                else if (secondaryApplyAction.IsPressed() &&
+                        (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride) == AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride)
                 {
-                    AddOrRemoveComponentWithinRadiusJob removePreventOverrideJob = new()
+                    AddOrRemoveComponentWithinRadiusJob removePreventOverrideJob = new ()
                     {
                         m_EntityType = SystemAPI.GetEntityTypeHandle(),
                         m_Position = hit.m_HitPosition,
@@ -360,15 +370,17 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                         m_ComponentType = ComponentType.ReadOnly<PreventOverride>(),
                         m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(),
                         m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
+                        m_OwnerLookup = SystemAPI.GetComponentLookup<Owner>(),
+                        m_TransformLookup = SystemAPI.GetComponentLookup<Game.Objects.Transform>(),
                     };
                     inputDeps = JobChunkExtensions.Schedule(removePreventOverrideJob, m_PreventOverrideQuery, inputDeps);
                     m_Barrier.AddJobHandleForProducer(inputDeps);
                 }
 
-                if (m_ApplyAction.IsPressed()
-                    && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord) == AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord)
+                if (applyAction.IsPressed() &&
+                   (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord) == AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord)
                 {
-                    AddOrRemoveComponentWithinRadiusJob addTransformRecordJob = new()
+                    AddOrRemoveComponentWithinRadiusJob addTransformRecordJob = new ()
                     {
                         m_EntityType = SystemAPI.GetEntityTypeHandle(),
                         m_Position = hit.m_HitPosition,
@@ -379,14 +391,16 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                         m_ComponentType = ComponentType.ReadOnly<TransformRecord>(),
                         m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(),
                         m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
+                        m_OwnerLookup = SystemAPI.GetComponentLookup<Owner>(),
+                        m_TransformLookup = SystemAPI.GetComponentLookup<Game.Objects.Transform>(),
                     };
                     inputDeps = JobChunkExtensions.Schedule(addTransformRecordJob, m_NotTransformRecordQuery, inputDeps);
                     m_Barrier.AddJobHandleForProducer(inputDeps);
                 }
-                else if (m_SecondaryApplyMimic.IsPressed()
-                    && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord) == AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord)
+                else if (secondaryApplyAction.IsPressed() &&
+                        (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord) == AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord)
                 {
-                    AddOrRemoveComponentWithinRadiusJob removeTransformRecordJob = new()
+                    AddOrRemoveComponentWithinRadiusJob removeTransformRecordJob = new ()
                     {
                         m_EntityType = SystemAPI.GetEntityTypeHandle(),
                         m_Position = hit.m_HitPosition,
@@ -397,6 +411,8 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                         m_ComponentType = ComponentType.ReadOnly<TransformRecord>(),
                         m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(),
                         m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
+                        m_OwnerLookup = SystemAPI.GetComponentLookup<Owner>(),
+                        m_TransformLookup = SystemAPI.GetComponentLookup<Game.Objects.Transform>(),
                     };
                     inputDeps = JobChunkExtensions.Schedule(removeTransformRecordJob, m_ElevationLockedQuery, inputDeps);
                     m_Barrier.AddJobHandleForProducer(inputDeps);
@@ -406,10 +422,10 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             }
 
             EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
-            if (!m_HighlightedQuery.IsEmptyIgnoreFilter
-                && (currentRaycastEntity != m_PreviousRaycastedEntity
-                || !ScreenEntity(currentRaycastEntity)
-                || (hit.m_HitPosition.x == 0 && hit.m_HitPosition.y == 0 && hit.m_HitPosition.z == 0)))
+            if (!m_HighlightedQuery.IsEmptyIgnoreFilter &&
+               (currentRaycastEntity != m_PreviousRaycastedEntity ||
+               !ScreenEntity(currentRaycastEntity) ||
+               (hit.m_HitPosition.x == 0 && hit.m_HitPosition.y == 0 && hit.m_HitPosition.z == 0)))
             {
                 buffer.AddComponent<BatchesUpdated>(m_HighlightedQuery, EntityQueryCaptureMode.AtPlayback);
                 buffer.RemoveComponent<Highlighted>(m_HighlightedQuery, EntityQueryCaptureMode.AtPlayback);
@@ -419,28 +435,38 @@ namespace Anarchy.Systems.AnarchyComponentsTool
 
             if (raycastFlag)
             {
-                if (!EntityManager.HasComponent<Highlighted>(currentRaycastEntity)
-                    && ScreenEntity(currentRaycastEntity)
-                    && m_PreviousRaycastedEntity == Entity.Null)
+                if (!EntityManager.HasComponent<Highlighted>(currentRaycastEntity) &&
+                    ScreenEntity(currentRaycastEntity) &&
+                    m_PreviousRaycastedEntity == Entity.Null)
                 {
                     buffer.AddComponent<Highlighted>(currentRaycastEntity);
                     buffer.AddComponent<BatchesUpdated>(currentRaycastEntity);
                     m_PreviousRaycastedEntity = currentRaycastEntity;
                 }
 
-                if (m_ApplyAction.WasPerformedThisFrame()
-                    && ScreenEntity(currentRaycastEntity))
+                if (applyAction.WasReleasedThisFrame() &&
+                    ScreenEntity(currentRaycastEntity))
                 {
-                    if ((m_UISystem.CurrentComponentType & AnarchyComponentType.TransformRecord) == AnarchyComponentType.TransformRecord
-                         && !EntityManager.HasComponent<TransformRecord>(currentRaycastEntity)
-                         && EntityManager.TryGetComponent(currentRaycastEntity, out Game.Objects.Transform transform))
+                    if (ScreenEntity(currentRaycastEntity, AnarchyComponentType.TransformRecord) &&
+                       (m_UISystem.CurrentComponentType & AnarchyComponentType.TransformRecord) == AnarchyComponentType.TransformRecord &&
+                       !EntityManager.HasComponent<TransformRecord>(currentRaycastEntity) &&
+                        EntityManager.TryGetComponent(currentRaycastEntity, out Game.Objects.Transform transform))
                     {
                         buffer.AddComponent<TransformRecord>(currentRaycastEntity);
-                        TransformRecord transformRecord = new TransformRecord()
+                        TransformRecord transformRecord = new ();
+
+                        if (!EntityManager.TryGetComponent(currentRaycastEntity, out Game.Common.Owner owner) ||
+                            !EntityManager.TryGetComponent(owner.m_Owner, out Game.Objects.Transform ownerTransform))
                         {
-                            m_Position = transform.m_Position,
-                            m_Rotation = transform.m_Rotation,
-                        };
+                            transformRecord.m_Position = transform.m_Position;
+                            transformRecord.m_Rotation = transform.m_Rotation;
+                        }
+                        else
+                        {
+                            transformRecord.m_Position = transform.m_Position - ownerTransform.m_Position;
+                            transformRecord.m_Rotation = transform.m_Rotation.value - ownerTransform.m_Rotation.value;
+                        }
+
                         buffer.SetComponent(currentRaycastEntity, transformRecord);
                     }
                     else
@@ -448,8 +474,9 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                         // Tooltip as to why can't add component.
                     }
 
-                    if ((m_UISystem.CurrentComponentType & AnarchyComponentType.PreventOverride) == AnarchyComponentType.PreventOverride
-                       && !EntityManager.HasComponent<PreventOverride>(currentRaycastEntity))
+                    if (ScreenEntity(currentRaycastEntity, AnarchyComponentType.PreventOverride) &&
+                        (m_UISystem.CurrentComponentType & AnarchyComponentType.PreventOverride) == AnarchyComponentType.PreventOverride &&
+                        !EntityManager.HasComponent<PreventOverride>(currentRaycastEntity))
                     {
                        buffer.AddComponent<PreventOverride>(currentRaycastEntity);
                     }
@@ -458,10 +485,10 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                        // tooltip as to why can't add component.
                     }
                 }
-                else if (m_SecondaryApplyMimic.WasPerformedThisFrame() && ScreenEntity(currentRaycastEntity))
+                else if (secondaryApplyAction.WasReleasedThisFrame() && ScreenEntity(currentRaycastEntity))
                 {
-                    if ((m_UISystem.CurrentComponentType & AnarchyComponentType.TransformRecord) == AnarchyComponentType.TransformRecord
-                         && EntityManager.HasComponent<TransformRecord>(currentRaycastEntity))
+                    if ((m_UISystem.CurrentComponentType & AnarchyComponentType.TransformRecord) == AnarchyComponentType.TransformRecord &&
+                         EntityManager.HasComponent<TransformRecord>(currentRaycastEntity))
                     {
                         buffer.RemoveComponent<TransformRecord>(currentRaycastEntity);
                     }
@@ -470,8 +497,8 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                         // Tooltip as to why can't remove component.
                     }
 
-                    if ((m_UISystem.CurrentComponentType & AnarchyComponentType.PreventOverride) == AnarchyComponentType.PreventOverride
-                       && EntityManager.HasComponent<PreventOverride>(currentRaycastEntity))
+                    if ((m_UISystem.CurrentComponentType & AnarchyComponentType.PreventOverride) == AnarchyComponentType.PreventOverride &&
+                         EntityManager.HasComponent<PreventOverride>(currentRaycastEntity))
                     {
                         buffer.RemoveComponent<PreventOverride>(currentRaycastEntity);
                     }
@@ -507,42 +534,30 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         /// Validates whether entity should receive anarchy components.
         /// </summary>
         /// <returns>True if entity can receive anarchy components. False if not approved.</returns>
-        private bool ScreenEntity(Entity entity)
+        private bool ScreenEntity(Entity instanceEntity, AnarchyComponentsToolUISystem.AnarchyComponentType componentType)
         {
-            PrefabBase prefabBase = null;
-            if (EntityManager.TryGetComponent(entity, out PrefabRef prefabRef) && !EntityManager.HasComponent<Owner>(entity) && m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase))
+            if (componentType == (AnarchyComponentType.PreventOverride | AnarchyComponentType.TransformRecord))
             {
-                if (prefabBase is StaticObjectPrefab && EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData) && prefabBase is not BuildingPrefab)
-                {
-                    if (((objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable
-                        && (m_UISystem.CurrentComponentType & AnarchyComponentType.PreventOverride) == AnarchyComponentType.PreventOverride)
-                        || ((m_UISystem.CurrentComponentType & AnarchyComponentType.TransformRecord) == AnarchyComponentType.TransformRecord
-                            && !EntityManager.HasComponent<Stack>(entity)
-                            && EntityManager.HasComponent<Game.Objects.Transform>(entity)))
-                    {
-#if VERBOSE
-                        m_Log.Verbose($"{nameof(AnarchyComponentsToolSystem)}.{nameof(ScreenEntity)} Acceptable entity.");
-#endif
-                        return true;
-                    }
-                }
-                else if (m_ToolSystem.actionMode.IsGame() && prefabBase.GetPrefabID().ToString() == "NetPrefab:Lane Editor Container" && EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<Game.Net.SubLane> subLaneBuffer))
-                {
-#if VERBOSE
-                    m_Log.Verbose($"{nameof(AnarchyComponentsToolSystem)}.{nameof(ScreenEntity)} Acceptable entity.");
-#endif
-                    return true;
-                }
+                return m_SelectedInfoPanelTogglesSystem.CheckOverridable(instanceEntity) ||
+                       m_SelectedInfoPanelTogglesSystem.CheckDisturbable(instanceEntity);
             }
 
-#if VERBOSE
-            if (prefabBase != null)
+            if ((componentType & AnarchyComponentType.PreventOverride) == AnarchyComponentType.PreventOverride)
             {
-                m_Log.Verbose($"{nameof(AnarchyComponentsToolSystem)}.{nameof(ScreenEntity)} entity {prefabBase.name} is not acceptable for anarchy components.");
+                return m_SelectedInfoPanelTogglesSystem.CheckOverridable(instanceEntity);
             }
-#endif
+
+            if ((componentType & AnarchyComponentType.TransformRecord) == AnarchyComponentType.TransformRecord)
+            {
+                return m_SelectedInfoPanelTogglesSystem.CheckDisturbable(instanceEntity);
+            }
 
             return false;
+        }
+
+        private bool ScreenEntity(Entity instanceEntity)
+        {
+            return ScreenEntity(instanceEntity, m_UISystem.CurrentComponentType);
         }
 
 #if BURST
@@ -562,6 +577,10 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             public ComponentLookup<PrefabRef> m_PrefabRefLookup;
             [ReadOnly]
             public ComponentLookup<Game.Prefabs.ObjectGeometryData> m_ObjectGeometryDataLookup;
+            [ReadOnly]
+            public ComponentLookup<Game.Common.Owner> m_OwnerLookup;
+            [ReadOnly]
+            public ComponentLookup<Game.Objects.Transform> m_TransformLookup;
 
             /// <summary>
             /// Executes job which will change state or prefab for trees within a radius.
@@ -595,11 +614,19 @@ namespace Anarchy.Systems.AnarchyComponentsTool
 
                         if (m_Add && m_ComponentType == ComponentType.ReadOnly<TransformRecord>())
                         {
-                            TransformRecord transformRecord = new TransformRecord()
+                            TransformRecord transformRecord = new ();
+                            if (!m_OwnerLookup.TryGetComponent(entityNativeArray[i], out Game.Common.Owner owner) ||
+                                !m_TransformLookup.TryGetComponent(owner.m_Owner, out Game.Objects.Transform ownerTransform))
                             {
-                                m_Position = transformNativeArray[i].m_Position,
-                                m_Rotation = transformNativeArray[i].m_Rotation,
-                            };
+                                transformRecord.m_Position = transformNativeArray[i].m_Position;
+                                transformRecord.m_Rotation = transformNativeArray[i].m_Rotation;
+                            }
+                            else
+                            {
+                                transformRecord.m_Position = transformNativeArray[i].m_Position - ownerTransform.m_Position;
+                                transformRecord.m_Rotation = transformNativeArray[i].m_Rotation.value - ownerTransform.m_Rotation.value;
+                            }
+
                             buffer.SetComponent(entityNativeArray[i], transformRecord);
                         }
                     }

@@ -16,6 +16,7 @@ namespace Anarchy.Systems.Common
     using Anarchy.Systems.ObjectElevation;
     using Anarchy.Systems.OverridePrevention;
     using Colossal.Entities;
+    using Colossal.Json;
     using Colossal.Logging;
     using Colossal.PSI.Environment;
     using Colossal.Serialization.Entities;
@@ -233,7 +234,7 @@ namespace Anarchy.Systems.Common
             m_IsInappropriatePrefab = CreateBinding("IsInappropriate", false);
             m_MultipleUniques = CreateBinding("MultipleUniques", AnarchyMod.Instance.Settings.AllowPlacingMultipleUniqueBuildings);
             m_ShowElevationSettingsOption = CreateBinding("ShowElevationSettingsOption", AnarchyMod.Instance.Settings.ShowElevationToolOption);
-            m_ObjectToolValidMode = CreateBinding("ObjectToolValidMode", m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve);
+            m_ObjectToolValidMode = CreateBinding("ObjectToolValidMode", m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Stamp);
             ErrorCheck[] errorChecks = DefaultErrorChecks;
             for (int i = 0; i < errorChecks.Length; i++)
             {
@@ -270,6 +271,42 @@ namespace Anarchy.Systems.Common
         {
             base.OnGameLoadingComplete(purpose, mode);
 
+            /*
+            m_Log.Debug("Shortcuts Action Map:");
+            ProxyActionMap shortcutsMap = InputManager.instance.FindActionMap(InputManager.kShortcutsMap);
+            foreach (KeyValuePair<string, ProxyAction> keyValue in shortcutsMap.actions)
+            {
+                m_Log.Debug(keyValue.Key);
+            }
+
+            m_Log.Debug("Tool Action Map:");
+            ProxyActionMap toolMap = InputManager.instance.FindActionMap(InputManager.kToolMap);
+            foreach (KeyValuePair<string, ProxyAction> keyValue in toolMap.actions)
+            {
+                m_Log.Debug(keyValue.Key);
+            }
+
+            m_Log.Debug("kEngagementMap Action Map:");
+            ProxyActionMap kEngagementMap = InputManager.instance.FindActionMap(InputManager.kEngagementMap);
+            foreach (KeyValuePair<string, ProxyAction> keyValue in kEngagementMap.actions)
+            {
+                m_Log.Debug(keyValue.Key);
+            }
+
+            m_Log.Debug("kMenuMap Action Map:");
+            ProxyActionMap kMenuMap = InputManager.instance.FindActionMap(InputManager.kMenuMap);
+            foreach (KeyValuePair<string, ProxyAction> keyValue in kEngagementMap.actions)
+            {
+                m_Log.Debug(keyValue.Key);
+            }
+
+            m_Log.Debug("kNavigationMap Action Map:");
+            ProxyActionMap kNavigationMap = InputManager.instance.FindActionMap(InputManager.kNavigationMap);
+            foreach (KeyValuePair<string, ProxyAction> keyValue in kEngagementMap.actions)
+            {
+                m_Log.Debug(keyValue.Key);
+            }*/
+
             m_ToggleAnarchy.shouldBeEnabled = mode.IsGameOrEditor();
 
             if (mode.IsEditor() && !AnarchyMod.Instance.Settings.PreventOverrideInEditor)
@@ -279,6 +316,8 @@ namespace Anarchy.Systems.Common
             }
 
             m_DisableElevationLock.Value = false;
+
+
         }
 
         /// <inheritdoc/>
@@ -301,9 +340,9 @@ namespace Anarchy.Systems.Common
                 m_IsBrushing = false;
             }
 
-            if (m_ObjectToolValidMode.Value != (m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve))
+            if (m_ObjectToolValidMode.Value != (m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Stamp))
             {
-                m_ObjectToolValidMode.Value = m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve;
+                m_ObjectToolValidMode.Value = m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve || m_ObjectToolSystem.actualMode  == ObjectToolSystem.Mode.Stamp;
             }
 
             if (m_ToggleAnarchy.WasPerformedThisFrame())

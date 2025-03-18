@@ -146,7 +146,7 @@ namespace Anarchy.Systems.OverridePrevention
                 PrefabBase prefabBase = null;
                 if (EntityManager.TryGetComponent(entity, out PrefabRef prefabRef))
                 {
-                    if (m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase) && EntityManager.HasComponent<Static>(entity) && !EntityManager.HasComponent<Building>(entity) && !EntityManager.HasComponent<Owner>(entity))
+                    if (m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase) && EntityManager.HasComponent<Static>(entity) && !EntityManager.HasComponent<Building>(entity))
                     {
                         if (prefabBase is StaticObjectPrefab && EntityManager.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData))
                         {

@@ -75,15 +75,37 @@ namespace Anarchy.Systems.ObjectElevation
 
                 EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
 
-                if (transformRecord.Equals(originalTransform))
+                if (!EntityManager.TryGetComponent(entity, out Game.Common.Owner owner))
                 {
-                    buffer.RemoveComponent<UpdateNextFrame>(entity);
-                    continue;
+                    if (transformRecord.Equals(originalTransform))
+                    {
+                        buffer.RemoveComponent<UpdateNextFrame>(entity);
+                        continue;
+                    }
+
+                    originalTransform.m_Position = transformRecord.m_Position;
+                    originalTransform.m_Rotation = transformRecord.m_Rotation;
+                    buffer.SetComponent(entity, originalTransform);
+                }
+                else if (EntityManager.TryGetComponent(owner.m_Owner, out Game.Objects.Transform ownerTransform))
+                {
+                    Game.Objects.Transform relativeTransform = new Game.Objects.Transform()
+                    {
+                        m_Position = originalTransform.m_Position - ownerTransform.m_Position,
+                        m_Rotation = originalTransform.m_Rotation.value - ownerTransform.m_Rotation.value,
+                    };
+
+                    if (transformRecord.Equals(relativeTransform))
+                    {
+                        buffer.RemoveComponent<UpdateNextFrame>(entity);
+                        continue;
+                    }
+
+                    originalTransform.m_Position = ownerTransform.m_Position + transformRecord.m_Position;
+                    originalTransform.m_Rotation = ownerTransform.m_Rotation.value + transformRecord.m_Rotation.value;
+                    buffer.SetComponent(entity, originalTransform);
                 }
 
-                originalTransform.m_Position = transformRecord.m_Position;
-                originalTransform.m_Rotation = transformRecord.m_Rotation;
-                buffer.SetComponent(entity, originalTransform);
                 if (EntityManager.HasComponent<UpdateNextFrame>(entity))
                 {
                     buffer.RemoveComponent<UpdateNextFrame>(entity);

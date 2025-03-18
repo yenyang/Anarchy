@@ -25,7 +25,7 @@ namespace Anarchy.Patches
         {
             NetworkAnarchyUISystem networkAnarchyUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<NetworkAnarchyUISystem>();
             ToolSystem toolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
-            if ((networkAnarchyUISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.ExpanedElevationRange) == NetworkAnarchyUISystem.Composition.ExpanedElevationRange && toolSystem.activePrefab != null)
+            if ((networkAnarchyUISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.ExpandedElevationRange) == NetworkAnarchyUISystem.Composition.ExpandedElevationRange && toolSystem.activePrefab != null)
             {
                 __result = new Bounds1(-1000f, 1000f);
                 return false;
