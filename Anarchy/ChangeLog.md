@@ -9,3 +9,5 @@
 * Fix replacing water and sewer mains with combined services or vice versa breaks the utility network.
 * Anarchy keybinding set to Tool Usage. This will display a conflict warning with Activating/Deactivating Buildings if bindings are not changed.
 * Object asset stamps may be raised and lowered during placement.
+* Elevation Lock has been renamed Transform Lock. (Main functionality hasn't changed).
+* Regression: Anarchy components tool no longer returns to previous tool or prefab when closed.

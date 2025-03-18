@@ -27,12 +27,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         private PrefabSystem m_PrefabSystem;
         private ValueBindingHelper<int> m_SelectionRadius;
         private RenderingSystem m_RenderingSystem;
-
-        // private ToolBaseSystem m_PreviousToolSystem;
-        // private PrefabBase m_PreviousPrefab;
-        // private bool m_SwitchToPreviousToolSystem;
         private DefaultToolSystem m_DefaultToolSystem;
-        private ToolbarUISystem m_ToolbarUISystem;
 
         /// <summary>
         /// Enum for different component types the tool can add or remove.
@@ -100,7 +95,6 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_DefaultToolSystem = World.GetOrCreateSystemManaged<DefaultToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
-            m_ToolbarUISystem = World.GetOrCreateSystemManaged<ToolbarUISystem>();
             m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_DefaultToolSystem;
             m_RenderingSystem = World.GetOrCreateSystemManaged<RenderingSystem>();
             m_AnarchyComponentType = CreateBinding("AnarchyComponentType", AnarchyComponentType.PreventOverride);

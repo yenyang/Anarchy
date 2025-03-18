@@ -70,7 +70,7 @@ export const SelectedInfoPanelTogglesComponent = (componentList: any): any => {
         const transformRecordTooltipKey = translate("Anarchy.TOOLTIP_TITLE[ElevationLock]" ,locale["Anarchy.TOOLTIP_TITLE[ElevationLock]"]);
         const transformRecordTooltipDescription = translate("Anarchy.TOOLTIP_DESCRIPTION[ElevationLock]" ,locale["Anarchy.TOOLTIP_DESCRIPTION[ElevationLock]"]);
         const anarchyModComponentsTooltipKey = translate("Anarchy.TOOLTIP_TITLE[AnarchyModComponets]" ,locale["Anarchy.TOOLTIP_TITLE[AnarchyModComponets]"]);
-        const elevationSectionTitle = translate("Toolbar.ELEVATION_TITLE" , "Elevation");
+        const elevationSectionTitle = translate("Anarchy.SECTION_TITLE[Transform]" , "Transform");
 
 
         return 	<InfoSection focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED} disableFocus={true}>
