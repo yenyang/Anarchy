@@ -234,7 +234,7 @@ namespace Anarchy.Systems.Common
             m_IsInappropriatePrefab = CreateBinding("IsInappropriate", false);
             m_MultipleUniques = CreateBinding("MultipleUniques", AnarchyMod.Instance.Settings.AllowPlacingMultipleUniqueBuildings);
             m_ShowElevationSettingsOption = CreateBinding("ShowElevationSettingsOption", AnarchyMod.Instance.Settings.ShowElevationToolOption);
-            m_ObjectToolValidMode = CreateBinding("ObjectToolValidMode", m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve);
+            m_ObjectToolValidMode = CreateBinding("ObjectToolValidMode", m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Stamp);
             ErrorCheck[] errorChecks = DefaultErrorChecks;
             for (int i = 0; i < errorChecks.Length; i++)
             {
@@ -340,9 +340,9 @@ namespace Anarchy.Systems.Common
                 m_IsBrushing = false;
             }
 
-            if (m_ObjectToolValidMode.Value != (m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve))
+            if (m_ObjectToolValidMode.Value != (m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Stamp))
             {
-                m_ObjectToolValidMode.Value = m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve;
+                m_ObjectToolValidMode.Value = m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve || m_ObjectToolSystem.actualMode  == ObjectToolSystem.Mode.Stamp;
             }
 
             if (m_ToggleAnarchy.WasPerformedThisFrame())
