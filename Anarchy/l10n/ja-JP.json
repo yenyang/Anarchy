@@ -94,5 +94,6 @@
   "Anarchy.SECTION_TITLE[AnarchyOptions]": "アナーキーの設定",
   "Anarchy.TOOLTIP_DESCRIPTION[AnarchyOptions]": "どのエラーチェックを無効にしないか、アナーキーで無効にするか、常に無効にするかを制御するパネルを開く。",
   "Anarchy.UI_TEXT[Never]": "無効にしない",
-  "Anarchy.UI_TEXT[Always]": "常に無効"
+  "Anarchy.UI_TEXT[Always]": "常に無効",
+  "Assets.DESCRIPTION[Tunnel01]": "ネットワークを強制的にトンネルにします。強制的に設定されたトンネルの見た目は悪くなりやすいため、必要な時のみ使用してください。"
 }
