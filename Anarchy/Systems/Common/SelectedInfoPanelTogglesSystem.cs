@@ -70,7 +70,8 @@ namespace Anarchy.Systems.Common
         public bool CheckDisturbable(Entity instanceEntity)
         {
             if (CheckOverridable(instanceEntity) &&
-               !EntityManager.HasComponent<Game.Objects.NetObject>(instanceEntity))
+               !EntityManager.HasComponent<Game.Objects.NetObject>(instanceEntity) &&
+               !EntityManager.HasComponent<Game.Objects.UtilityObject>(instanceEntity))
             {
                 return true;
             }
