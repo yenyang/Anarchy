@@ -182,6 +182,8 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                     ComponentType.ReadOnly<Game.Routes.Waypoint>(),
                     ComponentType.ReadOnly<Game.Routes.MailBox>(),
                     ComponentType.ReadOnly<Game.Routes.WaypointDefinition>(),
+                    ComponentType.ReadOnly<Game.Objects.NetObject>(),
+                    ComponentType.ReadOnly<Game.Objects.UtilityObject>(),
                 },
             });
 
@@ -218,6 +220,8 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                     ComponentType.ReadOnly<Game.Routes.Waypoint>(),
                     ComponentType.ReadOnly<Game.Routes.MailBox>(),
                     ComponentType.ReadOnly<Game.Routes.WaypointDefinition>(),
+                    ComponentType.ReadOnly<Game.Objects.NetObject>(),
+                    ComponentType.ReadOnly<Game.Objects.UtilityObject>(),
                 },
             });
 
