@@ -176,6 +176,11 @@ namespace Anarchy.Systems.OverridePrevention
                 {
                     EntityManager.AddComponent<Deleted>(entity);
                 }
+
+                if (EntityManager.HasComponent(entity, ComponentType.ReadOnly<TransformRecord>()) && EntityManager.HasComponent<Game.Objects.UtilityObject>(entity))
+                {
+                    EntityManager.RemoveComponent<TransformRecord>(entity);
+                }
             }
 
             entitiesWithComponent.Dispose();

@@ -69,13 +69,17 @@ namespace Anarchy.Systems.Common
         /// <returns>True if can receive component. False if not.</returns>
         public bool CheckDisturbable(Entity instanceEntity)
         {
-            if (CheckOverridable(instanceEntity))
+            if (CheckOverridable(instanceEntity) &&
+               !EntityManager.HasComponent<Game.Objects.NetObject>(instanceEntity) &&
+               !EntityManager.HasComponent<Game.Objects.UtilityObject>(instanceEntity))
             {
                 return true;
             }
 
             if (EntityManager.HasComponent<Owner>(instanceEntity) &&
                !EntityManager.HasComponent<Stack>(instanceEntity) &&
+               !EntityManager.HasComponent<Game.Objects.NetObject>(instanceEntity) &&
+               !EntityManager.HasComponent<Game.Objects.UtilityObject>(instanceEntity) &&
                 EntityManager.HasComponent<Game.Objects.Transform>(instanceEntity) &&
                 EntityManager.TryGetComponent(instanceEntity, out PrefabRef prefabRef) &&
                 m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out PrefabBase prefabBase) &&
