@@ -30,6 +30,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
     using Unity.Mathematics;
     using UnityEngine;
     using static Anarchy.Systems.AnarchyComponentsTool.AnarchyComponentsToolUISystem;
+    using static Game.Input.UIBaseInputAction;
 
     /// <summary>
     /// Tool for controlling adding and removing Anarchy mod components.
@@ -467,8 +468,10 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                         }
                         else
                         {
-                            transformRecord.m_Position = transform.m_Position - ownerTransform.m_Position;
-                            transformRecord.m_Rotation = transform.m_Rotation.value - ownerTransform.m_Rotation.value;
+                            Game.Objects.Transform inverseParentTransform = ObjectUtils.InverseTransform(ownerTransform);
+                            Game.Objects.Transform localTransform = ObjectUtils.WorldToLocal(inverseParentTransform, transform);
+                            transformRecord.m_Position = localTransform.m_Position;
+                            transformRecord.m_Rotation = localTransform.m_Rotation;
                         }
 
                         buffer.SetComponent(currentRaycastEntity, transformRecord);
@@ -627,8 +630,10 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                             }
                             else
                             {
-                                transformRecord.m_Position = transformNativeArray[i].m_Position - ownerTransform.m_Position;
-                                transformRecord.m_Rotation = transformNativeArray[i].m_Rotation.value - ownerTransform.m_Rotation.value;
+                                Game.Objects.Transform inverseParentTransform = ObjectUtils.InverseTransform(ownerTransform);
+                                Game.Objects.Transform localTransform = ObjectUtils.WorldToLocal(inverseParentTransform, transformNativeArray[i]);
+                                transformRecord.m_Position = localTransform.m_Position;
+                                transformRecord.m_Rotation = localTransform.m_Rotation;
                             }
 
                             buffer.SetComponent(entityNativeArray[i], transformRecord);
