@@ -25,6 +25,14 @@ namespace Anarchy.Components
         public quaternion m_Rotation;
 
         /// <summary>
+        /// Gets a game.objects.Transform from the transform record.
+        /// </summary>
+        public Game.Objects.Transform Transform
+        {
+            get { return new Game.Objects.Transform(m_Position, m_Rotation); }
+        }
+
+        /// <summary>
         /// Evaluates equualitiy between a transform record and a transform.
         /// </summary>
         /// <param name="other">A transform struct.</param>
@@ -38,7 +46,7 @@ namespace Anarchy.Components
 
             return false;
         }
-        
+
         /// <summary>
         /// Serializes the transform record.
         /// </summary>
@@ -61,7 +69,7 @@ namespace Anarchy.Components
         {
             reader.Read(out m_Position);
             reader.Read(out m_Rotation);
-            if (!math.all(m_Position >= -100000f) || !math.all(m_Position <= 100000f) || !math.all(math.isfinite(m_Rotation.value)) || math.all(m_Rotation.value == 0f))
+            if (!math.all(m_Position >= -100000f) || !math.all(m_Position <= 100000f) || !math.all(math.isfinite(m_Rotation.value)))
             {
                 m_Position = default(float3);
                 m_Rotation = quaternion.identity;

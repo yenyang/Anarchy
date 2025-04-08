@@ -22,6 +22,8 @@ namespace Anarchy.Systems.ObjectElevation
     using Unity.Collections;
     using Unity.Entities;
     using Unity.Jobs;
+    using UnityEngine;
+    using static Game.Input.UIBaseInputAction;
 
     /// <summary>
     /// A system that prevents objects from being overriden that has a custom component.
@@ -157,7 +159,7 @@ namespace Anarchy.Systems.ObjectElevation
                     m_EntityType = SystemAPI.GetEntityTypeHandle(),
                     m_MoveItSelectedEntities = GetEntities(readOnly: true, out JobHandle readerDeps),
                     m_TransformRecordType = SystemAPI.GetComponentTypeHandle<TransformRecord>(),
-                    m_TransformType = SystemAPI.GetComponentTypeHandle<Transform>(),
+                    m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(),
                     buffer = m_ModificationBarrier1.CreateCommandBuffer().AsParallelWriter(),
                 };
                 JobHandle jobHandle = updateTransformRecordJob.ScheduleParallel(m_TransformRecordQuery, JobHandle.CombineDependencies(Dependency, readerDeps));
@@ -176,8 +178,10 @@ namespace Anarchy.Systems.ObjectElevation
                 }
                 else
                 {
-                    transformRecord.m_Position = originalTransform.m_Position - ownerTransform.m_Position;
-                    transformRecord.m_Rotation = originalTransform.m_Rotation.value - ownerTransform.m_Rotation.value;
+                    Game.Objects.Transform inverseParentTransform = ObjectUtils.InverseTransform(ownerTransform);
+                    Game.Objects.Transform localTransform = ObjectUtils.WorldToLocal(inverseParentTransform, originalTransform);
+                    transformRecord.m_Position = localTransform.m_Position;
+                    transformRecord.m_Rotation = localTransform.m_Rotation;
                 }
 
                 EntityManager.SetComponentData(m_ToolSystem.selected, transformRecord);
@@ -189,20 +193,6 @@ namespace Anarchy.Systems.ObjectElevation
         {
             base.OnDestroy();
             m_MoveItSelectedEntities.Dispose();
-        }
-
-        private void ProcessSubObject(Game.Objects.SubObject subObject)
-        {
-            if (EntityManager.TryGetComponent(subObject.m_SubObject, out TransformRecord transformRecord) &&
-                EntityManager.TryGetComponent(subObject.m_SubObject, out Game.Objects.Transform originalTransform) &&
-                EntityManager.HasComponent<Updated>(subObject.m_SubObject) &&
-                EntityManager.TryGetComponent(subObject.m_SubObject, out Owner owner) &&
-                EntityManager.TryGetComponent(owner.m_Owner, out Game.Objects.Transform ownerTransform))
-            {
-                transformRecord.m_Position = originalTransform.m_Position - ownerTransform.m_Position;
-                transformRecord.m_Rotation = originalTransform.m_Rotation.value - ownerTransform.m_Rotation.value;
-                EntityManager.SetComponentData(subObject.m_SubObject, transformRecord);
-            }
         }
 
 #if BURST
@@ -232,7 +222,7 @@ namespace Anarchy.Systems.ObjectElevation
             [ReadOnly]
             public EntityTypeHandle m_EntityType;
             public ComponentTypeHandle<TransformRecord> m_TransformRecordType;
-            public ComponentTypeHandle<Transform> m_TransformType;
+            public ComponentTypeHandle<Game.Objects.Transform> m_TransformType;
             public EntityCommandBuffer.ParallelWriter buffer;
             public NativeHashSet<Entity> m_MoveItSelectedEntities;
 
@@ -240,11 +230,11 @@ namespace Anarchy.Systems.ObjectElevation
             {
                 NativeArray<Entity> entityNativeArray = chunk.GetNativeArray(m_EntityType);
                 NativeArray<TransformRecord> transformRecordNativeArray = chunk.GetNativeArray(ref m_TransformRecordType);
-                NativeArray<Transform> transformNativeArray = chunk.GetNativeArray(ref m_TransformType);
+                NativeArray<Game.Objects.Transform> transformNativeArray = chunk.GetNativeArray(ref m_TransformType);
                 for (int i = 0; i < chunk.Count; i++)
                 {
                     Entity currentEntity = entityNativeArray[i];
-                    Transform originalTransform = transformNativeArray[i];
+                    Game.Objects.Transform originalTransform = transformNativeArray[i];
                     TransformRecord transformRecord = transformRecordNativeArray[i];
                     if (m_MoveItSelectedEntities.Contains(currentEntity))
                     {
@@ -258,7 +248,7 @@ namespace Anarchy.Systems.ObjectElevation
                 }
             }
 
-            private bool Equals(TransformRecord record, Transform original)
+            private bool Equals(TransformRecord record, Game.Objects.Transform original)
             {
                 if (record.m_Position.x == original.m_Position.x && record.m_Position.y == original.m_Position.y && record.m_Position.z == original.m_Position.z)
                 {

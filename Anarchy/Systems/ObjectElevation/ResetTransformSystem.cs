@@ -14,7 +14,6 @@ namespace Anarchy.Systems.ObjectElevation
     using Game.Tools;
     using Unity.Collections;
     using Unity.Entities;
-    using UnityEngine;
 
     /// <summary>
     /// A system that prevents objects from being overriden that has a custom component.
@@ -89,20 +88,19 @@ namespace Anarchy.Systems.ObjectElevation
                 }
                 else if (EntityManager.TryGetComponent(owner.m_Owner, out Game.Objects.Transform ownerTransform))
                 {
-                    Game.Objects.Transform relativeTransform = new Game.Objects.Transform()
-                    {
-                        m_Position = originalTransform.m_Position - ownerTransform.m_Position,
-                        m_Rotation = originalTransform.m_Rotation.value - ownerTransform.m_Rotation.value,
-                    };
+                    Game.Objects.Transform inverseParentTransform = ObjectUtils.InverseTransform(ownerTransform);
+                    Game.Objects.Transform localTransform = ObjectUtils.WorldToLocal(inverseParentTransform, originalTransform);
 
-                    if (transformRecord.Equals(relativeTransform))
+                    if (transformRecord.Equals(localTransform))
                     {
                         buffer.RemoveComponent<UpdateNextFrame>(entity);
                         continue;
                     }
 
-                    originalTransform.m_Position = ownerTransform.m_Position + transformRecord.m_Position;
-                    originalTransform.m_Rotation = ownerTransform.m_Rotation.value + transformRecord.m_Rotation.value;
+                    Game.Objects.Transform worldTransform = ObjectUtils.LocalToWorld(ownerTransform, transformRecord.Transform);
+
+                    originalTransform.m_Position = worldTransform.m_Position;
+                    originalTransform.m_Rotation = worldTransform.m_Rotation;
                     buffer.SetComponent(entity, originalTransform);
                 }
 
@@ -123,6 +121,8 @@ namespace Anarchy.Systems.ObjectElevation
                             && EntityManager.TryGetComponent(subObject.m_SubObject, out LocalTransformCache localTransformCache))
                         {
                             subObjectTransform.m_Position = transformRecord.m_Position + localTransformCache.m_Position;
+
+                            // I doubt this is valid and probably only worked with trees because of 0 rotation.
                             subObjectTransform.m_Rotation.value = transformRecord.m_Rotation.value + localTransformCache.m_Rotation.value;
                             buffer.SetComponent(subObject.m_SubObject, subObjectTransform);
                             if (EntityManager.HasComponent<UpdateNextFrame>(entity))

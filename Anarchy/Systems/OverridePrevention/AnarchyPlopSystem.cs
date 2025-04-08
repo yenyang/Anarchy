@@ -22,6 +22,7 @@ namespace Anarchy.Systems.OverridePrevention
     using Game.Vehicles;
     using Unity.Collections;
     using Unity.Entities;
+    using UnityEngine;
 
     /// <summary>
     /// A system that prevents objects from being overriden when placed on each other.
@@ -143,6 +144,40 @@ namespace Anarchy.Systems.OverridePrevention
             // Cycle through all entities with Prevent Override and transform record component and look for any that shouldn't have been added. Remove component if it is not Overridable Static Object.
             foreach (Entity entity in entitiesWithComponent)
             {
+                if (EntityManager.HasComponent(entity, ComponentType.ReadOnly<TransformRecord>()) && EntityManager.HasComponent<Game.Objects.UtilityObject>(entity))
+                {
+                    EntityManager.RemoveComponent<TransformRecord>(entity);
+                }
+
+                if (EntityManager.TryGetComponent(entity, out TransformRecord transformRecord) &&
+                    EntityManager.TryGetComponent(entity, out Owner owner) &&
+                    EntityManager.TryGetComponent(entity, out Game.Objects.Transform subobjectTransform) &&
+                    owner.m_Owner != Entity.Null &&
+                    EntityManager.TryGetComponent(owner.m_Owner, out Game.Objects.Transform ownerTransform))
+                {
+                    // This is to fix a mistake where the transform record stored the wrong values and wasn't setup correctly to handle subobjects.
+                    Game.Objects.Transform relativeTransform = new Game.Objects.Transform()
+                    {
+                        m_Position = subobjectTransform.m_Position - ownerTransform.m_Position,
+                        m_Rotation = subobjectTransform.m_Rotation.value - ownerTransform.m_Rotation.value,
+                    };
+
+                    if (Mathf.Approximately(transformRecord.m_Position.x, relativeTransform.m_Position.x) &&
+                        Mathf.Approximately(transformRecord.m_Position.y, relativeTransform.m_Position.y) &&
+                        Mathf.Approximately(transformRecord.m_Position.z, relativeTransform.m_Position.z) &&
+                        Mathf.Approximately(transformRecord.m_Rotation.value.x, transformRecord.m_Rotation.value.x) &&
+                        Mathf.Approximately(transformRecord.m_Rotation.value.y, transformRecord.m_Rotation.value.y) &&
+                        Mathf.Approximately(transformRecord.m_Rotation.value.z, transformRecord.m_Rotation.value.z) &&
+                        Mathf.Approximately(transformRecord.m_Rotation.value.w, transformRecord.m_Rotation.value.w))
+                    {
+                        Game.Objects.Transform inverseParentTransform = ObjectUtils.InverseTransform(ownerTransform);
+                        Game.Objects.Transform localTransform = ObjectUtils.WorldToLocal(inverseParentTransform, subobjectTransform);
+                        transformRecord.m_Position = localTransform.m_Position;
+                        transformRecord.m_Rotation = localTransform.m_Rotation;
+                        EntityManager.SetComponentData(entity, transformRecord);
+                    }
+                }
+
                 PrefabBase prefabBase = null;
                 if (EntityManager.TryGetComponent(entity, out PrefabRef prefabRef))
                 {
@@ -175,11 +210,6 @@ namespace Anarchy.Systems.OverridePrevention
                 if (EntityManager.HasComponent(entity, ComponentType.ReadOnly<TransformRecord>()) && EntityManager.HasComponent<Game.Objects.NetObject>(entity))
                 {
                     EntityManager.AddComponent<Deleted>(entity);
-                }
-
-                if (EntityManager.HasComponent(entity, ComponentType.ReadOnly<TransformRecord>()) && EntityManager.HasComponent<Game.Objects.UtilityObject>(entity))
-                {
-                    EntityManager.RemoveComponent<TransformRecord>(entity);
                 }
             }
 

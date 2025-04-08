@@ -254,8 +254,10 @@ namespace Anarchy.Systems.Common
                 }
                 else
                 {
-                    transformRecord.m_Position = ownerTransform.m_Position - transform.m_Position;
-                    transformRecord.m_Rotation = ownerTransform.m_Rotation.value - transform.m_Rotation.value;
+                    Game.Objects.Transform inverseParentTransform = ObjectUtils.InverseTransform(ownerTransform);
+                    Game.Objects.Transform localTransform = ObjectUtils.WorldToLocal(inverseParentTransform, transform);
+                    transformRecord.m_Position = localTransform.m_Position;
+                    transformRecord.m_Rotation = localTransform.m_Rotation;
                 }
 
                 EntityManager.SetComponentData(selectedEntity, transformRecord);
