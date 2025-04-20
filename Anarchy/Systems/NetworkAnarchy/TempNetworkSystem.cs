@@ -26,6 +26,7 @@ namespace Anarchy.Systems.NetworkAnarchy
     using UnityEngine.InputSystem;
     using static Game.Rendering.OverlayRenderSystem;
     using static Game.Tools.NetToolSystem;
+    using static Unity.Burst.Intrinsics.X86.Avx;
 
     /// <summary>
     /// Applies upgrades and/or elevation to Temp networks.
@@ -201,9 +202,11 @@ namespace Anarchy.Systems.NetworkAnarchy
             NativeArray<Entity> entities = m_TempNetworksQuery.ToEntityArray(Allocator.Temp);
             for (int i = 0; i < entities.Length; i++)
             {
+                TempFlags originalTempFlags = 0;
                 Entity entity = entities[i];
                 if (EntityManager.TryGetComponent(entity, out Temp temp))
                 {
+                    originalTempFlags = temp.m_Flags;
                     if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace &&
                         temp.m_Original != Entity.Null &&
                        (pathEntities.Contains(entity) ||
@@ -240,6 +243,10 @@ namespace Anarchy.Systems.NetworkAnarchy
                 {
                     continue;
                 }
+
+                bool changedElevation = false;
+                EntityManager.TryGetComponent(entity, out Elevation originalElevation);
+                EntityManager.TryGetComponent(entity, out Upgraded originalUpgraded);
 
                 // This is a somewhat roundabout way to adapt Extended Road upgrades method of applying upgrades to the way Network Anarchy applies upgrades.
                 NetworkAnarchyUISystem.SideUpgrades effectiveLeftUpgrades = m_UISystem.LeftUpgrade;
@@ -392,12 +399,24 @@ namespace Anarchy.Systems.NetworkAnarchy
                     EntityManager.SetComponentData(entity, elevation);
                 }
 
+                EntityManager.TryGetComponent(entity, out Elevation finalElevation);
+                if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace &&
+                    !m_SecondaryApplyMimic.IsPressed() &&
+                    !m_SecondaryApplyMimic.WasPerformedThisFrame() &&
+                   (finalElevation.m_Elevation.x != originalElevation.m_Elevation.x ||
+                    finalElevation.m_Elevation.y != originalElevation.m_Elevation.y))
+                {
+                    changedElevation = true;
+                }
+
                 CompositionFlags compositionFlags = default;
 
                 if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace && EntityManager.TryGetComponent(entity, out Upgraded currentUpgrades))
                 {
                     compositionFlags = currentUpgrades.m_Flags;
                     m_Log.Debug($"{nameof(TempNetworkSystem)}.{nameof(OnUpdate)} Replace Upgraded General = {compositionFlags.m_General} Left = {compositionFlags.m_Left} Right = {compositionFlags.m_Right}");
+                    compositionFlags.m_Left &= ~(CompositionFlags.Side.WideSidewalk | CompositionFlags.Side.Lowered | CompositionFlags.Side.Raised | CompositionFlags.Side.PrimaryBeautification | CompositionFlags.Side.SecondaryBeautification | CompositionFlags.Side.SoundBarrier);
+                    compositionFlags.m_Right &= ~(CompositionFlags.Side.WideSidewalk | CompositionFlags.Side.Lowered | CompositionFlags.Side.Raised | CompositionFlags.Side.PrimaryBeautification | CompositionFlags.Side.SecondaryBeautification | CompositionFlags.Side.SoundBarrier);
                 }
 
 
@@ -460,7 +479,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                            && (placeableNetData.m_SetUpgradeFlags.m_Right & CompositionFlags.Side.PrimaryLane) != CompositionFlags.Side.PrimaryLane)
                         || m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace)
                     {
-                        compositionFlags.m_Left = SideUpgradeLookup[effectiveLeftUpgrades];
+                        compositionFlags.m_Left |= SideUpgradeLookup[effectiveLeftUpgrades];
                     }
 
                     if (leftSideTracksAndLanes != 0 && m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace && m_UISystem.ReplaceLeftUpgrade)
@@ -482,7 +501,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                             && (placeableNetData.m_SetUpgradeFlags.m_Right & CompositionFlags.Side.PrimaryLane) != CompositionFlags.Side.PrimaryLane)
                         || m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace)
                     {
-                        compositionFlags.m_Right = SideUpgradeLookup[effectiveRightUpgrades];
+                        compositionFlags.m_Right |= SideUpgradeLookup[effectiveRightUpgrades];
                     }
 
                     if (rightSideTracksAndLanes != 0 && m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace && m_UISystem.ReplaceRightUpgrade)
@@ -499,13 +518,22 @@ namespace Anarchy.Systems.NetworkAnarchy
                     m_Log.Debug($"{nameof(TempNetworkSystem)}{nameof(OnUpdate)} modified temp.");
                 }
 
-
                 if (compositionFlags.m_General == 0 && compositionFlags.m_Left == 0 && compositionFlags.m_Right == 0)
                 {
                     if (EntityManager.HasComponent<Game.Net.Upgraded>(entity))
                     {
                         EntityManager.RemoveComponent<Game.Net.Upgraded>(entity);
                         m_Log.Debug($"{nameof(TempNetworkSystem)}{nameof(OnUpdate)} removed.");
+                    }
+
+                    if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace &&
+                        originalUpgraded.m_Flags.m_General == 0 &&
+                        originalUpgraded.m_Flags.m_Left == 0 &&
+                        originalUpgraded.m_Flags.m_Right == 0 &&
+                        !changedElevation)
+                    {
+                        temp.m_Flags = originalTempFlags;
+                        EntityManager.SetComponentData(entity, temp);
                     }
 
                     continue;
@@ -519,6 +547,14 @@ namespace Anarchy.Systems.NetworkAnarchy
                 if (!EntityManager.HasComponent<Game.Net.Upgraded>(entity))
                 {
                     EntityManager.AddComponent<Game.Net.Upgraded>(entity);
+                }
+
+                if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace &&
+                    originalUpgraded.m_Flags == upgrades.m_Flags &&
+                   !changedElevation)
+                {
+                    temp.m_Flags = originalTempFlags;
+                    EntityManager.SetComponentData(entity, temp);
                 }
 
                 EntityManager.SetComponentData(entity, upgrades);
