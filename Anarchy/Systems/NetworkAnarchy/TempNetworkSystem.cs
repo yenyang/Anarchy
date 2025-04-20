@@ -5,6 +5,7 @@
 namespace Anarchy.Systems.NetworkAnarchy
 {
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using Anarchy.Components;
     using Anarchy.Extensions;
@@ -19,8 +20,12 @@ namespace Anarchy.Systems.NetworkAnarchy
     using Game.Tools;
     using Unity.Collections;
     using Unity.Entities;
+    using Unity.Entities.UniversalDelegates;
+    using Unity.Jobs;
     using UnityEngine;
     using UnityEngine.InputSystem;
+    using static Game.Rendering.OverlayRenderSystem;
+    using static Game.Tools.NetToolSystem;
 
     /// <summary>
     /// Applies upgrades and/or elevation to Temp networks.
@@ -148,7 +153,10 @@ namespace Anarchy.Systems.NetworkAnarchy
                 return;
             }
 
-            if (m_ToolSystem.activePrefab == null || !m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) || !EntityManager.TryGetComponent(prefabEntity, out PlaceableNetData placeableNetData))
+            if (m_ToolSystem.activePrefab == null ||
+               !m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) ||
+               !EntityManager.TryGetComponent(prefabEntity, out PlaceableNetData placeableNetData) ||
+               !EntityManager.TryGetComponent(prefabEntity, out NetData prefabNetData))
             {
                 return;
             }
@@ -168,6 +176,27 @@ namespace Anarchy.Systems.NetworkAnarchy
                 return;
             }
 
+            m_Log.Debug($"{nameof(TempNetworkSystem)}.{nameof(OnUpdate)} Creating Path.");
+            ComponentLookup<Edge> edgeLookup = SystemAPI.GetComponentLookup<Edge>();
+            ComponentLookup<Node> nodeLookup = SystemAPI.GetComponentLookup<Node>();
+            ComponentLookup<Curve> curveLookup = SystemAPI.GetComponentLookup<Curve>();
+            ComponentLookup<PrefabRef> prefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>();
+            ComponentLookup<NetData> netDataLookup = SystemAPI.GetComponentLookup<NetData>();
+            BufferLookup<ConnectedEdge> connectedEdgeLookup = SystemAPI.GetBufferLookup<ConnectedEdge>();
+            NativeList<ControlPoint> controlPoints = m_NetToolSystem.GetControlPoints(out JobHandle dependencies);
+            dependencies.Complete();
+            ControlPoint startPoint = controlPoints[0];
+            ControlPoint endPoint = controlPoints[controlPoints.Length - 1];
+            NativeList<PathEdge> path = new NativeList<PathEdge>(Allocator.Temp);
+            CreatePath(startPoint, endPoint, path, prefabNetData, placeableNetData, ref edgeLookup, ref nodeLookup, ref curveLookup, ref prefabRefLookup, ref netDataLookup, ref connectedEdgeLookup);
+            NativeList<Entity> pathEntities = new NativeList<Entity>(Allocator.Temp);
+            for (int i = 0; i <= path.Length; i++)
+            {
+                pathEntities.Add(path[i].m_Entity);
+                m_Log.Debug($"{nameof(TempNetworkSystem)}.{nameof(OnUpdate)} {path[i].m_Entity.Index}:{path[i].m_Entity.Version}.");
+            }
+
+            m_Log.Debug($"{nameof(TempNetworkSystem)}.{nameof(OnUpdate)} path completed.");
 
             NativeArray<Entity> entities = m_TempNetworksQuery.ToEntityArray(Allocator.Temp);
             for (int i = 0; i < entities.Length; i++)
@@ -177,8 +206,8 @@ namespace Anarchy.Systems.NetworkAnarchy
                 {
                     if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace &&
                         temp.m_Original != Entity.Null &&
-                        m_ToolRaycastSystem.GetRaycastResult(out RaycastResult raycastResult) &&
-                        raycastResult.m_Owner == temp.m_Original &&
+                       (pathEntities.Contains(entity) ||
+                        pathEntities.Contains(temp.m_Original)) &&
                        (UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID()) ||
                        (EntityManager.TryGetComponent(temp.m_Original, out PrefabRef prefabRef) &&
                         prefabRef == prefabEntity)))
