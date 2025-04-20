@@ -26,6 +26,7 @@ namespace Anarchy
     using Colossal.Logging;
     using Game;
     using Game.Modding;
+    using Game.Net;
     using Game.SceneFlow;
     using HarmonyLib;
     using Newtonsoft.Json;
@@ -144,7 +145,7 @@ namespace Anarchy
             updateSystem.UpdateBefore<ElevateObjectDefinitionSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateBefore<NetworkDefinitionSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateAt<SetRetainingWallSegmentElevationSystem>(SystemUpdatePhase.ModificationEnd);
-            updateSystem.UpdateBefore<TempNetworkSystem>(SystemUpdatePhase.Modification3);
+            updateSystem.UpdateBefore<TempNetworkSystem, CompositionSelectSystem>(SystemUpdatePhase.Modification3);
             updateSystem.UpdateAt<NetworkAnarchyUISystem>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateAt<AnarchyComponentsToolSystem>(SystemUpdatePhase.ToolUpdate);
             updateSystem.UpdateAt<AnarchyComponentsToolUISystem>(SystemUpdatePhase.UIUpdate);
