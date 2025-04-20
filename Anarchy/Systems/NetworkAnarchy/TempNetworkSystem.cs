@@ -27,6 +27,18 @@ namespace Anarchy.Systems.NetworkAnarchy
     /// </summary>
     public partial class TempNetworkSystem : GameSystemBase
     {
+        private readonly List<PrefabID> UpgradeLookup = new List<PrefabID>()
+        {
+             new PrefabID("FencePrefab", "RetainingWall"),
+             new PrefabID("FencePrefab", "RetainingWall01"),
+             new PrefabID("FencePrefab", "Quay"),
+             new PrefabID("FencePrefab", "Quay01"),
+             new PrefabID("FencePrefab", "Elevated"),
+             new PrefabID("FencePrefab", "Elevated01"),
+             new PrefabID("FencePrefab", "Tunnel"),
+             new PrefabID("FencePrefab", "Tunnel01"),
+        };
+
         private readonly Dictionary<NetworkAnarchyUISystem.SideUpgrades, CompositionFlags.Side> SideUpgradeLookup = new Dictionary<NetworkAnarchyUISystem.SideUpgrades, CompositionFlags.Side>()
         {
             { NetworkAnarchyUISystem.SideUpgrades.None, 0 },
@@ -51,18 +63,6 @@ namespace Anarchy.Systems.NetworkAnarchy
             { NetworkAnarchyUISystem.Composition.Trees, CompositionFlags.General.SecondaryMiddleBeautification },
             { NetworkAnarchyUISystem.Composition.Trees | NetworkAnarchyUISystem.Composition.GrassStrip, CompositionFlags.General.SecondaryMiddleBeautification | CompositionFlags.General.PrimaryMiddleBeautification },
             { NetworkAnarchyUISystem.Composition.Trees | NetworkAnarchyUISystem.Composition.WideMedian, CompositionFlags.General.SecondaryMiddleBeautification | CompositionFlags.General.WideMedian },
-        };
-
-        private readonly List<PrefabID> UpgradeLookup = new List<PrefabID>()
-        {
-             new PrefabID("FencePrefab", "RetainingWall"),
-             new PrefabID("FencePrefab", "RetainingWall01"),
-             new PrefabID("FencePrefab", "Quay"),
-             new PrefabID("FencePrefab", "Quay01"),
-             new PrefabID("FencePrefab", "Elevated"),
-             new PrefabID("FencePrefab", "Elevated01"),
-             new PrefabID("FencePrefab", "Tunnel"),
-             new PrefabID("FencePrefab", "Tunnel01"),
         };
 
         private ToolSystem m_ToolSystem;
@@ -131,8 +131,6 @@ namespace Anarchy.Systems.NetworkAnarchy
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            m_Log.Debug($"{nameof(TempNetworkSystem)}.{nameof(OnUpdate)} m_NetToolSystem.actualMode= {m_NetToolSystem.actualMode} m_NetToolSystem.mode= {m_NetToolSystem.mode} m_NetToolSystem.allowReplace = {m_NetToolSystem.allowReplace}");
-
             if (m_UISystem.NetworkComposition == NetworkAnarchyUISystem.Composition.None
                 && m_UISystem.LeftUpgrade == NetworkAnarchyUISystem.SideUpgrades.None
                 && m_UISystem.RightUpgrade == NetworkAnarchyUISystem.SideUpgrades.None
@@ -177,16 +175,16 @@ namespace Anarchy.Systems.NetworkAnarchy
                 Entity entity = entities[i];
                 if (EntityManager.TryGetComponent(entity, out Temp temp))
                 {
-                    bool doNotContinue = false;
                     if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace &&
-                        temp.m_Flags == 0 &&
                         temp.m_Original != Entity.Null &&
                         m_ToolRaycastSystem.GetRaycastResult(out RaycastResult raycastResult) &&
                         raycastResult.m_Owner == temp.m_Original &&
-                        EntityManager.TryGetComponent(temp.m_Original, out PrefabRef prefabRef) &&
-                        prefabRef == prefabEntity)
+                       (UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID()) ||
+                       (EntityManager.TryGetComponent(temp.m_Original, out PrefabRef prefabRef) &&
+                        prefabRef == prefabEntity)))
                     {
-                        doNotContinue = true;
+                        temp.m_Flags |= TempFlags.Modify;
+                        EntityManager.SetComponentData(entity, temp);
                     }
 
                     if (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace &&
@@ -206,11 +204,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                             m_Log.Debug($"{nameof(TempNetworkSystem)}.{nameof(OnUpdate)} removed elevation component.");
                         }
 
-
-                        if (!doNotContinue)
-                        {
-                            continue;
-                        }
+                        continue;
                     }
                 }
                 else
@@ -279,8 +273,6 @@ namespace Anarchy.Systems.NetworkAnarchy
                     EntityManager.RemoveComponent<Elevation>(edge.m_End);
                 }
 
-
-                m_Log.Debug($"{nameof(TempNetworkSystem)}.{nameof(OnUpdate)} processing elevations");
                 if ((effectiveLeftUpgrades & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
                     || (effectiveLeftUpgrades & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay
                     || (effectiveRightUpgrades & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall
@@ -371,7 +363,6 @@ namespace Anarchy.Systems.NetworkAnarchy
                     EntityManager.SetComponentData(entity, elevation);
                 }
 
-                m_Log.Debug($"{nameof(TempNetworkSystem)}.{nameof(OnUpdate)} processed elevations");
                 CompositionFlags compositionFlags = default;
 
                 if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace && EntityManager.TryGetComponent(entity, out Upgraded currentUpgrades))
@@ -381,7 +372,6 @@ namespace Anarchy.Systems.NetworkAnarchy
                 }
 
 
-                m_Log.Debug($"{nameof(TempNetworkSystem)}.{nameof(OnUpdate)} checking composition");
                 if ((m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace || m_UISystem.ReplaceComposition)
                     && (!UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID()) || effectiveComposition != 0))
                 {
@@ -398,7 +388,6 @@ namespace Anarchy.Systems.NetworkAnarchy
                     }
                 }
 
-                m_Log.Debug($"{nameof(TempNetworkSystem)}.{nameof(OnUpdate)} checking tracks and lanes");
 
                 CompositionFlags.Side leftSideTracksAndLanes = 0;
                 CompositionFlags.Side rightSideTracksAndLanes = 0;
@@ -431,7 +420,6 @@ namespace Anarchy.Systems.NetworkAnarchy
                     }
                 }
 
-                m_Log.Debug($"{nameof(TempNetworkSystem)}.{nameof(OnUpdate)} checking left upgrades");
                 if (SideUpgradeLookup.ContainsKey(effectiveLeftUpgrades)
                     && (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace || m_UISystem.ReplaceLeftUpgrade)
                     && (!UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID()) || effectiveLeftUpgrades != 0))
@@ -454,7 +442,6 @@ namespace Anarchy.Systems.NetworkAnarchy
                     m_Log.Debug($"{nameof(TempNetworkSystem)}.{nameof(OnUpdate)} m_NetToolSystem.actualMode = {m_NetToolSystem.actualMode} m_UISystem.ReplaceLeftUpgrade {m_UISystem.ReplaceLeftUpgrade}");
                 }
 
-                m_Log.Debug($"{nameof(TempNetworkSystem)}.{nameof(OnUpdate)} checking right upgrades");
                 if (SideUpgradeLookup.ContainsKey(effectiveRightUpgrades)
                     && (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace || m_UISystem.ReplaceRightUpgrade)
                     && (!UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID()) || effectiveRightUpgrades != 0))
