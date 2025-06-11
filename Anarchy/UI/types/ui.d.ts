@@ -80,9 +80,9 @@ declare module "cs2/ui" {
   }
   export export const DialogContext: import("react").Context<DialogContextProps>;
   export export const DialogRenderer: ({ children }: PropsWithChildren) => JSX.Element;
-  export interface ConfirmationDialogProps {
+  export interface ConfirmationDialogProps extends PropsWithChildren {
   	title?: ReactNode;
-  	message: ReactNode;
+  	message?: ReactNode;
   	details?: string;
   	confirm?: ReactNode;
   	cancel?: ReactNode;
@@ -91,6 +91,7 @@ declare module "cs2/ui" {
   	dismissible?: boolean;
   	cancellable?: boolean;
   	zIndex?: number;
+  	multiline?: boolean;
   }
   export const UITriggeredConfirmationDialog: React.FC<ConfirmationDialogProps>;
   export enum UISound {
