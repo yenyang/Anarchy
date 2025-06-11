@@ -130,6 +130,7 @@
   "Anarchy.TOOLTIP_TITLE[ReplaceUpgrade]": "Remplacer les améliorations",
   "Anarchy.TOOLTIP_DESCRIPTION[ReplaceUpgrade]": "Lorsque cette option est activée, le mode outil de remplacement ajoute ou supprime les mises à niveau du réseau pour les faire correspondre aux mises à niveau sélectionnées. S'il n'est pas activé, le mode outil de remplacement conservera les améliorations du réseau, si possible.",
   "Anarchy.TOOLTIP_TITLE[AnarchyComponentsTool]": "Outil des composantes d'Anarchy",
+  "Anarchy.TOOLTIP_DESCRIPTION[AnarchyComponentsTool]": "Ajoutez ou supprimez des verrouillages de transformation ou composantes d’Anarchy à l’aide d’un outil avec rayon ou à sélection unique. L’utilisation du rayon est recommandée pour les composante Anarchy, car elle permet de voir les objets cachés et d’interagir avec eux. La sélection unique ne peut pas interagir avec les objets cachés.",
   "Anarchy.TOOLTIP_DESCRIPTION[IncreaseRadius]": "Augmente le rayon.",
   "Anarchy.TOOLTIP_DESCRIPTION[DecreaseRadius]": "Diminue le rayon.",
   "Anarchy.TOOLTIP_TITLE[SingleSelection]": "Sélection unique",

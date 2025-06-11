@@ -1,3 +1,3 @@
-﻿## Patch V1.7.12
-* Fixed transform lock on sub-elements not being able to handle rotation of owner with Move it or vanilla relocate.
-* Transform lock data on sub-elements will be healed on load if it's never been rotated. 
+﻿## Patch V1.7.13
+* Fixes to replace tool mode for compatibility with Game v1.3.3f1 Quays and Piers Update.
+* Updated Localization
