@@ -502,6 +502,15 @@ namespace Anarchy.Systems.Common
 
             m_EnableToolErrorsSystem.Enabled = true;
             m_LastTool = tool.toolID;
+
+            if (m_ToolSystem.activeTool == m_ObjectToolSystem &&
+                m_ObjectToolSystem.allowRotation == false &&
+                m_ObjectToolSystem.prefab != null &&
+                m_PrefabSystem.TryGetEntity(m_ObjectToolSystem.prefab, out Entity prefabEntity1) &&
+                !EntityManager.HasComponent<Game.Objects.Marker>(prefabEntity1))
+            {
+                m_ObjectToolSystem.SetMemberValue("allowRotation", true);
+            }
         }
 
         private void OnPrefabChanged(PrefabBase prefabBase)
@@ -548,6 +557,15 @@ namespace Anarchy.Systems.Common
                 m_ElevationStepToggle.shouldBeEnabled = false;
                 m_ElevationKey.shouldBeEnabled = false;
                 m_ElevationMimicKeys.shouldBeEnabled = false;
+            }
+
+            if (m_ToolSystem.activeTool == m_ObjectToolSystem &&
+                m_ObjectToolSystem.allowRotation == false &&
+                m_ObjectToolSystem.prefab != null &&
+                m_PrefabSystem.TryGetEntity(m_ObjectToolSystem.prefab, out Entity prefabEntity1) &&
+                !EntityManager.HasComponent<Game.Objects.Marker>(prefabEntity1))
+            {
+                m_ObjectToolSystem.SetMemberValue("allowRotation", true);
             }
         }
 
