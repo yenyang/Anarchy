@@ -87,7 +87,9 @@ namespace Anarchy.Systems.ClearanceViolation
             NativeArray<Entity> entities = m_NetCompositionDataQuery.ToEntityArray(Allocator.Temp);
             foreach (Entity currentEntity in entities)
             {
-                if (EntityManager.TryGetComponent(currentEntity, out NetCompositionData netCompositionData))
+                if (EntityManager.TryGetComponent(currentEntity, out NetCompositionData netCompositionData) &&
+                    EntityManager.TryGetBuffer(currentEntity, true, out DynamicBuffer<NetCompositionPiece> netCompositionPieceBuffer) &&
+                    netCompositionPieceBuffer.Length > 0)
                 {
                     if (!EntityManager.HasComponent<HeightRangeRecord>(currentEntity))
                     {
@@ -129,7 +131,7 @@ namespace Anarchy.Systems.ClearanceViolation
                 }
                 else
                 {
-                    m_Log.Warn($"{nameof(ModifyNetCompositionDataSystem)}.{nameof(OnUpdate)} could not retrieve net composition data for Entity {currentEntity.Index}.{currentEntity.Version}.");
+                    m_Log.Debug($"{nameof(ModifyNetCompositionDataSystem)}.{nameof(OnUpdate)} could not retrieve net composition data for Entity {currentEntity.Index}.{currentEntity.Version}.");
                 }
             }
 
@@ -141,7 +143,8 @@ namespace Anarchy.Systems.ClearanceViolation
         private Bounds1 RecalculateHeightRange(Entity e)
         {
             Bounds1 heightRange = new (float.MaxValue, -float.MaxValue);
-            if (EntityManager.TryGetBuffer(e, true, out DynamicBuffer<NetCompositionPiece> netCompositionPieceBuffer))
+            if (EntityManager.TryGetBuffer(e, true, out DynamicBuffer<NetCompositionPiece> netCompositionPieceBuffer) &&
+                netCompositionPieceBuffer.Length > 0)
             {
                 foreach (NetCompositionPiece netCompositionPiece in netCompositionPieceBuffer)
                 {
@@ -165,7 +168,7 @@ namespace Anarchy.Systems.ClearanceViolation
             }
             else
             {
-                m_Log.Warn($"{nameof(ModifyNetCompositionDataSystem)}.{nameof(RecalculateHeightRange)} could not retrieve NetCompositionPiece buffer for Entity {e.Index}.{e.Version}");
+                m_Log.Debug($"{nameof(ModifyNetCompositionDataSystem)}.{nameof(RecalculateHeightRange)} could not retrieve NetCompositionPiece buffer for Entity {e.Index}.{e.Version}");
             }
 
             return heightRange;
