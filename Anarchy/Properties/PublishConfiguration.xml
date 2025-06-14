@@ -117,9 +117,9 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <!--Dependency for the mod, can be set multiple-->
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.13" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog>## Patch V1.7.13
-* Fixes to replace tool mode for compatibility with Game v1.3.3f1 Quays and Piers Update.
-* Updated Localization</ChangeLog>
+  <ChangeLog>## Patch V1.7.14
+* Allows rotation for all objects (trees, plants, vehicles, decals, props, etc.) other than cylindrical invisible markers.
+* Fixes blocking out the sun with vanilla piers and other prefabs that would cause the same issue.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
