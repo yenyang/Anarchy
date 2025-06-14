@@ -1,3 +1,3 @@
-﻿## Patch V1.7.13
-* Fixes to replace tool mode for compatibility with Game v1.3.3f1 Quays and Piers Update.
-* Updated Localization
+﻿## Patch V1.7.14
+* Allows rotation for all objects (trees, plants, vehicles, decals, props, etc.) other than cylindrical invisible markers.
+* Fixes blocking out the sun with vanilla piers and other prefabs that would cause the same issue.
