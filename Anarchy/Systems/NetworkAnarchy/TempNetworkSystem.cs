@@ -65,7 +65,8 @@ namespace Anarchy.Systems.NetworkAnarchy
             { NetworkAnarchyUISystem.Composition.Elevated, CompositionFlags.General.Elevated },
             { NetworkAnarchyUISystem.Composition.Tunnel, CompositionFlags.General.Tunnel },
             { NetworkAnarchyUISystem.Composition.WideMedian, CompositionFlags.General.WideMedian },
-            { NetworkAnarchyUISystem.Composition.Lighting, CompositionFlags.General.Lighting },
+
+            // { NetworkAnarchyUISystem.Composition.Lighting, CompositionFlags.General.Lighting },
             { NetworkAnarchyUISystem.Composition.GrassStrip, CompositionFlags.General.PrimaryMiddleBeautification },
             { NetworkAnarchyUISystem.Composition.Trees, CompositionFlags.General.SecondaryMiddleBeautification },
             { NetworkAnarchyUISystem.Composition.Trees | NetworkAnarchyUISystem.Composition.GrassStrip, CompositionFlags.General.SecondaryMiddleBeautification | CompositionFlags.General.PrimaryMiddleBeautification },
