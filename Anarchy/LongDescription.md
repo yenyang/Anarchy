@@ -32,7 +32,7 @@ The mod also has:
 * Anarchy and Transform Lock can be added or removed after placement via the selected info panel.
 * In Game panel for controlling which error checks are never disabled, disabled with Anarchy, or always disabled.
 * Optional Network Anarchy options: constant slope, force ground, force elevated, force tunnel (if needed, looks undesirable), and expanded elevation range.
-* Optional Network upgrades overhaul that lets you apply network upgrades left, right, or general during placement or replacement. Includes retaining walls, quays, trees, grass, wide sidewalks, lighting, medians, etc.
+* Optional Network upgrades overhaul that lets you apply network upgrades left, right, or general during placement or replacement. Includes retaining walls, quays, trees, grass, wide sidewalks, medians, etc.
 * Optional Elevation Step slider.
 * Anarchy Components tool for quickly adding or removing Anarchy and Transform Lock components from applicable objects. Radius selection is recommended for Anarchy component since you can see and interact with overriden (invisible) objects and bring them back to normal.
 * Optional Network upgrades assets: Originally part of Extended Road Upgrades and included here with permission from ST-Apps. This option adds Retaining Wall, Quay, Elevated, and Tunnel assets to vanilla menu for asset selection. This mod includes multiple fixes to issues from ERU.

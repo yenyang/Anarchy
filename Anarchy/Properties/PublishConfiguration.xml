@@ -40,7 +40,7 @@ The mod also has:
 * Anarchy and Transform Lock can be added or removed after placement via the selected info panel.
 * In Game panel for controlling which error checks are never disabled, disabled with Anarchy, or always disabled.
 * Optional Network Anarchy options: constant slope, force ground, force elevated, force tunnel (if needed, looks undesirable), and expanded elevation range.
-* Optional Network upgrades overhaul that lets you apply network upgrades left, right, or general during placement or replacement. Includes retaining walls, quays, trees, grass, wide sidewalks, lighting, medians, etc.
+* Optional Network upgrades overhaul that lets you apply network upgrades left, right, or general during placement or replacement. Includes retaining walls, quays, trees, grass, wide sidewalks, medians, etc.
 * Optional Elevation Step slider.
 * Anarchy Components tool for quickly adding or removing Anarchy and Transform Lock components from applicable objects. Radius selection is recommended for Anarchy component since you can see and interact with overriden (invisible) objects and bring them back to normal.
 * Optional Network upgrades assets: Originally part of Extended Road Upgrades and included here with permission from ST-Apps. This option adds Retaining Wall, Quay, Elevated, and Tunnel assets to vanilla menu for asset selection. This mod includes multiple fixes to issues from ERU.
@@ -118,7 +118,8 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.13" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>## Patch V1.7.15
-* Fixes Extended Road Upgrades: Retaining Walls and Quays.</ChangeLog>
+* Fixes Extended Road Upgrades: Retaining Walls and Quays.
+* Regression: Lighting removed as a network anarchy upgrade. Doesn't transfer electricity correctly. May never have worked correctly.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
