@@ -7,6 +7,7 @@ namespace Anarchy.Systems.NetworkAnarchy
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Reflection;
     using Anarchy.Components;
     using Anarchy.Extensions;
     using Colossal.Entities;
@@ -64,7 +65,8 @@ namespace Anarchy.Systems.NetworkAnarchy
             { NetworkAnarchyUISystem.Composition.Elevated, CompositionFlags.General.Elevated },
             { NetworkAnarchyUISystem.Composition.Tunnel, CompositionFlags.General.Tunnel },
             { NetworkAnarchyUISystem.Composition.WideMedian, CompositionFlags.General.WideMedian },
-            { NetworkAnarchyUISystem.Composition.Lighting, CompositionFlags.General.Lighting },
+
+            // { NetworkAnarchyUISystem.Composition.Lighting, CompositionFlags.General.Lighting },
             { NetworkAnarchyUISystem.Composition.GrassStrip, CompositionFlags.General.PrimaryMiddleBeautification },
             { NetworkAnarchyUISystem.Composition.Trees, CompositionFlags.General.SecondaryMiddleBeautification },
             { NetworkAnarchyUISystem.Composition.Trees | NetworkAnarchyUISystem.Composition.GrassStrip, CompositionFlags.General.SecondaryMiddleBeautification | CompositionFlags.General.PrimaryMiddleBeautification },
@@ -415,8 +417,15 @@ namespace Anarchy.Systems.NetworkAnarchy
                 {
                     compositionFlags = currentUpgrades.m_Flags;
                     m_Log.Debug($"{nameof(TempNetworkSystem)}.{nameof(OnUpdate)} Replace Upgraded General = {compositionFlags.m_General} Left = {compositionFlags.m_Left} Right = {compositionFlags.m_Right}");
-                    compositionFlags.m_Left &= ~(CompositionFlags.Side.WideSidewalk | CompositionFlags.Side.Lowered | CompositionFlags.Side.Raised | CompositionFlags.Side.PrimaryBeautification | CompositionFlags.Side.SecondaryBeautification | CompositionFlags.Side.SoundBarrier);
-                    compositionFlags.m_Right &= ~(CompositionFlags.Side.WideSidewalk | CompositionFlags.Side.Lowered | CompositionFlags.Side.Raised | CompositionFlags.Side.PrimaryBeautification | CompositionFlags.Side.SecondaryBeautification | CompositionFlags.Side.SoundBarrier);
+                    if (!UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID()) || effectiveLeftUpgrades != 0)
+                    {
+                        compositionFlags.m_Left &= ~(CompositionFlags.Side.WideSidewalk | CompositionFlags.Side.Lowered | CompositionFlags.Side.Raised | CompositionFlags.Side.PrimaryBeautification | CompositionFlags.Side.SecondaryBeautification | CompositionFlags.Side.SoundBarrier);
+                    }
+
+                    if (!UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID()) || effectiveRightUpgrades != 0)
+                    {
+                        compositionFlags.m_Right &= ~(CompositionFlags.Side.WideSidewalk | CompositionFlags.Side.Lowered | CompositionFlags.Side.Raised | CompositionFlags.Side.PrimaryBeautification | CompositionFlags.Side.SecondaryBeautification | CompositionFlags.Side.SoundBarrier);
+                    }
                 }
 
 
@@ -469,7 +478,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                 }
 
                 if (SideUpgradeLookup.ContainsKey(effectiveLeftUpgrades)
-                    && (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace || m_UISystem.ReplaceLeftUpgrade)
+                    && (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace || m_UISystem.ReplaceLeftUpgrade || (UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID()) && effectiveLeftUpgrades != 0))
                     && (!UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID()) || effectiveLeftUpgrades != 0))
                 {
                     if (effectiveLeftUpgrades != 0
@@ -487,11 +496,11 @@ namespace Anarchy.Systems.NetworkAnarchy
                         compositionFlags.m_Left |= leftSideTracksAndLanes;
                     }
 
-                    m_Log.Debug($"{nameof(TempNetworkSystem)}.{nameof(OnUpdate)} m_NetToolSystem.actualMode = {m_NetToolSystem.actualMode} m_UISystem.ReplaceLeftUpgrade {m_UISystem.ReplaceLeftUpgrade}");
+                    m_Log.Debug($"{nameof(TempNetworkSystem)}.{nameof(OnUpdate)} m_NetToolSystem.actualMode = {m_NetToolSystem.actualMode} m_UISystem.ReplaceLeftUpgrade {m_UISystem.ReplaceLeftUpgrade} compositionFlags.m_Left {compositionFlags.m_Left}");
                 }
 
                 if (SideUpgradeLookup.ContainsKey(effectiveRightUpgrades)
-                    && (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace || m_UISystem.ReplaceRightUpgrade)
+                    && (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace || m_UISystem.ReplaceRightUpgrade || (UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID()) && effectiveRightUpgrades != 0))
                     && (!UpgradeLookup.Contains(m_ToolSystem.activePrefab.GetPrefabID()) || effectiveRightUpgrades != 0))
                 {
                     if (effectiveRightUpgrades != 0
@@ -508,6 +517,8 @@ namespace Anarchy.Systems.NetworkAnarchy
                     {
                         compositionFlags.m_Right |= rightSideTracksAndLanes;
                     }
+
+                    m_Log.Debug($"{nameof(TempNetworkSystem)}.{nameof(OnUpdate)} m_NetToolSystem.actualMode = {m_NetToolSystem.actualMode} m_UISystem.ReplaceRightUpgrade {m_UISystem.ReplaceRightUpgrade} compositionFlags.m_Right {compositionFlags.m_Right}");
                 }
 
                 if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace)

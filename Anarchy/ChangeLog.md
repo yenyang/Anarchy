@@ -1,3 +1,3 @@
-﻿## Patch V1.7.14
-* Allows rotation for all objects (trees, plants, vehicles, decals, props, etc.) other than cylindrical invisible markers.
-* Fixes blocking out the sun with vanilla piers and other prefabs that would cause the same issue.
+﻿## Patch V1.7.15
+* Fixes Extended Road Upgrades: Retaining Walls and Quays.
+* Regression: Lighting removed as a network anarchy upgrade. Doesn't transfer electricity correctly. May never have worked correctly.
