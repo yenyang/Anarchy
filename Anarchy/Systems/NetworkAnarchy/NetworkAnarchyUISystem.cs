@@ -42,6 +42,7 @@ namespace Anarchy.Systems.NetworkAnarchy
         private ValueBindingHelper<bool> m_ShowElevationStepSlider;
         private bool m_InfoviewsFixed = false;
         private EntityQuery m_HeightRangePlaceableNetQuery;
+        private EndFrameBarrier m_Barrier;
 
         /// <summary>
         /// An enum for network cross section modes.
@@ -224,6 +225,7 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_TempNetworkSystem = World.GetOrCreateSystemManaged<TempNetworkSystem>();
+            m_Barrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
 
             // Establishing bindings between UI and C#.
             m_LeftUpgrade = CreateBinding("LeftUpgrade", SideUpgrades.None);
@@ -567,8 +569,9 @@ namespace Anarchy.Systems.NetworkAnarchy
                 if (EntityManager.TryGetComponent(entity, out PlaceableNetData placeableNetData) && EntityManager.TryGetComponent(entity, out HeightRangeRecord heightRangeRecord)) 
                 {
                     placeableNetData.m_ElevationRange = new Colossal.Mathematics.Bounds1(heightRangeRecord.min, heightRangeRecord.max);
-                    EntityManager.SetComponentData(entity, placeableNetData);
-                    EntityManager.RemoveComponent<HeightRangeRecord>(entity);
+                    EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
+                    buffer.SetComponent(entity, placeableNetData);
+                    buffer.RemoveComponent<HeightRangeRecord>(entity);
 #if DEBUG
                     if (m_PrefabSystem.TryGetPrefab(entity, out PrefabBase prefabBase))
                     {
@@ -588,10 +591,11 @@ namespace Anarchy.Systems.NetworkAnarchy
                     min = placeableNetData.m_ElevationRange.min,
                     max = placeableNetData.m_ElevationRange.max,
                 };
-                EntityManager.AddComponent<HeightRangeRecord>(prefabEntity);
-                EntityManager.SetComponentData(prefabEntity, heightRangeRecord);
+                EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
+                buffer.AddComponent<HeightRangeRecord>(prefabEntity);
+                buffer.SetComponent(prefabEntity, heightRangeRecord);
                 placeableNetData.m_ElevationRange = new Colossal.Mathematics.Bounds1(-1000f, 1000f);
-                EntityManager.SetComponentData(prefabEntity, placeableNetData);
+                buffer.SetComponent(prefabEntity, placeableNetData);
                 m_Log.Debug($"{nameof(NetworkAnarchyUISystem)}.{nameof(ExpandPrefabElevationRange)} Expanded {prefabID.GetName()} elevation range to -1000 to 1000.");
             }
         }
