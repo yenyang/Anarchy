@@ -15,6 +15,7 @@ namespace Anarchy.Systems.ErrorChecks
     using Game.Tools;
     using Unity.Collections;
     using Unity.Entities;
+    using Game.Common;
 
     /// <summary>
     /// A system the queries for toolErrorPrefabs and then disables relevent tool errors in game if active tool is applicable.
@@ -27,6 +28,7 @@ namespace Anarchy.Systems.ErrorChecks
         private EnableToolErrorsSystem m_EnableToolErrorsSystem;
         private ILog m_Log;
         private PrefabSystem m_PrefabSystem;
+        private ModificationBarrier5 m_Barrier;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DisableToolErrorsSystem"/> class.
@@ -43,6 +45,7 @@ namespace Anarchy.Systems.ErrorChecks
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_AnarchyUISystem = World.GetOrCreateSystemManaged<AnarchyUISystem>();
+            m_Barrier = World.GetOrCreateSystemManaged<ModificationBarrier5>();
             m_Log.Info($"{nameof(DisableToolErrorsSystem)} Created.");
             m_ToolErrorPrefabQuery = GetEntityQuery(new EntityQueryDesc[]
             {
@@ -67,6 +70,8 @@ namespace Anarchy.Systems.ErrorChecks
                 return;
             }
 
+            EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
+
             if (AnarchyMod.Instance.Settings.AllowPlacingMultipleUniqueBuildings)
             {
                 PrefabID prefabID = new ("NotificationIconPrefab", "Already Exists");
@@ -74,11 +79,13 @@ namespace Anarchy.Systems.ErrorChecks
                 {
                     if (m_PrefabSystem.TryGetEntity(prefabBase, out Entity entity))
                     {
-                        if (EntityManager.TryGetComponent(entity, out ToolErrorData toolErrorData))
+                        if (EntityManager.TryGetComponent(entity, out ToolErrorData toolErrorData) &&
+                          ((toolErrorData.m_Flags & ToolErrorFlags.DisableInEditor) != ToolErrorFlags.DisableInEditor ||
+                           (toolErrorData.m_Flags & ToolErrorFlags.DisableInGame) != ToolErrorFlags.DisableInGame))
                         {
                             toolErrorData.m_Flags |= ToolErrorFlags.DisableInGame;
                             toolErrorData.m_Flags |= ToolErrorFlags.DisableInEditor;
-                            EntityManager.SetComponentData(entity, toolErrorData);
+                            buffer.SetComponent(entity, toolErrorData);
                         }
                     }
                 }
@@ -94,11 +101,13 @@ namespace Anarchy.Systems.ErrorChecks
                     m_Log.Verbose("DisableToolErrorsSystem.OnUpdate currentEntity.index = " + currentEntity.Index + " currentEntity.version = " + currentEntity.Version + " ErrorType = " + toolErrorData.m_Error.ToString());
                     m_Log.Verbose("DisableToolErrorsSystem.OnUpdate toolErrorData.m_Flags = " + toolErrorData.m_Flags.ToString());
 #endif
-                    if (errorTypesToDisable.Contains(toolErrorData.m_Error))
+                    if (errorTypesToDisable.Contains(toolErrorData.m_Error) &&
+                       ((toolErrorData.m_Flags & ToolErrorFlags.DisableInEditor) != ToolErrorFlags.DisableInEditor ||
+                       (toolErrorData.m_Flags & ToolErrorFlags.DisableInGame) != ToolErrorFlags.DisableInGame))
                     {
                         toolErrorData.m_Flags |= ToolErrorFlags.DisableInGame;
                         toolErrorData.m_Flags |= ToolErrorFlags.DisableInEditor;
-                        EntityManager.SetComponentData(currentEntity, toolErrorData);
+                        buffer.SetComponent(currentEntity, toolErrorData);
                     }
                 }
             }

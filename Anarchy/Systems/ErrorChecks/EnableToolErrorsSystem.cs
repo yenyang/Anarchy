@@ -10,6 +10,7 @@ namespace Anarchy.Systems.ErrorChecks
     using Colossal.Entities;
     using Colossal.Logging;
     using Game;
+    using Game.Common;
     using Game.Prefabs;
     using Unity.Collections;
     using Unity.Entities;
@@ -19,6 +20,7 @@ namespace Anarchy.Systems.ErrorChecks
     /// </summary>
     public partial class EnableToolErrorsSystem : GameSystemBase
     {
+        private ModificationEndBarrier m_Barrier;
         private EntityQuery m_ToolErrorPrefabQuery;
         private AnarchyUISystem m_AnarchyUISystem;
         private ILog m_Log;
@@ -43,6 +45,7 @@ namespace Anarchy.Systems.ErrorChecks
             m_Log = AnarchyMod.Instance.Log;
             m_Log.Info($"{nameof(EnableToolErrorsSystem)} Created.");
             m_AnarchyUISystem = World.GetOrCreateSystemManaged<AnarchyUISystem>();
+            m_Barrier = World.GetOrCreateSystemManaged<ModificationEndBarrier>();
             Enabled = false;
             m_ToolErrorPrefabQuery = GetEntityQuery(new EntityQueryDesc[]
             {
@@ -62,22 +65,32 @@ namespace Anarchy.Systems.ErrorChecks
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
+
+            EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
             NativeArray<Entity> toolErrorPrefabs = m_ToolErrorPrefabQuery.ToEntityArray(Allocator.Temp);
             foreach (Entity currentEntity in toolErrorPrefabs)
             {
                 if (EntityManager.TryGetComponent<ToolErrorData>(currentEntity, out ToolErrorData toolErrorData))
                 {
-                    if (toolErrorData.m_Error != Game.Tools.ErrorType.ExceedsLotLimits)
+                    bool flagChanged = false;
+                    if (toolErrorData.m_Error != Game.Tools.ErrorType.ExceedsLotLimits &&
+                       (toolErrorData.m_Flags & ToolErrorFlags.DisableInGame) == ToolErrorFlags.DisableInGame)
                     {
                         toolErrorData.m_Flags &= ~ToolErrorFlags.DisableInGame;
+                        flagChanged = true;
                     }
 
-                    if (!m_DoNotReEnableForEditor.Contains(toolErrorData.m_Error))
+                    if (!m_DoNotReEnableForEditor.Contains(toolErrorData.m_Error) &&
+                       (toolErrorData.m_Flags & ToolErrorFlags.DisableInEditor) == ToolErrorFlags.DisableInGame)
                     {
                         toolErrorData.m_Flags &= ~ToolErrorFlags.DisableInEditor;
+                        flagChanged = true;
                     }
 
-                    EntityManager.SetComponentData(currentEntity, toolErrorData);
+                    if (flagChanged)
+                    {
+                        buffer.SetComponent(currentEntity, toolErrorData);
+                    }
 #if VERBOSE
                     AnarchyIMod.Logger.Verbose(("DisableToolErrorsSystem.OnUpdate currentEntity.index = " + currentEntity.Index + " currentEntity.version = " + currentEntity.Version + " ErrorType = " + toolErrorData.m_Error.ToString());
                     AnarchyIMod.Logger.Verbose("DisableToolErrorsSystem.OnUpdate toolErrorData.m_Flags = " + toolErrorData.m_Flags.ToString());
