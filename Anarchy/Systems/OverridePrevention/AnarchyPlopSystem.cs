@@ -47,6 +47,7 @@ namespace Anarchy.Systems.OverridePrevention
         private EntityQuery m_OwnedAndOverridenQuery;
         private TerrainSystem m_TerrainSystem;
         private bool m_ElevationChangeIsNegative;
+        private ModificationEndBarrier m_Barrier;
 
         /// <summary>
         /// Gets or sets a value indicating whether Elevation change is negative.
@@ -64,6 +65,7 @@ namespace Anarchy.Systems.OverridePrevention
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_TerrainSystem = World.GetOrCreateSystemManaged<TerrainSystem>();
+            m_Barrier = World.GetOrCreateSystemManaged<ModificationEndBarrier>();
             m_AppliedQuery = GetEntityQuery(new EntityQueryDesc
             {
                 All = new ComponentType[]
@@ -229,12 +231,15 @@ namespace Anarchy.Systems.OverridePrevention
 
             if (!m_NetToolSystem.TrySetPrefab(m_ToolSystem.activePrefab) || m_ToolSystem.activePrefab is NetLaneGeometryPrefab || m_ToolSystem.activePrefab is NetLanePrefab)
             {
+                EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
+
                 NativeArray<Entity> appliedEntities = m_AppliedQuery.ToEntityArray(Allocator.Temp);
+                NativeArray<Entity> ownedAndOverridenEnities = m_OwnedAndOverridenQuery.ToEntityArray(Allocator.Temp);
                 m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)}");
                 if (m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID))
                 {
-                    EntityManager.RemoveComponent(m_AppliedQuery, ComponentType.ReadWrite<Overridden>());
-                    EntityManager.RemoveComponent(m_OwnedAndOverridenQuery, ComponentType.ReadWrite<Overridden>());
+                    buffer.RemoveComponent<Overridden>(appliedEntities);
+                    buffer.RemoveComponent<Overridden>(ownedAndOverridenEnities);
                 }
 
                 foreach (Entity entity in appliedEntities)
@@ -258,26 +263,26 @@ namespace Anarchy.Systems.OverridePrevention
 
                                 if (m_ToolSystem.actionMode.IsGame() && EntityManager.TryGetComponent(entity, out Attached attachedComponent) && !isInappropriate)
                                 {
-                                    if (EntityManager.TryGetBuffer(attachedComponent.m_Parent, isReadOnly: false, out DynamicBuffer<Game.Objects.SubObject> subObjectBuffer))
+                                    if (EntityManager.TryGetBuffer(attachedComponent.m_Parent, isReadOnly: true, out DynamicBuffer<Game.Objects.SubObject> subObjectBuffer))
                                     {
                                         // Loop through all subobjecst started at last entry to try and quickly find applied entity.
-                                        for (int i = subObjectBuffer.Length - 1; i >= 0; i--)
+                                        DynamicBuffer<Game.Objects.SubObject> subObjects = buffer.AddBuffer<Game.Objects.SubObject>(attachedComponent.m_Parent);
+                                        for (int i = 0; i < subObjectBuffer.Length; i++)
                                         {
                                             Game.Objects.SubObject subObject = subObjectBuffer[i];
-                                            if (subObject.m_SubObject == entity)
+                                            if (subObject.m_SubObject != entity)
                                             {
-                                                subObjectBuffer.RemoveAt(i);
-                                                break;
+                                                subObjects.Add(subObject);
                                             }
                                         }
                                     }
 
-                                    EntityManager.RemoveComponent<Attached>(entity);
+                                    buffer.RemoveComponent<Attached>(entity);
                                     if (EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform) && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create && !EntityManager.HasComponent<TransformRecord>(entity))
                                     {
-                                        EntityManager.AddComponent<TransformRecord>(entity);
+                                        buffer.AddComponent<TransformRecord>(entity);
                                         TransformRecord transformRecord = new () { m_Position = originalTransform.m_Position, m_Rotation = originalTransform.m_Rotation };
-                                        EntityManager.SetComponentData(entity, transformRecord);
+                                        buffer.SetComponent(entity, transformRecord);
                                     }
                                 }
 
@@ -290,9 +295,9 @@ namespace Anarchy.Systems.OverridePrevention
                                     (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") &&
                                     (m_AnarchyUISystem.LockElevation || (originalTransform2.m_Position.y <= terrainHeight - 0.1f && m_ElevationChangeIsNegative)))
                                 {
-                                    EntityManager.AddComponent<TransformRecord>(entity);
+                                    buffer.AddComponent<TransformRecord>(entity);
                                     TransformRecord transformRecord = new () { m_Position = originalTransform2.m_Position, m_Rotation = originalTransform2.m_Rotation };
-                                    EntityManager.SetComponentData(entity, transformRecord);
+                                    buffer.SetComponent(entity, transformRecord);
 
                                     if (!EntityManager.HasComponent<Game.Objects.Elevation>(entity) && originalTransform2.m_Position.y <= terrainHeight - 0.1f && m_ElevationChangeIsNegative)
                                     {
@@ -302,14 +307,14 @@ namespace Anarchy.Systems.OverridePrevention
                                             m_Elevation = originalTransform2.m_Position.y - terrainHeight,
                                             m_Flags = ElevationFlags.Lowered,
                                         };
-                                        EntityManager.SetComponentData(entity, elevation);
+                                        buffer.SetComponent(entity, elevation);
                                     }
                                 }
 
                                 if (m_AnarchyUISystem.AnarchyEnabled && m_AppropriateTools.Contains(m_ToolSystem.activeTool.toolID) && (objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) == Game.Objects.GeometryFlags.Overridable)
                                 {
                                     m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)} Added PreventOverride to {prefabBase.name}");
-                                    EntityManager.AddComponent<PreventOverride>(entity);
+                                    buffer.AddComponent<PreventOverride>(entity);
 
                                     continue;
                                 }
@@ -321,9 +326,9 @@ namespace Anarchy.Systems.OverridePrevention
                                 {
                                     Game.Net.SubLane subLane = subLaneBuffer[i];
                                     m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)} Added PreventOverride to {prefabBase.name}");
-                                    EntityManager.AddComponent(subLane.m_SubLane, ComponentType.ReadOnly<PreventOverride>());
+                                    buffer.AddComponent(subLane.m_SubLane, ComponentType.ReadOnly<PreventOverride>());
                                     m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)} Added DoNotForceUpdate to {prefabBase.name}");
-                                    EntityManager.AddComponent(subLane.m_SubLane, ComponentType.ReadOnly<DoNotForceUpdate>());
+                                    buffer.AddComponent(subLane.m_SubLane, ComponentType.ReadOnly<DoNotForceUpdate>());
                                 }
                             }
                         }

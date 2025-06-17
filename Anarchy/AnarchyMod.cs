@@ -131,7 +131,7 @@ namespace Anarchy
             updateSystem.UpdateAt<DisableToolErrorsSystem>(SystemUpdatePhase.Modification5);
             updateSystem.UpdateAt<EnableToolErrorsSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<AnarchyUISystem>(SystemUpdatePhase.UIUpdate);
-            updateSystem.UpdateBefore<AnarchyPlopSystem>(SystemUpdatePhase.ModificationEnd);
+            updateSystem.UpdateAt<AnarchyPlopSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<PreventOverrideSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<RemoveOverridenSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<PreventCullingSystem>(SystemUpdatePhase.ToolUpdate);
