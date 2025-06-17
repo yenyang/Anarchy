@@ -33,6 +33,7 @@ namespace Anarchy.Systems.NetworkAnarchy
         private PrefabSystem m_PrefabSystem;
         private NetworkAnarchyUISystem m_UISystem;
         private EntityQuery m_NetCourseQuery;
+        public ModificationBarrier1 m_Barrier;
         private ILog m_Log;
 
         /// <summary>
@@ -50,6 +51,7 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
+            m_Barrier = World.GetOrCreateSystemManaged<ModificationBarrier1>();
             m_UISystem = World.GetOrCreateSystemManaged<NetworkAnarchyUISystem>();
             m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_NetToolSystem;
             m_Log.Info($"[{nameof(NetworkDefinitionSystem)}] {nameof(OnCreate)}");
@@ -74,7 +76,7 @@ namespace Anarchy.Systems.NetworkAnarchy
             }
 
             NativeArray<Entity> entities = m_NetCourseQuery.ToEntityArray(Allocator.Temp);
-
+            EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
             // If not constant slope only check and set elevations for network composition mode.
             if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.ConstantSlope) != NetworkAnarchyUISystem.Composition.ConstantSlope
                 || m_NetToolSystem.actualMode == NetToolSystem.Mode.Grid)
@@ -84,7 +86,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                     if (EntityManager.TryGetComponent(entity, out NetCourse netCourse))
                     {
                         CheckAndSetElevations(ref netCourse);
-                        EntityManager.SetComponentData(entity, netCourse);
+                        buffer.SetComponent(entity, netCourse);
                     }
                 }
 
@@ -109,12 +111,16 @@ namespace Anarchy.Systems.NetworkAnarchy
             CalculateSlope(entities, out float slope, out float parallelSlope, ref netCourses, ref parallelCourses);
 
             OrderNetCourses(netCourses, out NativeArray<Entity> netCourseEntities, out NativeArray<NetCourse> netCoursesArray);
-            ProcessNetCourses(netCourseEntities, netCoursesArray, slope);
+            ProcessNetCourses(netCourseEntities, netCoursesArray, slope, buffer);
             if (parallelCourses.Count > 0)
             {
                 OrderParallelNetCourses(parallelCourses, out NativeArray<Entity> parallelEntities, out NativeArray<NetCourse> parallelNetCourses);
-                ProcessParallelNetCourses(parallelEntities, parallelNetCourses, parallelSlope);
+                ProcessParallelNetCourses(parallelEntities, parallelNetCourses, parallelSlope, buffer);
             }
+
+            buffer.Playback(EntityManager);
+            buffer.ShouldPlayback = false;
+            buffer.Dispose();
         }
 
         private void CalculateSlope(NativeArray<Entity> entities, out float slope, out float parallelSlope, ref NativeHashMap<Entity, NetCourse> netCourses, ref NativeHashMap<Entity, NetCourse> parallelCourses)
@@ -296,7 +302,7 @@ namespace Anarchy.Systems.NetworkAnarchy
             }
         }
 
-        private void ProcessNetCourses(NativeArray<Entity> entities, NativeArray<NetCourse> netCourses, float slope)
+        private void ProcessNetCourses(NativeArray<Entity> entities, NativeArray<NetCourse> netCourses, float slope, EntityCommandBuffer buffer)
         {
             for (int i = 0; i < netCourses.Length - 1; i++)
             {
@@ -329,7 +335,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                 nextCourse.m_StartPosition.m_Elevation = currentCourse.m_EndPosition.m_Elevation;
 
                 netCourses[i] = currentCourse;
-                EntityManager.SetComponentData(entities[i], netCourses[i]);
+                buffer.SetComponent(entities[i], netCourses[i]);
                 netCourses[i + 1] = nextCourse;
 
                 if ((nextCourse.m_EndPosition.m_Flags & CoursePosFlags.IsLast) == CoursePosFlags.IsLast)
@@ -342,7 +348,7 @@ namespace Anarchy.Systems.NetworkAnarchy
 
                     CheckAndSetElevations(ref nextCourse);
 
-                    EntityManager.SetComponentData(entities[i + 1], nextCourse);
+                    buffer.SetComponent(entities[i + 1], nextCourse);
                 }
             }
 
@@ -357,11 +363,11 @@ namespace Anarchy.Systems.NetworkAnarchy
 
                 CheckAndSetElevations(ref nextCourse);
 
-                EntityManager.SetComponentData(entities[0], nextCourse);
+                buffer.SetComponent(entities[0], nextCourse);
             }
         }
 
-        private void ProcessParallelNetCourses(NativeArray<Entity> entities, NativeArray<NetCourse> netCourses, float slope)
+        private void ProcessParallelNetCourses(NativeArray<Entity> entities, NativeArray<NetCourse> netCourses, float slope, EntityCommandBuffer buffer)
         {
             for (int i = 0; i < netCourses.Length - 1; i++)
             {
@@ -394,7 +400,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                 nextCourse.m_EndPosition.m_Elevation = currentCourse.m_StartPosition.m_Elevation;
 
                 netCourses[i] = currentCourse;
-                EntityManager.SetComponentData(entities[i], netCourses[i]);
+                buffer.SetComponent(entities[i], netCourses[i]);
                 netCourses[i + 1] = nextCourse;
 
                 if ((nextCourse.m_StartPosition.m_Flags & CoursePosFlags.IsLast) == CoursePosFlags.IsLast)
@@ -407,7 +413,7 @@ namespace Anarchy.Systems.NetworkAnarchy
 
                     CheckAndSetElevations(ref nextCourse);
 
-                    EntityManager.SetComponentData(entities[i + 1], nextCourse);
+                    buffer.SetComponent(entities[i + 1], nextCourse);
                 }
             }
 
@@ -422,7 +428,7 @@ namespace Anarchy.Systems.NetworkAnarchy
 
                 CheckAndSetElevations(ref nextCourse);
 
-                EntityManager.SetComponentData(entities[0], nextCourse);
+                buffer.SetComponent(entities[0], nextCourse);
             }
         }
     }
