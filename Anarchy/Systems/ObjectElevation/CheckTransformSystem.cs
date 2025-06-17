@@ -184,7 +184,9 @@ namespace Anarchy.Systems.ObjectElevation
                     transformRecord.m_Rotation = localTransform.m_Rotation;
                 }
 
-                EntityManager.SetComponentData(m_ToolSystem.selected, transformRecord);
+                EntityCommandBuffer buffer = m_ModificationBarrier1.CreateCommandBuffer();
+
+                buffer.SetComponent(m_ToolSystem.selected, transformRecord);
             }
         }
 
