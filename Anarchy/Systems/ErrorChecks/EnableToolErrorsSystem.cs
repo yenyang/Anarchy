@@ -53,7 +53,7 @@ namespace Anarchy.Systems.ErrorChecks
                 {
                     All = new ComponentType[]
                     {
-                        ComponentType.ReadWrite<ToolErrorData>(),
+                        ComponentType.ReadOnly<ToolErrorData>(),
                         ComponentType.ReadOnly<NotificationIconData>(),
                     },
                 },

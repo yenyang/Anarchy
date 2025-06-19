@@ -59,7 +59,7 @@ namespace Anarchy.Systems.ClearanceViolation
                 {
                     All = new ComponentType[]
                     {
-                        ComponentType.ReadWrite<NetCompositionData>(),
+                        ComponentType.ReadOnly<NetCompositionData>(),
                     },
                     None = new ComponentType[]
                     {

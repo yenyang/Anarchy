@@ -50,8 +50,8 @@ namespace Anarchy.Systems.ClearanceViolation
                 {
                     All = new ComponentType[]
                     {
-                        ComponentType.ReadWrite<HeightRangeRecord>(),
-                        ComponentType.ReadWrite<NetCompositionData>(),
+                        ComponentType.ReadOnly<HeightRangeRecord>(),
+                        ComponentType.ReadOnly<NetCompositionData>(),
                     },
                 },
             });

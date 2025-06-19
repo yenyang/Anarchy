@@ -42,7 +42,7 @@ namespace Anarchy.Systems.OverridePrevention
                 All = new ComponentType[]
                {
                     ComponentType.ReadOnly<PreventOverride>(),
-                    ComponentType.ReadWrite<Overridden>(),
+                    ComponentType.ReadOnly<Overridden>(),
                },
                 None = new ComponentType[]
                 {

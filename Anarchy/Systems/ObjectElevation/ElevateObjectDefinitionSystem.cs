@@ -27,7 +27,6 @@ namespace Anarchy.Systems.ObjectElevation
         private AnarchyUISystem m_AnarchyUISystem;
         private EntityQuery m_ObjectDefinitionQuery;
         private ILog m_Log;
-        private ModificationBarrier1 m_Barrier;
 
         private float m_ElevationDelta;
 
@@ -46,9 +45,7 @@ namespace Anarchy.Systems.ObjectElevation
             m_Log = AnarchyMod.Instance.Log;
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
-
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
-            m_Barrier = World.GetOrCreateSystemManaged<ModificationBarrier1>();
             m_AnarchyUISystem = World.CreateSystemManaged<AnarchyUISystem>();
             m_Log.Info($"[{nameof(ElevateObjectDefinitionSystem)}] {nameof(OnCreate)}");
             m_ObjectDefinitionQuery = SystemAPI.QueryBuilder()
@@ -77,7 +74,7 @@ namespace Anarchy.Systems.ObjectElevation
 
             NativeArray<Entity> entities = m_ObjectDefinitionQuery.ToEntityArray(Allocator.Temp);
 
-            EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
+            EntityCommandBuffer buffer = new EntityCommandBuffer(Allocator.Temp);
             foreach (Entity entity in entities)
             {
                 if (!EntityManager.TryGetComponent(entity, out CreationDefinition currentCreationDefinition))
@@ -121,7 +118,6 @@ namespace Anarchy.Systems.ObjectElevation
             }
 
             buffer.Playback(EntityManager);
-            buffer.ShouldPlayback = false;
             buffer.Dispose();
 
             entities.Dispose();

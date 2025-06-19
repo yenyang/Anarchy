@@ -91,7 +91,7 @@ namespace Anarchy.Systems.ObjectElevation
                 All = new ComponentType[]
                {
                     ComponentType.ReadOnly<Updated>(),
-                    ComponentType.ReadWrite<TransformRecord>(),
+                    ComponentType.ReadOnly<TransformRecord>(),
                     ComponentType.ReadOnly<Game.Objects.Transform>(),
                },
                 None = new ComponentType[]

@@ -14,6 +14,7 @@ namespace Anarchy.Systems.NetworkAnarchy
     using Game.Tools;
     using Unity.Collections;
     using Unity.Entities;
+    using Unity.Entities.UniversalDelegates;
     using Unity.Mathematics;
     using UnityEngine;
 
@@ -33,7 +34,6 @@ namespace Anarchy.Systems.NetworkAnarchy
         private PrefabSystem m_PrefabSystem;
         private NetworkAnarchyUISystem m_UISystem;
         private EntityQuery m_NetCourseQuery;
-        public ModificationBarrier1 m_Barrier;
         private ILog m_Log;
 
         /// <summary>
@@ -51,7 +51,6 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
-            m_Barrier = World.GetOrCreateSystemManaged<ModificationBarrier1>();
             m_UISystem = World.GetOrCreateSystemManaged<NetworkAnarchyUISystem>();
             m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_NetToolSystem;
             m_Log.Info($"[{nameof(NetworkDefinitionSystem)}] {nameof(OnCreate)}");
@@ -76,7 +75,7 @@ namespace Anarchy.Systems.NetworkAnarchy
             }
 
             NativeArray<Entity> entities = m_NetCourseQuery.ToEntityArray(Allocator.Temp);
-            EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
+            EntityCommandBuffer buffer = new EntityCommandBuffer(Allocator.Temp);
             // If not constant slope only check and set elevations for network composition mode.
             if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.ConstantSlope) != NetworkAnarchyUISystem.Composition.ConstantSlope
                 || m_NetToolSystem.actualMode == NetToolSystem.Mode.Grid)
@@ -93,19 +92,8 @@ namespace Anarchy.Systems.NetworkAnarchy
                 return;
             }
 
-            NativeHashMap<Entity, NetCourse> netCourses;
-            NativeHashMap<Entity, NetCourse> parallelCourses;
-            if (m_NetToolSystem.actualParallelCount <= 1)
-            {
-                netCourses = new (entities.Length, Allocator.Temp);
-                parallelCourses = new (entities.Length, Allocator.Temp);
-            }
-            else
-            {
-                netCourses = new (entities.Length / 2, Allocator.Temp);
-                parallelCourses = new (entities.Length / 2, Allocator.Temp);
-            }
-
+            NativeHashMap<Entity, NetCourse> netCourses = new (entities.Length, Allocator.Temp);
+            NativeHashMap<Entity, NetCourse> parallelCourses = new (entities.Length, Allocator.Temp);
             m_Log.Debug($"{nameof(NetworkDefinitionSystem)}.{nameof(OnUpdate)} entities length = {entities.Length}.");
 
             CalculateSlope(entities, out float slope, out float parallelSlope, ref netCourses, ref parallelCourses);
@@ -119,7 +107,6 @@ namespace Anarchy.Systems.NetworkAnarchy
             }
 
             buffer.Playback(EntityManager);
-            buffer.ShouldPlayback = false;
             buffer.Dispose();
         }
 
@@ -219,7 +206,7 @@ namespace Anarchy.Systems.NetworkAnarchy
 
             foreach (KVPair<Entity, NetCourse> kVPair in kVPairs)
             {
-                if ((kVPair.Value.m_StartPosition.m_Flags & CoursePosFlags.IsFirst) == CoursePosFlags.IsFirst )
+                if ((kVPair.Value.m_StartPosition.m_Flags & CoursePosFlags.IsFirst) == CoursePosFlags.IsFirst)
                 {
                     entities[0] = kVPair.Key;
                     netCourses[0] = kVPair.Value;
@@ -231,9 +218,9 @@ namespace Anarchy.Systems.NetworkAnarchy
             {
                 foreach (KVPair<Entity, NetCourse> kVPair in kVPairs)
                 {
-                    if (kVPair.Value.m_StartPosition.m_Position.x == netCourses[i].m_EndPosition.m_Position.x
-                        && kVPair.Value.m_StartPosition.m_Position.y == netCourses[i].m_EndPosition.m_Position.y
-                        && kVPair.Value.m_StartPosition.m_Position.z == netCourses[i].m_EndPosition.m_Position.z)
+                    if (Mathf.Approximately(kVPair.Value.m_StartPosition.m_Position.x, netCourses[i].m_EndPosition.m_Position.x) &&
+                        Mathf.Approximately(kVPair.Value.m_StartPosition.m_Position.y, netCourses[i].m_EndPosition.m_Position.y) &&
+                        Mathf.Approximately(kVPair.Value.m_StartPosition.m_Position.z, netCourses[i].m_EndPosition.m_Position.z))
                     {
                         entities[i + 1] = kVPair.Key;
                         netCourses[i + 1] = kVPair.Value;
@@ -262,9 +249,9 @@ namespace Anarchy.Systems.NetworkAnarchy
             {
                 foreach (KVPair<Entity, NetCourse> kVPair in kVPairs)
                 {
-                    if (kVPair.Value.m_EndPosition.m_Position.x == netCourses[i].m_StartPosition.m_Position.x
-                        && kVPair.Value.m_EndPosition.m_Position.y == netCourses[i].m_StartPosition.m_Position.y
-                        && kVPair.Value.m_EndPosition.m_Position.z == netCourses[i].m_StartPosition.m_Position.z)
+                    if (Mathf.Approximately(kVPair.Value.m_EndPosition.m_Position.x, netCourses[i].m_StartPosition.m_Position.x) &&
+                        Mathf.Approximately(kVPair.Value.m_EndPosition.m_Position.y, netCourses[i].m_StartPosition.m_Position.y) &&
+                        Mathf.Approximately(kVPair.Value.m_EndPosition.m_Position.z, netCourses[i].m_StartPosition.m_Position.z))
                     {
                         entities[i + 1] = kVPair.Key;
                         netCourses[i + 1] = kVPair.Value;
@@ -306,6 +293,12 @@ namespace Anarchy.Systems.NetworkAnarchy
         {
             for (int i = 0; i < netCourses.Length - 1; i++)
             {
+                if (entities[i] == Entity.Null)
+                {
+                    m_Log.Debug($"{nameof(NetworkDefinitionSystem)}.{nameof(ProcessNetCourses)} Entities[{i}] is null");
+                    continue;
+                }
+
                 NetCourse currentCourse = netCourses[i];
                 NetCourse nextCourse = netCourses[i + 1];
 #if VERBOSE
@@ -340,6 +333,12 @@ namespace Anarchy.Systems.NetworkAnarchy
 
                 if ((nextCourse.m_EndPosition.m_Flags & CoursePosFlags.IsLast) == CoursePosFlags.IsLast)
                 {
+                    if (entities[i + 1] == Entity.Null)
+                    {
+                        m_Log.Debug($"{nameof(NetworkDefinitionSystem)}.{nameof(ProcessNetCourses)} Entities[{i + 1}] is null");
+                        continue;
+                    }
+
                     if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.ConstantSlope) == NetworkAnarchyUISystem.Composition.ConstantSlope)
                     {
                         nextCourse.m_Curve.b.y = nextCourse.m_Curve.a.y + (slope * Vector2.Distance(new float2(nextCourse.m_Curve.a.x, nextCourse.m_Curve.a.z), new float2(nextCourse.m_Curve.b.x, nextCourse.m_Curve.b.z)));
@@ -354,6 +353,12 @@ namespace Anarchy.Systems.NetworkAnarchy
 
             if (netCourses.Length == 1)
             {
+                if (entities[0] == Entity.Null)
+                {
+                    m_Log.Debug($"{nameof(NetworkDefinitionSystem)}.{nameof(ProcessNetCourses)} Entities[0] is null");
+                    return;
+                }
+
                 NetCourse nextCourse = netCourses[0];
                 if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.ConstantSlope) == NetworkAnarchyUISystem.Composition.ConstantSlope)
                 {
@@ -371,6 +376,12 @@ namespace Anarchy.Systems.NetworkAnarchy
         {
             for (int i = 0; i < netCourses.Length - 1; i++)
             {
+                if (entities[i] == Entity.Null)
+                {
+                    m_Log.Debug($"{nameof(NetworkDefinitionSystem)}.{nameof(ProcessNetCourses)} Entities[{i}] is null");
+                    continue;
+                }
+
                 NetCourse currentCourse = netCourses[i];
                 NetCourse nextCourse = netCourses[i + 1];
 #if VERBOSE
@@ -413,12 +424,24 @@ namespace Anarchy.Systems.NetworkAnarchy
 
                     CheckAndSetElevations(ref nextCourse);
 
+                    if (entities[i + 1] == Entity.Null)
+                    {
+                        m_Log.Debug($"{nameof(NetworkDefinitionSystem)}.{nameof(ProcessNetCourses)} Entities[{i + 1}] is null");
+                        continue;
+                    }
+
                     buffer.SetComponent(entities[i + 1], nextCourse);
                 }
             }
 
             if (netCourses.Length == 1)
             {
+                if (entities[0] == Entity.Null)
+                {
+                    m_Log.Debug($"{nameof(NetworkDefinitionSystem)}.{nameof(ProcessNetCourses)} Entities[0] is null");
+                    return;
+                }
+
                 NetCourse nextCourse = netCourses[0];
                 if ((m_UISystem.NetworkComposition & NetworkAnarchyUISystem.Composition.ConstantSlope) == NetworkAnarchyUISystem.Composition.ConstantSlope)
                 {
