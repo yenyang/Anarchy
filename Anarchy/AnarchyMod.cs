@@ -72,7 +72,7 @@ namespace Anarchy
         /// <summary>
         /// Gets the version of the mod.
         /// </summary>
-        internal string Version => Assembly.GetExecutingAssembly().GetName().Version.ToString(4);
+        internal string Version => Assembly.GetExecutingAssembly().GetName().Version.ToString(3);
 
 
         /// <inheritdoc/>
