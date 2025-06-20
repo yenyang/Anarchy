@@ -33,6 +33,7 @@ namespace Anarchy.Systems.ClearanceViolation
         private PrefabSystem m_PrefabSystem;
         private bool m_FirstTime = true;
         private bool m_EnsureReset = false;
+        private ModificationBarrier3 m_Barrier;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModifyNetCompositionDataSystem"/> class.
@@ -49,6 +50,7 @@ namespace Anarchy.Systems.ClearanceViolation
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
+            m_Barrier = World.GetOrCreateSystemManaged<ModificationBarrier3>();
             m_ResetNetCompositionDataSystem = World.GetOrCreateSystemManaged<ResetNetCompositionDataSystem>();
             m_Log.Info($"{nameof(ModifyNetCompositionDataSystem)} Created.");
             m_NetCompositionDataQuery = GetEntityQuery(new EntityQueryDesc[]
@@ -57,7 +59,7 @@ namespace Anarchy.Systems.ClearanceViolation
                 {
                     All = new ComponentType[]
                     {
-                        ComponentType.ReadWrite<NetCompositionData>(),
+                        ComponentType.ReadOnly<NetCompositionData>(),
                     },
                     None = new ComponentType[]
                     {
@@ -84,6 +86,8 @@ namespace Anarchy.Systems.ClearanceViolation
                 return;
             }
 
+            EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
+
             NativeArray<Entity> entities = m_NetCompositionDataQuery.ToEntityArray(Allocator.Temp);
             foreach (Entity currentEntity in entities)
             {
@@ -105,8 +109,8 @@ namespace Anarchy.Systems.ClearanceViolation
                             min = netCompositionData.m_HeightRange.min,
                             max = netCompositionData.m_HeightRange.max,
                         };
-                        EntityManager.AddComponent<HeightRangeRecord>(currentEntity);
-                        EntityManager.SetComponentData(currentEntity, heightRangeRecord);
+                        buffer.AddComponent<HeightRangeRecord>(currentEntity);
+                        buffer.SetComponent(currentEntity, heightRangeRecord);
 
                         m_Log.Debug($"{nameof(ModifyNetCompositionDataSystem)}.{nameof(OnUpdate)} Recorded m_HeightRange {netCompositionData.m_HeightRange.min}+{netCompositionData.m_HeightRange.max} for entity: {currentEntity.Index}.{currentEntity.Version}.");
                     }
@@ -127,7 +131,7 @@ namespace Anarchy.Systems.ClearanceViolation
                         m_Log.Debug($"{nameof(ModifyNetCompositionDataSystem)}.{nameof(OnUpdate)} Setting m_HeightRange to {netCompositionData.m_HeightRange.min}:{netCompositionData.m_HeightRange.max} for entity: {currentEntity.Index}.{currentEntity.Version}.");
                     }
 
-                    EntityManager.SetComponentData(currentEntity, netCompositionData);
+                    buffer.SetComponent(currentEntity, netCompositionData);
                 }
                 else
                 {

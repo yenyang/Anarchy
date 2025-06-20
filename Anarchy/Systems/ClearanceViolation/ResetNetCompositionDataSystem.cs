@@ -11,6 +11,7 @@ namespace Anarchy.Systems.ClearanceViolation
     using Colossal.Entities;
     using Colossal.Logging;
     using Game;
+    using Game.Common;
     using Game.Prefabs;
     using Game.Tools;
     using Unity.Collections;
@@ -26,6 +27,7 @@ namespace Anarchy.Systems.ClearanceViolation
         private ILog m_Log;
         private NetToolSystem m_NetToolSystem;
         private PrefabSystem m_PrefabSystem;
+        private ModificationEndBarrier m_Barrier;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResetNetCompositionDataSystem"/> class.
@@ -40,6 +42,7 @@ namespace Anarchy.Systems.ClearanceViolation
             m_Log = AnarchyMod.Instance.Log;
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
+            m_Barrier = World.GetOrCreateSystemManaged<ModificationEndBarrier>();
             m_Log.Info($"{nameof(ResetNetCompositionDataSystem)} Created.");
             m_NetCompositionDataQuery = GetEntityQuery(new EntityQueryDesc[]
             {
@@ -47,8 +50,8 @@ namespace Anarchy.Systems.ClearanceViolation
                 {
                     All = new ComponentType[]
                     {
-                        ComponentType.ReadWrite<HeightRangeRecord>(),
-                        ComponentType.ReadWrite<NetCompositionData>(),
+                        ComponentType.ReadOnly<HeightRangeRecord>(),
+                        ComponentType.ReadOnly<NetCompositionData>(),
                     },
                 },
             });
@@ -60,6 +63,7 @@ namespace Anarchy.Systems.ClearanceViolation
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
+            EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
             NativeArray<Entity> entities = m_NetCompositionDataQuery.ToEntityArray(Allocator.Temp);
             foreach (Entity currentEntity in entities)
             {
@@ -71,7 +75,7 @@ namespace Anarchy.Systems.ClearanceViolation
                         netCompositionData.m_HeightRange.max = heightRangeRecord.max;
 
                         // m_Log.Debug($"{nameof(ResetNetCompositionDataSystem)}.{nameof(OnUpdate)} Reset m_HeightRange to {netCompositionData.m_HeightRange.min}+{netCompositionData.m_HeightRange.max} for entity: {currentEntity.Index}.{currentEntity.Version}.");
-                        EntityManager.SetComponentData(currentEntity, netCompositionData);
+                        buffer.SetComponent(currentEntity, netCompositionData);
                     }
                     else
                     {

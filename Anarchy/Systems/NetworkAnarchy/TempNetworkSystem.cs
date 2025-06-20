@@ -188,12 +188,17 @@ namespace Anarchy.Systems.NetworkAnarchy
             BufferLookup<ConnectedEdge> connectedEdgeLookup = SystemAPI.GetBufferLookup<ConnectedEdge>();
             NativeList<ControlPoint> controlPoints = m_NetToolSystem.GetControlPoints(out JobHandle dependencies);
             dependencies.Complete();
+            if (controlPoints.Length == 0 && m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace)
+            {
+                return;
+            }
+
             ControlPoint startPoint = controlPoints[0];
             ControlPoint endPoint = controlPoints[controlPoints.Length - 1];
             NativeList<PathEdge> path = new NativeList<PathEdge>(Allocator.Temp);
             CreatePath(startPoint, endPoint, path, prefabNetData, placeableNetData, ref edgeLookup, ref nodeLookup, ref curveLookup, ref prefabRefLookup, ref netDataLookup, ref connectedEdgeLookup);
             NativeList<Entity> pathEntities = new NativeList<Entity>(Allocator.Temp);
-            for (int i = 0; i <= path.Length; i++)
+            for (int i = 0; i < path.Length; i++)
             {
                 pathEntities.Add(path[i].m_Entity);
                 m_Log.Debug($"{nameof(TempNetworkSystem)}.{nameof(OnUpdate)} {path[i].m_Entity.Index}:{path[i].m_Entity.Version}.");

@@ -187,14 +187,15 @@ namespace Anarchy.Systems.Common
                !ApproximateTransforms(transform, m_RecentTransform) &&
                 EntityManager.TryGetComponent(owner.m_Owner, out Game.Objects.Transform ownerTransform))
             {
-                EntityManager.AddComponent<TransformRecord>(selectedEntity);
+                EntityCommandBuffer buffer = m_EndFrameBarrier.CreateCommandBuffer();
+                buffer.AddComponent<TransformRecord>(selectedEntity);
                 TransformRecord transformRecord = new TransformRecord()
                 {
                     m_Position = ownerTransform.m_Position - transform.m_Position,
                     m_Rotation = ownerTransform.m_Rotation.value - transform.m_Rotation.value,
                 };
-                EntityManager.SetComponentData(selectedEntity, transformRecord);
-                EntityManager.AddComponent<PreventOverride>(selectedEntity);
+                buffer.SetComponent(selectedEntity, transformRecord);
+                buffer.AddComponent<PreventOverride>(selectedEntity);
                 RequestUpdate();
             }
         }
@@ -220,13 +221,14 @@ namespace Anarchy.Systems.Common
         /// </summary>
         private void PreventOverrideButtonToggled()
         {
+            EntityCommandBuffer buffer = m_EndFrameBarrier.CreateCommandBuffer();
             if (EntityManager.HasComponent<PreventOverride>(selectedEntity))
             {
-                EntityManager.RemoveComponent<PreventOverride>(selectedEntity);
+                buffer.RemoveComponent<PreventOverride>(selectedEntity);
             }
             else
             {
-                EntityManager.AddComponent<PreventOverride>(selectedEntity);
+                buffer.AddComponent<PreventOverride>(selectedEntity);
             }
 
             RequestUpdate();
@@ -237,14 +239,15 @@ namespace Anarchy.Systems.Common
         /// </summary>
         private void TransformRecordButtonToggled()
         {
+            EntityCommandBuffer buffer = m_EndFrameBarrier.CreateCommandBuffer();
             if (EntityManager.HasComponent<TransformRecord>(selectedEntity))
             {
-                EntityManager.RemoveComponent<TransformRecord>(selectedEntity);
+                buffer.RemoveComponent<TransformRecord>(selectedEntity);
                 m_PreviouslySelectedEntity = Entity.Null;
             }
             else if (EntityManager.TryGetComponent(selectedEntity, out Game.Objects.Transform transform))
             {
-                EntityManager.AddComponent<TransformRecord>(selectedEntity);
+                buffer.AddComponent<TransformRecord>(selectedEntity);
                 TransformRecord transformRecord = new ();
                 if (!EntityManager.TryGetComponent(selectedEntity, out Game.Common.Owner owner) ||
                     !EntityManager.TryGetComponent(owner.m_Owner, out Game.Objects.Transform ownerTransform))
@@ -260,7 +263,7 @@ namespace Anarchy.Systems.Common
                     transformRecord.m_Rotation = localTransform.m_Rotation;
                 }
 
-                EntityManager.SetComponentData(selectedEntity, transformRecord);
+                buffer.SetComponent(selectedEntity, transformRecord);
             }
 
             RequestUpdate();

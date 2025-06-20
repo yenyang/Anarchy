@@ -9,6 +9,7 @@ namespace Anarchy.Systems.Common
     using Colossal.Logging;
     using Game;
     using Game.Common;
+    using Unity.Collections;
     using Unity.Entities;
 
     /// <summary>
@@ -69,9 +70,11 @@ namespace Anarchy.Systems.Common
         protected override void OnUpdate()
         {
             EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
-            buffer.AddComponent<Updated>(m_UpdateNextFrameQuery, EntityQueryCaptureMode.AtRecord);
-            buffer.AddComponent<ClearUpdateNextFrame>(m_UpdateNextFrameAndNotTransformRecordQuery, EntityQueryCaptureMode.AtRecord);
-            buffer.AddComponent<Updated>(m_UpdateNextFrameAndNotTransformRecordQuery, EntityQueryCaptureMode.AtRecord);
+            NativeArray<Entity> updateNextFrameEntities = m_UpdateNextFrameQuery.ToEntityArray(Allocator.Temp);
+            buffer.AddComponent<Updated>(updateNextFrameEntities);
+            NativeArray<Entity> updateNextFrameAndNotTransformRecordEntities = m_UpdateNextFrameAndNotTransformRecordQuery.ToEntityArray(Allocator.Temp);
+            buffer.AddComponent<ClearUpdateNextFrame>(updateNextFrameAndNotTransformRecordEntities);
+            buffer.AddComponent<Updated>(updateNextFrameAndNotTransformRecordEntities);
         }
     }
 }

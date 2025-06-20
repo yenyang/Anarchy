@@ -97,7 +97,8 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * Localization: Nyoko, Citadino, Dome, elGendo87 and Eryalito (Spanish), Hendrix, Fuchs23, FearMyFeedEU and Infinityuranium (German), RilkeXS, CBEdwin, zlhww and GuaGua_ua (Chinese Simplified), Luis Fernando de Paula, dvzz, and felipecollucci (Brazilian Portuguese), Maxi and raistlin46 (Italian), karmel68 and Lisek (Polish), Tanat, TwotoolusFLY_LSh.st, and Hinanchovo (Korean), OWSEEX, Katsumoto, TraceXR, and krugl1y (Russian) and Morgan Toverux, spooky_off, Quoifleur, Karg, CEO of Tabarnak and Edou24 (French), Seraphina and main1108 (Japanese), allegretic (Chinese Traditional), ti4go and ruidias (European Portuguese), Jesyx and scoobysub (Dutch), GamingNerdLeith (Arabic).
 * StarQ - Technical support, and helping recover people's saves.
 * Testing, Feedback - Dante, starrysum, HarbourMaster Jay, Dome, Tigon Ologdring, BruceyBoy, RaftermanNZ, Elektrotek, SpaceChad, GamingNerdLeith, CanadianMoosePlays, Teddy Radko, Jason_Stephen, Brian Rocha, elGendo87, CEO of Tabarnak, DanielVNZ
-* Those that provided broken saves to help diagnose and fix the problems with v1.7.2. Especially miguel.mateo who's save was used extensively during development and testing of v1.7.4.</LongDescription>
+* Those that provided broken saves to help diagnose and fix the problems with v1.7.2. Especially miguel.mateo who's save was used extensively during development and testing of v1.7.4.
+* Thanks to DanielVNZ, liron, ConstBuilds, krzychu124, phillycheese, Valentina, foxxy, dom_the_great, Tommerty, Herliger, REV0, Fraggn_aut, gurt, lil tajine, Brainium, Neil, ExpedientFalcon, and anyone that I missed from Cities Skylines Modding Discord for coming together as a community to diagnose and help solve the serialization problems from the constant slope option that started after game version 1.3.3f1.</LongDescription>
   <!--Thumbnail-->
   <Thumbnail Value="Properties/Thumbnail.png" />
   <!--Screenshot, can be set multiple-->
@@ -111,15 +112,17 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/anarchy.1644970/" />
   <!--Version of the mod-->
-  <ModVersion Value="1.7.15" />
+  <ModVersion Value="1.7.16" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.3.*" />
   <!--Dependency for the mod, can be set multiple-->
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.13" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog>## Patch V1.7.15
-* Fixes Extended Road Upgrades: Retaining Walls and Quays.
-* Regression: Lighting removed as a network anarchy upgrade. Doesn't transfer electricity correctly. May never have worked correctly.</ChangeLog>
+  <ChangeLog>## Patch V1.7.16
+* Fix Constant Slope option so that it no longer breaks the serialization process and soft locks the game.
+* Code cleanup of various systems to avoid obsolete methods and reduce sync points.
+
+Special Thanks to DanielVNZ, liron, ConstBuilds, krzychu124, phillycheese, Valentina, foxxy, dom_the_great, Tommerty, Herliger, REV0, Fraggn_aut, gurt, lil tajine, Brainium, Neil, ExpedientFalcon, and anyone that I missed from Cities Skylines Modding Discord for coming together as a community to diagnose and help solve this problem.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
