@@ -47,7 +47,6 @@ namespace Anarchy.Systems.OverridePrevention
         private PrefabSystem m_PrefabSystem;
         private EntityQuery m_OwnedAndOverridenQuery;
         private EntityQuery m_HasAnarchyAndUpdatedQuery;
-        private ModificationEndBarrier m_Barrier;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RemoveOverridenSystem"/> class.
@@ -65,7 +64,6 @@ namespace Anarchy.Systems.OverridePrevention
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
-            m_Barrier = World.GetOrCreateSystemManaged<ModificationEndBarrier>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_OwnedAndOverridenQuery = GetEntityQuery(new EntityQueryDesc
             {
@@ -134,11 +132,14 @@ namespace Anarchy.Systems.OverridePrevention
                 || (m_AppropriateToolsWithAnarchy.Contains(m_ToolSystem.activeTool.toolID) && m_AnarchyUISystem.AnarchyEnabled)
                 || !m_HasAnarchyAndUpdatedQuery.IsEmptyIgnoreFilter)
             {
-                EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
+                EntityCommandBuffer buffer = new EntityCommandBuffer(Allocator.Temp);
                 NativeArray<Entity> ownedAndOverridenEntities = m_OwnedAndOverridenQuery.ToEntityArray(Allocator.Temp);
 
                 buffer.RemoveComponent<Game.Common.Overridden>(ownedAndOverridenEntities);
-                buffer.AddComponent<UpdateNextFrame>(ownedAndOverridenEntities);
+                buffer.AddComponent<Updated>(ownedAndOverridenEntities);
+
+                buffer.Playback(EntityManager);
+                buffer.Dispose();
                 m_Log.Debug($"{nameof(RemoveOverridenSystem)}.{nameof(OnUpdate)}");
             }
         }
