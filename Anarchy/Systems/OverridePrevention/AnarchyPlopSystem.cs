@@ -47,7 +47,6 @@ namespace Anarchy.Systems.OverridePrevention
         private EntityQuery m_OwnedAndOverridenQuery;
         private TerrainSystem m_TerrainSystem;
         private bool m_ElevationChangeIsNegative;
-        private ModificationEndBarrier m_Barrier;
 
         /// <summary>
         /// Gets or sets a value indicating whether Elevation change is negative.
@@ -65,7 +64,6 @@ namespace Anarchy.Systems.OverridePrevention
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_TerrainSystem = World.GetOrCreateSystemManaged<TerrainSystem>();
-            m_Barrier = World.GetOrCreateSystemManaged<ModificationEndBarrier>();
             m_AppliedQuery = GetEntityQuery(new EntityQueryDesc
             {
                 All = new ComponentType[]
@@ -231,8 +229,7 @@ namespace Anarchy.Systems.OverridePrevention
 
             if (!m_NetToolSystem.TrySetPrefab(m_ToolSystem.activePrefab) || m_ToolSystem.activePrefab is NetLaneGeometryPrefab || m_ToolSystem.activePrefab is NetLanePrefab)
             {
-                EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
-
+                EntityCommandBuffer buffer =  new EntityCommandBuffer(Allocator.Temp);
                 NativeArray<Entity> appliedEntities = m_AppliedQuery.ToEntityArray(Allocator.Temp);
                 NativeArray<Entity> ownedAndOverridenEnities = m_OwnedAndOverridenQuery.ToEntityArray(Allocator.Temp);
                 m_Log.Debug($"{nameof(AnarchyPlopSystem)}.{nameof(OnUpdate)}");
@@ -340,6 +337,8 @@ namespace Anarchy.Systems.OverridePrevention
                     }
                 }
 
+                buffer.Playback(EntityManager);
+                buffer.Dispose();
                 appliedEntities.Dispose();
             }
         }
