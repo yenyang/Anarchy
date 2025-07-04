@@ -357,6 +357,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                         m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
                         m_OwnerLookup = SystemAPI.GetComponentLookup<Owner>(),
                         m_TransformLookup = SystemAPI.GetComponentLookup<Game.Objects.Transform>(),
+                        m_NodeLookup = SystemAPI.GetComponentLookup<Game.Net.Node>(),
                     };
                     inputDeps = JobChunkExtensions.Schedule(addPreventOverrideJob, m_NotPreventOverrideQuery, inputDeps);
                     m_Barrier.AddJobHandleForProducer(inputDeps);
@@ -377,6 +378,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                         m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
                         m_OwnerLookup = SystemAPI.GetComponentLookup<Owner>(),
                         m_TransformLookup = SystemAPI.GetComponentLookup<Game.Objects.Transform>(),
+                        m_NodeLookup = SystemAPI.GetComponentLookup<Game.Net.Node>(),
                     };
                     inputDeps = JobChunkExtensions.Schedule(removePreventOverrideJob, m_PreventOverrideQuery, inputDeps);
                     m_Barrier.AddJobHandleForProducer(inputDeps);
@@ -398,6 +400,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                         m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
                         m_OwnerLookup = SystemAPI.GetComponentLookup<Owner>(),
                         m_TransformLookup = SystemAPI.GetComponentLookup<Game.Objects.Transform>(),
+                        m_NodeLookup = SystemAPI.GetComponentLookup<Game.Net.Node>(),
                     };
                     inputDeps = JobChunkExtensions.Schedule(addTransformRecordJob, m_NotTransformRecordQuery, inputDeps);
                     m_Barrier.AddJobHandleForProducer(inputDeps);
@@ -418,6 +421,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                         m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(),
                         m_OwnerLookup = SystemAPI.GetComponentLookup<Owner>(),
                         m_TransformLookup = SystemAPI.GetComponentLookup<Game.Objects.Transform>(),
+                        m_NodeLookup = SystemAPI.GetComponentLookup<Game.Net.Node>(),
                     };
                     inputDeps = JobChunkExtensions.Schedule(removeTransformRecordJob, m_ElevationLockedQuery, inputDeps);
                     m_Barrier.AddJobHandleForProducer(inputDeps);
@@ -461,14 +465,22 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                         TransformRecord transformRecord = new ();
 
                         if (!EntityManager.TryGetComponent(currentRaycastEntity, out Game.Common.Owner owner) ||
-                            !EntityManager.TryGetComponent(owner.m_Owner, out Game.Objects.Transform ownerTransform))
+                           (!EntityManager.HasComponent<Game.Objects.Transform>(owner.m_Owner) &&
+                            !EntityManager.HasComponent<Game.Net.Node>(owner.m_Owner)))
                         {
                             transformRecord.m_Position = transform.m_Position;
                             transformRecord.m_Rotation = transform.m_Rotation;
                         }
-                        else
+                        else if (EntityManager.TryGetComponent(owner.m_Owner, out Game.Objects.Transform ownerTransform))
                         {
                             Game.Objects.Transform inverseParentTransform = ObjectUtils.InverseTransform(ownerTransform);
+                            Game.Objects.Transform localTransform = ObjectUtils.WorldToLocal(inverseParentTransform, transform);
+                            transformRecord.m_Position = localTransform.m_Position;
+                            transformRecord.m_Rotation = localTransform.m_Rotation;
+                        }
+                        else if (EntityManager.TryGetComponent(owner.m_Owner, out Game.Net.Node node))
+                        {
+                            Game.Objects.Transform inverseParentTransform = ObjectUtils.InverseTransform(new Game.Objects.Transform(node.m_Position, node.m_Rotation));
                             Game.Objects.Transform localTransform = ObjectUtils.WorldToLocal(inverseParentTransform, transform);
                             transformRecord.m_Position = localTransform.m_Position;
                             transformRecord.m_Rotation = localTransform.m_Rotation;
@@ -588,6 +600,8 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             public ComponentLookup<Game.Common.Owner> m_OwnerLookup;
             [ReadOnly]
             public ComponentLookup<Game.Objects.Transform> m_TransformLookup;
+            [ReadOnly]
+            public ComponentLookup<Game.Net.Node> m_NodeLookup;
 
             /// <summary>
             /// Executes job which will change state or prefab for trees within a radius.
@@ -623,14 +637,22 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                         {
                             TransformRecord transformRecord = new ();
                             if (!m_OwnerLookup.TryGetComponent(entityNativeArray[i], out Game.Common.Owner owner) ||
-                                !m_TransformLookup.TryGetComponent(owner.m_Owner, out Game.Objects.Transform ownerTransform))
+                               (!m_TransformLookup.HasComponent(owner.m_Owner) &&
+                                !m_NodeLookup.HasComponent(owner.m_Owner)))
                             {
                                 transformRecord.m_Position = transformNativeArray[i].m_Position;
                                 transformRecord.m_Rotation = transformNativeArray[i].m_Rotation;
                             }
-                            else
+                            else if (m_TransformLookup.TryGetComponent(owner.m_Owner, out Game.Objects.Transform ownerTransform))
                             {
                                 Game.Objects.Transform inverseParentTransform = ObjectUtils.InverseTransform(ownerTransform);
+                                Game.Objects.Transform localTransform = ObjectUtils.WorldToLocal(inverseParentTransform, transformNativeArray[i]);
+                                transformRecord.m_Position = localTransform.m_Position;
+                                transformRecord.m_Rotation = localTransform.m_Rotation;
+                            }
+                            else if (m_NodeLookup.TryGetComponent(owner.m_Owner, out Game.Net.Node node))
+                            {
+                                Game.Objects.Transform inverseParentTransform = ObjectUtils.InverseTransform(new Game.Objects.Transform(node.m_Position, node.m_Rotation));
                                 Game.Objects.Transform localTransform = ObjectUtils.WorldToLocal(inverseParentTransform, transformNativeArray[i]);
                                 transformRecord.m_Position = localTransform.m_Position;
                                 transformRecord.m_Rotation = localTransform.m_Rotation;

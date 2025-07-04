@@ -1,2 +1,3 @@
-﻿## Patch V1.7.17
-* Fix tree age reverting back to child size. You may need Tree Controller Mod to fix trees that already changed size.
+﻿## Patch V1.7.18
+* Fix transform lock on network subobjects.
+* Added support for relative transform lock on node subobjects.

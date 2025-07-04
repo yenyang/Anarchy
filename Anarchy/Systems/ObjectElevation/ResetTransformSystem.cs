@@ -74,7 +74,9 @@ namespace Anarchy.Systems.ObjectElevation
 
                 EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
 
-                if (!EntityManager.TryGetComponent(entity, out Game.Common.Owner owner))
+                if (!EntityManager.TryGetComponent(entity, out Game.Common.Owner owner) ||
+                   (!EntityManager.HasComponent<Game.Objects.Transform>(owner.m_Owner) &&
+                    !EntityManager.HasComponent<Game.Net.Node>(owner.m_Owner)))
                 {
                     if (transformRecord.Equals(originalTransform))
                     {
@@ -98,6 +100,24 @@ namespace Anarchy.Systems.ObjectElevation
                     }
 
                     Game.Objects.Transform worldTransform = ObjectUtils.LocalToWorld(ownerTransform, transformRecord.Transform);
+
+                    originalTransform.m_Position = worldTransform.m_Position;
+                    originalTransform.m_Rotation = worldTransform.m_Rotation;
+                    buffer.SetComponent(entity, originalTransform);
+                }
+                else if (EntityManager.TryGetComponent(owner.m_Owner, out Game.Net.Node node))
+                {
+                    Game.Objects.Transform nodeTransform = new Game.Objects.Transform(node.m_Position, node.m_Rotation);
+                    Game.Objects.Transform inverseParentTransform = ObjectUtils.InverseTransform(nodeTransform);
+                    Game.Objects.Transform localTransform = ObjectUtils.WorldToLocal(inverseParentTransform, originalTransform);
+
+                    if (transformRecord.Equals(localTransform))
+                    {
+                        buffer.RemoveComponent<UpdateNextFrame>(entity);
+                        continue;
+                    }
+
+                    Game.Objects.Transform worldTransform = ObjectUtils.LocalToWorld(nodeTransform, transformRecord.Transform);
 
                     originalTransform.m_Position = worldTransform.m_Position;
                     originalTransform.m_Rotation = worldTransform.m_Rotation;
