@@ -279,14 +279,22 @@ namespace Anarchy.Systems.Common
                 buffer.AddComponent<TransformRecord>(selectedEntity);
                 TransformRecord transformRecord = new ();
                 if (!EntityManager.TryGetComponent(selectedEntity, out Game.Common.Owner owner) ||
-                    !EntityManager.TryGetComponent(owner.m_Owner, out Game.Objects.Transform ownerTransform))
+                   (!EntityManager.HasComponent<Game.Objects.Transform>(owner.m_Owner) &&
+                    !EntityManager.HasComponent<Game.Net.Node>(owner.m_Owner)))
                 {
                     transformRecord.m_Position = transform.m_Position;
                     transformRecord.m_Rotation = transform.m_Rotation;
                 }
-                else
+                else if (EntityManager.TryGetComponent(owner.m_Owner, out Game.Objects.Transform ownerTransform))
                 {
                     Game.Objects.Transform inverseParentTransform = ObjectUtils.InverseTransform(ownerTransform);
+                    Game.Objects.Transform localTransform = ObjectUtils.WorldToLocal(inverseParentTransform, transform);
+                    transformRecord.m_Position = localTransform.m_Position;
+                    transformRecord.m_Rotation = localTransform.m_Rotation;
+                }
+                else if (EntityManager.TryGetComponent(owner.m_Owner, out Game.Net.Node node))
+                {
+                    Game.Objects.Transform inverseParentTransform = ObjectUtils.InverseTransform(new Game.Objects.Transform(node.m_Position, node.m_Rotation));
                     Game.Objects.Transform localTransform = ObjectUtils.WorldToLocal(inverseParentTransform, transform);
                     transformRecord.m_Position = localTransform.m_Position;
                     transformRecord.m_Rotation = localTransform.m_Rotation;
