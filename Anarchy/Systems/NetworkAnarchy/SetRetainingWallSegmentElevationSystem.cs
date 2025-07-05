@@ -145,7 +145,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                     }
                     else if ((upgraded.m_Flags.m_Right & CompositionFlags.Side.Raised) == CompositionFlags.Side.Raised)
                     {
-                        elevation.m_Elevation.y = Mathf.Max(elevation.m_Elevation.y, NetworkDefinitionSystem.QuayThreshold);
+                        elevation.m_Elevation.y = Mathf.Clamp(Mathf.Max(elevation.m_Elevation.y, NetworkDefinitionSystem.QuayThreshold), NetworkDefinitionSystem.QuayThreshold, NetworkDefinitionSystem.ElevatedThreshold - .01f);
                     }
                     else if (elevation.m_Elevation.y == NetworkDefinitionSystem.QuayThreshold || elevation.m_Elevation.y == NetworkDefinitionSystem.RetainingWallThreshold)
                     {
@@ -158,7 +158,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                     }
                     else if ((upgraded.m_Flags.m_Left & CompositionFlags.Side.Raised) == CompositionFlags.Side.Raised)
                     {
-                        elevation.m_Elevation.x = Mathf.Max(elevation.m_Elevation.x, NetworkDefinitionSystem.QuayThreshold);
+                        elevation.m_Elevation.x = Mathf.Clamp(Mathf.Max(elevation.m_Elevation.x, NetworkDefinitionSystem.QuayThreshold), NetworkDefinitionSystem.QuayThreshold, NetworkDefinitionSystem.ElevatedThreshold - .01f);
                     }
                     else if (elevation.m_Elevation.x == NetworkDefinitionSystem.QuayThreshold || elevation.m_Elevation.x == NetworkDefinitionSystem.RetainingWallThreshold)
                     {
@@ -312,6 +312,13 @@ namespace Anarchy.Systems.NetworkAnarchy
                         }
                     }
 
+                    if (upgraded.m_Flags.m_Left == CompositionFlags.Side.Raised ||
+                        upgraded.m_Flags.m_Right == CompositionFlags.Side.Raised)
+                    {
+                        buffer.RemoveComponent<Game.Net.Elevation>(edge.m_Start);
+                        buffer.RemoveComponent<Game.Net.Elevation>(edge.m_End);
+                    }
+
                     if (upgraded.m_Flags.m_Left == 0 && upgraded.m_Flags.m_Right == 0 && upgraded.m_Flags.m_General == 0)
                     {
                         buffer.RemoveComponent<Upgraded>(entity);
@@ -330,7 +337,10 @@ namespace Anarchy.Systems.NetworkAnarchy
                         buffer.RemoveComponent<Elevation>(entity);
                     }
 
-                    if (m_ReplaceMode || m_SetEndElevationsToZero.HasComponent(entity))
+                    if (m_ReplaceMode ||
+                        m_SetEndElevationsToZero.HasComponent(entity) ||
+                        upgraded.m_Flags.m_Left == CompositionFlags.Side.Raised ||
+                        upgraded.m_Flags.m_Right == CompositionFlags.Side.Raised)
                     {
                         buffer.AddComponent<UpdateNextFrame>(entity);
                         if (m_ConnectedEdgeLookup.TryGetBuffer(edge.m_End, out DynamicBuffer<ConnectedEdge> endConnectedEdges))
