@@ -65,7 +65,6 @@ namespace Anarchy.Systems.ErrorChecks
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-
             EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
             NativeArray<Entity> toolErrorPrefabs = m_ToolErrorPrefabQuery.ToEntityArray(Allocator.Temp);
             foreach (Entity currentEntity in toolErrorPrefabs)
@@ -81,7 +80,7 @@ namespace Anarchy.Systems.ErrorChecks
                     }
 
                     if (!m_DoNotReEnableForEditor.Contains(toolErrorData.m_Error) &&
-                       (toolErrorData.m_Flags & ToolErrorFlags.DisableInEditor) == ToolErrorFlags.DisableInGame)
+                       (toolErrorData.m_Flags & ToolErrorFlags.DisableInEditor) == ToolErrorFlags.DisableInEditor)
                     {
                         toolErrorData.m_Flags &= ~ToolErrorFlags.DisableInEditor;
                         flagChanged = true;
