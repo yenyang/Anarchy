@@ -704,6 +704,17 @@ namespace Anarchy.Systems.NetworkAnarchy
                 }
             }
 
+            if ((netGeometryData.m_Flags & Game.Net.GeometryFlags.RaisedIsElevated) == Game.Net.GeometryFlags.RaisedIsElevated)
+            {
+                m_LeftShowUpgrade.Value &= ~SideUpgrades.Quay;
+                m_RightShowUpgrade.Value &= ~SideUpgrades.Quay;
+            }
+
+            if ((netGeometryData.m_Flags & Game.Net.GeometryFlags.ElevatedIsRaised) == Game.Net.GeometryFlags.ElevatedIsRaised)
+            {
+                m_ShowComposition.Value &= ~Composition.Elevated;
+            }
+
             if ((netGeometryData.m_Flags & Game.Net.GeometryFlags.RequireElevated) == Game.Net.GeometryFlags.RequireElevated)
             {
                 m_ShowComposition.Value &= ~(Composition.Elevated | Composition.Tunnel | Composition.Trees | Composition.GrassStrip);
@@ -713,7 +724,7 @@ namespace Anarchy.Systems.NetworkAnarchy
             else if ((placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.UpgradeOnly) != Game.Net.PlacementFlags.UpgradeOnly)
             {
                 m_ShowComposition.Value |= Composition.Ground;
-            }
+            } 
             else
             {
                 m_ShowComposition.Value &= ~(Composition.Elevated | Composition.Tunnel);

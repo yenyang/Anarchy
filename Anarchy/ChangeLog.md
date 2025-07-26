@@ -6,3 +6,4 @@
 * Elevated is now mutually exclusive with Quay and Retaining Wall.
 * Constant slope added as an option for Vanilla Quays networks.
 * Updated some localizations.
+* Handles networks with RaisedIsElevated and ElevatedIsRaised flags so that Elevated is no longer an option for Vanilla Quays.

@@ -125,7 +125,8 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * Fix not re-enabling error checks in the Editor.
 * Elevated is now mutually exclusive with Quay and Retaining Wall.
 * Constant slope added as an option for Vanilla Quays networks.
-* Updated some localizations.</ChangeLog>
+* Updated some localizations.
+* Handles networks with RaisedIsElevated and ElevatedIsRaised flags so that Elevated is no longer an option for Vanilla Quays.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
