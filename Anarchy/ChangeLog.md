@@ -4,3 +4,5 @@
 * Fix end walls for some networks with forced quays.
 * Fix not re-enabling error checks in the Editor.
 * Elevated is now mutually exclusive with Quay and Retaining Wall.
+* Constant slope added as an option for Vanilla Quays networks.
+* Updated some localizations.

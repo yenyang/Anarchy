@@ -395,6 +395,8 @@ namespace Anarchy.Systems.NetworkAnarchy
             {
                 m_Composition.Value &= ~(Composition.Tunnel | Composition.Elevated);
             }
+
+            UpdateButtonDisplay(m_ToolSystem.activePrefab);
         }
 
         private void RightUpgradeClicked(int mode)
@@ -450,10 +452,12 @@ namespace Anarchy.Systems.NetworkAnarchy
                 m_Composition.Value &= ~Composition.Ground;
             }
 
-            if (((SideUpgrades.Quay | SideUpgrades.RetainingWall) & sideUpgrade) == sideUpgrade) 
+            if (((SideUpgrades.Quay | SideUpgrades.RetainingWall) & sideUpgrade) == sideUpgrade)
             {
                 m_Composition.Value &= ~(Composition.Tunnel | Composition.Elevated);
             }
+
+            UpdateButtonDisplay(m_ToolSystem.activePrefab);
         }
 
         private void CompositionModeClicked(int composition)
@@ -508,11 +512,11 @@ namespace Anarchy.Systems.NetworkAnarchy
                 m_Composition.Value |= newComposition;
             }
 
-            if (((m_LeftUpgrade.Value & SideUpgrades.Quay) == SideUpgrades.Quay || (m_LeftUpgrade.Value & SideUpgrades.RetainingWall) == SideUpgrades.RetainingWall) &&
+            if ((((m_LeftUpgrade.Value & SideUpgrades.Quay) == SideUpgrades.Quay || (m_LeftUpgrade.Value & SideUpgrades.RetainingWall) == SideUpgrades.RetainingWall) &&
                 ((m_RightUpgrade.Value & SideUpgrades.Quay) == SideUpgrades.Quay || (m_RightUpgrade.Value & SideUpgrades.RetainingWall) == SideUpgrades.RetainingWall) &&
-                 (newComposition == Composition.Ground ||
+                 newComposition == Composition.Ground) ||
                  newComposition == Composition.Tunnel ||
-                 newComposition == Composition.Elevated))
+                 newComposition == Composition.Elevated)
             {
                 m_LeftUpgrade.Value &= ~(SideUpgrades.Quay | SideUpgrades.RetainingWall);
                 m_RightUpgrade.Value &= ~(SideUpgrades.Quay | SideUpgrades.RetainingWall);
@@ -723,9 +727,10 @@ namespace Anarchy.Systems.NetworkAnarchy
                 m_RightShowUpgrade.Value &= ~(SideUpgrades.Trees | SideUpgrades.GrassStrip | SideUpgrades.SoundBarrier | SideUpgrades.WideSidewalk);
             }
 
-            if ((netGeometryData.m_Flags & Game.Net.GeometryFlags.SmoothSlopes) != Game.Net.GeometryFlags.SmoothSlopes
-                && (placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.UpgradeOnly) != Game.Net.PlacementFlags.UpgradeOnly
-                && m_NetToolSystem.actualMode != NetToolSystem.Mode.Grid)
+            if (((netGeometryData.m_Flags & Game.Net.GeometryFlags.SmoothSlopes) != Game.Net.GeometryFlags.SmoothSlopes ||
+                (netGeometryData.m_Flags & Game.Net.GeometryFlags.ElevatedIsRaised) == Game.Net.GeometryFlags.ElevatedIsRaised) &&
+                (placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.UpgradeOnly) != Game.Net.PlacementFlags.UpgradeOnly &&
+                 m_NetToolSystem.actualMode != NetToolSystem.Mode.Grid)
             {
                 m_ShowComposition.Value |= Composition.ConstantSlope;
             }
