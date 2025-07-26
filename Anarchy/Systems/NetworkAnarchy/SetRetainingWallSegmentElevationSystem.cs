@@ -115,6 +115,13 @@ namespace Anarchy.Systems.NetworkAnarchy
 
                     m_UpgradedLookup.TryGetComponent(entity, out Upgraded upgraded);
 
+                    // This is to remove retaining wall and quay upgrades from networks that are also elevated.
+                    if ((upgraded.m_Flags.m_General & CompositionFlags.General.Elevated) == CompositionFlags.General.Elevated)
+                    {
+                        upgraded.m_Flags.m_Left &= ~(CompositionFlags.Side.Raised | CompositionFlags.Side.Lowered);
+                        upgraded.m_Flags.m_Right &= ~(CompositionFlags.Side.Raised | CompositionFlags.Side.Lowered);
+                    }
+
                     if (!m_ElevationLookup.HasComponent(entity)
                         && ((upgraded.m_Flags.m_Left & CompositionFlags.Side.Raised) == CompositionFlags.Side.Raised
                         || (upgraded.m_Flags.m_Left & CompositionFlags.Side.Lowered) == CompositionFlags.Side.Lowered

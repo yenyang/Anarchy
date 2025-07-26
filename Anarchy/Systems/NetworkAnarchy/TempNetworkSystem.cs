@@ -283,6 +283,8 @@ namespace Anarchy.Systems.NetworkAnarchy
                     if ((upgraded.m_Flags.m_General & CompositionFlags.General.Elevated) == CompositionFlags.General.Elevated)
                     {
                         effectiveComposition |= NetworkAnarchyUISystem.Composition.Elevated;
+                        effectiveLeftUpgrades &= ~(NetworkAnarchyUISystem.SideUpgrades.RetainingWall | NetworkAnarchyUISystem.SideUpgrades.Quay);
+                        effectiveRightUpgrades &= ~(NetworkAnarchyUISystem.SideUpgrades.RetainingWall | NetworkAnarchyUISystem.SideUpgrades.Quay);
                     }
                     else if ((upgraded.m_Flags.m_General & CompositionFlags.General.Tunnel) == CompositionFlags.General.Tunnel)
                     {
@@ -567,6 +569,14 @@ namespace Anarchy.Systems.NetworkAnarchy
                 {
                     EntityManager.AddComponent<Game.Net.Upgraded>(entity);
                 }
+
+                // This is to remove retaining wall and quay upgrades from networks that are also elevated.
+                if ((upgrades.m_Flags.m_General & CompositionFlags.General.Elevated) == CompositionFlags.General.Elevated)
+                {
+                    upgrades.m_Flags.m_Left &= ~(CompositionFlags.Side.Raised | CompositionFlags.Side.Lowered);
+                    upgrades.m_Flags.m_Right &= ~(CompositionFlags.Side.Raised | CompositionFlags.Side.Lowered);
+                }
+
 
                 if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace &&
                     originalUpgraded.m_Flags == upgrades.m_Flags &&
