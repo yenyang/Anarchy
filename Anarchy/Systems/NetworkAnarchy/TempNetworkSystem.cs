@@ -283,6 +283,8 @@ namespace Anarchy.Systems.NetworkAnarchy
                     if ((upgraded.m_Flags.m_General & CompositionFlags.General.Elevated) == CompositionFlags.General.Elevated)
                     {
                         effectiveComposition |= NetworkAnarchyUISystem.Composition.Elevated;
+                        effectiveLeftUpgrades &= ~(NetworkAnarchyUISystem.SideUpgrades.RetainingWall | NetworkAnarchyUISystem.SideUpgrades.Quay);
+                        effectiveRightUpgrades &= ~(NetworkAnarchyUISystem.SideUpgrades.RetainingWall | NetworkAnarchyUISystem.SideUpgrades.Quay);
                     }
                     else if ((upgraded.m_Flags.m_General & CompositionFlags.General.Tunnel) == CompositionFlags.General.Tunnel)
                     {
@@ -302,7 +304,10 @@ namespace Anarchy.Systems.NetworkAnarchy
                 }
 
                 if (EntityManager.TryGetComponent(entity, out Edge edge)
-                    && (((m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace) && (effectiveComposition & NetworkAnarchyUISystem.Composition.Ground) == NetworkAnarchyUISystem.Composition.Ground)
+                    && (((m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace) &&
+                        ((effectiveComposition & NetworkAnarchyUISystem.Composition.Ground) == NetworkAnarchyUISystem.Composition.Ground ||
+                         (effectiveLeftUpgrades & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay ||
+                         (effectiveRightUpgrades & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay))
                     || (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace &&
                         ((EntityManager.TryGetComponent(edge.m_Start, out Game.Net.Elevation startElevation) && EvaluateCompositionUpgradesAndToolOptions(entity, startElevation))
                         || (EntityManager.TryGetComponent(edge.m_End, out Game.Net.Elevation endElevation) && EvaluateCompositionUpgradesAndToolOptions(entity, endElevation))))))
@@ -334,7 +339,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                     }
                     else if ((effectiveRightUpgrades & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
                     {
-                        elevation.m_Elevation.y = Mathf.Max(elevation.m_Elevation.y, m_NetToolSystem.elevation, NetworkDefinitionSystem.QuayThreshold);
+                        elevation.m_Elevation.y = Mathf.Clamp(Mathf.Max(elevation.m_Elevation.y, m_NetToolSystem.elevation, NetworkDefinitionSystem.QuayThreshold), NetworkDefinitionSystem.QuayThreshold, NetworkDefinitionSystem.ElevatedThreshold - .01f);
                     }
 
                     if ((effectiveLeftUpgrades & NetworkAnarchyUISystem.SideUpgrades.RetainingWall) == NetworkAnarchyUISystem.SideUpgrades.RetainingWall)
@@ -343,7 +348,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                     }
                     else if ((effectiveLeftUpgrades & NetworkAnarchyUISystem.SideUpgrades.Quay) == NetworkAnarchyUISystem.SideUpgrades.Quay)
                     {
-                        elevation.m_Elevation.x = Mathf.Max(elevation.m_Elevation.x, m_NetToolSystem.elevation, NetworkDefinitionSystem.QuayThreshold);
+                        elevation.m_Elevation.x = Mathf.Clamp(Mathf.Max(elevation.m_Elevation.x, m_NetToolSystem.elevation, NetworkDefinitionSystem.QuayThreshold), NetworkDefinitionSystem.QuayThreshold, NetworkDefinitionSystem.ElevatedThreshold - .01f);
                     }
 
                     if ((effectiveComposition & NetworkAnarchyUISystem.Composition.Elevated) == NetworkAnarchyUISystem.Composition.Elevated)
@@ -564,6 +569,14 @@ namespace Anarchy.Systems.NetworkAnarchy
                 {
                     EntityManager.AddComponent<Game.Net.Upgraded>(entity);
                 }
+
+                // This is to remove retaining wall and quay upgrades from networks that are also elevated.
+                if ((upgrades.m_Flags.m_General & CompositionFlags.General.Elevated) == CompositionFlags.General.Elevated)
+                {
+                    upgrades.m_Flags.m_Left &= ~(CompositionFlags.Side.Raised | CompositionFlags.Side.Lowered);
+                    upgrades.m_Flags.m_Right &= ~(CompositionFlags.Side.Raised | CompositionFlags.Side.Lowered);
+                }
+
 
                 if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace &&
                     originalUpgraded.m_Flags == upgrades.m_Flags &&

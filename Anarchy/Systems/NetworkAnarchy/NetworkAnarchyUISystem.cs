@@ -390,6 +390,13 @@ namespace Anarchy.Systems.NetworkAnarchy
                     m_Composition.Value &= ~(Composition.WideMedian | Composition.GrassStrip | Composition.Trees);
                 }
             }
+
+            if (((SideUpgrades.Quay | SideUpgrades.RetainingWall) & sideUpgrade) == sideUpgrade)
+            {
+                m_Composition.Value &= ~(Composition.Tunnel | Composition.Elevated);
+            }
+
+            UpdateButtonDisplay(m_ToolSystem.activePrefab);
         }
 
         private void RightUpgradeClicked(int mode)
@@ -444,6 +451,13 @@ namespace Anarchy.Systems.NetworkAnarchy
             {
                 m_Composition.Value &= ~Composition.Ground;
             }
+
+            if (((SideUpgrades.Quay | SideUpgrades.RetainingWall) & sideUpgrade) == sideUpgrade)
+            {
+                m_Composition.Value &= ~(Composition.Tunnel | Composition.Elevated);
+            }
+
+            UpdateButtonDisplay(m_ToolSystem.activePrefab);
         }
 
         private void CompositionModeClicked(int composition)
@@ -498,9 +512,11 @@ namespace Anarchy.Systems.NetworkAnarchy
                 m_Composition.Value |= newComposition;
             }
 
-            if (((m_LeftUpgrade.Value & SideUpgrades.Quay) == SideUpgrades.Quay || (m_LeftUpgrade.Value & SideUpgrades.RetainingWall) == SideUpgrades.RetainingWall)
-                && ((m_RightUpgrade.Value & SideUpgrades.Quay) == SideUpgrades.Quay || (m_RightUpgrade.Value & SideUpgrades.RetainingWall) == SideUpgrades.RetainingWall)
-                && newComposition == Composition.Ground)
+            if ((((m_LeftUpgrade.Value & SideUpgrades.Quay) == SideUpgrades.Quay || (m_LeftUpgrade.Value & SideUpgrades.RetainingWall) == SideUpgrades.RetainingWall) &&
+                ((m_RightUpgrade.Value & SideUpgrades.Quay) == SideUpgrades.Quay || (m_RightUpgrade.Value & SideUpgrades.RetainingWall) == SideUpgrades.RetainingWall) &&
+                 newComposition == Composition.Ground) ||
+                 newComposition == Composition.Tunnel ||
+                 newComposition == Composition.Elevated)
             {
                 m_LeftUpgrade.Value &= ~(SideUpgrades.Quay | SideUpgrades.RetainingWall);
                 m_RightUpgrade.Value &= ~(SideUpgrades.Quay | SideUpgrades.RetainingWall);
@@ -688,6 +704,17 @@ namespace Anarchy.Systems.NetworkAnarchy
                 }
             }
 
+            if ((netGeometryData.m_Flags & Game.Net.GeometryFlags.RaisedIsElevated) == Game.Net.GeometryFlags.RaisedIsElevated)
+            {
+                m_LeftShowUpgrade.Value &= ~SideUpgrades.Quay;
+                m_RightShowUpgrade.Value &= ~SideUpgrades.Quay;
+            }
+
+            if ((netGeometryData.m_Flags & Game.Net.GeometryFlags.ElevatedIsRaised) == Game.Net.GeometryFlags.ElevatedIsRaised)
+            {
+                m_ShowComposition.Value &= ~Composition.Elevated;
+            }
+
             if ((netGeometryData.m_Flags & Game.Net.GeometryFlags.RequireElevated) == Game.Net.GeometryFlags.RequireElevated)
             {
                 m_ShowComposition.Value &= ~(Composition.Elevated | Composition.Tunnel | Composition.Trees | Composition.GrassStrip);
@@ -697,7 +724,7 @@ namespace Anarchy.Systems.NetworkAnarchy
             else if ((placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.UpgradeOnly) != Game.Net.PlacementFlags.UpgradeOnly)
             {
                 m_ShowComposition.Value |= Composition.Ground;
-            }
+            } 
             else
             {
                 m_ShowComposition.Value &= ~(Composition.Elevated | Composition.Tunnel);
@@ -711,15 +738,10 @@ namespace Anarchy.Systems.NetworkAnarchy
                 m_RightShowUpgrade.Value &= ~(SideUpgrades.Trees | SideUpgrades.GrassStrip | SideUpgrades.SoundBarrier | SideUpgrades.WideSidewalk);
             }
 
-            if ((NetworkComposition & Composition.Tunnel) == Composition.Tunnel)
-            {
-                m_LeftShowUpgrade.Value &= ~(SideUpgrades.RetainingWall | SideUpgrades.Quay);
-                m_RightShowUpgrade.Value &= ~(SideUpgrades.RetainingWall | SideUpgrades.Quay);
-            }
-
-            if ((netGeometryData.m_Flags & Game.Net.GeometryFlags.SmoothSlopes) != Game.Net.GeometryFlags.SmoothSlopes
-                && (placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.UpgradeOnly) != Game.Net.PlacementFlags.UpgradeOnly
-                && m_NetToolSystem.actualMode != NetToolSystem.Mode.Grid)
+            if (((netGeometryData.m_Flags & Game.Net.GeometryFlags.SmoothSlopes) != Game.Net.GeometryFlags.SmoothSlopes ||
+                (netGeometryData.m_Flags & Game.Net.GeometryFlags.ElevatedIsRaised) == Game.Net.GeometryFlags.ElevatedIsRaised) &&
+                (placeableNetData.m_PlacementFlags & Game.Net.PlacementFlags.UpgradeOnly) != Game.Net.PlacementFlags.UpgradeOnly &&
+                 m_NetToolSystem.actualMode != NetToolSystem.Mode.Grid)
             {
                 m_ShowComposition.Value |= Composition.ConstantSlope;
             }
