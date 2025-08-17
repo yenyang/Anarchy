@@ -7,6 +7,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
     using Anarchy;
     using Anarchy.Extensions;
     using Colossal.Logging;
+    using Colossal.UI.Binding;
     using Game.Prefabs;
     using Game.Rendering;
     using Game.Tools;
@@ -28,6 +29,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         private ValueBindingHelper<int> m_SelectionRadius;
         private RenderingSystem m_RenderingSystem;
         private DefaultToolSystem m_DefaultToolSystem;
+        private ValueBindingHelper<Tier> m_Tier;
 
         /// <summary>
         /// Enum for different component types the tool can add or remove.
@@ -62,6 +64,22 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         }
 
         /// <summary>
+        /// An enum for Main Elements of subelements.
+        /// </summary>
+        public enum Tier
+        {
+            /// <summary>
+            /// Primary objects.
+            /// </summary>
+            MainElements = 1,
+
+            /// <summary>
+            /// Subelements.
+            /// </summary>
+            SubElements = 2,
+        }
+
+        /// <summary>
         /// Gets the value of current anarchy component type for the tool.
         /// </summary>
         public AnarchyComponentType CurrentComponentType
@@ -85,6 +103,11 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             get { return m_SelectionRadius.Value; }
         }
 
+        public Tier CurrentTier
+        {
+            get { return m_Tier.Value; }
+        }
+
         /// <inheritdoc/>
         protected override void OnCreate()
         {
@@ -100,6 +123,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             m_AnarchyComponentType = CreateBinding("AnarchyComponentType", AnarchyComponentType.PreventOverride);
             m_SelectionMode = CreateBinding("SelectionMode", SelectionMode.Radius);
             m_SelectionRadius = CreateBinding("SelectionRadius", 10);
+            m_Tier = CreateBinding("Tier", Tier.MainElements);
 
             // Creates triggers for C# methods based on UI events.
             CreateTrigger("ActivateAnarchyComponentsTool", () =>
@@ -122,39 +146,11 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                 }
             });
 
-            CreateTrigger("AnarchyComponentType", (int type) =>
-            {
-                AnarchyComponentType anarchyComponentType = (AnarchyComponentType)type;
-                if ((m_AnarchyComponentType & anarchyComponentType) == anarchyComponentType)
-                {
-                    m_AnarchyComponentType.Value &= ~anarchyComponentType;
-                    if (m_AnarchyComponentType.Value == 0 && anarchyComponentType == AnarchyComponentType.TransformRecord)
-                    {
-                        m_AnarchyComponentType.Value |= AnarchyComponentType.PreventOverride;
-                    }
-                    else if (m_AnarchyComponentType.Value == 0 && anarchyComponentType == AnarchyComponentType.PreventOverride)
-                    {
-                        m_AnarchyComponentType.Value |= AnarchyComponentType.TransformRecord;
-                    }
-                }
-                else
-                {
-                    m_AnarchyComponentType.Value |= anarchyComponentType;
-                }
-
-                if ((m_AnarchyComponentType & AnarchyComponentType.PreventOverride) == AnarchyComponentType.PreventOverride
-                    && m_SelectionMode == SelectionMode.Radius)
-                {
-                    m_RenderingSystem.markersVisible = true;
-                }
-                else
-                {
-                    m_RenderingSystem.markersVisible = m_AnarchyComponentsTool.PreviousShowMarkers;
-                }
-            });
+            CreateTrigger<int>("AnarchyComponentType", AnarchyComponentTypeToggled);
 
             CreateTrigger("IncreaseRadius", () => m_SelectionRadius.Value = Math.Min(m_SelectionRadius.Value + 10, 100));
             CreateTrigger("DecreaseRadius", () => m_SelectionRadius.Value = Math.Max(m_SelectionRadius.Value - 10, 10));
+            CreateTrigger<int>("TierToggled", TierToggled);
             Enabled = false;
         }
 
@@ -168,6 +164,58 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             }
 
             Enabled = false;
+        }
+
+        private void AnarchyComponentTypeToggled(int type)
+        {
+            AnarchyComponentType anarchyComponentType = (AnarchyComponentType)type;
+            if ((m_AnarchyComponentType.Value & anarchyComponentType) == anarchyComponentType)
+            {
+                m_AnarchyComponentType.Value &= ~anarchyComponentType;
+                if (m_AnarchyComponentType.Value == 0 && anarchyComponentType == AnarchyComponentType.TransformRecord)
+                {
+                    m_AnarchyComponentType.Value |= AnarchyComponentType.PreventOverride;
+                }
+                else if (m_AnarchyComponentType.Value == 0 && anarchyComponentType == AnarchyComponentType.PreventOverride)
+                {
+                    m_AnarchyComponentType.Value |= AnarchyComponentType.TransformRecord;
+                }
+            }
+            else
+            {
+                m_AnarchyComponentType.Value |= anarchyComponentType;
+            }
+
+            if ((m_AnarchyComponentType.Value & AnarchyComponentType.PreventOverride) == AnarchyComponentType.PreventOverride
+                && m_SelectionMode == SelectionMode.Radius)
+            {
+                m_RenderingSystem.markersVisible = true;
+            }
+            else
+            {
+                m_RenderingSystem.markersVisible = m_AnarchyComponentsTool.PreviousShowMarkers;
+            }
+        }
+
+        private void TierToggled(int tier)
+        {
+            Tier toggledTier = (Tier)tier;
+            if ((m_Tier.Value & toggledTier) == toggledTier)
+            {
+                m_Tier.Value &= ~toggledTier;
+                if (m_Tier.Value == 0 && toggledTier == Tier.MainElements)
+                {
+                    m_Tier.Value |= Tier.SubElements;
+                }
+                else if (m_Tier.Value == 0 && toggledTier == Tier.SubElements)
+                {
+                    m_Tier.Value |= Tier.MainElements;
+                }
+            }
+            else
+            {
+                m_Tier.Value |= toggledTier;
+            }
         }
     }
 }

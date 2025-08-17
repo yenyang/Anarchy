@@ -175,6 +175,11 @@ namespace Anarchy.Settings
                 { "Assets.DESCRIPTION[Elevated01]", "Forces a network to utilize the elevated mode (i.e. bridge, overpass, crossover)." },
                 { "Assets.NAME[Tunnel01]", "Tunnel" },
                 { "Assets.DESCRIPTION[Tunnel01]", "Forces a network to become a tunnel. Forced tunnel visuals are often undesirable. Use only, if necessary." },
+                { SectionLabel("Tier"), "Tier" },
+                { TooltipTitleKey("MainElements"), "Main Elements" },
+                { TooltipDescriptionKey("MainElements"), "Add or remove components from the top level object." },
+                { TooltipTitleKey("SubElements"), "Sub-Elements" },
+                { TooltipDescriptionKey("SubElements"), "Add or remove components from sub-elements of the main element. Be careful with Transform Lock on sub-elements. It locks relative position and rotation and overrides the normal automated repositioning of sub-elements by the game when their owner is updated. Network nodes can also flip which causes the locked position and rotation to flip incorrectly. Removing Transform lock and updating the owner will reset vanilla automated sub-element behavior." },
             };
         }
 
