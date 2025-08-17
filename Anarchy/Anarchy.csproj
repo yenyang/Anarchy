@@ -9,8 +9,8 @@
 		
 		<!--The file where mod information which is required for publishing mod on PDX mods are stored-->
 		<PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
-		<AssemblyVersion>1.7.19</AssemblyVersion>
-		<FileVersion>1.7.19</FileVersion>
+		<AssemblyVersion>1.7.18.1</AssemblyVersion>
+		<FileVersion>1.7.18.1</FileVersion>
 		<Version>1.7.19</Version>
 	</PropertyGroup>
 	<!--Imports must be after PropertyGroup block-->
