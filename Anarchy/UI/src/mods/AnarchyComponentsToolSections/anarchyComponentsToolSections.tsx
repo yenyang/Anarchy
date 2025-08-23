@@ -39,10 +39,27 @@ enum SelectionMode
     Radius,
 }
 
+  /// <summary>
+  /// An enum for Main Elements of subelements.
+  /// </summary>
+  export enum Tier
+  {
+      /// <summary>
+      /// Primary objects.
+      /// </summary>
+      MainElements = 1,
+
+      /// <summary>
+      /// Subelements.
+      /// </summary>
+      SubElements = 2,
+  }
+
 // These establishes the binding with C# side. Without C# side game ui will crash.
 const selectionMode$ = bindValue<SelectionMode>(mod.id, "SelectionMode");
 const anarchyComponentType$ = bindValue<AnarchyComponentType>(mod.id, "AnarchyComponentType");
 const selectionRadius$ = bindValue<Number>(mod.id, "SelectionRadius"); 
+const Tier$ = bindValue<Tier>(mod.id, "Tier");
 
 // These contain the coui paths to Unified Icon Library svg assets
 const uilStandard =                          "coui://uil/Standard/";
@@ -54,9 +71,11 @@ const singleSrc =          uilStandard + "Dot.svg";
 const radiusSrc =                          uilStandard + "Circle.svg";
 const arrowDownSrc =         uilStandard +  "ArrowDownThickStroke.svg";
 const arrowUpSrc =           uilStandard +  "ArrowUpThickStroke.svg";
+const mainElementsSrc = uilStandard + "HouseMainElements.svg";
+const subElementsSrc = uilStandard + "HouseSmallSubElements.svg";
 
 
-function handleClickWithValue(event: string, value: SelectionMode | AnarchyComponentType) {
+function handleClickWithValue(event: string, value: SelectionMode | AnarchyComponentType | Tier) {
     trigger(mod.id, event, value);
 }
 
@@ -72,6 +91,7 @@ export const AnarchyComponentsToolComponent: ModuleRegistryExtend = (Component :
         const selectionMode = useValue(selectionMode$);
         const anarchyComponentType = useValue(anarchyComponentType$);
         const selectionRadius = useValue(selectionRadius$);
+        const CurrentTier = useValue(Tier$);
 
         // translation handling. Translates using locale keys that are defined in C# or fallback string here.
         const { translate } = useLocalization();
@@ -100,6 +120,24 @@ export const AnarchyComponentsToolComponent: ModuleRegistryExtend = (Component :
                     <VanillaComponentResolver.instance.Section title={translate("Anarchy.SECTION_TITLE[Selection]", locale["Anarchy.SECTION_TITLE[Selection]"])}>
                                 <VanillaComponentResolver.instance.ToolButton className={VanillaComponentResolver.instance.toolButtonTheme.button} selected={selectionMode == SelectionMode.Single}       tooltip={descriptionTooltip( translate("Anarchy.TOOLTIP_TITLE[SingleSelection]", locale["Anarchy.TOOLTIP_TITLE[SingleSelection]"]), translate("Anarchy.TOOLTIP_DESCRIPTION[SingleSelection]", locale["Anarchy.TOOLTIP_DESCRIPTION[SingleSelection]"]))}                          onSelect={() => handleClickWithValue("SelectionMode", SelectionMode.Single)}              src={singleSrc}         focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}  ></VanillaComponentResolver.instance.ToolButton>
                                 <VanillaComponentResolver.instance.ToolButton className={VanillaComponentResolver.instance.toolButtonTheme.button} selected={selectionMode == SelectionMode.Radius}       tooltip={descriptionTooltip( translate("Anarchy.TOOLTIP_TITLE[RadiusSelection]", locale["Anarchy.TOOLTIP_TITLE[RadiusSelection]"]), translate("Anarchy.TOOLTIP_DESCRIPTION[RadiusSelection]", locale["Anarchy.TOOLTIP_DESCRIPTION[RadiusSelection]"]))}                          onSelect={() => handleClickWithValue("SelectionMode", SelectionMode.Radius)}              src={radiusSrc}                 focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}  ></VanillaComponentResolver.instance.ToolButton>
+                    </VanillaComponentResolver.instance.Section>
+                    <VanillaComponentResolver.instance.Section title={translate("Anarchy.SECTION_TITLE[Tier]", locale["Anarchy.SECTION_TITLE[Tier]"])}>
+                        <VanillaComponentResolver.instance.ToolButton
+                            className={VanillaComponentResolver.instance.toolButtonTheme.button}
+                            selected={(CurrentTier & Tier.MainElements) == Tier.MainElements}
+                            src={mainElementsSrc}
+                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                            tooltip={descriptionTooltip( translate("Anarchy.TOOLTIP_TITLE[MainElements]", locale["Anarchy.TOOLTIP_TITLE[MainElements]"]), translate("Anarchy.TOOLTIP_DESCRIPTION[MainElements]", locale["Anarchy.TOOLTIP_DESCRIPTION[MainElements]"]))}
+                            onSelect={() => {handleClickWithValue("TierToggled", Tier.MainElements)}}
+                        ></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.ToolButton
+                            className={VanillaComponentResolver.instance.toolButtonTheme.button}
+                            selected={(CurrentTier & Tier.SubElements) == Tier.SubElements}
+                            src={subElementsSrc}
+                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                            tooltip={descriptionTooltip( translate("Anarchy.TOOLTIP_TITLE[SubElements]", locale["Anarchy.TOOLTIP_TITLE[SubElements]"]), translate("Anarchy.TOOLTIP_DESCRIPTION[SubElements]" ,locale["Anarchy.TOOLTIP_DESCRIPTION[SubElements]"]))}
+                            onSelect={() => handleClickWithValue("TierToggled", Tier.SubElements)}
+                        ></VanillaComponentResolver.instance.ToolButton>
                     </VanillaComponentResolver.instance.Section>
                     <VanillaComponentResolver.instance.Section title={translate("Anarchy.SECTION_TITLE[Components]", locale["Anarchy.SECTION_TITLE[Components]"])}>
                         <VanillaComponentResolver.instance.ToolButton

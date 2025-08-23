@@ -146,5 +146,10 @@
   "Assets.NAME[Elevated01]": "Podwyższenie",
   "Assets.DESCRIPTION[Elevated01]": "Wymusza na sieci zamianę w sieć podwyższoną (tzn. most, estakada, rampa).",
   "Assets.NAME[Tunnel01]": "Tunel",
-  "Assets.DESCRIPTION[Tunnel01]": "Wymusza na sieci zamianę w tunel. Wymuszone tunele powodują niepożądane efekty wizualne. Używaj tylko w razie potrzeby."
+  "Assets.DESCRIPTION[Tunnel01]": "Wymusza na sieci zamianę w tunel. Wymuszone tunele powodują niepożądane efekty wizualne. Używaj tylko w razie potrzeby.",
+  "Anarchy.SECTION_TITLE[Tier]": "Zastosowanie",
+  "Anarchy.TOOLTIP_TITLE[MainElements]": "Główny element",
+  "Anarchy.TOOLTIP_DESCRIPTION[MainElements]": "Dodaj lub usuń Elementy z obiektu głównego.",
+  "Anarchy.TOOLTIP_TITLE[SubElements]": "Dodatki",
+  "Anarchy.TOOLTIP_DESCRIPTION[SubElements]": "Dodaj lub usuń Elementy z dodatków dołączonych do głównego elementu. Zachowaj ostrożność, ustawiając Blokadę Zmiany na dodatkach, zablokuje ona ich względną pozycję i obrót oraz zapobiegnie automatycznemu nadpisaniu dodatków przez grę, kiedy ich właściciel jest aktualizowany. Węzły sieci mogą się obrócić, co spowoduje nieprawidłowe odwrócenie zablokowanej pozycji i obrotu dodatków. Usunięcie Blokady Zmiany i zaktualizowanie właściciela przywróci domyślne automatyczne zachowanie dodatków."
 }

@@ -44,7 +44,10 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         private bool m_PreviousShowMarkers;
         private EntityQuery m_OverridenQuery;
         private EntityQuery m_PreventOverrideQuery;
-        private EntityQuery m_ElevationLockedQuery;
+        private EntityQuery m_TransformLockedQuery;
+        private EntityQuery m_PreventOverrideOnlyQuery;
+        private EntityQuery m_TransformLockedOnlyQuery;
+        private EntityQuery m_PreventOverrideAndTransformLockedQuery;
         private AnarchyComponentsToolUISystem m_UISystem;
         private SelectedInfoPanelTogglesSystem m_SelectedInfoPanelTogglesSystem;
         private EntityQuery m_NotPreventOverrideQuery;
@@ -98,7 +101,16 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             else
             {
                 m_ToolRaycastSystem.typeMask = TypeMask.StaticObjects;
-                m_ToolRaycastSystem.raycastFlags |= RaycastFlags.Markers | RaycastFlags.Placeholders | RaycastFlags.SubElements;
+                m_ToolRaycastSystem.raycastFlags |= RaycastFlags.Markers | RaycastFlags.Placeholders;
+                if ((m_UISystem.CurrentTier & Tier.SubElements) == Tier.SubElements)
+                {
+                    m_ToolRaycastSystem.raycastFlags |= RaycastFlags.SubElements;
+                }
+
+                if ((m_UISystem.CurrentTier & Tier.MainElements) != Tier.MainElements)
+                {
+                    m_ToolRaycastSystem.raycastFlags |= RaycastFlags.NoMainElements;
+                }
             }
         }
 
@@ -146,10 +158,27 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                 .WithNone<Deleted, Temp>()
                 .Build();
 
-            m_ElevationLockedQuery = SystemAPI.QueryBuilder()
+            m_TransformLockedQuery = SystemAPI.QueryBuilder()
                 .WithAll<TransformRecord, Game.Objects.Object, Game.Objects.Static, Game.Objects.Transform>()
                 .WithNone<Deleted, Temp>()
                 .Build();
+
+            m_PreventOverrideOnlyQuery = SystemAPI.QueryBuilder()
+              .WithAll<PreventOverride, Game.Objects.Object, Game.Objects.Static, Game.Objects.Transform>()
+              .WithNone<Deleted, Temp, TransformRecord>()
+              .Build();
+
+            m_TransformLockedOnlyQuery = SystemAPI.QueryBuilder()
+                .WithAll<TransformRecord, Game.Objects.Object, Game.Objects.Static, Game.Objects.Transform>()
+                .WithNone<Deleted, Temp, PreventOverride>()
+                .Build();
+
+
+            m_PreventOverrideAndTransformLockedQuery = SystemAPI.QueryBuilder()
+                .WithAll<PreventOverride, TransformRecord, Game.Objects.Object, Game.Objects.Static, Game.Objects.Transform>()
+                .WithNone<Deleted, Temp>()
+                .Build();
+
 
             m_NotPreventOverrideQuery = GetEntityQuery(new EntityQueryDesc
             {
@@ -286,7 +315,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                 m_OverlayRenderSystem.AddBufferWriter(inputDeps);
             }
 
-            if (!m_PreventOverrideQuery.IsEmptyIgnoreFilter
+            if (!m_PreventOverrideOnlyQuery.IsEmptyIgnoreFilter
                 && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride) == AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride)
             {
                 ObjectHoopRenderJob preventOverrideHoopRenderJob = new ObjectHoopRenderJob()
@@ -300,11 +329,11 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                     m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(isReadOnly: true),
                     m_TreeLookup = SystemAPI.GetComponentLookup<Game.Objects.Tree>(isReadOnly: true),
                 };
-                inputDeps = preventOverrideHoopRenderJob.Schedule(m_PreventOverrideQuery, JobHandle.CombineDependencies(inputDeps, outJobHandle));
+                inputDeps = preventOverrideHoopRenderJob.Schedule(m_PreventOverrideOnlyQuery, JobHandle.CombineDependencies(inputDeps, outJobHandle));
                 m_OverlayRenderSystem.AddBufferWriter(inputDeps);
             }
 
-            if (!m_ElevationLockedQuery.IsEmptyIgnoreFilter
+            if (!m_TransformLockedOnlyQuery.IsEmptyIgnoreFilter
                 && (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord) == AnarchyComponentsToolUISystem.AnarchyComponentType.TransformRecord)
             {
                 ObjectHoopRenderJob elevationLockedHoopRenderJob = new ObjectHoopRenderJob()
@@ -318,7 +347,35 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                     m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(isReadOnly: true),
                     m_TreeLookup = SystemAPI.GetComponentLookup<Game.Objects.Tree>(isReadOnly: true),
                 };
-                inputDeps = elevationLockedHoopRenderJob.Schedule(m_ElevationLockedQuery, JobHandle.CombineDependencies(inputDeps, outJobHandle));
+                inputDeps = elevationLockedHoopRenderJob.Schedule(m_TransformLockedOnlyQuery, JobHandle.CombineDependencies(inputDeps, outJobHandle));
+                m_OverlayRenderSystem.AddBufferWriter(inputDeps);
+            }
+
+            if (!m_PreventOverrideAndTransformLockedQuery.IsEmptyIgnoreFilter)
+            {
+                // Purple for both.
+                UnityEngine.Color color = new UnityEngine.Color(0.5f, 0f, 0.5f);
+                if (m_UISystem.CurrentComponentType == AnarchyComponentType.TransformRecord)
+                {
+                    color = UnityEngine.Color.blue;
+                }
+                else if (m_UISystem.CurrentComponentType == AnarchyComponentType.PreventOverride)
+                {
+                    color = UnityEngine.Color.red;
+                }
+
+                ObjectHoopRenderJob elevationLockedHoopRenderJob = new ObjectHoopRenderJob()
+                {
+                    m_Color = color,
+                    m_CullingInfoType = SystemAPI.GetComponentTypeHandle<CullingInfo>(isReadOnly: true),
+                    m_OverlayBuffer = m_OverlayRenderSystem.GetBuffer(out JobHandle outJobHandle),
+                    m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
+                    m_EntityType = SystemAPI.GetEntityTypeHandle(),
+                    m_ObjectGeometryDataLookup = SystemAPI.GetComponentLookup<ObjectGeometryData>(isReadOnly: true),
+                    m_PrefabRefLookup = SystemAPI.GetComponentLookup<PrefabRef>(isReadOnly: true),
+                    m_TreeLookup = SystemAPI.GetComponentLookup<Game.Objects.Tree>(isReadOnly: true),
+                };
+                inputDeps = elevationLockedHoopRenderJob.Schedule(m_PreventOverrideAndTransformLockedQuery, JobHandle.CombineDependencies(inputDeps, outJobHandle));
                 m_OverlayRenderSystem.AddBufferWriter(inputDeps);
             }
 
@@ -344,7 +401,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                 if (applyAction.IsPressed() &&
                    (m_UISystem.CurrentComponentType & AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride) == AnarchyComponentsToolUISystem.AnarchyComponentType.PreventOverride)
                 {
-                    AddOrRemoveComponentWithinRadiusJob addPreventOverrideJob = new ()
+                    AddOrRemoveComponentWithinRadiusJob addPreventOverrideJob = new()
                     {
                         m_EntityType = SystemAPI.GetEntityTypeHandle(),
                         m_Position = hit.m_HitPosition,
@@ -358,6 +415,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                         m_OwnerLookup = SystemAPI.GetComponentLookup<Owner>(),
                         m_TransformLookup = SystemAPI.GetComponentLookup<Game.Objects.Transform>(),
                         m_NodeLookup = SystemAPI.GetComponentLookup<Game.Net.Node>(),
+                        m_Tier = m_UISystem.CurrentTier,
                     };
                     inputDeps = JobChunkExtensions.Schedule(addPreventOverrideJob, m_NotPreventOverrideQuery, inputDeps);
                     m_Barrier.AddJobHandleForProducer(inputDeps);
@@ -379,6 +437,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                         m_OwnerLookup = SystemAPI.GetComponentLookup<Owner>(),
                         m_TransformLookup = SystemAPI.GetComponentLookup<Game.Objects.Transform>(),
                         m_NodeLookup = SystemAPI.GetComponentLookup<Game.Net.Node>(),
+                        m_Tier = m_UISystem.CurrentTier,
                     };
                     inputDeps = JobChunkExtensions.Schedule(removePreventOverrideJob, m_PreventOverrideQuery, inputDeps);
                     m_Barrier.AddJobHandleForProducer(inputDeps);
@@ -401,6 +460,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                         m_OwnerLookup = SystemAPI.GetComponentLookup<Owner>(),
                         m_TransformLookup = SystemAPI.GetComponentLookup<Game.Objects.Transform>(),
                         m_NodeLookup = SystemAPI.GetComponentLookup<Game.Net.Node>(),
+                        m_Tier = m_UISystem.CurrentTier,
                     };
                     inputDeps = JobChunkExtensions.Schedule(addTransformRecordJob, m_NotTransformRecordQuery, inputDeps);
                     m_Barrier.AddJobHandleForProducer(inputDeps);
@@ -422,8 +482,9 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                         m_OwnerLookup = SystemAPI.GetComponentLookup<Owner>(),
                         m_TransformLookup = SystemAPI.GetComponentLookup<Game.Objects.Transform>(),
                         m_NodeLookup = SystemAPI.GetComponentLookup<Game.Net.Node>(),
+                        m_Tier = m_UISystem.CurrentTier,
                     };
-                    inputDeps = JobChunkExtensions.Schedule(removeTransformRecordJob, m_ElevationLockedQuery, inputDeps);
+                    inputDeps = JobChunkExtensions.Schedule(removeTransformRecordJob, m_TransformLockedQuery, inputDeps);
                     m_Barrier.AddJobHandleForProducer(inputDeps);
                 }
 
@@ -602,6 +663,7 @@ namespace Anarchy.Systems.AnarchyComponentsTool
             public ComponentLookup<Game.Objects.Transform> m_TransformLookup;
             [ReadOnly]
             public ComponentLookup<Game.Net.Node> m_NodeLookup;
+            public Tier m_Tier;
 
             /// <summary>
             /// Executes job which will change state or prefab for trees within a radius.
@@ -625,6 +687,18 @@ namespace Anarchy.Systems.AnarchyComponentsTool
                         && m_PrefabRefLookup.TryGetComponent(entityNativeArray[i], out PrefabRef prefabRef)
                         && m_ObjectGeometryDataLookup.TryGetComponent(prefabRef.m_Prefab, out ObjectGeometryData objectGeometryData)
                         && (objectGeometryData.m_Flags & Game.Objects.GeometryFlags.Overridable) != Game.Objects.GeometryFlags.Overridable)
+                    {
+                        continue;
+                    }
+
+                    if ((m_Tier & Tier.MainElements) != Tier.MainElements &&
+                       !m_OwnerLookup.HasComponent(entityNativeArray[i]))
+                    {
+                        continue;
+                    }
+
+                    if ((m_Tier & Tier.SubElements) != Tier.SubElements &&
+                        m_OwnerLookup.HasComponent(entityNativeArray[i]))
                     {
                         continue;
                     }
