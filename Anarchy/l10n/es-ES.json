@@ -146,5 +146,10 @@
   "Assets.NAME[Elevated01]": "Elevado",
   "Assets.DESCRIPTION[Elevated01]": "Forzar una red a utilizar el modo elevado (por ejemplo, puentes o pasos elevados).",
   "Assets.NAME[Tunnel01]": "Túnel",
-  "Assets.DESCRIPTION[Tunnel01]": "Fuerza a una red a convertirse en un túnel. Forzar la visualización de túnel a menudo es indeseado. Úsalo solo si es necesario."
+  "Assets.DESCRIPTION[Tunnel01]": "Fuerza a una red a convertirse en un túnel. Forzar la visualización de túnel a menudo es indeseado. Úsalo solo si es necesario.",
+  "Anarchy.SECTION_TITLE[Tier]": "Clase",
+  "Anarchy.TOOLTIP_TITLE[MainElements]": "Elementos principales",
+  "Anarchy.TOOLTIP_DESCRIPTION[MainElements]": "Agrega o remueve componentes del objeto de nivel superior.",
+  "Anarchy.TOOLTIP_TITLE[SubElements]": "Sub-elementos",
+  "Anarchy.TOOLTIP_DESCRIPTION[SubElements]": "Agrega o remueve componentes de subelementos del elemento principal. Ten cuidado con el Bloqueo de Transformación en los sub-elementos. Esto bloquea la posición relativa y rotación y además, anula el reposicionamiento automático normal de sub-elementos cuando el elemento principal se actualiza. Los nodos de red también pueden voltearse, lo que hace que la posición bloqueada y la rotación se vuelquen incorrectamente. Quitar el Bloqueo de Transformación y actualizar el elemento principal, restablecerá el comportamiento automático de sub-elementos."
 }

@@ -146,5 +146,10 @@
   "Assets.NAME[Elevated01]": "强制高架",
   "Assets.DESCRIPTION[Elevated01]": "强制网络使用高架模式（例如桥梁、立交桥、交叉路口）。",
   "Assets.NAME[Tunnel01]": "强制隧道",
-  "Assets.DESCRIPTION[Tunnel01]": "强制网络使用隧道模式。需要注意，强制隧道的外观通常是不合适的。只在必要时使用。"
+  "Assets.DESCRIPTION[Tunnel01]": "强制网络使用隧道模式。需要注意，强制隧道的外观通常是不合适的。只在必要时使用。",
+  "Anarchy.SECTION_TITLE[Tier]": "选择类别",
+  "Anarchy.TOOLTIP_TITLE[MainElements]": "主资产",
+  "Anarchy.TOOLTIP_DESCRIPTION[MainElements]": "从顶层对象中添加或删除组件。",
+  "Anarchy.TOOLTIP_TITLE[SubElements]": "子元素",
+  "Anarchy.TOOLTIP_DESCRIPTION[SubElements]": "在主资产的子元素中添加或移除组件。请谨慎使用子元素上的“锁定变换”，它会锁定相对位置和旋转角度，并在主资产更新时覆盖游戏对子元素的定位。网络节点也可能发生翻转，这会导致锁定的位置和旋转角度出现错误。移除“锁定变换”并更新主资产将重置原版子元素的表现。"
 }

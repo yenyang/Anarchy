@@ -1,4 +1,4 @@
-as{
+{
   "Options.SECTION[Anarchy.Anarchy.AnarchyMod]": "Anarchy",
   "Options.TAB[Anarchy.Anarchy.AnarchyMod.General]": "Algemeen",
   "Options.TAB[Anarchy.Anarchy.AnarchyMod.UI]": "UI",
@@ -146,5 +146,9 @@ as{
   "Assets.NAME[Elevated01]": "Verhoogd",
   "Assets.DESCRIPTION[Elevated01]": "Forceert netwerk gebruik te laten maken van de modus verhoogd (zoals bruggen, viaducten en kruisingen).",
   "Assets.NAME[Tunnel01]": "Tunnel",
-  "Assets.DESCRIPTION[Tunnel01]": "Forceert netwerk gebruik te laten maken van de modus tunnel. De weergave van een geforceerde tunnel is vaak ongewenst. Gebruik alleen indien nodig."
+  "Assets.DESCRIPTION[Tunnel01]": "Forceert netwerk gebruik te laten maken van de modus tunnel. De weergave van een geforceerde tunnel is vaak ongewenst. Gebruik alleen indien nodig.",
+  "Anarchy.SECTION_TITLE[Tier]": "Rang",
+  "Anarchy.TOOLTIP_TITLE[MainElements]": "Hoofdelementen",
+  "Anarchy.TOOLTIP_DESCRIPTION[MainElements]": "Componenten toevoegen of verwijderen van het object op de eerste laag.",
+  "Anarchy.TOOLTIP_TITLE[SubElements]": "Subelementen"
 }

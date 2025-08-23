@@ -146,5 +146,10 @@
   "Assets.NAME[Elevated01]": "Élévation",
   "Assets.DESCRIPTION[Elevated01]": "Force un réseau à utiliser le mode surélevé (c'est-à-dire pont, passage supérieur, croisement).",
   "Assets.NAME[Tunnel01]": "Tunnel",
-  "Assets.DESCRIPTION[Tunnel01]": "Force un réseau à devenir un tunnel. Les visuels de tunnels forcés sont souvent indésirables. À n'utiliser qu'en cas de nécessité."
+  "Assets.DESCRIPTION[Tunnel01]": "Force un réseau à devenir un tunnel. Les visuels de tunnels forcés sont souvent indésirables. À n'utiliser qu'en cas de nécessité.",
+  "Anarchy.SECTION_TITLE[Tier]": "Niveau",
+  "Anarchy.TOOLTIP_TITLE[MainElements]": "Éléments principaux",
+  "Anarchy.TOOLTIP_DESCRIPTION[MainElements]": "Ajouter ou supprimer des composants de l’objet de niveau supérieur.",
+  "Anarchy.TOOLTIP_TITLE[SubElements]": "Sous-éléments",
+  "Anarchy.TOOLTIP_DESCRIPTION[SubElements]": "Ajouter ou supprimer des composants des sous-éléments de l’élément principal. Attention au verrouillage de transformation sur les sous-éléments. Il verrouille la position et la rotation relatives et remplace le repositionnement automatique normal des sous-éléments par le jeu lorsque leur objet parent est mis à jour. Les nœuds de réseau peuvent également s’inverser, ce qui entraîne une inversion incorrecte de la position et de la rotation verrouillées. Supprimer le verrouillage de transformation et mettre à jour l’objet parent réinitialisera le comportement des sous-éléments à celui du jeu de base."
 }
