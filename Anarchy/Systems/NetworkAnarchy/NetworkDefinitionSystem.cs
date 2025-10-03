@@ -321,13 +321,14 @@ namespace Anarchy.Systems.NetworkAnarchy
                 if (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace)
                 {
                     currentCourse.m_Elevation = (currentCourse.m_StartPosition.m_Elevation + currentCourse.m_EndPosition.m_Elevation) / 2f;
-                    currentCourse.m_EndPosition.m_Flags |= CoursePosFlags.FreeHeight;
                 }
                 else
                 {
                     TerrainHeightData terrainHeightData = m_TerrainSystem.GetHeightData(waitForPending: false);
                     currentCourse.m_StartPosition.m_Elevation = currentCourse.m_StartPosition.m_Position.y - TerrainUtils.SampleHeight(ref terrainHeightData, currentCourse.m_StartPosition.m_Position);
                 }
+
+                currentCourse.m_EndPosition.m_Flags |= CoursePosFlags.FreeHeight;
 
                 CheckAndSetElevations(ref currentCourse);
 #if VERBOSE
