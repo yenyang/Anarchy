@@ -11,6 +11,7 @@ namespace Anarchy.Systems.NetworkAnarchy
     using Game.Common;
     using Game.Net;
     using Game.Prefabs;
+    using Game.Simulation;
     using Game.Tools;
     using Unity.Collections;
     using Unity.Entities;
@@ -33,6 +34,7 @@ namespace Anarchy.Systems.NetworkAnarchy
         private NetToolSystem m_NetToolSystem;
         private PrefabSystem m_PrefabSystem;
         private NetworkAnarchyUISystem m_UISystem;
+        private TerrainSystem m_TerrainSystem;
         private EntityQuery m_NetCourseQuery;
         private ILog m_Log;
 
@@ -52,6 +54,7 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_UISystem = World.GetOrCreateSystemManaged<NetworkAnarchyUISystem>();
+            m_TerrainSystem = World.GetOrCreateSystemManaged<TerrainSystem>();
             m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_NetToolSystem;
             m_Log.Info($"[{nameof(NetworkDefinitionSystem)}] {nameof(OnCreate)}");
 
@@ -315,8 +318,16 @@ namespace Anarchy.Systems.NetworkAnarchy
                 m_Log.Verbose($"{nameof(NetworkDefinitionSystem)}.{nameof(ProcessNetCourses)} currentCourse.m_EndPosition elevation is {currentCourse.m_EndPosition.m_Elevation}.");
 #endif
                 currentCourse.m_EndPosition.m_Elevation += currentCourse.m_EndPosition.m_Position.y - nextCourse.m_StartPosition.m_Position.y;
-                currentCourse.m_Elevation = (currentCourse.m_StartPosition.m_Elevation + currentCourse.m_EndPosition.m_Elevation) / 2f;
-                currentCourse.m_EndPosition.m_Flags |= CoursePosFlags.FreeHeight;
+                if (m_NetToolSystem.actualMode != NetToolSystem.Mode.Replace)
+                {
+                    currentCourse.m_Elevation = (currentCourse.m_StartPosition.m_Elevation + currentCourse.m_EndPosition.m_Elevation) / 2f;
+                    currentCourse.m_EndPosition.m_Flags |= CoursePosFlags.FreeHeight;
+                }
+                else
+                {
+                    TerrainHeightData terrainHeightData = m_TerrainSystem.GetHeightData(waitForPending: false);
+                    currentCourse.m_StartPosition.m_Elevation = currentCourse.m_StartPosition.m_Position.y - TerrainUtils.SampleHeight(ref terrainHeightData, currentCourse.m_StartPosition.m_Position);
+                }
 
                 CheckAndSetElevations(ref currentCourse);
 #if VERBOSE
@@ -326,7 +337,6 @@ namespace Anarchy.Systems.NetworkAnarchy
                 nextCourse.m_StartPosition.m_Position.y = currentCourse.m_EndPosition.m_Position.y;
                 nextCourse.m_Curve.a.y = currentCourse.m_EndPosition.m_Position.y;
                 nextCourse.m_StartPosition.m_Elevation = currentCourse.m_EndPosition.m_Elevation;
-                nextCourse.m_StartPosition.m_Flags |= CoursePosFlags.FreeHeight;
 
                 netCourses[i] = currentCourse;
                 buffer.SetComponent(entities[i], netCourses[i]);
