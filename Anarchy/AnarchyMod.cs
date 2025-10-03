@@ -3,7 +3,7 @@
 // </copyright>
 
 // #define VERBOSE
-
+// # define EXPORT_EN_US
 // #define DUMP_VANILLA_LOCALIZATION
 namespace Anarchy
 {
@@ -94,7 +94,7 @@ namespace Anarchy
             GameManager.instance.localizationManager.AddSource("en-US", new LocaleEN(Settings));
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Loading other languages");
             LoadNonEnglishLocalizations();
-#if DEBUG
+#if DEBUG && EXPORT_EN_US
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Exporting localization");
             var localeDict = new LocaleEN(Settings).ReadEntries(new List<IDictionaryEntryError>(), new Dictionary<string, int>()).ToDictionary(pair => pair.Key, pair => pair.Value);
             var str = JsonConvert.SerializeObject(localeDict, Formatting.Indented);

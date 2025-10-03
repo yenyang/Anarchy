@@ -798,7 +798,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                     }
                 }
 
-                m_ShowComposition.Value &= ~(Composition.ConstantSlope | Composition.Ground);
+                m_ShowComposition.Value &= ~Composition.Ground;
             }
         }
     }

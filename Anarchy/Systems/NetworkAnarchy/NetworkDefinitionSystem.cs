@@ -326,6 +326,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                 nextCourse.m_StartPosition.m_Position.y = currentCourse.m_EndPosition.m_Position.y;
                 nextCourse.m_Curve.a.y = currentCourse.m_EndPosition.m_Position.y;
                 nextCourse.m_StartPosition.m_Elevation = currentCourse.m_EndPosition.m_Elevation;
+                nextCourse.m_StartPosition.m_Flags |= CoursePosFlags.FreeHeight;
 
                 netCourses[i] = currentCourse;
                 buffer.SetComponent(entities[i], netCourses[i]);
