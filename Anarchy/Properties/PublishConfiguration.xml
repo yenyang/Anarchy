@@ -118,10 +118,8 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <!--Dependency for the mod, can be set multiple-->
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.13" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog>## Patch V1.7.19
-* Added Tier tool options to Anarchy Components Tool. Default is Main Elements, but you can also choose Sub-Elements or both.
-* While using the Anarchy components tool with both components selected, hoops for having both components will actually be purple now rather than overlaid red and blue.
-* Updated Localization</ChangeLog>
+  <ChangeLog>## Patch V1.7.20
+* Compatibility fixes for changes to bindings with Bridges and Ports update.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
