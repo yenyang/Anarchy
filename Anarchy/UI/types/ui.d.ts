@@ -34,6 +34,7 @@ declare module "cs2/ui" {
   export interface TooltipProps extends ClassProps {
   	tooltip: ReactNode;
   	disabled?: boolean;
+  	delayTime?: number;
   	forceVisible?: boolean;
   	theme?: Partial<BalloonTheme>;
   	direction?: BalloonDirection;
@@ -41,7 +42,7 @@ declare module "cs2/ui" {
   	children: RefReactElement;
   	anchorElRef?: RefObject<HTMLElement>;
   }
-  export export const Tooltip: ({ tooltip, forceVisible, disabled, theme, direction, alignment, className, children, anchorElRef }: PropsWithChildren<TooltipProps>) => JSX.Element;
+  export export const Tooltip: ({ tooltip, forceVisible, disabled, delayTime, theme, direction, alignment, className, children, anchorElRef }: PropsWithChildren<TooltipProps>) => JSX.Element;
   export class FocusSymbol {
   	readonly debugName: string;
   	readonly r: number;
@@ -58,6 +59,7 @@ declare module "cs2/ui" {
   	content: string;
   	footer: string;
   	floatingHint?: string;
+  	tooltipHint?: string;
   }
   export interface PanelTitleBarTheme {
   	titleBar: string;
@@ -80,6 +82,10 @@ declare module "cs2/ui" {
   }
   export export const DialogContext: import("react").Context<DialogContextProps>;
   export export const DialogRenderer: ({ children }: PropsWithChildren) => JSX.Element;
+  export interface Number2 {
+  	readonly x: number;
+  	readonly y: number;
+  }
   export interface ConfirmationDialogProps extends PropsWithChildren {
   	title?: ReactNode;
   	message?: ReactNode;
@@ -142,10 +148,6 @@ declare module "cs2/ui" {
   	closeMenu = "close-menu",
   	clickDisableButton = "click-disable-button"
   }
-  export interface Number2 {
-  	readonly x: number;
-  	readonly y: number;
-  }
   export type Action = () => void | boolean;
   export type Action1D = (value: number) => void | boolean;
   export interface InputActionsDefinition {
@@ -170,6 +172,7 @@ declare module "cs2/ui" {
   	"Select Route": Action;
   	"Remove Operating District": Action;
   	"Upgrades Menu": Action;
+  	"Upgrades Menu Secondary": Action;
   	"Purchase Map Tile": Action;
   	"Unfollow Citizen": Action;
   	"Like Chirp": Action;
@@ -184,6 +187,7 @@ declare module "cs2/ui" {
   	"Focus Line Panel": Action;
   	"Focus Occupants Panel": Action;
   	"Focus Info Panel": Action;
+  	"Quaternary Action": Action;
   	"Close": Action;
   	"Back": Action;
   	"Leave Underground Mode": Action;
@@ -270,6 +274,10 @@ declare module "cs2/ui" {
   	"Debug Multiplier": Action1D;
   }
   export type InputAction = keyof InputActionsDefinition;
+  export type InputActionRequest = {
+  	action: InputAction;
+  	actionContext?: string;
+  };
   export interface ButtonTheme {
   	button: string;
   	hint: string;
@@ -293,8 +301,9 @@ declare module "cs2/ui" {
   	onSelect?: () => void;
   	as?: "button" | "div";
   	hintAction?: InputAction;
+  	actionContext?: string;
   	forceHint?: boolean;
-  	shortcut?: InputAction;
+  	shortcut?: InputAction | InputActionRequest;
   	allowFocusableChildren?: boolean;
   }
   export interface IconButtonTheme extends ButtonTheme {
@@ -403,7 +412,9 @@ declare module "cs2/ui" {
   	hintClassName?: string;
   	showCloseHint?: boolean | InputAction;
   	unfocusedHintAction?: InputAction;
-  	backActionOverride?: string;
+  	footerHintAsTooltip?: boolean;
+  	backActionOverride?: InputAction;
+  	actionContext?: string;
   	allowLooping?: boolean;
   }
   export interface DraggablePanelProps extends PanelProps {
@@ -430,9 +441,12 @@ declare module "cs2/ui" {
   	link?: ReactNode;
   	uppercase?: boolean;
   	subRow?: boolean;
+  	subRowDimmed?: boolean;
   	disableFocus?: boolean;
+  	noShrinkRight?: boolean;
+  	justifyLeft?: boolean;
   }
-  export const InfoRow: ({ icon, left, right, tooltip, link, uppercase, subRow, disableFocus, className }: InfoRowProps) => JSX.Element;
+  export const InfoRow: ({ icon, left, right, tooltip, link, uppercase, subRow, subRowDimmed, disableFocus, className, noShrinkRight, justifyLeft }: InfoRowProps) => JSX.Element;
   export interface SimplePanelProps extends PanelProps {
   	draggable?: false | undefined;
   }
@@ -534,8 +548,9 @@ declare module "cs2/ui" {
   	renderer?: FormattedTextRenderer;
   	onLinkSelect?: (data: string) => void;
   	selectAction?: InputAction;
+  	nonInline?: boolean;
   }
-  export export const FormattedText: ({ focusKey, text, theme: partialTheme, renderer, className, onLinkSelect, selectAction, ...props }: FormattedTextProps) => JSX.Element;
+  export export const FormattedText: ({ focusKey, text, theme: partialTheme, renderer, className, onLinkSelect, selectAction, nonInline, ...props }: FormattedTextProps) => JSX.Element;
   export interface FormattedParagraphsTheme extends FormattedTextTheme {
   	paragraphs: string;
   }
@@ -549,8 +564,9 @@ declare module "cs2/ui" {
   	selectAction?: InputAction;
   	maxLineLength?: number;
   	splitLineLength?: number;
+  	nonInline?: boolean;
   }
-  export export const FormattedParagraphs: ({ focusKey, text, theme: partialTheme, renderer, className, children, onLinkSelect, selectAction, maxLineLength, splitLineLength, ...props }: PropsWithChildren<FormattedParagraphsProps>) => JSX.Element;
+  export export const FormattedParagraphs: ({ focusKey, text, theme: partialTheme, renderer, className, children, onLinkSelect, selectAction, nonInline, maxLineLength, splitLineLength, ...props }: PropsWithChildren<FormattedParagraphsProps>) => JSX.Element;
   export export class MarkdownRenderer implements FormattedTextRenderer {
   	render(str: string): FormattedTextRenderResult;
   }

@@ -266,8 +266,8 @@ namespace Anarchy.Systems.AnarchyComponentsTool
         protected override void OnStartRunning()
         {
             base.OnStartRunning();
-            applyAction.enabled = true;
-            secondaryApplyAction.enabled = true;
+            applyAction.shouldBeEnabled = true;
+            secondaryApplyAction.shouldBeEnabled = true;
             m_MustStartRunning = false;
             m_Log.Debug($"{nameof(AnarchyComponentsToolSystem)}.{nameof(OnStartRunning)}");
             m_PreviousShowMarkers = m_RenderingSystem.markersVisible;
