@@ -75,6 +75,8 @@ namespace Anarchy.Systems.Common
             new (ErrorType.SmallArea, ErrorCheck.DisableState.WithAnarchy, 22),
             new (ErrorType.SteepSlope, ErrorCheck.DisableState.WithAnarchy, 23),
             new (ErrorType.TightCurve, ErrorCheck.DisableState.WithAnarchy, 24),
+            new (ErrorType.NoPortAccess, ErrorCheck.DisableState.WithAnarchy, 25),
+            new (ErrorType.NotEnoughClearance, ErrorCheck.DisableState.WithAnarchy, 26),
         };
 
         private ToolSystem m_ToolSystem;
