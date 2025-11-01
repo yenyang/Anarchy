@@ -75,7 +75,24 @@ namespace Anarchy.Systems.ClearanceViolation
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            if (m_ToolSystem.activeTool != m_NetToolSystem || !m_AnarchyUISystem.AnarchyEnabled)
+            bool moveableBridge = false;
+            if (m_ToolSystem.activeTool == m_NetToolSystem &&
+                m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) &&
+                EntityManager.TryGetBuffer(prefabEntity, isReadOnly: true, out DynamicBuffer<Game.Prefabs.SubObject> prefabSubObjects))
+            {
+                for (int i = 0; i < prefabSubObjects.Length; i++)
+                {
+                    if (EntityManager.HasComponent<MoveableBridgeData>(prefabSubObjects[i].m_Prefab))
+                    {
+                        moveableBridge = true;
+                        break;
+                    }
+                }
+            }
+
+            if (m_ToolSystem.activeTool != m_NetToolSystem ||
+               !m_AnarchyUISystem.AnarchyEnabled ||
+                moveableBridge)
             {
                 if (m_EnsureReset)
                 {

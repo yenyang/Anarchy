@@ -135,6 +135,8 @@ namespace Anarchy.Settings
                 { ErrorCheckKey(ErrorType.NoRoadAccess), "No Road Access" },
                 { ErrorCheckKey(ErrorType.NoTrackAccess), "No Track Access" },
                 { ErrorCheckKey(ErrorType.NoTrainAccess), "No Train Access" },
+                { ErrorCheckKey(ErrorType.NotEnoughClearance), "Clearance Too Low" },
+                { ErrorCheckKey(ErrorType.NoPortAccess), "No Port Access" },
                 { SectionLabel("ErrorCheck"), "Error Check" },
                 { SectionLabel("Disabled"), "Disabled?" },
                 { SectionLabel("Transform"), "Transform" },
