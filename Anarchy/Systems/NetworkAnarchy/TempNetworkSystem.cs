@@ -46,6 +46,10 @@ namespace Anarchy.Systems.NetworkAnarchy
              new PrefabID("FencePrefab", "Tunnel01"),
         };
 
+        /// <summary>
+        /// Dictionary of different possible combinations of side upgrades.
+        /// With the addition of Bike Lanes and especially Bike Restriction this got a bit out-of-hand a different approach may be warrented.
+        /// </summary>
         private readonly Dictionary<NetworkAnarchyUISystem.SideUpgrades, CompositionFlags.Side> SideUpgradeLookup = new Dictionary<NetworkAnarchyUISystem.SideUpgrades, CompositionFlags.Side>()
         {
             { NetworkAnarchyUISystem.SideUpgrades.None, 0 },
@@ -57,6 +61,23 @@ namespace Anarchy.Systems.NetworkAnarchy
             { NetworkAnarchyUISystem.SideUpgrades.SoundBarrier, CompositionFlags.Side.SoundBarrier },
             { NetworkAnarchyUISystem.SideUpgrades.Trees | NetworkAnarchyUISystem.SideUpgrades.GrassStrip, CompositionFlags.Side.PrimaryBeautification | CompositionFlags.Side.SecondaryBeautification },
             { NetworkAnarchyUISystem.SideUpgrades.WideSidewalk | NetworkAnarchyUISystem.SideUpgrades.Trees, CompositionFlags.Side.WideSidewalk | CompositionFlags.Side.SecondaryBeautification },
+            { NetworkAnarchyUISystem.SideUpgrades.BikeLane, CompositionFlags.Side.SecondaryLane },
+            { NetworkAnarchyUISystem.SideUpgrades.BikeLane | NetworkAnarchyUISystem.SideUpgrades.Quay, CompositionFlags.Side.SecondaryLane | CompositionFlags.Side.Raised },
+            { NetworkAnarchyUISystem.SideUpgrades.BikeLane | NetworkAnarchyUISystem.SideUpgrades.RetainingWall, CompositionFlags.Side.SecondaryLane | CompositionFlags.Side.Lowered },
+            { NetworkAnarchyUISystem.SideUpgrades.BikeLane | NetworkAnarchyUISystem.SideUpgrades.Trees,  CompositionFlags.Side.SecondaryLane | CompositionFlags.Side.SecondaryBeautification },
+            { NetworkAnarchyUISystem.SideUpgrades.BikeRestriction, CompositionFlags.Side.ForbidSecondary },
+            { NetworkAnarchyUISystem.SideUpgrades.BikeRestriction | NetworkAnarchyUISystem.SideUpgrades.Quay, CompositionFlags.Side.ForbidSecondary | CompositionFlags.Side.Raised },
+            { NetworkAnarchyUISystem.SideUpgrades.BikeRestriction | NetworkAnarchyUISystem.SideUpgrades.RetainingWall, CompositionFlags.Side.ForbidSecondary | CompositionFlags.Side.Lowered },
+            { NetworkAnarchyUISystem.SideUpgrades.BikeRestriction | NetworkAnarchyUISystem.SideUpgrades.Trees, CompositionFlags.Side.ForbidSecondary | CompositionFlags.Side.SecondaryBeautification },
+            { NetworkAnarchyUISystem.SideUpgrades.BikeRestriction | NetworkAnarchyUISystem.SideUpgrades.GrassStrip, CompositionFlags.Side.ForbidSecondary | CompositionFlags.Side.PrimaryBeautification },
+            { NetworkAnarchyUISystem.SideUpgrades.BikeRestriction | NetworkAnarchyUISystem.SideUpgrades.WideSidewalk, CompositionFlags.Side.ForbidSecondary | CompositionFlags.Side.WideSidewalk },
+            { NetworkAnarchyUISystem.SideUpgrades.BikeRestriction | NetworkAnarchyUISystem.SideUpgrades.SoundBarrier, CompositionFlags.Side.ForbidSecondary | CompositionFlags.Side.SoundBarrier },
+            { NetworkAnarchyUISystem.SideUpgrades.BikeRestriction | NetworkAnarchyUISystem.SideUpgrades.Trees | NetworkAnarchyUISystem.SideUpgrades.GrassStrip, CompositionFlags.Side.ForbidSecondary | CompositionFlags.Side.PrimaryBeautification | CompositionFlags.Side.SecondaryBeautification },
+            { NetworkAnarchyUISystem.SideUpgrades.BikeRestriction | NetworkAnarchyUISystem.SideUpgrades.WideSidewalk | NetworkAnarchyUISystem.SideUpgrades.Trees, CompositionFlags.Side.ForbidSecondary | CompositionFlags.Side.WideSidewalk | CompositionFlags.Side.SecondaryBeautification },
+            { NetworkAnarchyUISystem.SideUpgrades.BikeRestriction | NetworkAnarchyUISystem.SideUpgrades.BikeLane, CompositionFlags.Side.ForbidSecondary | CompositionFlags.Side.SecondaryLane },
+            { NetworkAnarchyUISystem.SideUpgrades.BikeRestriction | NetworkAnarchyUISystem.SideUpgrades.BikeLane | NetworkAnarchyUISystem.SideUpgrades.Quay, CompositionFlags.Side.ForbidSecondary | CompositionFlags.Side.SecondaryLane | CompositionFlags.Side.Raised },
+            { NetworkAnarchyUISystem.SideUpgrades.BikeRestriction | NetworkAnarchyUISystem.SideUpgrades.BikeLane | NetworkAnarchyUISystem.SideUpgrades.RetainingWall, CompositionFlags.Side.ForbidSecondary | CompositionFlags.Side.SecondaryLane | CompositionFlags.Side.Lowered },
+            { NetworkAnarchyUISystem.SideUpgrades.BikeRestriction | NetworkAnarchyUISystem.SideUpgrades.BikeLane | NetworkAnarchyUISystem.SideUpgrades.Trees, CompositionFlags.Side.ForbidSecondary | CompositionFlags.Side.SecondaryLane | CompositionFlags.Side.SecondaryBeautification },
         };
 
         private readonly Dictionary<NetworkAnarchyUISystem.Composition, CompositionFlags.General> GeneralCompositionLookup = new Dictionary<NetworkAnarchyUISystem.Composition, CompositionFlags.General>()
