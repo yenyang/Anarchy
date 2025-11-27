@@ -100,7 +100,7 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * Those that provided broken saves to help diagnose and fix the problems with v1.7.2. Especially miguel.mateo who's save was used extensively during development and testing of v1.7.4.
 * Thanks to DanielVNZ, liron, ConstBuilds, krzychu124, phillycheese, Valentina, foxxy, dom_the_great, Tommerty, Herliger, REV0, Fraggn_aut, gurt, lil tajine, Brainium, Neil, ExpedientFalcon, and anyone that I missed from Cities Skylines Modding Discord for coming together as a community to diagnose and help solve the serialization problems from the constant slope option that started after game version 1.3.3f1.</LongDescription>
   <!--Thumbnail-->
-  <Thumbnail Value="Properties/Thumbnail.png" />
+  <Thumbnail Value="Properties/Stable/Thumbnail.png" />
   <!--Screenshot, can be set multiple-->
   <Screenshot Value="Properties/Previews/anarchyStreets.jpg" />
   <Screenshot Value="Properties/Previews/anarchyApartments.jpg" />
@@ -128,4 +128,6 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />
   <ExternalLink Type="crowdin" Url="https://crowdin.com/project/csl2-mod-anarchy" />
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=reQFuJozcj4" />
+  <!-- Supported values Public, Private, Unlisted -->
+  <AccessLevel Value="Public" />
 </Publish>
