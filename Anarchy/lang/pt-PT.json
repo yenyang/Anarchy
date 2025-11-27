@@ -107,6 +107,8 @@
   "Anarchy.ErrorType[NoRoadAccess]": "Sem acesso à estrada",
   "Anarchy.ErrorType[NoTrackAccess]": "Sem acesso à via",
   "Anarchy.ErrorType[NoTrainAccess]": "Sem acesso a comboios",
+  "Anarchy.ErrorType[NotEnoughClearance]": "Folga insuficiente",
+  "Anarchy.ErrorType[NoPortAccess]": "Sem acesso ao porto",
   "Anarchy.SECTION_TITLE[ErrorCheck]": "Verificação de erros",
   "Anarchy.SECTION_TITLE[Disabled]": "Desativado?",
   "Anarchy.SECTION_TITLE[Transform]": "Transformar",
@@ -146,5 +148,10 @@
   "Assets.NAME[Elevated01]": "Elevado",
   "Assets.DESCRIPTION[Elevated01]": "Força uma rede a utilizar o modo elevado (ex.: ponte, viaduto, passagem superior).",
   "Assets.NAME[Tunnel01]": "Túnel",
-  "Assets.DESCRIPTION[Tunnel01]": "Força uma rede a tornar-se um túnel. A aparência do túnel forçado é muitas vezes indesejável. Usa apenas se necessário."
+  "Assets.DESCRIPTION[Tunnel01]": "Força uma rede a tornar-se um túnel. A aparência do túnel forçado é muitas vezes indesejável. Usa apenas se necessário.",
+  "Anarchy.SECTION_TITLE[Tier]": "Categoria",
+  "Anarchy.TOOLTIP_TITLE[MainElements]": "Elementos principais",
+  "Anarchy.TOOLTIP_DESCRIPTION[MainElements]": "Adiciona ou remove componentes do objeto de nível superior.",
+  "Anarchy.TOOLTIP_TITLE[SubElements]": "Sub-elementos",
+  "Anarchy.TOOLTIP_DESCRIPTION[SubElements]": "Adiciona ou remove componentes dos sub-elementos do elemento principal. Tem cuidado com o Transform Lock nos sub-elementos. Este bloqueia a posição e rotação relativas e sobrepõe-se ao reposicionamento automático normal dos sub-elementos feito pelo jogo quando o dono é atualizado. Os nós de rede também podem virar, o que faz com que a posição e rotação bloqueadas virem incorretamente. Remover o Transform Lock e atualizar o dono vai repor o comportamento automático padrão dos sub-elementos."
 }

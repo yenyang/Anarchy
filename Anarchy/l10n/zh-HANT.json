@@ -107,6 +107,8 @@
   "Anarchy.ErrorType[NoRoadAccess]": "需要道路",
   "Anarchy.ErrorType[NoTrackAccess]": "需要連接軌道",
   "Anarchy.ErrorType[NoTrainAccess]": "無軌道連接點",
+  "Anarchy.ErrorType[NotEnoughClearance]": "淨空高度不足",
+  "Anarchy.ErrorType[NoPortAccess]": "港口無法通行",
   "Anarchy.SECTION_TITLE[ErrorCheck]": "錯誤檢查",
   "Anarchy.SECTION_TITLE[Disabled]": "禁用？",
   "Anarchy.SECTION_TITLE[Transform]": "變換",

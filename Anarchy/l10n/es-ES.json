@@ -107,6 +107,8 @@
   "Anarchy.ErrorType[NoRoadAccess]": "Carretera necesaria",
   "Anarchy.ErrorType[NoTrackAccess]": "Sin conexión a la vía",
   "Anarchy.ErrorType[NoTrainAccess]": "Sin conexión a la vía",
+  "Anarchy.ErrorType[NotEnoughClearance]": "Despeje muy bajo",
+  "Anarchy.ErrorType[NoPortAccess]": "Sin acceso a puerto",
   "Anarchy.SECTION_TITLE[ErrorCheck]": "Comprobación de errores",
   "Anarchy.SECTION_TITLE[Disabled]": "¿Deshabilitado?",
   "Anarchy.SECTION_TITLE[Transform]": "Transformación",

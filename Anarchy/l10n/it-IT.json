@@ -35,7 +35,5 @@
   "YY_ANARCHY_DESCRIPTION.AnarchyButton": "Disabilita il controllo degli errori per gli strumenti e non mostra errori. Se applicabile, è possibile posizionare vegetazione e oggetti di scena (con menu DevUI 'Aggiungi oggetto') sovrapponendosi o all'interno dei confini di altri oggetti vicini.",
   "Anarchy.TOOLTIP_DESCRIPTION[PreventOverrideButton]": "Permette il posizionamento di vegetazione e oggetti di scena che si sovrappongono o all'interno dei confini di altri oggetti vicini.",
   "Anarchy.TOOLTIP_TITLE[PreventOverrideButton]": "Previene Sovrascrittura",
-  "Anarchy.TOOLTIP_TITLE[AnarchyModComponets]": "Componenti Mod Anarchia",
-  "Anarchy.TOOLTIP_TITLE[ElevationLock]": "Elevazione bloccata",
-  "Anarchy.TOOLTIP_DESCRIPTION[ElevationLock]": "Impedisce ai sistemi di gioco di cambiare elevazione. Puoi ancora cambiare posizione con le mods."
+  "Anarchy.TOOLTIP_TITLE[AnarchyModComponets]": "Componenti Mod Anarchia"
 }

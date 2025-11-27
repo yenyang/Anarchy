@@ -107,6 +107,8 @@
   "Anarchy.ErrorType[NoRoadAccess]": "Pas d'accès à la route",
   "Anarchy.ErrorType[NoTrackAccess]": "Pas d'accès au chemin",
   "Anarchy.ErrorType[NoTrainAccess]": "Pas d'accès au train",
+  "Anarchy.ErrorType[NotEnoughClearance]": "Hauteur libre insuffisante",
+  "Anarchy.ErrorType[NoPortAccess]": "Pas d’accès au port",
   "Anarchy.SECTION_TITLE[ErrorCheck]": "Vérification d'erreur",
   "Anarchy.SECTION_TITLE[Disabled]": "Désactivé ?",
   "Anarchy.SECTION_TITLE[Transform]": "Transformation",
