@@ -4,10 +4,6 @@
 
 namespace Anarchy.Systems.Common
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Xml.Serialization;
     using Anarchy.Domain;
     using Anarchy.Extensions;
     using Anarchy.Settings;
@@ -26,6 +22,11 @@ namespace Anarchy.Systems.Common
     using Game.Objects;
     using Game.Prefabs;
     using Game.Tools;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Reflection;
+    using System.Xml.Serialization;
     using Unity.Entities;
     using UnityEngine;
 
@@ -117,6 +118,8 @@ namespace Anarchy.Systems.Common
         private bool m_UpdateErrorChecks;
         private ValueBindingHelper<bool> m_ShowAnarchyToggleOptionsPanel;
         private Dictionary<ErrorType, ErrorCheck.DisableState> m_DefaultErrorChecks;
+        private bool m_FoundPlater;
+        private ComponentType m_PlatterComponent;
 
         /// <summary>
         /// Gets or sets a value indicating whether the flaming chirper option binding is on/off.
@@ -309,6 +312,19 @@ namespace Anarchy.Systems.Common
                 m_Log.Debug(keyValue.Key);
             }*/
 
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            foreach (Assembly assembly in assemblies)
+            {
+                Type type = assembly.GetType("Platter.Components.ParcelPlaceholderData");
+                if (type != null)
+                {
+                    m_Log.Info($"Found {type.FullName} in {type.Assembly.FullName}. ");
+                    m_PlatterComponent = ComponentType.ReadOnly(type);
+                    m_FoundPlater = true;
+                }
+            }
+
             m_ToggleAnarchy.shouldBeEnabled = mode.IsGameOrEditor();
 
             if (mode.IsEditor() && !AnarchyMod.Instance.Settings.PreventOverrideInEditor)
@@ -463,7 +479,10 @@ namespace Anarchy.Systems.Common
                 (m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) && EntityManager.TryGetComponent(prefabEntity, out PlaceableObjectData placeableObjectData)
                 && ((placeableObjectData.m_Flags & PlacementFlags.RoadEdge) == PlacementFlags.RoadEdge
                 || (placeableObjectData.m_Flags & PlacementFlags.RoadNode) == PlacementFlags.RoadNode
-                || (placeableObjectData.m_Flags & PlacementFlags.RoadSide) == PlacementFlags.RoadSide))))
+                || (placeableObjectData.m_Flags & PlacementFlags.RoadSide) == PlacementFlags.RoadSide)) ||
+               (m_FoundPlater &&
+                m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity platterPrefabEntity) &&
+                EntityManager.HasComponent(platterPrefabEntity, m_PlatterComponent))))
             {
                 if (!m_IsInappropriatePrefab.Value)
                 {
@@ -522,8 +541,11 @@ namespace Anarchy.Systems.Common
                 (m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) && EntityManager.TryGetComponent(prefabEntity, out PlaceableObjectData placeableObjectData)
                 && ((placeableObjectData.m_Flags & PlacementFlags.RoadEdge) == PlacementFlags.RoadEdge
                 || (placeableObjectData.m_Flags & PlacementFlags.RoadNode) == PlacementFlags.RoadNode
-                || (placeableObjectData.m_Flags & PlacementFlags.RoadSide) == PlacementFlags.RoadSide))))
-            {
+                || (placeableObjectData.m_Flags & PlacementFlags.RoadSide) == PlacementFlags.RoadSide)) ||
+               (m_FoundPlater &&
+                m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity platterPrefabEntity) &&
+                EntityManager.HasComponent(platterPrefabEntity, m_PlatterComponent))))
+               {
                 if (!m_IsInappropriatePrefab.Value)
                 {
                     m_IsInappropriatePrefab.Value = true;
