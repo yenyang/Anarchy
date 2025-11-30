@@ -5,11 +5,8 @@
 namespace Anarchy.Systems.NetworkAnarchy
 {
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
-    using System.Reflection;
     using Anarchy.Components;
-    using Anarchy.Extensions;
     using Colossal.Entities;
     using Colossal.Logging;
     using Game;
@@ -21,13 +18,9 @@ namespace Anarchy.Systems.NetworkAnarchy
     using Game.Tools;
     using Unity.Collections;
     using Unity.Entities;
-    using Unity.Entities.UniversalDelegates;
     using Unity.Jobs;
     using UnityEngine;
-    using UnityEngine.InputSystem;
-    using static Game.Rendering.OverlayRenderSystem;
     using static Game.Tools.NetToolSystem;
-    using static Unity.Burst.Intrinsics.X86.Avx;
 
     /// <summary>
     /// Applies upgrades and/or elevation to Temp networks.
@@ -597,6 +590,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                     upgrades.m_Flags.m_Left &= ~(CompositionFlags.Side.Raised | CompositionFlags.Side.Lowered);
                     upgrades.m_Flags.m_Right &= ~(CompositionFlags.Side.Raised | CompositionFlags.Side.Lowered);
                 }
+
 
 
                 if (m_NetToolSystem.actualMode == NetToolSystem.Mode.Replace &&
