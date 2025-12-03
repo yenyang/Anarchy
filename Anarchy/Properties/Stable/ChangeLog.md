@@ -3,3 +3,4 @@
 * Updated Localization
 * Compatibility with Platter improved by removing Elevation row from Parcel prefabs.
 * Fixed CTD involving replacing forced tunnels.
+* Compatibility fixes for game version 1.5.2f1
