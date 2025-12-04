@@ -4,7 +4,7 @@
 
 // #define VERBOSE
 
-#define DUMP_VANILLA_LOCALIZATION
+// #define DUMP_VANILLA_LOCALIZATION
 namespace Anarchy
 {
     using System;

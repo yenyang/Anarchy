@@ -114,7 +114,7 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <!--Version of the mod-->
   <ModVersion Value="1.7.22" />
   <!--Recommended version of the base game to use the mod-->
-  <GameVersion Value="1.4.*" />
+  <GameVersion Value="1.5.*" />
   <!--Dependency for the mod, can be set multiple-->
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.13" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
