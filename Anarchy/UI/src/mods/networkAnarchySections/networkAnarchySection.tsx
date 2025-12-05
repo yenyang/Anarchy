@@ -12,6 +12,8 @@ import locale from "../../lang/en-US.json";
 import grassSrc from "./A_GrassWhite.svg";
 import styles from "./networkAnarchySection.module.scss";
 import { useState } from "react";
+import bikeSrc from "../../images/bicycle-illustration-1-svgrepo-com.svg";
+import bikeRestrictionSrc from "../../images/no-parking-2-svgrepo-com.svg";
 
 /// <summary>
 /// An enum for network cross section modes.
@@ -52,6 +54,16 @@ export enum SideUpgrades
     /// Adds Sound Barrier.
     /// </summary>
     SoundBarrier = 32,
+
+    /// <summary>
+    /// Adds a bike lane.
+    /// </summary>
+    BikeLane = 64,
+
+    /// <summary>
+    /// Restricts bikes from car travel lanes.
+    /// </summary>
+    BikeRestriction = 128,
 }
 
 /// <summary>
@@ -225,6 +237,8 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
                                             onSelect={() => handleEvent("ReplaceLeftUpgrade")}
                                         />
                                     )}
+                                    <LeftButtonComponent src={bikeSrc} localeId={descriptionTooltip(translate("Assets.NAME[Bikelane]"), translate("Assets.DESCRIPTION[Bikelane]"))} upgrade={SideUpgrades.BikeLane}/>
+                                    <LeftButtonComponent src={bikeRestrictionSrc} localeId={descriptionTooltip(translate("Assets.NAME[Bicycle Traffic Restriction]"), translate("Assets.DESCRIPTION[Bicycle Traffic Restriction]"))} upgrade={SideUpgrades.BikeRestriction}/>                                    
                                     <LeftButtonComponent src={wideSidewalkSrc} localeId={descriptionTooltip(translate("Assets.NAME[Wide Sidewalk]"), translate("Assets.DESCRIPTION[Wide Sidewalk]"))} upgrade={SideUpgrades.WideSidewalk}/>
                                     <LeftButtonComponent src={grassSrc} localeId={descriptionTooltip(translate("Assets.NAME[Grass]"), translate("Assets.DESCRIPTION[Grass]"))} upgrade={SideUpgrades.GrassStrip}/>
                                     <LeftButtonComponent src={treesSrc} localeId={descriptionTooltip(translate("Assets.NAME[Trees]"), translate("Assets.DESCRIPTION[Trees]"))} upgrade={SideUpgrades.Trees}/>
@@ -251,6 +265,8 @@ export const NetworkAnarchySections: ModuleRegistryExtend = (Component : any) =>
                                             onSelect={() => handleEvent("ReplaceRightUpgrade")}
                                         />
                                     )}
+                                    <RightButtonComponent src={bikeSrc} localeId={descriptionTooltip(translate("Assets.NAME[Bikelane]"), translate("Assets.DESCRIPTION[Bikelane]"))} upgrade={SideUpgrades.BikeLane}/>
+                                    <RightButtonComponent src={bikeRestrictionSrc} localeId={descriptionTooltip(translate("Assets.NAME[Bicycle Traffic Restriction]"), translate("Assets.DESCRIPTION[Bicycle Traffic Restriction]"))} upgrade={SideUpgrades.BikeRestriction}/>   
                                     <RightButtonComponent src={wideSidewalkSrc} localeId={descriptionTooltip(translate("Assets.NAME[Wide Sidewalk]"), translate("Assets.DESCRIPTION[Wide Sidewalk]"))} upgrade={SideUpgrades.WideSidewalk}/>
                                     <RightButtonComponent src={grassSrc} localeId={descriptionTooltip(translate("Assets.NAME[Grass]"), translate("Assets.DESCRIPTION[Grass]"))} upgrade={SideUpgrades.GrassStrip}/>
                                     <RightButtonComponent src={treesSrc} localeId={descriptionTooltip(translate("Assets.NAME[Trees]"), translate("Assets.DESCRIPTION[Trees]"))} upgrade={SideUpgrades.Trees}/>

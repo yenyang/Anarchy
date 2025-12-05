@@ -5,7 +5,6 @@
 // #define DUMP_PREFABS
 namespace Anarchy.Systems.NetworkAnarchy
 {
-    using System.Collections.Generic;
     using Anarchy;
     using Anarchy.Components;
     using Anarchy.ExtendedRoadUpgrades;
@@ -16,6 +15,7 @@ namespace Anarchy.Systems.NetworkAnarchy
     using Game;
     using Game.Prefabs;
     using Game.Tools;
+    using System.Collections.Generic;
     using Unity.Collections;
     using Unity.Entities;
 
@@ -83,6 +83,16 @@ namespace Anarchy.Systems.NetworkAnarchy
             /// Adds Sound Barrier.
             /// </summary>
             SoundBarrier = 32,
+
+            /// <summary>
+            /// Adds a bike lane.
+            /// </summary>
+            BikeLane = 64,
+
+            /// <summary>
+            /// Restricts bikes from car travel lanes.
+            /// </summary>
+            BikeRestriction = 128,
         }
 
         /// <summary>
@@ -357,24 +367,24 @@ namespace Anarchy.Systems.NetworkAnarchy
             {
                 m_LeftUpgrade.Value &= ~sideUpgrade;
             }
-            else if ((sideUpgrade == SideUpgrades.Trees && (m_LeftUpgrade.Value == SideUpgrades.WideSidewalk || m_LeftUpgrade.Value == SideUpgrades.GrassStrip))
-                || (m_LeftUpgrade == SideUpgrades.Trees && (sideUpgrade == SideUpgrades.WideSidewalk || sideUpgrade == SideUpgrades.GrassStrip)))
-            {
-                m_LeftUpgrade.Value |= sideUpgrade;
-            }
-            else if ((m_LeftUpgrade.Value & SideUpgrades.WideSidewalk) == SideUpgrades.WideSidewalk && sideUpgrade == SideUpgrades.GrassStrip)
-            {
-                m_LeftUpgrade.Value &= ~SideUpgrades.WideSidewalk;
-                m_LeftUpgrade.Value |= sideUpgrade;
-            }
-            else if ((m_LeftUpgrade.Value & SideUpgrades.GrassStrip) == SideUpgrades.GrassStrip && sideUpgrade == SideUpgrades.WideSidewalk)
-            {
-                m_LeftUpgrade.Value &= ~SideUpgrades.GrassStrip;
-                m_LeftUpgrade.Value |= sideUpgrade;
-            }
             else
             {
-                m_LeftUpgrade.Value = sideUpgrade;
+                bool foundCombination = false;
+                SideUpgrades combinedUpgrade = m_LeftUpgrade.Value |= sideUpgrade;
+                foreach (KeyValuePair<SideUpgrades, CompositionFlags.Side> keyValuePair in m_TempNetworkSystem.SideUpgradesDictionary)
+                {
+                    if (combinedUpgrade == keyValuePair.Key)
+                    {
+                        m_LeftUpgrade.Value = combinedUpgrade;
+                        foundCombination = true;
+                        break;
+                    }
+                }
+
+                if (!foundCombination)
+                {
+                    m_LeftUpgrade.Value = sideUpgrade;
+                }
             }
 
             if (((SideUpgrades.Quay | SideUpgrades.RetainingWall) & sideUpgrade) == sideUpgrade &&
@@ -412,30 +422,24 @@ namespace Anarchy.Systems.NetworkAnarchy
             {
                 m_RightUpgrade.Value &= ~sideUpgrade;
             }
-            else if ((sideUpgrade == SideUpgrades.Trees &&
-                     (m_RightUpgrade.Value == SideUpgrades.WideSidewalk ||
-                      m_RightUpgrade.Value == SideUpgrades.GrassStrip)) ||
-                     (m_RightUpgrade == SideUpgrades.Trees &&
-                     (sideUpgrade == SideUpgrades.WideSidewalk ||
-                      sideUpgrade == SideUpgrades.GrassStrip)))
-            {
-                m_RightUpgrade.Value |= sideUpgrade;
-            }
-            else if ((m_RightUpgrade.Value & SideUpgrades.WideSidewalk) == SideUpgrades.WideSidewalk &&
-                      sideUpgrade == SideUpgrades.GrassStrip)
-            {
-                m_RightUpgrade.Value &= ~SideUpgrades.WideSidewalk;
-                m_RightUpgrade.Value |= sideUpgrade;
-            }
-            else if ((m_RightUpgrade.Value & SideUpgrades.GrassStrip) == SideUpgrades.GrassStrip &&
-                      sideUpgrade == SideUpgrades.WideSidewalk)
-            {
-                m_RightUpgrade.Value &= ~SideUpgrades.GrassStrip;
-                m_RightUpgrade.Value |= sideUpgrade;
-            }
             else
             {
-                m_RightUpgrade.Value = sideUpgrade;
+                bool foundCombination = false;
+                SideUpgrades combinedUpgrade = m_RightUpgrade.Value |= sideUpgrade;
+                foreach (KeyValuePair<SideUpgrades, CompositionFlags.Side> keyValuePair in m_TempNetworkSystem.SideUpgradesDictionary)
+                {
+                    if (combinedUpgrade == keyValuePair.Key)
+                    {
+                        m_RightUpgrade.Value = combinedUpgrade;
+                        foundCombination = true;
+                        break;
+                    }
+                }
+
+                if (!foundCombination)
+                {
+                    m_RightUpgrade.Value = sideUpgrade;
+                }
             }
 
             if (netGeometryData.m_DefaultWidth < 40f)
@@ -682,7 +686,6 @@ namespace Anarchy.Systems.NetworkAnarchy
             {
                 return;
             }
-
 
             if (AnarchyMod.Instance.Settings.NetworkUpgradesToolOptions)
             {

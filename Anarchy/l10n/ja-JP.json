@@ -46,8 +46,6 @@
   "Anarchy.TOOLTIP_DESCRIPTION[IncreaseElevation]": "配置面からの高さを増加させます。オプションメニューでキーバインドをカスタマイズする。",
   "Anarchy.TOOLTIP_DESCRIPTION[DecreaseElevation]": "配置面からの高さを下げる。オプションメニューのキーバインドをカスタマイズする。",
   "Anarchy.TOOLTIP_DESCRIPTION[ElevationStep]": "標高の変化率を変える。オプションメニューでキーバインドをカスタマイズする。",
-  "Anarchy.TOOLTIP_TITLE[ElevationLock]": "標高ロック",
-  "Anarchy.TOOLTIP_DESCRIPTION[ElevationLock]": "ゲームシステムによる標高の変化を防ぐ。違うMODで位置を変えることはできます。",
   "Anarchy.TOOLTIP_DESCRIPTION[ResetElevation]": "標高を0にリセットする。オプションメニューでキーバインドをカスタマイズする。",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ToggleAnarchy]": "アナーキーをトグルする",
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ToggleAnarchy]": "アナーキーのオンとオフを切り替えるキーバインド。",

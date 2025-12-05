@@ -25,7 +25,7 @@ namespace Anarchy.Systems.NetworkAnarchy
     /// </summary>
     public partial class SetRetainingWallSegmentElevationSystem : GameSystemBase
     {
-        private EntityQuery m_UpgradedAndUpgradedQuery;
+        private EntityQuery m_AppliedOrUpdatedEdgeQuery;
         private ILog m_Log;
         private ModificationEndBarrier m_Barrier;
         private NetworkAnarchyUISystem m_UISystem;
@@ -51,13 +51,13 @@ namespace Anarchy.Systems.NetworkAnarchy
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_NetToolSystem;
             m_UISystem = World.GetOrCreateSystemManaged<NetworkAnarchyUISystem>();
-            m_UpgradedAndUpgradedQuery = SystemAPI.QueryBuilder()
+            m_AppliedOrUpdatedEdgeQuery = SystemAPI.QueryBuilder()
                             .WithAll<Game.Net.Edge>()
                             .WithAny<Applied, Updated>()
                             .WithNone<Deleted, Overridden, Temp, UpdateNextFrame, ClearUpdateNextFrame>()
                             .Build();
 
-            RequireForUpdate(m_UpgradedAndUpgradedQuery);
+            RequireForUpdate(m_AppliedOrUpdatedEdgeQuery);
         }
 
         /// <inheritdoc/>
@@ -76,7 +76,7 @@ namespace Anarchy.Systems.NetworkAnarchy
                 m_SetEndElevationsToZero = SystemAPI.GetComponentLookup<SetEndElevationsToZero>(isReadOnly: true),
             };
 
-            JobHandle segmentElevationsJobHandle = setSegmentElevationsJob.Schedule(m_UpgradedAndUpgradedQuery, Dependency);
+            JobHandle segmentElevationsJobHandle = setSegmentElevationsJob.Schedule(m_AppliedOrUpdatedEdgeQuery, Dependency);
             m_Barrier.AddJobHandleForProducer(segmentElevationsJobHandle);
             Dependency = segmentElevationsJobHandle;
         }
@@ -183,79 +183,23 @@ namespace Anarchy.Systems.NetworkAnarchy
                         elevation.m_Elevation.y = Mathf.Min(elevation.m_Elevation.y, NetworkDefinitionSystem.TunnelThreshold);
                     }
 
-                    if ((m_ReplaceMode || m_SetEndElevationsToZero.HasComponent(entity)) && (upgraded.m_Flags.m_General & CompositionFlags.General.Elevated) != CompositionFlags.General.Elevated)
+                    // Removed some code below that was related to tunnels 
+                    if ((m_ReplaceMode ||
+                        m_SetEndElevationsToZero.HasComponent(entity)) &&
+                        (upgraded.m_Flags.m_General & CompositionFlags.General.Elevated) != CompositionFlags.General.Elevated)
                     {
-                        if ((upgraded.m_Flags.m_General & CompositionFlags.General.Tunnel) == CompositionFlags.General.Tunnel || m_ElevationLookup.HasComponent(edge.m_End))
+                        if (m_ElevationLookup.HasComponent(edge.m_End))
                         {
-                            bool removeEndElevationComponent = true;
-                            if (m_ConnectedEdgeLookup.TryGetBuffer(edge.m_End, out DynamicBuffer<ConnectedEdge> endConnectedEdges))
-                            {
-                                foreach (ConnectedEdge connectedEdge in endConnectedEdges)
-                                {
-                                    if (m_UpgradedLookup.TryGetComponent(connectedEdge.m_Edge, out Upgraded upgraded1)
-                                        && connectedEdge.m_Edge != entity
-                                        && (upgraded1.m_Flags.m_General & CompositionFlags.General.Tunnel) == CompositionFlags.General.Tunnel)
-                                    {
-                                        if (m_ElevationLookup.TryGetComponent(edge.m_End, out Elevation edgeEndElevation))
-                                        {
-                                            edgeEndElevation.m_Elevation.x = Mathf.Min(edgeEndElevation.m_Elevation.x, NetworkDefinitionSystem.TunnelThreshold);
-                                            edgeEndElevation.m_Elevation.y = Mathf.Min(edgeEndElevation.m_Elevation.y, NetworkDefinitionSystem.TunnelThreshold);
-                                        }
-                                        else
-                                        {
-                                            edgeEndElevation.m_Elevation.x = NetworkDefinitionSystem.TunnelThreshold;
-                                            edgeEndElevation.m_Elevation.y = NetworkDefinitionSystem.TunnelThreshold;
-                                            buffer.AddComponent<Elevation>(edge.m_End);
-                                        }
-
-                                        buffer.SetComponent(edge.m_End, edgeEndElevation);
-                                        removeEndElevationComponent = false;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (removeEndElevationComponent && m_ElevationLookup.HasComponent(edge.m_End))
-                            {
-                                buffer.RemoveComponent<Elevation>(edge.m_End);
-                            }
+                            buffer.RemoveComponent<Elevation>(edge.m_End);
                         }
 
-                        if ((upgraded.m_Flags.m_General & CompositionFlags.General.Tunnel) == CompositionFlags.General.Tunnel || m_ElevationLookup.HasComponent(edge.m_Start))
+                        if (m_ElevationLookup.HasComponent(edge.m_Start))
                         {
-                            bool removeStartElevationComponent = true;
-                            if (m_ConnectedEdgeLookup.TryGetBuffer(edge.m_Start, out DynamicBuffer<ConnectedEdge> startConnectedEdges))
-                            {
-                                foreach (ConnectedEdge connectedEdge in startConnectedEdges)
-                                {
-                                    if (m_UpgradedLookup.TryGetComponent(connectedEdge.m_Edge, out Upgraded upgraded1) && connectedEdge.m_Edge != entity && (upgraded1.m_Flags.m_General & CompositionFlags.General.Tunnel) == CompositionFlags.General.Tunnel)
-                                    {
-                                        if (m_ElevationLookup.TryGetComponent(edge.m_Start, out Elevation edgeStartElevation))
-                                        {
-                                            edgeStartElevation.m_Elevation.x = Mathf.Min(edgeStartElevation.m_Elevation.x, NetworkDefinitionSystem.TunnelThreshold);
-                                            edgeStartElevation.m_Elevation.y = Mathf.Min(edgeStartElevation.m_Elevation.y, NetworkDefinitionSystem.TunnelThreshold);
-                                        }
-                                        else
-                                        {
-                                            edgeStartElevation.m_Elevation.x = NetworkDefinitionSystem.TunnelThreshold;
-                                            edgeStartElevation.m_Elevation.y = NetworkDefinitionSystem.TunnelThreshold;
-                                            buffer.AddComponent<Elevation>(edge.m_Start);
-                                        }
-
-                                        removeStartElevationComponent = false;
-                                        buffer.SetComponent(edge.m_Start, edgeStartElevation);
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (m_ElevationLookup.HasComponent(edge.m_Start) && removeStartElevationComponent)
-                            {
-                                buffer.RemoveComponent<Elevation>(edge.m_Start);
-                            }
+                            buffer.RemoveComponent<Elevation>(edge.m_Start);
                         }
                     }
 
+                    // Problem above.
                     if ((upgraded.m_Flags.m_General & CompositionFlags.General.Elevated) == CompositionFlags.General.Elevated)
                     {
                         if (m_ConnectedEdgeLookup.TryGetBuffer(edge.m_Start, out DynamicBuffer<ConnectedEdge> startConnectedEdges))

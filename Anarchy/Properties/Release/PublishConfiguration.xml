@@ -1,4 +1,12 @@
-Anarchy disables error checks for tools in a way that the errors are not shown at all.
+<Publish>
+  <!--Id must be set in order to update existed mod. it is not required for publishing mod for the first time-->
+  <ModId Value="126009" />
+  <!--Name of the mod to display to players-->
+  <DisplayName Value="Anarchy [Temporary Beta]" />
+  <!--Short description of the mod-->
+  <ShortDescription Value="Disables Error Checks and does not show errors. Place vegetation and props overlapping or inside the boundaries of other objects and close together." />
+  <!--Long description of the mod. Single line or multi line. Supports minimal markdown subset-->
+  <LongDescription>Anarchy disables error checks for tools in a way that the errors are not shown at all.
 This mod allows you to place vegetation and props overlapping or inside the boundaries of other objects and close together.
 This mod includes a network upgrades placement and replacement overhaul (quay, retaining walls, grass strips, street trees, etc.) and additional network placement options such as constant slope, force ground, force elevated, and expanded elevation range.
 Sully has prepared an Amazing! demo video about detailing with Anarchy on Youtube. I made a no frills demo YouTube video about network anarchy and the network upgrades overhaul.
@@ -10,7 +18,7 @@ Unified Icon Library
 If you want to say thank you with a donation you can do so on Paypal.
 
 ## Translations
-I am looking for volunteers to help translate the mod into the other languages. For those interested please find the project in the crowdin or discord link. CSL2:CODEMODS -> mods-wip -> Anarchy: Translations.
+I am looking for volunteers to help translate the mod into the other languages. For those interested please find the project in the crowdin or discord link. CSL2:CODEMODS -&gt; mods-wip -&gt; Anarchy: Translations.
 Full or Partial Localization: Spanish, German, Chinese Simplified, Brazilian Portuguese, Italian, Polish, Korean, Russian, French, Japanese, Chinese Traditional, Arabic, Dutch, European Portuguese, and Finnish. See credits for list of translators.
 
 ## Supplemental Mods
@@ -27,7 +35,7 @@ The mod also has:
 * Opt-In Option to allow multiple copies of unique buildings using toolbar menu. Effects of multiple buildings stack!
 * Option to set minimum clearance below elevated networks even while Anarchy is active in case you don't remove the zoning under a low bridge. It would be better just to remove the zoning.
 * Opt-In Option to automatically disable Anarchy toggle while brushing objects such as trees.
-* Set relative Elevation with Object tool and line tool for props, trees, and plants. (Options to disable and automatically reset elevation) Keybinds are Configurable. alt + r -> reset elevation to 0, alt + e -> change elevation step. Increase and decrease elevation by default matches vanilla keybind but doesn't work with some snapping options from EDT.
+* Set relative Elevation with Object tool and line tool for props, trees, and plants. (Options to disable and automatically reset elevation) Keybinds are Configurable. alt + r -&gt; reset elevation to 0, alt + e -&gt; change elevation step. Increase and decrease elevation by default matches vanilla keybind but doesn't work with some snapping options from EDT.
 * Transform Lock to prevent game systems from changing position of props, trees, plants, and decals. You can still change position with mods.
 * Anarchy and Transform Lock can be added or removed after placement via the selected info panel.
 * In Game panel for controlling which error checks are never disabled, disabled with Anarchy, or always disabled.
@@ -86,8 +94,39 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * Klyte45, Algernon, T.D.W. - Help with UI, Cooperative Development and Code Sharing
 * Bad Peanut - Image Credit for Flaming Chirper, and grass icon.
 * krzychu124, Triton Supreme, and Quboid - Cooperative Development and Code Sharing
-* Localization: Nyoko, Citadino, Dome, elGendo87 and Eryalito (Spanish), Hendrix, Fuchs23, FearMyFeedEU and Infinityuranium (German), RilkeXS, CBEdwin, zlhww and GuaGua_ua (Chinese Simplified), Luis Fernando de Paula, dvzz, and felipecollucci (Brazilian Portuguese), Maxi and raistlin46 (Italian), karmel68 and Lisek (Polish), Tanat, TwotoolusFLY_LSh.st, and Hinanchovo (Korean), OWSEEX, Katsumoto, TraceXR, and krugl1y (Russian) and Morgan Toverux, spooky_off, Quoifleur, Karg, CEO of Tabarnak and Edou24 (French), Seraphina and main1108 (Japanese), allegretic (Chinese Traditional), ti4go and ruidias (European Portuguese), Jesyx, scoobysub, WISSAH and kwalnoot(Dutch), GamingNerdLeith (Arabic), Emppu45 (Finnish).
+* Localization: Nyoko, Citadino, Dome, elGendo87 and Eryalito (Spanish), Hendrix, Fuchs23, FearMyFeedEU and Infinityuranium (German), RilkeXS, CBEdwin, zlhww and GuaGua_ua (Chinese Simplified), Luis Fernando de Paula, dvzz, and felipecollucci (Brazilian Portuguese), Maxi and raistlin46 (Italian), karmel68 and Lisek (Polish), Tanat, TwotoolusFLY_LSh.st, and Hinanchovo (Korean), OWSEEX, Katsumoto, TraceXR, krugl1y, quoxsii and Bob.Smith17 (Russian) and Morgan Toverux, spooky_off, Quoifleur, Karg, CEO of Tabarnak and Edou24 (French), Seraphina and main1108 (Japanese), allegretic (Chinese Traditional), ti4go and ruidias (European Portuguese), Jesyx, scoobysub, WISSAH and kwalnoot(Dutch), GamingNerdLeith (Arabic), Emppu45 (Finnish).
 * StarQ - Technical support, and helping recover people's saves.
 * Testing, Feedback - Dante, starrysum, HarbourMaster Jay, Dome, Tigon Ologdring, BruceyBoy, RaftermanNZ, Elektrotek, SpaceChad, GamingNerdLeith, CanadianMoosePlays, Teddy Radko, Jason_Stephen, Brian Rocha, elGendo87, CEO of Tabarnak, DanielVNZ
 * Those that provided broken saves to help diagnose and fix the problems with v1.7.2. Especially miguel.mateo who's save was used extensively during development and testing of v1.7.4.
-* Thanks to DanielVNZ, liron, ConstBuilds, krzychu124, phillycheese, Valentina, foxxy, dom_the_great, Tommerty, Herliger, REV0, Fraggn_aut, gurt, lil tajine, Brainium, Neil, ExpedientFalcon, and anyone that I missed from Cities Skylines Modding Discord for coming together as a community to diagnose and help solve the serialization problems from the constant slope option that started after game version 1.3.3f1.  
+* Thanks to DanielVNZ, liron, ConstBuilds, krzychu124, phillycheese, Valentina, foxxy, dom_the_great, Tommerty, Herliger, REV0, Fraggn_aut, gurt, lil tajine, Brainium, Neil, ExpedientFalcon, and anyone that I missed from Cities Skylines Modding Discord for coming together as a community to diagnose and help solve the serialization problems from the constant slope option that started after game version 1.3.3f1.</LongDescription>
+  <!--Thumbnail-->
+  <Thumbnail Value="Properties/Release/Thumbnail.png" />
+  <!--Screenshot, can be set multiple-->
+  <Screenshot Value="Properties/Previews/anarchyStreets.jpg" />
+  <Screenshot Value="Properties/Previews/anarchyApartments.jpg" />
+  <Screenshot Value="Properties/Previews/anarchyStream.jpg" />
+  <Screenshot Value="Properties/Previews/turboRoundAboutCurbs.jpg" />
+  <Screenshot Value="Properties/Previews/anarchyOptionsPanel.jpg" />
+  <!--Tag, can be set multiple-->
+  <Tag Value="Code Mod" />
+  <!--Link to the forum post where the mod can be discussed-->
+  <ForumLink Value="" />
+  <!--Version of the mod-->
+  <ModVersion Value="1.7.21.101" />
+  <!--Recommended version of the base game to use the mod-->
+  <GameVersion Value="1.5.*" />
+  <!--Dependency for the mod, can be set multiple-->
+  <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.13" />
+  <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
+  <ChangeLog>## Patch V1.7.21.101
+* Fixed CTD involving replacing forced tunnels.</ChangeLog>
+  <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
+  <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
+  <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
+  <ExternalLink Type="github" Url="https://github.com/yenyang/Anarchy" />
+  <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />
+  <ExternalLink Type="crowdin" Url="https://crowdin.com/project/csl2-mod-anarchy" />
+  <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=reQFuJozcj4" />
+  <!-- Supported values Public, Private, Unlisted -->
+  <AccessLevel Value="Unlisted" />
+</Publish>

@@ -107,6 +107,8 @@
   "Anarchy.ErrorType[NoRoadAccess]": "Brak dostępu do drogi",
   "Anarchy.ErrorType[NoTrackAccess]": "Brak dostępu do torów",
   "Anarchy.ErrorType[NoTrainAccess]": "Brak dostępu dla pociągów",
+  "Anarchy.ErrorType[NotEnoughClearance]": "Zbyt mały prześwit",
+  "Anarchy.ErrorType[NoPortAccess]": "Brak dostępu do portu",
   "Anarchy.SECTION_TITLE[ErrorCheck]": "Sprawdzenie błędów",
   "Anarchy.SECTION_TITLE[Disabled]": "Wyłączyć?",
   "Anarchy.SECTION_TITLE[Transform]": "Zmiana",

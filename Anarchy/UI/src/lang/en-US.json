@@ -107,7 +107,7 @@
   "Anarchy.ErrorType[NoRoadAccess]": "No Road Access",
   "Anarchy.ErrorType[NoTrackAccess]": "No Track Access",
   "Anarchy.ErrorType[NoTrainAccess]": "No Train Access",
-  "Anarchy.ErrorType[NotEnoughClearance]": "Clearance too low",
+  "Anarchy.ErrorType[NotEnoughClearance]": "Clearance Too Low",
   "Anarchy.ErrorType[NoPortAccess]": "No Port Access",
   "Anarchy.SECTION_TITLE[ErrorCheck]": "Error Check",
   "Anarchy.SECTION_TITLE[Disabled]": "Disabled?",

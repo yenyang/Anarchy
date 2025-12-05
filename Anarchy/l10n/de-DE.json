@@ -107,6 +107,7 @@
   "Anarchy.ErrorType[NoRoadAccess]": "Kein Straßenzugang",
   "Anarchy.ErrorType[NoTrackAccess]": "Kein Schienenzugang",
   "Anarchy.ErrorType[NoTrainAccess]": "Kein Zugzugang",
+  "Anarchy.ErrorType[NotEnoughClearance]": "Abstand zu gering",
   "Anarchy.SECTION_TITLE[ErrorCheck]": "Fehlerkontrolle",
   "Anarchy.SECTION_TITLE[Disabled]": "Deaktivieren?",
   "Anarchy.SECTION_TITLE[Transform]": "transformieren",
@@ -146,5 +147,8 @@
   "Assets.NAME[Elevated01]": "Erhöht",
   "Assets.DESCRIPTION[Elevated01]": "Zwingt ein Netzwerk im erhöhten Modus zu sein. (z.B. Eine Brücke).",
   "Assets.NAME[Tunnel01]": "Tunnel",
-  "Assets.DESCRIPTION[Tunnel01]": "Zwingt ein Netzwerk im Tunnelmodus zu sein. Die erzwungene Tunnelgrafik sieht meist schlecht aus. Nur verwenden, wenn nötig."
+  "Assets.DESCRIPTION[Tunnel01]": "Zwingt ein Netzwerk im Tunnelmodus zu sein. Die erzwungene Tunnelgrafik sieht meist schlecht aus. Nur verwenden, wenn nötig.",
+  "Anarchy.SECTION_TITLE[Tier]": "Stufe",
+  "Anarchy.TOOLTIP_TITLE[MainElements]": "Hauptelemente",
+  "Anarchy.TOOLTIP_TITLE[SubElements]": "Unterelemente"
 }
