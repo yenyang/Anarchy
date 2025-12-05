@@ -89,7 +89,7 @@ namespace Anarchy
             Log.effectivenessLevel = Level.Info;
 #endif
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Initializing settings");
-            Settings = new (this);
+            Settings = new(this);
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Loading en-US localization");
             GameManager.instance.localizationManager.AddSource("en-US", new LocaleEN(Settings));
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Loading other languages");
@@ -149,8 +149,14 @@ namespace Anarchy
             updateSystem.UpdateAt<NetworkAnarchyUISystem>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateAt<AnarchyComponentsToolSystem>(SystemUpdatePhase.ToolUpdate);
             updateSystem.UpdateAt<AnarchyComponentsToolUISystem>(SystemUpdatePhase.UIUpdate);
-            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Completed.");
 
+            foreach (UIModuleAsset asset in AssetDatabase.global.GetAssets<UIModuleAsset>(SearchFilter<UIModuleAsset>.ByCondition((UIModuleAsset asset) => asset.name == Id, false)))
+            {
+                Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Ensured Mod Manager Added UI Module for {asset.id}.");
+                GameManager.instance.modManager.AddUIModule(asset);
+            }
+
+            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Completed.");
         }
 
         /// <inheritdoc/>
