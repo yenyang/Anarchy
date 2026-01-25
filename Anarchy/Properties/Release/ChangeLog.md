@@ -1,2 +1,2 @@
-﻿## Patch V1.7.22.1
-* Attempt to ensure UI is loaded.
+﻿## Patch V1.7.22.2
+*   Added bridge for other mods to register their tool systems.
