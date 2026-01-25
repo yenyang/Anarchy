@@ -35,20 +35,6 @@ namespace Anarchy.Systems.Common
     /// </summary>
     public partial class AnarchyUISystem : ExtendedUISystemBase
     {
-        /// <summary>
-        /// A list of tools ids that Anarchy is applicable to.
-        /// </summary>
-        private readonly List<string> ToolIDs = new ()
-        {
-            { "Object Tool" },
-            { "Net Tool" },
-            { "Area Tool" },
-            { "Bulldoze Tool" },
-            { "Terrain Tool" },
-            { "Upgrade Tool" },
-            { "Line Tool" },
-        };
-
         private readonly ErrorCheck[] DefaultErrorChecks = new ErrorCheck[]
         {
             new (ErrorType.AlreadyExists, ErrorCheck.DisableState.WithAnarchy, 0),
@@ -122,6 +108,20 @@ namespace Anarchy.Systems.Common
         private ComponentType m_PlatterComponent;
 
         /// <summary>
+        /// A list of tools ids that Anarchy is applicable to.
+        /// </summary>
+        private List<string> m_ToolIDs = new ()
+        {
+            { "Object Tool" },
+            { "Net Tool" },
+            { "Area Tool" },
+            { "Bulldoze Tool" },
+            { "Terrain Tool" },
+            { "Upgrade Tool" },
+            { "Line Tool" },
+        };
+
+        /// <summary>
         /// Gets or sets a value indicating whether the flaming chirper option binding is on/off.
         /// </summary>
         public bool FlamingChirperOption { get => m_FlamingChirperOption.Value; set => m_FlamingChirperOption.Value = value; }
@@ -135,6 +135,22 @@ namespace Anarchy.Systems.Common
         /// Gets a value indicating whether the elevation should be locked.
         /// </summary>
         public bool LockElevation { get => m_LockElevation.Value; }
+
+        /// <summary>
+        /// Trys to add a tool based on ID to the tool id list.
+        /// </summary>
+        /// <param name="id">String for Tool ID.</param>
+        /// <returns>True if added. False if already included.</returns>
+        public bool TryAddTool(string id)
+        {
+            if (m_ToolIDs.Contains(id))
+            {
+                return false;
+            }
+
+            m_ToolIDs.Add(id);
+            return true;
+        }
 
         /// <summary>
         /// Sets the prevent Override option binding to value.
@@ -176,7 +192,7 @@ namespace Anarchy.Systems.Common
         /// </summary>
         /// <param name="toolID">A string representing a tool id.</param>
         /// <returns>True if anarchy is applicable to that toolID. False if not.</returns>
-        public bool IsToolAppropriate(string toolID) => ToolIDs.Contains(toolID);
+        public bool IsToolAppropriate(string toolID) => m_ToolIDs.Contains(toolID);
 
         /// <summary>
         /// Gets a list of error types that should be disabled.

@@ -150,12 +150,6 @@ namespace Anarchy
             updateSystem.UpdateAt<AnarchyComponentsToolSystem>(SystemUpdatePhase.ToolUpdate);
             updateSystem.UpdateAt<AnarchyComponentsToolUISystem>(SystemUpdatePhase.UIUpdate);
 
-            foreach (UIModuleAsset asset in AssetDatabase.global.GetAssets<UIModuleAsset>(SearchFilter<UIModuleAsset>.ByCondition((UIModuleAsset asset) => asset.name == Id, false)))
-            {
-                Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Ensured Mod Manager Added UI Module for {asset.id}.");
-                GameManager.instance.modManager.AddUIModule(asset);
-            }
-
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Completed.");
         }
 
