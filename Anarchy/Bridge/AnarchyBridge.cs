@@ -14,7 +14,7 @@ namespace Anarchy.Bridge
     public static class AnarchyBridge
     {
         /// <summary>
-        /// Tryies to add a tool base system into Anarchy's list of compatible tools.
+        /// Tries to add a tool base system into Anarchy's list of compatible tools.
         /// </summary>
         /// <param name="tool">Toolbase system for tool to add.</param>
         /// <returns>True if added. False if not.</returns>
