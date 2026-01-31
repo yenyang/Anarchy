@@ -73,7 +73,7 @@ namespace Anarchy.Systems.ErrorChecks
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer(); // Create the command buffer that we will schedule structural changes too.
+            EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer(); // Create the command buffer that we will schedule changes too.
             NativeArray<Entity> toolErrorPrefabs = m_ToolErrorPrefabQuery.ToEntityArray(Allocator.Temp); // Important to use Allocator.Temp. You do not need to dispose of a Temp allocator. Forgetting to dispose a TempJob allocator will produce a memory leak.
             foreach (Entity currentEntity in toolErrorPrefabs)
             {
@@ -96,7 +96,7 @@ namespace Anarchy.Systems.ErrorChecks
 
                     if (flagChanged)
                     {
-                        buffer.SetComponent(currentEntity, toolErrorData); // Queue ups all structural changes to be played back automatically with ModificationEndBarrier. When using a barrier you should not manually playback the ECB, nor  should you dispose of the ECB. All handled by the barrier.
+                        buffer.SetComponent(currentEntity, toolErrorData); // Queue ups all changes to be played back automatically with ModificationEndBarrier. When using a barrier you should not manually playback the ECB, nor  should you dispose of the ECB. All handled by the barrier.
                     }
 #if VERBOSE
                     AnarchyIMod.Logger.Verbose(("DisableToolErrorsSystem.OnUpdate currentEntity.index = " + currentEntity.Index + " currentEntity.version = " + currentEntity.Version + " ErrorType = " + toolErrorData.m_Error.ToString());
