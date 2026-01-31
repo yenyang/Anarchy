@@ -20,7 +20,7 @@ namespace Anarchy.Systems.ErrorChecks
     /// </summary>
     public partial class EnableToolErrorsSystem : GameSystemBase
     {
-        private ModificationEndBarrier m_Barrier; // System runs on SystemUpdatePhasel.ModificationEnd therefore use ModificationEndBarrier. Using a barrier in the wrong phase will produce an error.
+        private ModificationEndBarrier m_Barrier; // System runs on SystemUpdatePhase.ModificationEnd therefore use ModificationEndBarrier. Using a barrier in the wrong phase will produce an error.
         private EntityQuery m_ToolErrorPrefabQuery;
         private AnarchyUISystem m_AnarchyUISystem;
         private ILog m_Log;
