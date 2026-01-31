@@ -20,10 +20,12 @@ namespace Anarchy.Systems.ErrorChecks
     /// </summary>
     public partial class EnableToolErrorsSystem : GameSystemBase
     {
-        private ModificationEndBarrier m_Barrier;
+        private ModificationEndBarrier m_Barrier; // System runs on SystemUpdatePhase.ModificationEnd therefore use ModificationEndBarrier. Using a barrier in the wrong phase will produce an error.
         private EntityQuery m_ToolErrorPrefabQuery;
         private AnarchyUISystem m_AnarchyUISystem;
         private ILog m_Log;
+
+        // These errors typically have DisableInEditor flat by default.
         private List<Game.Tools.ErrorType> m_DoNotReEnableForEditor = new ()
         {
             Game.Tools.ErrorType.AlreadyExists,
@@ -44,9 +46,15 @@ namespace Anarchy.Systems.ErrorChecks
         {
             m_Log = AnarchyMod.Instance.Log;
             m_Log.Info($"{nameof(EnableToolErrorsSystem)} Created.");
+
+            // System References.
             m_AnarchyUISystem = World.GetOrCreateSystemManaged<AnarchyUISystem>();
-            m_Barrier = World.GetOrCreateSystemManaged<ModificationEndBarrier>();
+            m_Barrier = World.GetOrCreateSystemManaged<ModificationEndBarrier>(); // Get an System reference to the barrier with the right timing.
+
+            // Disable System by default. This system will enabled whenever any error checks are disabled by DisableToolErrorsSystem.
             Enabled = false;
+
+            // Consider using SystemAPI but this is a valid way to setup a Query too. This setup worked before we could use SystemAPI.
             m_ToolErrorPrefabQuery = GetEntityQuery(new EntityQueryDesc[]
             {
                 new EntityQueryDesc
@@ -65,8 +73,8 @@ namespace Anarchy.Systems.ErrorChecks
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
-            NativeArray<Entity> toolErrorPrefabs = m_ToolErrorPrefabQuery.ToEntityArray(Allocator.Temp);
+            EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer(); // Create the command buffer that we will schedule structural changes too.
+            NativeArray<Entity> toolErrorPrefabs = m_ToolErrorPrefabQuery.ToEntityArray(Allocator.Temp); // Important to use Allocator.Temp. You do not need to dispose of a Temp allocator. Forgetting to dispose a TempJob allocator will produce a memory leak.
             foreach (Entity currentEntity in toolErrorPrefabs)
             {
                 if (EntityManager.TryGetComponent<ToolErrorData>(currentEntity, out ToolErrorData toolErrorData))
@@ -88,7 +96,7 @@ namespace Anarchy.Systems.ErrorChecks
 
                     if (flagChanged)
                     {
-                        buffer.SetComponent(currentEntity, toolErrorData);
+                        buffer.SetComponent(currentEntity, toolErrorData); // Queue ups all structural changes to be played back automatically with ModificationEndBarrier. When using a barrier you should not manually playback the ECB, nor  should you dispose of the ECB. All handled by the barrier.
                     }
 #if VERBOSE
                     AnarchyIMod.Logger.Verbose(("DisableToolErrorsSystem.OnUpdate currentEntity.index = " + currentEntity.Index + " currentEntity.version = " + currentEntity.Version + " ErrorType = " + toolErrorData.m_Error.ToString());
@@ -97,8 +105,8 @@ namespace Anarchy.Systems.ErrorChecks
                 }
             }
 
-            toolErrorPrefabs.Dispose();
-            Enabled = false;
+            toolErrorPrefabs.Dispose();   // Not necessary, but doesn't actually hurt to include it.
+            Enabled = false;          // Disable the system afterwards.
         }
     }
 }
