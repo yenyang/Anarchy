@@ -89,6 +89,9 @@ namespace Anarchy.Systems.NetworkAnarchy
                     }
                 }
 
+                buffer.Playback(EntityManager);
+                buffer.Dispose();
+
                 return;
             }
 
