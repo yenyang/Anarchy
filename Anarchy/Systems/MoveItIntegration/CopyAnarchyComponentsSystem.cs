@@ -33,6 +33,7 @@ namespace Anarchy.Systems.MoveItIntegration
         private EntityQuery m_MITOriginalQuery;
         private ToolSystem m_ToolSystem;
         private bool m_FoundOriginalType;
+        private ModificationBarrier2 m_Barrier;
 
         /// <inheritdoc/>
         protected override void OnCreate()
@@ -43,6 +44,7 @@ namespace Anarchy.Systems.MoveItIntegration
 
             // System references
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
+            m_Barrier = World.GetOrCreateSystemManaged<ModificationBarrier2>();
 
             Enabled = false;
         }
@@ -166,7 +168,7 @@ namespace Anarchy.Systems.MoveItIntegration
                 return;
             }
 
-            EntityCommandBuffer buffer = new EntityCommandBuffer(Allocator.Temp);
+            EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
 
             NativeArray<Entity> entities = m_MITOriginalQuery.ToEntityArray(Allocator.Temp);
             for (int i = 0; i < entities.Length; i++)
@@ -191,9 +193,6 @@ namespace Anarchy.Systems.MoveItIntegration
                     buffer.AddComponent(entities[i], new TransformRecord() { m_Position = transform.m_Position, m_Rotation = transform.m_Rotation });
                 }
             }
-
-            buffer.Playback(EntityManager);
-            buffer.Dispose();
         }
     }
 }
