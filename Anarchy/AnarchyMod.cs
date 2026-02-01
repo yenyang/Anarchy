@@ -17,6 +17,7 @@ namespace Anarchy
     using Anarchy.Systems.ClearanceViolation;
     using Anarchy.Systems.Common;
     using Anarchy.Systems.ErrorChecks;
+    using Anarchy.Systems.MoveItIntegration;
     using Anarchy.Systems.NetworkAnarchy;
     using Anarchy.Systems.ObjectElevation;
     using Anarchy.Systems.OverridePrevention;
@@ -149,6 +150,7 @@ namespace Anarchy
             updateSystem.UpdateAt<NetworkAnarchyUISystem>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateAt<AnarchyComponentsToolSystem>(SystemUpdatePhase.ToolUpdate);
             updateSystem.UpdateAt<AnarchyComponentsToolUISystem>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateAt<CopyAnarchyComponentsSystem>(SystemUpdatePhase.Modification2);
 
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Completed.");
         }

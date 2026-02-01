@@ -19,7 +19,7 @@ namespace Anarchy.Bridge
         /// <param name="tool">Toolbase system for tool to add.</param>
         /// <param name="alwaysDisableErrorChecks">Default is false where Anarchy is a toggle with Keybind or UI  on Tool Options Panel. True, whether Anarchy is enabled or not, all error checks will be disabled while that tool is active.</param>
         /// <returns>True if added. False if not.</returns>
-        public static bool TryAddToolSystem(ToolBaseSystem tool, bool alwaysDisableErrorChecks = false)
+        public static bool TryAddToolSystem(ToolBaseSystem tool)
         {
             AnarchyUISystem uiSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<AnarchyUISystem>();
             if (uiSystem is null ||
