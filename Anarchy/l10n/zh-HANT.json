@@ -148,5 +148,10 @@
   "Assets.NAME[Elevated01]": "高架",
   "Assets.DESCRIPTION[Elevated01]": "強制網路使用高架模式（例如：橋樑、高架橋、立體交叉）",
   "Assets.NAME[Tunnel01]": "隧道",
-  "Assets.DESCRIPTION[Tunnel01]": "強制將網路轉變為隧道。強制隧道視覺效果通常不佳，僅在必要時使用。"
+  "Assets.DESCRIPTION[Tunnel01]": "強制將網路轉變為隧道。強制隧道視覺效果通常不佳，僅在必要時使用。",
+  "Anarchy.SECTION_TITLE[Tier]": "選擇類別",
+  "Anarchy.TOOLTIP_TITLE[MainElements]": "主元素",
+  "Anarchy.TOOLTIP_DESCRIPTION[MainElements]": "在最上層物件中新增或移除元件。",
+  "Anarchy.TOOLTIP_TITLE[SubElements]": "子元素",
+  "Anarchy.TOOLTIP_DESCRIPTION[SubElements]": "在主要元素的子元素中新增或移除元件。請謹慎使用子元素上的「變換鎖定」，此功能會鎖定相對位置與旋轉，並在擁有者更新時覆蓋遊戲原本對子元素的自動重新定位行為。網路節點也可能發生翻轉，導致已鎖定的位置與旋轉出現錯誤翻轉。移除「變換鎖定」並更新擁有者後，將恢復原版的子元素自動行為。"
 }

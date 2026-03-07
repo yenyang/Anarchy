@@ -39,6 +39,11 @@ namespace Anarchy.Systems.Common
         /// <returns>True if entity can receive anarchy components. False if not approved.</returns>
         public bool CheckOverridable(Entity instanceEntity)
         {
+            if (instanceEntity == Entity.Null)
+            {
+                return false;
+            }
+
             PrefabBase prefabBase = null;
             if (EntityManager.TryGetComponent(instanceEntity, out PrefabRef prefabRef) &&
                 m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out prefabBase) &&
@@ -69,6 +74,11 @@ namespace Anarchy.Systems.Common
         /// <returns>True if can receive component. False if not.</returns>
         public bool CheckDisturbable(Entity instanceEntity)
         {
+            if (instanceEntity == Entity.Null)
+            {
+                return false;
+            }
+
             if (CheckOverridable(instanceEntity) &&
                !EntityManager.HasComponent<Game.Objects.NetObject>(instanceEntity) &&
                !EntityManager.HasComponent<Game.Objects.UtilityObject>(instanceEntity))
