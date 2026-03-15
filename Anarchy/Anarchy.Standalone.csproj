@@ -1,0 +1,69 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>9</LangVersion>
+    <AssemblyName>Anarchy</AssemblyName>
+    <RootNamespace>Anarchy</RootNamespace>
+    <AssemblyVersion>1.7.23</AssemblyVersion>
+    <FileVersion>$(AssemblyVersion)</FileVersion>
+    <Version>$(AssemblyVersion)</Version>
+    <ManagedPath>C:\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed</ManagedPath>
+    <AssemblySearchPaths>$(AssemblySearchPaths);$(ManagedPath)</AssemblySearchPaths>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <NoWarn>$(NoWarn);CS0169;CS0649;CS0414;CS1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="l10n\de-DE.json" />
+    <EmbeddedResource Include="l10n\es-ES.json" />
+    <EmbeddedResource Include="l10n\fr-FR.json" />
+    <EmbeddedResource Include="l10n\it-IT.json" />
+    <EmbeddedResource Include="l10n\ja-JP.json" />
+    <EmbeddedResource Include="l10n\ko-KR.json" />
+    <EmbeddedResource Include="l10n\pl-PL.json" />
+    <EmbeddedResource Include="l10n\pt-BR.json" />
+    <EmbeddedResource Include="l10n\ru-RU.json" />
+    <EmbeddedResource Include="l10n\zh-HANS.json" />
+    <EmbeddedResource Include="l10n\zh-HANT.json" />
+  </ItemGroup>
+
+  <!-- Game references -->
+  <ItemGroup>
+    <Reference Include="mscorlib"><HintPath>$(ManagedPath)\mscorlib.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Game"><HintPath>$(ManagedPath)\Game.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Colossal.Core"><HintPath>$(ManagedPath)\Colossal.Core.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Colossal.Logging"><HintPath>$(ManagedPath)\Colossal.Logging.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Colossal.IO.AssetDatabase"><HintPath>$(ManagedPath)\Colossal.IO.AssetDatabase.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Colossal.UI"><HintPath>$(ManagedPath)\Colossal.UI.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Colossal.UI.Binding"><HintPath>$(ManagedPath)\Colossal.UI.Binding.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Colossal.IO"><HintPath>$(ManagedPath)\Colossal.IO.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Colossal.Localization"><HintPath>$(ManagedPath)\Colossal.Localization.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Colossal.Mathematics"><HintPath>$(ManagedPath)\Colossal.Mathematics.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Colossal.Mono.Cecil"><HintPath>$(ManagedPath)\Colossal.Mono.Cecil.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Colossal.PSI.Common"><HintPath>$(ManagedPath)\Colossal.PSI.Common.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Colossal.AssetPipeline"><HintPath>$(ManagedPath)\Colossal.AssetPipeline.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="cohtml.Net"><HintPath>$(ManagedPath)\cohtml.Net.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Newtonsoft.Json"><HintPath>$(ManagedPath)\Newtonsoft.Json.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="UnityEngine"><HintPath>$(ManagedPath)\UnityEngine.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(ManagedPath)\UnityEngine.CoreModule.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="UnityEngine.IMGUIModule"><HintPath>$(ManagedPath)\UnityEngine.IMGUIModule.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Unity.Burst"><HintPath>$(ManagedPath)\Unity.Burst.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Unity.Burst.Unsafe"><HintPath>$(ManagedPath)\Unity.Burst.Unsafe.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Unity.Collections"><HintPath>$(ManagedPath)\Unity.Collections.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Unity.Entities"><HintPath>$(ManagedPath)\Unity.Entities.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Unity.Mathematics"><HintPath>$(ManagedPath)\Unity.Mathematics.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Unity.InputSystem"><HintPath>$(ManagedPath)\Unity.InputSystem.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Colossal.Collections"><HintPath>$(ManagedPath)\Colossal.Collections.dll</HintPath><Private>False</Private></Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Update="System"><Private>False</Private></Reference>
+    <Reference Update="System.Core"><Private>False</Private></Reference>
+    <Reference Update="System.Data"><Private>False</Private></Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Lib.Harmony" Version="2.2.2" />
+  </ItemGroup>
+</Project>
