@@ -276,69 +276,38 @@ namespace Anarchy.Systems.Common
         {
             base.OnGameLoadingComplete(purpose, mode);
 
-            /*
-            m_Log.Debug("Shortcuts Action Map:");
-            ProxyActionMap shortcutsMap = InputManager.instance.FindActionMap(InputManager.kShortcutsMap);
-            foreach (KeyValuePair<string, ProxyAction> keyValue in shortcutsMap.actions)
+            try
             {
-                m_Log.Debug(keyValue.Key);
-            }
+                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-            m_Log.Debug("Tool Action Map:");
-            ProxyActionMap toolMap = InputManager.instance.FindActionMap(InputManager.kToolMap);
-            foreach (KeyValuePair<string, ProxyAction> keyValue in toolMap.actions)
-            {
-                m_Log.Debug(keyValue.Key);
-            }
-
-            m_Log.Debug("kEngagementMap Action Map:");
-            ProxyActionMap kEngagementMap = InputManager.instance.FindActionMap(InputManager.kEngagementMap);
-            foreach (KeyValuePair<string, ProxyAction> keyValue in kEngagementMap.actions)
-            {
-                m_Log.Debug(keyValue.Key);
-            }
-
-            m_Log.Debug("kMenuMap Action Map:");
-            ProxyActionMap kMenuMap = InputManager.instance.FindActionMap(InputManager.kMenuMap);
-            foreach (KeyValuePair<string, ProxyAction> keyValue in kEngagementMap.actions)
-            {
-                m_Log.Debug(keyValue.Key);
-            }
-
-            m_Log.Debug("kNavigationMap Action Map:");
-            ProxyActionMap kNavigationMap = InputManager.instance.FindActionMap(InputManager.kNavigationMap);
-            foreach (KeyValuePair<string, ProxyAction> keyValue in kEngagementMap.actions)
-            {
-                m_Log.Debug(keyValue.Key);
-            }*/
-
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-
-            foreach (Assembly assembly in assemblies)
-            {
-                Type type = assembly.GetType("Platter.Components.ParcelPlaceholderData");
-                if (type != null)
+                foreach (Assembly assembly in assemblies)
                 {
-                    m_Log.Info($"Found {type.FullName} in {type.Assembly.FullName}. ");
-                    m_PlatterComponent = ComponentType.ReadOnly(type);
-                    m_FoundPlater = true;
+                    Type type = assembly.GetType("Platter.Components.ParcelPlaceholderData");
+                    if (type != null)
+                    {
+                        m_Log.Info($"Found {type.FullName} in {type.Assembly.FullName}. ");
+                        m_PlatterComponent = ComponentType.ReadOnly(type);
+                        m_FoundPlater = true;
+                    }
                 }
-            }
 
-            if (m_ToggleAnarchy != null)
+                if (m_ToggleAnarchy != null)
+                {
+                    m_ToggleAnarchy.shouldBeEnabled = mode.IsGameOrEditor();
+                }
+
+                if (AnarchyMod.Instance?.Settings != null && mode.IsEditor() && !AnarchyMod.Instance.Settings.PreventOverrideInEditor)
+                {
+                    if (m_DisableElevationLock != null) m_DisableElevationLock.Value = true;
+                    return;
+                }
+
+                if (m_DisableElevationLock != null) m_DisableElevationLock.Value = false;
+            }
+            catch (System.Exception ex)
             {
-                m_ToggleAnarchy.shouldBeEnabled = mode.IsGameOrEditor();
+                m_Log.Warn($"AnarchyUISystem.OnGameLoadingComplete handled error: {ex.Message}");
             }
-
-            if (mode.IsEditor() && !AnarchyMod.Instance.Settings.PreventOverrideInEditor)
-            {
-                m_DisableElevationLock.Value = true;
-                return;
-            }
-
-            m_DisableElevationLock.Value = false;
-
-
         }
 
         /// <inheritdoc/>
