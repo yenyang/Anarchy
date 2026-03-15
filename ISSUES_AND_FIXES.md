@@ -48,7 +48,16 @@
   2. Built UI from source (webpack) ✓
   3. Copied 0Harmony.dll from NuGet build output ✓
   4. Also deployed to `UserDataPath/Mods/Anarchy/` (standard local mod path) — **testing now**
-- **Current deploy**: Two locations: `mods_workInProgress/Anarchy/` AND `Mods/Anarchy/` (under CS2 user data root)
+- **Current deploy**: Removed both `mods_workInProgress/Anarchy/` and `Mods/Anarchy/` — reverting to subscribed approach (see Issue #6)
+
+## Issue #6: Game crashes on launch — "Value cannot be null. Parameter name: source"
+- **Status**: FIXING
+- **Discovered**: 2026-03-15
+- **Error**: `ArgumentNullException` in `PdxSdkPlatform.CreateMod()` → `GetModsInActivePlayset()` → LINQ `.Where()` on null source
+- **Root cause**: After unsubscribing from Anarchy (74604), the Paradox SDK server-side state is inconsistent. The SDK's `CreateMod()` returns null for the unsubscribed mod, which gets passed to LINQ `.Where()`, crashing with `ArgumentNullException`.
+- **Stack trace**: `PdxSdkPlatform.GetModsInActivePlayset` → `ParadoxModsDataSource.OnActivePlaysetChanged` → `ParadoxModsDataSource.Populate` → FATAL
+- **Fix**: Re-subscribe to Anarchy on Paradox Mods to restore consistent SDK state, then replace DLL in subscribed folder with our patched build. The `mods_workInProgress` approach doesn't work reliably.
+- **Lesson**: Don't unsubscribe from Paradox mods to use local copies — it breaks the Paradox SDK's server sync. Instead, stay subscribed and overwrite the DLL in place.
 
 ---
 
