@@ -59,6 +59,30 @@
 - **Fix**: Re-subscribe to Anarchy on Paradox Mods to restore consistent SDK state, then replace DLL in subscribed folder with our patched build. The `mods_workInProgress` approach doesn't work reliably.
 - **Lesson**: Don't unsubscribe from Paradox mods to use local copies — it breaks the Paradox SDK's server sync. Instead, stay subscribed and overwrite the DLL in place.
 
+## Issue #7: NullReferenceException in AnarchyUISystem.OnGameLoadingComplete
+- **Status**: FIXED
+- **Discovered**: 2026-03-15
+- **Error**: `NullReferenceException` at `AnarchyUISystem.OnGameLoadingComplete` — system disabled itself on error
+- **Root cause**: `Settings.GetAction()` returns null `ProxyAction` in v1.5.5f1 for keybinding actions (ToggleAnarchy, ResetElevation, ElevationStep, ElevationKey, ElevationMimicKeys). The mod accessed `.shouldBeEnabled` and `.WasPerformedThisFrame()` on null references.
+- **Fix**: Added null guards (`!= null`) on all 5 `ProxyAction` field usages across `OnGameLoadingComplete`, `OnUpdate`, `OnToolChanged`, and `OnPrefabChanged`.
+- **File**: `Anarchy/Systems/Common/AnarchyUISystem.cs`
+
+## Issue #8: "No suitable code replacement generated" — ECS source generators missing
+- **Status**: CRITICAL — REVERTED to original DLL
+- **Discovered**: 2026-03-15
+- **Error**: `InvalidOperationException: No suitable code replacement generated` in `ElevateObjectDefinitionSystem.OnCreate`, cascading to `AnarchyUISystem` and `AnarchyTooltipSystem`
+- **Root cause**: Our standalone csproj compiles without Unity ECS source generators (SystemGenerator, JobEntityGenerator, etc.). These generators produce required runtime code for systems using `SystemAPI` and `IJobEntity`. Without them, the ECS framework can't initialize the systems.
+- **Impact**: The entire mod fails to initialize — no Anarchy functionality at all
+- **Resolution**: Reverted to original v1.7.22 DLL which has the source-generated code baked in. The original DLL works with v1.5.5f1 (APIs are compatible) — it just has the two non-fatal startup errors from Issues #1 and #2.
+- **Lesson**: Cannot recompile CS2 ECS mods without the full Unity modding toolchain including source generators. A partial recompile breaks the generated system code.
+
+## Issue #9: Hardcoded dev path for en-US.json
+- **Status**: NON-FATAL (cosmetic, ignore)
+- **Discovered**: 2026-03-15
+- **Error**: `DirectoryNotFoundException: Could not find path "C:\Users\TJ\source\repos\Anarchy\...\en-US.json"`
+- **Root cause**: The original author (yenyang, user "TJ") has a debug feature that writes locale files to their dev machine path. Fails harmlessly for everyone else.
+- **Impact**: None — the mod continues loading normally after this error
+
 ---
 
 ## Backup Log
