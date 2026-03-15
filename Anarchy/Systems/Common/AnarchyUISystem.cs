@@ -325,7 +325,10 @@ namespace Anarchy.Systems.Common
                 }
             }
 
-            m_ToggleAnarchy.shouldBeEnabled = mode.IsGameOrEditor();
+            if (m_ToggleAnarchy != null)
+            {
+                m_ToggleAnarchy.shouldBeEnabled = mode.IsGameOrEditor();
+            }
 
             if (mode.IsEditor() && !AnarchyMod.Instance.Settings.PreventOverrideInEditor)
             {
@@ -363,29 +366,29 @@ namespace Anarchy.Systems.Common
                 m_ObjectToolValidMode.Value = m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve || m_ObjectToolSystem.actualMode  == ObjectToolSystem.Mode.Stamp;
             }
 
-            if (m_ToggleAnarchy.WasPerformedThisFrame())
+            if (m_ToggleAnarchy != null && m_ToggleAnarchy.WasPerformedThisFrame())
             {
                 AnarchyToggled();
             }
 
             if (m_ToolSystem.activeTool.toolID != null && (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
             {
-                if (m_ResetElevation.WasPerformedThisFrame())
+                if (m_ResetElevation != null && m_ResetElevation.WasPerformedThisFrame())
                 {
                     ChangeElevation(m_ElevationValue.Value * -1f);
                 }
 
-                if (m_ElevationStepToggle.WasPerformedThisFrame())
+                if (m_ElevationStepToggle != null && m_ElevationStepToggle.WasPerformedThisFrame())
                 {
                     ElevationStepPressed();
                 }
 
-                if (m_ElevationKey.WasPerformedThisFrame())
+                if (m_ElevationKey != null && m_ElevationKey.WasPerformedThisFrame())
                 {
                     ChangeElevation(m_ElevationStep.Value * m_ElevationKey.ReadValue<float>());
                 }
 
-                if (m_ElevationMimicKeys.WasPerformedThisFrame())
+                if (m_ElevationMimicKeys != null && m_ElevationMimicKeys.WasPerformedThisFrame())
                 {
                     ChangeElevation(m_ElevationStep.Value * m_ElevationMimicKeys.ReadValue<float>());
                 }
@@ -505,20 +508,20 @@ namespace Anarchy.Systems.Common
 
             if (((tool == m_ObjectToolSystem || tool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab && AnarchyMod.Instance.Settings.ShowElevationToolOption) || tool == m_NetToolSystem)
             {
-                m_ResetElevation.shouldBeEnabled = true;
-                m_ElevationStepToggle.shouldBeEnabled = true;
+                if (m_ResetElevation != null) m_ResetElevation.shouldBeEnabled = true;
+                if (m_ElevationStepToggle != null) m_ElevationStepToggle.shouldBeEnabled = true;
                 if (tool == m_ObjectToolSystem || tool.toolID == "Line Tool")
                 {
-                    m_ElevationMimicKeys.shouldBeEnabled = AnarchyMod.Instance.Settings.UseElevationMimics;
-                    m_ElevationKey.shouldBeEnabled = !AnarchyMod.Instance.Settings.UseElevationMimics;
+                    if (m_ElevationMimicKeys != null) m_ElevationMimicKeys.shouldBeEnabled = AnarchyMod.Instance.Settings.UseElevationMimics;
+                    if (m_ElevationKey != null) m_ElevationKey.shouldBeEnabled = !AnarchyMod.Instance.Settings.UseElevationMimics;
                 }
             }
             else
             {
-                m_ResetElevation.shouldBeEnabled = false;
-                m_ElevationStepToggle.shouldBeEnabled = false;
-                m_ElevationKey.shouldBeEnabled = false;
-                m_ElevationMimicKeys.shouldBeEnabled = false;
+                if (m_ResetElevation != null) m_ResetElevation.shouldBeEnabled = false;
+                if (m_ElevationStepToggle != null) m_ElevationStepToggle.shouldBeEnabled = false;
+                if (m_ElevationKey != null) m_ElevationKey.shouldBeEnabled = false;
+                if (m_ElevationMimicKeys != null) m_ElevationMimicKeys.shouldBeEnabled = false;
             }
 
             m_EnableToolErrorsSystem.Enabled = true;
@@ -567,20 +570,20 @@ namespace Anarchy.Systems.Common
 
             if (((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab && AnarchyMod.Instance.Settings.ShowElevationToolOption) || m_ToolSystem.activeTool == m_NetToolSystem)
             {
-                m_ResetElevation.shouldBeEnabled = true;
-                m_ElevationStepToggle.shouldBeEnabled = true;
+                if (m_ResetElevation != null) m_ResetElevation.shouldBeEnabled = true;
+                if (m_ElevationStepToggle != null) m_ElevationStepToggle.shouldBeEnabled = true;
                 if (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool")
                 {
-                    m_ElevationMimicKeys.shouldBeEnabled = AnarchyMod.Instance.Settings.UseElevationMimics;
-                    m_ElevationKey.shouldBeEnabled = !AnarchyMod.Instance.Settings.UseElevationMimics;
+                    if (m_ElevationMimicKeys != null) m_ElevationMimicKeys.shouldBeEnabled = AnarchyMod.Instance.Settings.UseElevationMimics;
+                    if (m_ElevationKey != null) m_ElevationKey.shouldBeEnabled = !AnarchyMod.Instance.Settings.UseElevationMimics;
                 }
             }
             else
             {
-                m_ResetElevation.shouldBeEnabled = false;
-                m_ElevationStepToggle.shouldBeEnabled = false;
-                m_ElevationKey.shouldBeEnabled = false;
-                m_ElevationMimicKeys.shouldBeEnabled = false;
+                if (m_ResetElevation != null) m_ResetElevation.shouldBeEnabled = false;
+                if (m_ElevationStepToggle != null) m_ElevationStepToggle.shouldBeEnabled = false;
+                if (m_ElevationKey != null) m_ElevationKey.shouldBeEnabled = false;
+                if (m_ElevationMimicKeys != null) m_ElevationMimicKeys.shouldBeEnabled = false;
             }
 
             if (m_ToolSystem.activeTool == m_ObjectToolSystem &&
