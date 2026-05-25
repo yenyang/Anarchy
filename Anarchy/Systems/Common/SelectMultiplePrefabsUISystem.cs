@@ -4,16 +4,18 @@
 
 namespace Anarchy.Systems.Common
 {
-    using System.Collections.Generic;
+    using Colossal.Annotations;
     using Colossal.Entities;
     using Colossal.Logging;
     using Game.Prefabs;
     using Game.SceneFlow;
     using Game.Tools;
     using Game.UI;
+    using System.Collections.Generic;
     using Unity.Collections;
     using Unity.Entities;
     using UnityEngine.InputSystem;
+    using static Colossal.AssetPipeline.Diagnostic.Report;
 
     /// <summary>
     /// Hacky solution for selecing multiple prefabs. Limited to objects, on same tab, no trees or plants.
@@ -27,9 +29,12 @@ namespace Anarchy.Systems.Common
         private ILog m_Log;
         private List<Entity> m_ThemeEntities;
         private NativeList<Entity> m_SelectedPrefabEntities;
+        private Entity m_RecentlyRemovedPrefabEntity;
         private bool m_UpdateSelectionSet;
         private Entity m_UIGroup = Entity.Null;
         private int m_FrameCount = 0;
+        [CanBeNull]
+        private PrefabBase m_TrySetPrefabNextFrame;
 
         /// <summary>
         /// Gets or sets a value indicating whether the selection set of buttons on the Toolbar UI needs to be updated.
@@ -102,6 +107,14 @@ namespace Anarchy.Systems.Common
         protected override void OnUpdate()
         {
             base.OnUpdate();
+
+            if (m_TrySetPrefabNextFrame != null)
+            {
+                m_Log.Debug($"{nameof(SelectMultiplePrefabsUISystem)}.{nameof(OnUpdate)} ActivatedPrefabTool {m_TrySetPrefabNextFrame.name}.");
+                m_ToolSystem.ActivatePrefabTool(m_TrySetPrefabNextFrame);
+                return;
+            }
+
             if (m_UiView is null)
             {
                 m_Log.Info($"{nameof(SelectMultiplePrefabsUISystem)}.{nameof(OnUpdate)} m_UiView is null. Tried to reset it.");
@@ -126,7 +139,7 @@ namespace Anarchy.Systems.Common
                 {
                     if (m_FrameCount < 5)
                     {
-                        UnselectPrefabs();
+                        UnselectAllPrefabs();
                     }
 
                     foreach (Entity entity in m_SelectedPrefabEntities)
@@ -137,6 +150,7 @@ namespace Anarchy.Systems.Common
                     if (m_FrameCount == 5)
                     {
                         m_UpdateSelectionSet = false;
+                        m_RecentlyRemovedPrefabEntity = Entity.Null;
                         m_Log.Debug($"{nameof(SelectMultiplePrefabsUISystem)}.{nameof(OnUpdate)} finished frame set. selectedPrefabs.Count = {m_SelectedPrefabEntities.Length}");
                         m_FrameCount = 6;
                     }
@@ -200,23 +214,37 @@ namespace Anarchy.Systems.Common
                 m_Log.Debug($"{nameof(SelectMultiplePrefabsUISystem)}.{nameof(HandleToolOrPrefabChange)} ");
                 if (!Keyboard.current.leftCtrlKey.isPressed && !Keyboard.current.rightCtrlKey.isPressed)
                 {
-                    UnselectPrefabs(clearPrefabs: true);
+                    UnselectAllPrefabs(clearPrefabs: true);
                 }
 
                 Enabled = true;
-                SelectPrefab(prefab, selectionStateOnly: false);
+                if (m_TrySetPrefabNextFrame is null)
+                {
+                    TrySelectOrUnselectPrefab(prefab, selectionStateOnly: false);
+                }
+                else
+                {
+                    m_TrySetPrefabNextFrame = null;
+
+                    // This script creates the Anarchy object if it doesn't exist.
+                    m_UiView.ExecuteScript("if (yyAnarchy == null) var yyAnarchy = {};");
+
+                    // This script searches through all img and adds removes selected if the src of that image contains the name of the prefab and is not the active prefab.
+                    m_UiView.ExecuteScript($"yyAnarchy.tagElements = document.getElementsByTagName(\"img\"); for (yyAnarchy.i = 0; yyAnarchy.i < yyAnarchy.tagElements.length; yyAnarchy.i++) {{ if (yyAnarchy.tagElements[yyAnarchy.i].src.includes(\"{ImageSystem.GetThumbnail(prefab)}\")) {{ yyAnarchy.tagElements[yyAnarchy.i].parentNode.classList.remove(\"selected\"); yyAnarchy.tagElements[yyAnarchy.i].parentNode.parentNode.classList.remove(\"selected\");   }} }} ");
+
+                }
             }
             else
             {
                 Enabled = false;
-                UnselectPrefabs(clearPrefabs: true);
+                UnselectAllPrefabs(clearPrefabs: true);
             }
         }
 
         /// <summary>
         /// Clears all selected vegetation prefabs.
         /// </summary>
-        private void UnselectPrefabs(bool clearPrefabs = false)
+        private void UnselectAllPrefabs(bool clearPrefabs = false)
         {
             foreach (Entity e in m_SelectedPrefabEntities)
             {
@@ -230,12 +258,22 @@ namespace Anarchy.Systems.Common
                 }
             }
 
+            if (m_RecentlyRemovedPrefabEntity != Entity.Null &&
+                m_PrefabSystem.TryGetPrefab(m_RecentlyRemovedPrefabEntity, out PrefabBase prefab1))
+            {
+                // This script creates the Anarchy object if it doesn't exist.
+                m_UiView.ExecuteScript("if (yyAnarchy == null) var yyAnarchy = {};");
+
+                // This script searches through all img and adds removes selected if the src of that image contains the name of the prefab and is not the active prefab.
+                m_UiView.ExecuteScript($"yyAnarchy.tagElements = document.getElementsByTagName(\"img\"); for (yyAnarchy.i = 0; yyAnarchy.i < yyAnarchy.tagElements.length; yyAnarchy.i++) {{ if (yyAnarchy.tagElements[yyAnarchy.i].src.includes(\"{ImageSystem.GetThumbnail(prefab1)}\")) {{ yyAnarchy.tagElements[yyAnarchy.i].parentNode.classList.remove(\"selected\"); yyAnarchy.tagElements[yyAnarchy.i].parentNode.parentNode.classList.remove(\"selected\");   }} }} ");
+            }
+
             if (clearPrefabs)
             {
                 m_SelectedPrefabEntities.Clear();
             }
 
-            m_Log.Debug($"{nameof(SelectMultiplePrefabsUISystem)}.{nameof(UnselectPrefabs)}");
+            m_Log.Debug($"{nameof(SelectMultiplePrefabsUISystem)}.{nameof(UnselectAllPrefabs)}");
         }
 
         private bool ReviewPrefab(PrefabBase prefabBase)
@@ -259,7 +297,7 @@ namespace Anarchy.Systems.Common
                 if (uIObjectData.m_Group != m_UIGroup)
                 {
                     m_UIGroup = uIObjectData.m_Group;
-                    UnselectPrefabs(clearPrefabs: true);
+                    UnselectAllPrefabs(clearPrefabs: true);
                 }
 
                 return true;
@@ -272,7 +310,7 @@ namespace Anarchy.Systems.Common
         /// Adds selected to the selected prefab.
         /// </summary>
         /// <param name="prefab">The selected prefab.</param>
-        private void SelectPrefab(PrefabBase prefab, bool selectionStateOnly = true)
+        private void TrySelectOrUnselectPrefab(PrefabBase prefab, bool selectionStateOnly = true)
         {
             if (prefab == null)
             {
@@ -308,11 +346,23 @@ namespace Anarchy.Systems.Common
             }
             else
             {
+                m_RecentlyRemovedPrefabEntity = prefabEntity;
                 for (int i = 0; i < m_SelectedPrefabEntities.Length; i++)
                 {
                     if (m_SelectedPrefabEntities[i] == prefabEntity)
                     {
                         m_SelectedPrefabEntities.RemoveAt(i);
+                        break;
+                    }
+                }
+
+                foreach (Entity e in m_SelectedPrefabEntities)
+                {
+                    if (m_PrefabSystem.TryGetPrefab(e, out PrefabBase nextPrefab) &&
+                        ReviewPrefab(nextPrefab))
+                    {
+                        m_TrySetPrefabNextFrame = nextPrefab;
+                        m_Log.Debug($"{nameof(SelectMultiplePrefabsUISystem)}.{nameof(SelectPrefab)} trying to set prefab to {nextPrefab.name}");
                         break;
                     }
                 }
@@ -336,7 +386,7 @@ namespace Anarchy.Systems.Common
             if (m_PrefabSystem.TryGetPrefab(prefabEntity, out PrefabBase prefabBase) &&
                 prefabBase is not null)
             {
-                SelectPrefab(prefabBase);
+                TrySelectOrUnselectPrefab(prefabBase);
             }
         }
     }
