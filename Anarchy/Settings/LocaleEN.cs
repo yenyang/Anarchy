@@ -200,6 +200,8 @@ namespace Anarchy.Settings
                 { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.ElevationVariationStep)), "Elevation Variance Step" },
                 { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.ElevationVariationStep)), "A keybind to change the rate in which Elevation Variance changes." },
                 { m_Setting.GetBindingKeyLocaleID(AnarchyModSettings.ElevationVariationStepActionName), "Elevation Variance Step Keybind" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.ConstrainBrush)), "Constrain Brush" },
+                { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.ConstrainBrush)), "Prevents objects applied with the circular brush from exceeding the visual limits of the brush. You may not always have a visual indicator of where the next one will be if the game wants to place the next one outside the limits." },
             };
         }
 

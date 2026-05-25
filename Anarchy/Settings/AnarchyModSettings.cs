@@ -225,6 +225,12 @@ namespace Anarchy.Settings
         public int PropRefreshFrequency { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to constrain the brush.
+        /// </summary>
+        [SettingsUISection(General, Stable)]
+        public bool ConstrainBrush { get; set; }
+
+        /// <summary>
         /// Gets or sets hidden keybinding for secondary apply action.
         /// </summary>
         [SettingsUIMouseBinding(AnarchyMod.SecondaryMimicAction)]
@@ -394,6 +400,7 @@ namespace Anarchy.Settings
                 AllowPlacingMultipleUniqueBuildings = false;
                 MinimumClearanceBelowElevatedNetworks = 0f;
                 PreventOverrideInEditor = false;
+                ConstrainBrush = true;
                 ApplyAndSave();
             }
         }
@@ -467,6 +474,7 @@ namespace Anarchy.Settings
             ReplaceUpgradesBehavior = true;
             ResetNetworkToolOptionsWhenChangingPrefab = false;
             UseElevationMimics = true;
+            ConstrainBrush = true;
         }
 
 

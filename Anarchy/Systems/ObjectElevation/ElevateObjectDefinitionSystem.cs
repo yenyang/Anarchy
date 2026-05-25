@@ -37,6 +37,7 @@ namespace Anarchy.Systems.ObjectElevation
         private uint m_PreviousObjectToolRandomSeed;
         private float m_ElevationDelta;
         private float m_ElevationVariance;
+        private ToolRaycastSystem m_ToolRaycastSystem;
 
         /// <summary>
         /// Sets the elevation delta.
@@ -62,7 +63,8 @@ namespace Anarchy.Systems.ObjectElevation
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
-            m_AnarchyUISystem = World.CreateSystemManaged<AnarchyUISystem>();
+            m_AnarchyUISystem = World.GetOrCreateSystemManaged<AnarchyUISystem>();
+            m_ToolRaycastSystem = World.GetOrCreateSystemManaged<ToolRaycastSystem>();
             m_Log.Info($"[{nameof(ElevateObjectDefinitionSystem)}] {nameof(OnCreate)}");
             m_ObjectDefinitionQuery = SystemAPI.QueryBuilder()
                 .WithAllRW<Game.Tools.ObjectDefinition>()
@@ -78,7 +80,7 @@ namespace Anarchy.Systems.ObjectElevation
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            if ((m_ToolSystem.activeTool != m_ObjectToolSystem && m_ToolSystem.activeTool.toolID != "Line Tool") || !AnarchyMod.Instance.Settings.ShowElevationToolOption)
+            if ((m_ToolSystem.activeTool != m_ObjectToolSystem && m_ToolSystem.activeTool.toolID != "Line Tool") || (!AnarchyMod.Instance.Settings.ShowElevationToolOption && !AnarchyMod.Instance.Settings.ConstrainBrush))
             {
                 return;
             }
@@ -90,133 +92,160 @@ namespace Anarchy.Systems.ObjectElevation
 
             NativeArray<Entity> entities = m_ObjectDefinitionQuery.ToEntityArray(Allocator.Temp);
 
-            EntityCommandBuffer buffer = new EntityCommandBuffer(Allocator.Temp);
-
-            // Determine if RandomSeeds are fixed.
-            bool seedsAreRadomized = false;
-            if (entities.Length > 1)
+            if (AnarchyMod.Instance.Settings.ShowElevationToolOption)
             {
-                for (int i = 0; i < entities.Length; i++)
+                EntityCommandBuffer buffer = new EntityCommandBuffer(Allocator.Temp);
+                // Determine if RandomSeeds are fixed.
+                bool seedsAreRadomized = false;
+                if (entities.Length > 1)
                 {
-                    if (!EntityManager.TryGetComponent(entities[i], out CreationDefinition currentCreationDefinition))
+                    for (int i = 0; i < entities.Length; i++)
                     {
-                        continue;
-                    }
-
-                    if (m_PreviousRandomSeed == 0)
-                    {
-                        m_PreviousRandomSeed = currentCreationDefinition.m_RandomSeed;
-                        continue;
-                    }
-
-                    if (m_PreviousRandomSeed != currentCreationDefinition.m_RandomSeed)
-                    {
-                        seedsAreRadomized = true;
-                        m_PreviousRandomSeed = currentCreationDefinition.m_RandomSeed;
-                        break;
-                    }
-                }
-            }
-            else if (entities.Length == 1 &&
-                     EntityManager.TryGetComponent(entities[0], out CreationDefinition currentCreationDefinition))
-            {
-                /*
-                if (!TryGetObjectToolSeed(out uint objectToolSeed))
-                {
-                    // If it's impossible to tell just assume randomized.
-                    seedsAreRadomized = true;
-                    m_PreviousRandomSeed = currentCreationDefinition.m_RandomSeed;
-                }
-                else
-                {
-                    // Seed should be random and is random.
-                    if (objectToolSeed != m_PreviousObjectToolRandomSeed &&
-                        m_PreviousRandomSeed != currentCreationDefinition.m_RandomSeed)
-                    {
-                        seedsAreRadomized = true;
-                        m_PreviousRandomSeed = currentCreationDefinition.m_RandomSeed;
-                        m_PreviousObjectToolRandomSeed = objectToolSeed;
-                    }
-
-                    // Object tool hasn't been randomized.
-                    else if (objectToolSeed == m_PreviousObjectToolRandomSeed)
-                    {
-                        seedsAreRadomized = true;
-                        m_PreviousRandomSeed = currentCreationDefinition.m_RandomSeed;
-                    }
-                }*/
-                seedsAreRadomized = true;
-                m_PreviousRandomSeed = currentCreationDefinition.m_RandomSeed;
-            }
-
-            foreach (Entity entity in entities)
-            {
-                if (!EntityManager.TryGetComponent(entity, out CreationDefinition currentCreationDefinition))
-                {
-                    continue;
-                }
-
-                if (!EntityManager.TryGetComponent(entity, out ObjectDefinition currentObjectDefinition))
-                {
-                    continue;
-                }
-
-                if (!m_PrefabSystem.TryGetPrefab(currentCreationDefinition.m_Prefab, out PrefabBase prefabBase))
-                {
-                    continue;
-                }
-
-                if (!m_PrefabSystem.TryGetEntity(prefabBase, out Entity prefabEntity) ||
-                    (EntityManager.TryGetComponent(prefabEntity, out PlaceableObjectData placeableObjectData)
-                    && ((placeableObjectData.m_Flags & PlacementFlags.RoadEdge) == PlacementFlags.RoadEdge
-                    || (placeableObjectData.m_Flags & PlacementFlags.RoadNode) == PlacementFlags.RoadNode
-                    || (placeableObjectData.m_Flags & PlacementFlags.RoadSide) == PlacementFlags.RoadSide)))
-                {
-                    continue;
-                }
-
-                if (prefabBase is not BuildingPrefab)
-                {
-                    float currentElevationDelta = m_ElevationDelta;
-                    if (m_ElevationVariance != 0f)
-                    {
-                        if (!seedsAreRadomized)
+                        if (!EntityManager.TryGetComponent(entities[i], out CreationDefinition currentCreationDefinition))
                         {
-                            m_Random.InitState((uint)((math.abs(currentObjectDefinition.m_Position.x) % 1.2456f) * (math.abs(currentObjectDefinition.m_Position.y) % 3.456f) * (math.abs(currentObjectDefinition.m_Position.z) % 5.356f) * 100000));
-                            for (int i = 0; i < m_Random.NextInt(50); i++)
-                            {
-                                m_Random.NextInt();
-                            }
-
-                            for (int i = 0; i < m_Random.NextInt(50);  i++)
-                            {
-                                m_Random.NextFloat();
-                            }
-                        }
-                        else
-                        {
-                            m_Random.InitState((uint)currentCreationDefinition.m_RandomSeed);
+                            continue;
                         }
 
-                        currentElevationDelta += m_Random.NextFloat(-m_ElevationVariance, m_ElevationVariance);
-                    }
+                        if (m_PreviousRandomSeed == 0)
+                        {
+                            m_PreviousRandomSeed = currentCreationDefinition.m_RandomSeed;
+                            continue;
+                        }
 
-                    if (!EntityManager.HasComponent<StackData>(currentCreationDefinition.m_Prefab))
+                        if (m_PreviousRandomSeed != currentCreationDefinition.m_RandomSeed)
+                        {
+                            seedsAreRadomized = true;
+                            m_PreviousRandomSeed = currentCreationDefinition.m_RandomSeed;
+                            break;
+                        }
+                    }
+                }
+                else if (entities.Length == 1 &&
+                         EntityManager.TryGetComponent(entities[0], out CreationDefinition currentCreationDefinition))
+                {
+                    /*
+                    if (!TryGetObjectToolSeed(out uint objectToolSeed))
                     {
-                        currentObjectDefinition.m_Elevation = Mathf.Max(currentElevationDelta, 0);
-                        currentObjectDefinition.m_Position.y += currentElevationDelta;
+                        // If it's impossible to tell just assume randomized.
+                        seedsAreRadomized = true;
+                        m_PreviousRandomSeed = currentCreationDefinition.m_RandomSeed;
                     }
                     else
                     {
-                        currentObjectDefinition.m_Position.y += currentElevationDelta;
+                        // Seed should be random and is random.
+                        if (objectToolSeed != m_PreviousObjectToolRandomSeed &&
+                            m_PreviousRandomSeed != currentCreationDefinition.m_RandomSeed)
+                        {
+                            seedsAreRadomized = true;
+                            m_PreviousRandomSeed = currentCreationDefinition.m_RandomSeed;
+                            m_PreviousObjectToolRandomSeed = objectToolSeed;
+                        }
+
+                        // Object tool hasn't been randomized.
+                        else if (objectToolSeed == m_PreviousObjectToolRandomSeed)
+                        {
+                            seedsAreRadomized = true;
+                            m_PreviousRandomSeed = currentCreationDefinition.m_RandomSeed;
+                        }
+                    }*/
+                    seedsAreRadomized = true;
+                    m_PreviousRandomSeed = currentCreationDefinition.m_RandomSeed;
+                }
+
+                foreach (Entity entity in entities)
+                {
+                    if (!EntityManager.TryGetComponent(entity, out CreationDefinition currentCreationDefinition))
+                    {
+                        continue;
                     }
 
-                    buffer.SetComponent(entity, currentObjectDefinition);
+                    if (!EntityManager.TryGetComponent(entity, out ObjectDefinition currentObjectDefinition))
+                    {
+                        continue;
+                    }
+
+                    if (!m_PrefabSystem.TryGetPrefab(currentCreationDefinition.m_Prefab, out PrefabBase prefabBase))
+                    {
+                        continue;
+                    }
+
+                    if (!m_PrefabSystem.TryGetEntity(prefabBase, out Entity prefabEntity) ||
+                        (EntityManager.TryGetComponent(prefabEntity, out PlaceableObjectData placeableObjectData)
+                        && ((placeableObjectData.m_Flags & PlacementFlags.RoadEdge) == PlacementFlags.RoadEdge
+                        || (placeableObjectData.m_Flags & PlacementFlags.RoadNode) == PlacementFlags.RoadNode
+                        || (placeableObjectData.m_Flags & PlacementFlags.RoadSide) == PlacementFlags.RoadSide)))
+                    {
+                        continue;
+                    }
+
+                    if (prefabBase is not BuildingPrefab)
+                    {
+                        float currentElevationDelta = m_ElevationDelta;
+                        if (m_ElevationVariance != 0f)
+                        {
+                            if (!seedsAreRadomized)
+                            {
+                                m_Random.InitState((uint)((math.abs(currentObjectDefinition.m_Position.x) % 1.2456f) * (math.abs(currentObjectDefinition.m_Position.y) % 3.456f) * (math.abs(currentObjectDefinition.m_Position.z) % 5.356f) * 100000));
+                                for (int i = 0; i < m_Random.NextInt(50); i++)
+                                {
+                                    m_Random.NextInt();
+                                }
+
+                                for (int i = 0; i < m_Random.NextInt(50); i++)
+                                {
+                                    m_Random.NextFloat();
+                                }
+                            }
+                            else
+                            {
+                                m_Random.InitState((uint)currentCreationDefinition.m_RandomSeed);
+                            }
+
+                            currentElevationDelta += m_Random.NextFloat(-m_ElevationVariance, m_ElevationVariance);
+                        }
+
+                        if (!EntityManager.HasComponent<StackData>(currentCreationDefinition.m_Prefab))
+                        {
+                            currentObjectDefinition.m_Elevation = Mathf.Max(currentElevationDelta, 0);
+                            currentObjectDefinition.m_Position.y += currentElevationDelta;
+                        }
+                        else
+                        {
+                            currentObjectDefinition.m_Position.y += currentElevationDelta;
+                        }
+
+                        buffer.SetComponent(entity, currentObjectDefinition);
+                    }
                 }
+
+                buffer.Playback(EntityManager);
+                buffer.Dispose();
             }
 
-            buffer.Playback(EntityManager);
-            buffer.Dispose();
+            if (m_ToolSystem.activeTool == m_ObjectToolSystem
+               && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush &&
+               AnarchyMod.Instance.Settings.ConstrainBrush)
+            {
+                foreach (Entity entity in entities)
+                {
+                    if (!EntityManager.TryGetComponent(entity, out ObjectDefinition currentObjectDefinition))
+                    {
+                        continue;
+                    }
+
+                    if (m_ToolRaycastSystem.GetRaycastResult(out RaycastResult result) &&
+                        !EntityManager.HasComponent<Deleted>(result.m_Owner))
+                    {
+                        float2 objectXZ = new (currentObjectDefinition.m_Position.x, currentObjectDefinition.m_Position.z);
+                        float2 raycastXZ = new (result.m_Hit.m_Position.x, result.m_Hit.m_Position.z);
+                        if (Vector2.Distance(objectXZ, raycastXZ) > (0.333f * m_ObjectToolSystem.brushSize))
+                        {
+                            EntityManager.DestroyEntity(entity);
+                            continue;
+                        }
+                    }
+                }
+            }
 
             entities.Dispose();
         }
