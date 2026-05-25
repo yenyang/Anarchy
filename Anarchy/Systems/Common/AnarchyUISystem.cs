@@ -4,6 +4,11 @@
 
 namespace Anarchy.Systems.Common
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Reflection;
+    using System.Xml.Serialization;
     using Anarchy.Domain;
     using Anarchy.Extensions;
     using Anarchy.Settings;
@@ -12,7 +17,6 @@ namespace Anarchy.Systems.Common
     using Anarchy.Systems.ObjectElevation;
     using Anarchy.Systems.OverridePrevention;
     using Colossal.Entities;
-    using Colossal.Json;
     using Colossal.Logging;
     using Colossal.PSI.Environment;
     using Colossal.Serialization.Entities;
@@ -21,13 +25,7 @@ namespace Anarchy.Systems.Common
     using Game.Input;
     using Game.Objects;
     using Game.Prefabs;
-    using Game.SceneFlow;
     using Game.Tools;
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Reflection;
-    using System.Xml.Serialization;
     using Unity.Entities;
     using UnityEngine;
 
@@ -36,6 +34,8 @@ namespace Anarchy.Systems.Common
     /// </summary>
     public partial class AnarchyUISystem : ExtendedUISystemBase
     {
+        private const int kKeybindHeldFrames = 10;
+
         private readonly ErrorCheck[] DefaultErrorChecks = new ErrorCheck[]
         {
             new (ErrorType.AlreadyExists, ErrorCheck.DisableState.WithAnarchy, 0),
@@ -84,11 +84,14 @@ namespace Anarchy.Systems.Common
         private ValueBindingHelper<float> m_ElevationStep;
         private string m_ContentFolder;
         private ValueBindingHelper<int> m_ElevationScale;
+        private ValueBindingHelper<float> m_ElevationVariance;
+        private ValueBindingHelper<float> m_ElevationVarianceStep;
         private ValueBindingHelper<bool> m_IsInappropriatePrefab;
         private ValueBindingHelper<bool> m_ShowElevationSettingsOption;
         private ValueBindingHelper<bool> m_ObjectToolValidMode;
         private ValueBindingHelper<bool> m_DisableElevationLock;
         private ValueBindingHelper<bool> m_MultipleUniques;
+        private ValueBindingHelper<bool> m_ShowElevationVariance;
         private ElevateObjectDefinitionSystem m_ElevateObjectDefinitionSystem;
         private ValueBindingHelper<bool> m_LockElevation;
         private PrefabSystem m_PrefabSystem;
@@ -101,12 +104,16 @@ namespace Anarchy.Systems.Common
         private ProxyAction m_ElevationStepToggle;
         private ProxyAction m_ElevationKey;
         private ProxyAction m_ElevationMimicKeys;
+        private ProxyAction m_ElevationVariationKey;
+        private ProxyAction m_ElevationVariationStepKey;
+        private ProxyAction m_ResetElevationVariationKey;
         private ValueBindingHelper<ErrorCheck[]> m_ErrorChecksBinding;
         private bool m_UpdateErrorChecks;
         private ValueBindingHelper<bool> m_ShowAnarchyToggleOptionsPanel;
         private Dictionary<ErrorType, ErrorCheck.DisableState> m_DefaultErrorChecks;
         private bool m_FoundPlater;
         private ComponentType m_PlatterComponent;
+        private int m_KeybindHeldFrames = 0;
 
         /// <summary>
         /// A list of tools ids that Anarchy is applicable to.
@@ -249,13 +256,16 @@ namespace Anarchy.Systems.Common
             m_ShowToolIcon = CreateBinding("ShowToolIcon", false);
             m_FlamingChirperOption = CreateBinding("FlamingChirperOption", AnarchyMod.Instance.Settings.FlamingChirper);
             m_ElevationValue = CreateBinding("ElevationValue", 0f);
-            m_ElevationStep = CreateBinding("ElevationStep", 10f);
+            m_ElevationStep = CreateBinding("ElevationStep", 1f);
             m_ElevationScale = CreateBinding("ElevationScale", 1);
+            m_ElevationVariance = CreateBinding("ElevationVariance", 0f);
+            m_ElevationVarianceStep = CreateBinding("ElevationVarianceStep", 0.1f);
             m_DisableElevationLock = CreateBinding("DisableElevationLock", false);
             m_LockElevation = CreateBinding("LockElevation", AnarchyMod.Instance.Settings.ElevationLock);
             m_IsInappropriatePrefab = CreateBinding("IsInappropriate", false);
             m_MultipleUniques = CreateBinding("MultipleUniques", AnarchyMod.Instance.Settings.AllowPlacingMultipleUniqueBuildings);
             m_ShowElevationSettingsOption = CreateBinding("ShowElevationSettingsOption", AnarchyMod.Instance.Settings.ShowElevationToolOption);
+            m_ShowElevationVariance = CreateBinding("ShowElevationVariance", AnarchyMod.Instance.Settings.ShowElevationVariance);
             m_ObjectToolValidMode = CreateBinding("ObjectToolValidMode", m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Stamp);
             ErrorCheck[] errorChecks = DefaultErrorChecks;
             for (int i = 0; i < errorChecks.Length; i++)
@@ -270,22 +280,30 @@ namespace Anarchy.Systems.Common
             AddBinding(new TriggerBinding("Anarchy", "AnarchyToggled", AnarchyToggled));
             CreateTrigger("IncreaseElevation", () => ChangeElevation(m_ElevationStep.Value));
             CreateTrigger("DecreaseElevation", () => ChangeElevation(-1f * m_ElevationStep.Value));
+            CreateTrigger("IncreaseElevationVariance", () => ChangeElevationVariance(m_ElevationVarianceStep.Value));
+            CreateTrigger("DecreaseElevationVariance", () => ChangeElevationVariance(-1f * m_ElevationVarianceStep.Value));
             CreateTrigger("LockElevationToggled", () =>
             {
                 m_LockElevation.Value = !m_LockElevation.Value;
                 AnarchyMod.Instance.Settings.ElevationLock = m_LockElevation.Value;
+                AnarchyMod.Instance.Settings.ApplyAndSave();
             });
             CreateTrigger("ElevationStep", ElevationStepPressed);
+            CreateTrigger("ElevationVarianceStep", ElevationVarianceStepPressed);
             CreateTrigger("ResetElevationToggled", () => ChangeElevation(-1f * m_ElevationValue.Value));
+            CreateTrigger("ResetElevationVariance", () => ChangeElevationVariance(-1f * m_ElevationVariance.Value));
+            CreateTrigger("ToggleShowElevationVariance", ShowElevationVariance);
+            CreateTrigger<int, int>("ChangeDisabledState", ChangeDisabledState);
+            CreateTrigger("ToggleAnarchyOptionsPanel", () => m_ShowAnarchyToggleOptionsPanel.Value = !m_ShowAnarchyToggleOptionsPanel.Value);
 
             m_ToggleAnarchy = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ToggleAnarchyActionName);
             m_ResetElevation = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ResetElevationActionName);
             m_ElevationStepToggle = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ElevationStepActionName);
             m_ElevationKey = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ElevationActionName);
             m_ElevationMimicKeys = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ElevationMimicActionName);
-            CreateTrigger("ResetElevationToggled", () => ChangeElevation(-1f * m_ElevationValue.Value));
-            CreateTrigger<int, int>("ChangeDisabledState", ChangeDisabledState);
-            CreateTrigger("ToggleAnarchyOptionsPanel", () => m_ShowAnarchyToggleOptionsPanel.Value = !m_ShowAnarchyToggleOptionsPanel.Value);
+            m_ElevationVariationKey = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ElevationVariationActionName);
+            m_ElevationVariationStepKey = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ElevationVariationStepActionName);
+            m_ResetElevationVariationKey = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ElevationVariationResetActionName);
         }
 
         /// <inheritdoc/>
@@ -383,27 +401,11 @@ namespace Anarchy.Systems.Common
                 AnarchyToggled();
             }
 
-            if (m_ToolSystem.activeTool.toolID != null && (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab)
+            if (m_ToolSystem.activeTool.toolID != null &&
+               (m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") &&
+                m_ToolSystem.activePrefab is not BuildingPrefab)
             {
-                if (m_ResetElevation.WasPerformedThisFrame())
-                {
-                    ChangeElevation(m_ElevationValue.Value * -1f);
-                }
-
-                if (m_ElevationStepToggle.WasPerformedThisFrame())
-                {
-                    ElevationStepPressed();
-                }
-
-                if (m_ElevationKey.WasPerformedThisFrame())
-                {
-                    ChangeElevation(m_ElevationStep.Value * m_ElevationKey.ReadValue<float>());
-                }
-
-                if (m_ElevationMimicKeys.WasPerformedThisFrame())
-                {
-                    ChangeElevation(m_ElevationStep.Value * m_ElevationMimicKeys.ReadValue<float>());
-                }
+                ProcessElevationKeyBinds();
             }
 
             if (m_ToolSystem.activeTool == m_NetToolSystem)
@@ -514,6 +516,7 @@ namespace Anarchy.Systems.Common
                 if ((tool == m_ObjectToolSystem || tool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab && m_ToolSystem.activePrefab != m_PreviousPrefab)
                 {
                     ChangeElevation(m_ElevationValue.Value * -1f);
+                    ChangeElevationVariance(m_ElevationVariance.Value * -1f);
                     m_PreviousPrefab = m_ToolSystem.activePrefab;
                 }
             }
@@ -526,6 +529,8 @@ namespace Anarchy.Systems.Common
                 {
                     m_ElevationMimicKeys.shouldBeEnabled = AnarchyMod.Instance.Settings.UseElevationMimics;
                     m_ElevationKey.shouldBeEnabled = !AnarchyMod.Instance.Settings.UseElevationMimics;
+                    m_ElevationVariationKey.shouldBeEnabled = true;
+                    m_ElevationVariationStepKey.shouldBeEnabled = true;
                 }
             }
             else
@@ -534,6 +539,8 @@ namespace Anarchy.Systems.Common
                 m_ElevationStepToggle.shouldBeEnabled = false;
                 m_ElevationKey.shouldBeEnabled = false;
                 m_ElevationMimicKeys.shouldBeEnabled = false;
+                m_ElevationVariationStepKey.shouldBeEnabled = false;
+                m_ElevationVariationKey.shouldBeEnabled = false;
             }
 
             m_EnableToolErrorsSystem.Enabled = true;
@@ -576,6 +583,7 @@ namespace Anarchy.Systems.Common
                 if ((m_ToolSystem.activeTool == m_ObjectToolSystem || m_ToolSystem.activeTool.toolID == "Line Tool") && m_ToolSystem.activePrefab is not BuildingPrefab && prefabBase != m_PreviousPrefab)
                 {
                     ChangeElevation(m_ElevationValue.Value * -1f);
+                    ChangeElevationVariance(m_ElevationVariance.Value * -1f);
                     m_PreviousPrefab = prefabBase;
                 }
             }
@@ -588,6 +596,8 @@ namespace Anarchy.Systems.Common
                 {
                     m_ElevationMimicKeys.shouldBeEnabled = AnarchyMod.Instance.Settings.UseElevationMimics;
                     m_ElevationKey.shouldBeEnabled = !AnarchyMod.Instance.Settings.UseElevationMimics;
+                    m_ElevationVariationKey.shouldBeEnabled = true;
+                    m_ElevationVariationStepKey.shouldBeEnabled = true;
                 }
             }
             else
@@ -596,6 +606,8 @@ namespace Anarchy.Systems.Common
                 m_ElevationStepToggle.shouldBeEnabled = false;
                 m_ElevationKey.shouldBeEnabled = false;
                 m_ElevationMimicKeys.shouldBeEnabled = false;
+                m_ElevationVariationStepKey.shouldBeEnabled = false;
+                m_ElevationVariationKey.shouldBeEnabled = false;
             }
 
             if (m_ToolSystem.activeTool == m_ObjectToolSystem &&
@@ -616,7 +628,21 @@ namespace Anarchy.Systems.Common
 
                 // I don't know why this is necessary. There seems to be a disconnect that forms in the binding value between C# and UI when the value is changed during onUpdate.
                 m_ElevateObjectDefinitionSystem.ElevationDelta = m_ElevationValue.Value;
-                m_AnarchyPlopSystem.ElevationChangeIsNegative = m_ElevationValue < 0f;
+                m_AnarchyPlopSystem.ElevationChangeIsNegative = m_ElevationValue - m_ElevationVariance.Value < 0f;
+
+                m_ObjectToolSystem.SetMemberValue("m_ForceUpdate", true);
+            }
+        }
+
+        private void ChangeElevationVariance(float difference)
+        {
+            if (AnarchyMod.Instance.Settings.ShowElevationToolOption)
+            {
+                m_ElevationVariance.Value = Mathf.Max(m_ElevationVariance.Value + difference, 0);
+
+                // I don't know why this is necessary. There seems to be a disconnect that forms in the binding value between C# and UI when the value is changed during onUpdate.
+                m_ElevateObjectDefinitionSystem.ElevationVariance = m_ElevationVariance.Value;
+                m_AnarchyPlopSystem.ElevationChangeIsNegative = m_ElevationValue - m_ElevationVariance.Value < 0f;
 
                 m_ObjectToolSystem.SetMemberValue("m_ForceUpdate", true);
             }
@@ -643,6 +669,29 @@ namespace Anarchy.Systems.Common
             }
 
             m_ElevationStep.Value = tempValue;
+        }
+
+        private void ElevationVarianceStepPressed()
+        {
+            float tempValue = m_ElevationVarianceStep.Value;
+            if (Mathf.Approximately(tempValue, 10f))
+            {
+                tempValue = 2.5f;
+            }
+            else if (Mathf.Approximately(tempValue, 2.5f))
+            {
+                tempValue = 1.0f;
+            }
+            else if (Mathf.Approximately(tempValue, 1.0f))
+            {
+                tempValue = 0.1f;
+            }
+            else
+            {
+                tempValue = 10f;
+            }
+
+            m_ElevationVarianceStep.Value = tempValue;
         }
 
         private void ChangeDisabledState(int index, int disabledState)
@@ -732,5 +781,85 @@ namespace Anarchy.Systems.Common
             return false;
         }
 
+        private void ShowElevationVariance()
+        {
+            m_ShowElevationVariance.Value = !m_ShowElevationVariance.Value;
+            if (m_ShowElevationVariance.Value)
+            {
+                m_ElevateObjectDefinitionSystem.ElevationVariance = m_ElevationVariance.Value;
+            }
+            else
+            {
+                m_ElevateObjectDefinitionSystem.ElevationVariance = 0f;
+            }
+
+            AnarchyMod.Instance.Settings.ShowElevationVariance = m_ShowElevationVariance.Value;
+            AnarchyMod.Instance.Settings.ApplyAndSave();
+        }
+
+        private void ProcessElevationKeyBinds()
+        {
+            if (m_ResetElevation.WasPerformedThisFrame())
+            {
+                ChangeElevation(m_ElevationValue.Value * -1f);
+            }
+
+            if (m_ElevationStepToggle.WasPerformedThisFrame())
+            {
+                ElevationStepPressed();
+            }
+
+            if (m_ElevationKey.WasPerformedThisFrame())
+            {
+                ChangeElevation(m_ElevationStep.Value * m_ElevationKey.ReadValue<float>());
+            }
+
+            if (m_ElevationMimicKeys.WasPerformedThisFrame())
+            {
+                ChangeElevation(m_ElevationStep.Value * m_ElevationMimicKeys.ReadValue<float>());
+            }
+
+            if (m_ElevationVariationKey.WasPerformedThisFrame())
+            {
+                ChangeElevationVariance(m_ElevationVarianceStep.Value * m_ElevationVariationKey.ReadValue<float>());
+            }
+
+            if (m_ElevationVariationStepKey.WasPerformedThisFrame())
+            {
+                ElevationVarianceStepPressed();
+            }
+
+            if (m_ResetElevationVariationKey.WasPerformedThisFrame())
+            {
+                ChangeElevationVariance(-m_ElevationVariance.Value);
+            }
+
+            if (m_ElevationKey.IsPressed() && m_KeybindHeldFrames > kKeybindHeldFrames)
+            {
+                ChangeElevation(m_ElevationStep.Value * m_ElevationKey.ReadValue<float>());
+                m_KeybindHeldFrames = 0;
+            }
+
+            if (m_ElevationMimicKeys.IsPressed() && m_KeybindHeldFrames > kKeybindHeldFrames)
+            {
+                ChangeElevation(m_ElevationStep.Value * m_ElevationMimicKeys.ReadValue<float>());
+                m_KeybindHeldFrames = 0;
+            }
+
+            if (m_ElevationVariationKey.IsPressed() && m_KeybindHeldFrames > kKeybindHeldFrames)
+            {
+                ChangeElevationVariance(m_ElevationVarianceStep.Value * m_ElevationVariationKey.ReadValue<float>());
+                m_KeybindHeldFrames = 0;
+            }
+
+            if (m_ElevationKey.IsPressed() || m_ElevationMimicKeys.IsPressed() || m_ElevationVariationKey.IsPressed())
+            {
+                m_KeybindHeldFrames++;
+            }
+            else
+            {
+                m_KeybindHeldFrames = 0;
+            }
+        }
     }
 }

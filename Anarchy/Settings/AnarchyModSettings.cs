@@ -16,7 +16,7 @@ namespace Anarchy.Settings
     /// <summary>
     /// The mod settings for the Anarchy Mod.
     /// </summary>
-    [FileLocation("Mods_Yenyang_Anarchy")]
+    [FileLocation("ModsSettings/yenyang/" + nameof(Anarchy))]
     [SettingsUITabOrder(General, UI)]
     [SettingsUIGroupOrder(Toggle, Elevation, Networks, Stable, Reset, About)]
     [SettingsUIMouseAction(AnarchyMod.SecondaryMimicAction, "AnarchySecondaryApplyMimic")]
@@ -25,6 +25,9 @@ namespace Anarchy.Settings
     [SettingsUIKeyboardAction(ResetElevationActionName, ActionType.Button, new string[] { Usages.kToolUsage })]
     [SettingsUIKeyboardAction(ElevationActionName, ActionType.Button, new string[] { "Anarchy" })]
     [SettingsUIKeyboardAction(ElevationMimicActionName, ActionType.Button, new string[] { "AnarchyMimic" })]
+    [SettingsUIKeyboardAction(ElevationVariationActionName, ActionType.Button, new string[] { Usages.kToolUsage })]
+    [SettingsUIKeyboardAction(ElevationVariationStepActionName, ActionType.Button, new string[] { Usages.kToolUsage })]
+    [SettingsUIKeyboardAction(ElevationVariationResetActionName, ActionType.Button, new string[] { Usages.kToolUsage })]
     public class AnarchyModSettings : ModSetting
     {
         /// <summary>
@@ -96,6 +99,21 @@ namespace Anarchy.Settings
         /// The action name for Elevation keybind.
         /// </summary>
         public const string ElevationActionName = "Elevation";
+
+        /// <summary>
+        /// The action name for Elevation Variance keybind.
+        /// </summary>
+        public const string ElevationVariationActionName = "ElevationVariation";
+
+        /// <summary>
+        /// The action name for Elevation Variance Step keybind.
+        /// </summary>
+        public const string ElevationVariationStepActionName = "ElevationVariationStep";
+
+        /// <summary>
+        /// The action name for Elevation Variance Reset keybind.
+        /// </summary>
+        public const string ElevationVariationResetActionName = "ElevationVariationReset";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AnarchyModSettings"/> class.
@@ -310,6 +328,40 @@ namespace Anarchy.Settings
         [SettingsUIKeyboardBinding(BindingKeyboard.PageDown, AxisComponent.Negative, actionName: ElevationActionName)]
         [SettingsUIDisableByCondition(typeof(AnarchyModSettings), nameof(UseElevationMimics))]
         public ProxyBinding DecreaseElevation { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the keybinding for Increase Elevation Variation.
+        /// </summary>
+        [SettingsUISection(Keybinds, Stable)]
+        [SettingsUIKeyboardBinding(BindingKeyboard.PageUp, AxisComponent.Positive, actionName: ElevationVariationActionName, shift: true)]
+        public ProxyBinding IncreaseElevationVariation { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the keybinding for Decrease Elevation Variation.
+        /// </summary>
+        [SettingsUISection(Keybinds, Stable)]
+        [SettingsUIKeyboardBinding(BindingKeyboard.PageDown, AxisComponent.Negative, actionName: ElevationVariationActionName, shift: true)]
+        public ProxyBinding DecreaseElevationVariation { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the keybinding for Decrease Elevation Variation.
+        /// </summary>
+        [SettingsUISection(Keybinds, Stable)]
+        [SettingsUIKeyboardBinding(BindingKeyboard.R, actionName: ElevationVariationResetActionName, shift: true, alt: true)]
+        public ProxyBinding ResetElevationVariation { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the keybinding for Decrease Elevation Variation.
+        /// </summary>
+        [SettingsUISection(Keybinds, Stable)]
+        [SettingsUIKeyboardBinding(BindingKeyboard.E, actionName: ElevationVariationStepActionName, shift: true, alt: true)]
+        public ProxyBinding ElevationVariationStep { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to show Elevation Variance or not.
+        /// </summary>
+        [SettingsUIHidden]
+        public bool ShowElevationVariance { get; set; }
 
         /// <summary>
         /// Sets a value indicating whether: a button for Resetting the settings for keybinds.

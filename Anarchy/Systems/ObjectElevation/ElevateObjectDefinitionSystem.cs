@@ -4,16 +4,21 @@
 
 namespace Anarchy.Systems.ObjectElevation
 {
+    using Anarchy.Extensions;
     using Anarchy.Systems.Common;
     using Colossal.Entities;
     using Colossal.Logging;
+    using Colossal.Mono.Cecil.Cil;
     using Game;
     using Game.Common;
     using Game.Objects;
     using Game.Prefabs;
+    using Game.Routes;
     using Game.Tools;
     using Unity.Collections;
     using Unity.Entities;
+    using Unity.Entities.UniversalDelegates;
+    using Unity.Mathematics;
     using UnityEngine;
 
     /// <summary>
@@ -27,8 +32,11 @@ namespace Anarchy.Systems.ObjectElevation
         private AnarchyUISystem m_AnarchyUISystem;
         private EntityQuery m_ObjectDefinitionQuery;
         private ILog m_Log;
-
+        private Unity.Mathematics.Random m_Random;
+        private int m_PreviousRandomSeed;
+        private uint m_PreviousObjectToolRandomSeed;
         private float m_ElevationDelta;
+        private float m_ElevationVariance;
 
         /// <summary>
         /// Sets the elevation delta.
@@ -36,6 +44,14 @@ namespace Anarchy.Systems.ObjectElevation
         public float ElevationDelta
         {
             set { m_ElevationDelta = value; }
+        }
+
+        /// <summary>
+        /// Sets the elevation variance.
+        /// </summary>
+        public float ElevationVariance
+        {
+            set { m_ElevationVariance = value; }
         }
 
         /// <inheritdoc/>
@@ -54,7 +70,7 @@ namespace Anarchy.Systems.ObjectElevation
                 .WithNone<Deleted, Overridden>()
                 .Build();
 
-
+            m_Random = new ();
             RequireForUpdate(m_ObjectDefinitionQuery);
         }
 
@@ -75,6 +91,64 @@ namespace Anarchy.Systems.ObjectElevation
             NativeArray<Entity> entities = m_ObjectDefinitionQuery.ToEntityArray(Allocator.Temp);
 
             EntityCommandBuffer buffer = new EntityCommandBuffer(Allocator.Temp);
+
+            // Determine if RandomSeeds are fixed.
+            bool seedsAreRadomized = false;
+            if (entities.Length > 1)
+            {
+                for (int i = 0; i < entities.Length; i++)
+                {
+                    if (!EntityManager.TryGetComponent(entities[i], out CreationDefinition currentCreationDefinition))
+                    {
+                        continue;
+                    }
+
+                    if (m_PreviousRandomSeed == 0)
+                    {
+                        m_PreviousRandomSeed = currentCreationDefinition.m_RandomSeed;
+                        continue;
+                    }
+
+                    if (m_PreviousRandomSeed != currentCreationDefinition.m_RandomSeed)
+                    {
+                        seedsAreRadomized = true;
+                        m_PreviousRandomSeed = currentCreationDefinition.m_RandomSeed;
+                        break;
+                    }
+                }
+            }
+            else if (entities.Length == 1 &&
+                     EntityManager.TryGetComponent(entities[0], out CreationDefinition currentCreationDefinition))
+            {
+                /*
+                if (!TryGetObjectToolSeed(out uint objectToolSeed))
+                {
+                    // If it's impossible to tell just assume randomized.
+                    seedsAreRadomized = true;
+                    m_PreviousRandomSeed = currentCreationDefinition.m_RandomSeed;
+                }
+                else
+                {
+                    // Seed should be random and is random.
+                    if (objectToolSeed != m_PreviousObjectToolRandomSeed &&
+                        m_PreviousRandomSeed != currentCreationDefinition.m_RandomSeed)
+                    {
+                        seedsAreRadomized = true;
+                        m_PreviousRandomSeed = currentCreationDefinition.m_RandomSeed;
+                        m_PreviousObjectToolRandomSeed = objectToolSeed;
+                    }
+
+                    // Object tool hasn't been randomized.
+                    else if (objectToolSeed == m_PreviousObjectToolRandomSeed)
+                    {
+                        seedsAreRadomized = true;
+                        m_PreviousRandomSeed = currentCreationDefinition.m_RandomSeed;
+                    }
+                }*/
+                seedsAreRadomized = true;
+                m_PreviousRandomSeed = currentCreationDefinition.m_RandomSeed;
+            }
+
             foreach (Entity entity in entities)
             {
                 if (!EntityManager.TryGetComponent(entity, out CreationDefinition currentCreationDefinition))
@@ -103,14 +177,38 @@ namespace Anarchy.Systems.ObjectElevation
 
                 if (prefabBase is not BuildingPrefab)
                 {
+                    float currentElevationDelta = m_ElevationDelta;
+                    if (m_ElevationVariance != 0f)
+                    {
+                        if (!seedsAreRadomized)
+                        {
+                            m_Random.InitState((uint)((math.abs(currentObjectDefinition.m_Position.x) % 1.2456f) * (math.abs(currentObjectDefinition.m_Position.y) % 3.456f) * (math.abs(currentObjectDefinition.m_Position.z) % 5.356f) * 100000));
+                            for (int i = 0; i < m_Random.NextInt(50); i++)
+                            {
+                                m_Random.NextInt();
+                            }
+
+                            for (int i = 0; i < m_Random.NextInt(50);  i++)
+                            {
+                                m_Random.NextFloat();
+                            }
+                        }
+                        else
+                        {
+                            m_Random.InitState((uint)currentCreationDefinition.m_RandomSeed);
+                        }
+
+                        currentElevationDelta += m_Random.NextFloat(-m_ElevationVariance, m_ElevationVariance);
+                    }
+
                     if (!EntityManager.HasComponent<StackData>(currentCreationDefinition.m_Prefab))
                     {
-                        currentObjectDefinition.m_Elevation = Mathf.Max(m_ElevationDelta, 0);
-                        currentObjectDefinition.m_Position.y += m_ElevationDelta;
+                        currentObjectDefinition.m_Elevation = Mathf.Max(currentElevationDelta, 0);
+                        currentObjectDefinition.m_Position.y += currentElevationDelta;
                     }
                     else
                     {
-                        currentObjectDefinition.m_Position.y += m_ElevationDelta;
+                        currentObjectDefinition.m_Position.y += currentElevationDelta;
                     }
 
                     buffer.SetComponent(entity, currentObjectDefinition);
@@ -121,8 +219,25 @@ namespace Anarchy.Systems.ObjectElevation
             buffer.Dispose();
 
             entities.Dispose();
-
         }
 
+        /*
+        private bool TryGetObjectToolSeed(out uint objectToolSeed)
+        {
+            object randomSeedObj = m_ObjectToolSystem.GetMemberValue("m_RandomSeed");
+            objectToolSeed = 0;
+            if (randomSeedObj is not null && randomSeedObj is RandomSeed)
+            {
+                RandomSeed randomSeed = (RandomSeed)randomSeedObj;
+                object seedObj = randomSeed.GetMemberValue("m_Seed");
+                if (seedObj is not null && seedObj is uint)
+                {
+                    objectToolSeed = (uint)seedObj;
+                    return true;
+                }
+            }
+
+            return false;
+        }*/
     }
 }
