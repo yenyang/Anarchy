@@ -14,7 +14,6 @@ namespace Anarchy.Systems.Common
     using Anarchy.Settings;
     using Anarchy.Systems.ClearanceViolation;
     using Anarchy.Systems.ErrorChecks;
-    using Anarchy.Systems.ObjectElevation;
     using Anarchy.Systems.OverridePrevention;
     using Colossal.Entities;
     using Colossal.Logging;
@@ -92,7 +91,7 @@ namespace Anarchy.Systems.Common
         private ValueBindingHelper<bool> m_DisableElevationLock;
         private ValueBindingHelper<bool> m_MultipleUniques;
         private ValueBindingHelper<bool> m_ShowElevationVariance;
-        private ElevateObjectDefinitionSystem m_ElevateObjectDefinitionSystem;
+        private ObjectDefinitionSystem m_ElevateObjectDefinitionSystem;
         private ValueBindingHelper<bool> m_LockElevation;
         private PrefabSystem m_PrefabSystem;
         private ObjectToolSystem m_ObjectToolSystem;
@@ -239,7 +238,7 @@ namespace Anarchy.Systems.Common
             m_BulldozeToolSystem = World.GetOrCreateSystemManaged<BulldozeToolSystem>();
             m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_ResetNetCompositionDataSystem = World.GetOrCreateSystemManaged<ResetNetCompositionDataSystem>();
-            m_ElevateObjectDefinitionSystem = World.GetOrCreateSystemManaged<ElevateObjectDefinitionSystem>();
+            m_ElevateObjectDefinitionSystem = World.GetOrCreateSystemManaged<ObjectDefinitionSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_AnarchyPlopSystem = World.GetOrCreateSystemManaged<AnarchyPlopSystem>();

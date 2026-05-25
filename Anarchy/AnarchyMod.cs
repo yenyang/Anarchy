@@ -143,7 +143,7 @@ namespace Anarchy
             updateSystem.UpdateAt<HandleUpdateNextFrameSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateAt<HandleClearUpdateNextFrameSystem>(SystemUpdatePhase.ModificationEnd);
             SelectedInfoPanelTogglesSystem selectedInfoPanelTogglesSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<SelectedInfoPanelTogglesSystem>();
-            updateSystem.UpdateBefore<ElevateObjectDefinitionSystem>(SystemUpdatePhase.Modification1);
+            updateSystem.UpdateBefore<ObjectDefinitionSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateBefore<NetworkDefinitionSystem>(SystemUpdatePhase.Modification1);
             updateSystem.UpdateAt<SetRetainingWallSegmentElevationSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateBefore<TempNetworkSystem, CompositionSelectSystem>(SystemUpdatePhase.Modification3);

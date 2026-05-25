@@ -1,11 +1,11 @@
-﻿// <copyright file="ElevateObjectDefinitionSystem.cs" company="Yenyang's Mods. MIT License">
+﻿// <copyright file="ObjectDefinitionSystem.cs" company="Yenyang's Mods. MIT License">
 // Copyright (c) Yenyang's Mods. MIT License. All rights reserved.
 // </copyright>
 
-namespace Anarchy.Systems.ObjectElevation
+namespace Anarchy.Systems.Common
 {
+    using Anarchy;
     using Anarchy.Extensions;
-    using Anarchy.Systems.Common;
     using Colossal.Entities;
     using Colossal.Logging;
     using Colossal.Mono.Cecil.Cil;
@@ -24,17 +24,15 @@ namespace Anarchy.Systems.ObjectElevation
     /// <summary>
     /// Overrides vertical position of creation definition.
     /// </summary>
-    public partial class ElevateObjectDefinitionSystem : GameSystemBase
+    public partial class ObjectDefinitionSystem : GameSystemBase
     {
         private ToolSystem m_ToolSystem;
         private ObjectToolSystem m_ObjectToolSystem;
         private PrefabSystem m_PrefabSystem;
-        private AnarchyUISystem m_AnarchyUISystem;
         private EntityQuery m_ObjectDefinitionQuery;
         private ILog m_Log;
         private Unity.Mathematics.Random m_Random;
         private int m_PreviousRandomSeed;
-        private uint m_PreviousObjectToolRandomSeed;
         private float m_ElevationDelta;
         private float m_ElevationVariance;
         private ToolRaycastSystem m_ToolRaycastSystem;
@@ -63,9 +61,8 @@ namespace Anarchy.Systems.ObjectElevation
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
-            m_AnarchyUISystem = World.GetOrCreateSystemManaged<AnarchyUISystem>();
             m_ToolRaycastSystem = World.GetOrCreateSystemManaged<ToolRaycastSystem>();
-            m_Log.Info($"[{nameof(ElevateObjectDefinitionSystem)}] {nameof(OnCreate)}");
+            m_Log.Info($"[{nameof(ObjectDefinitionSystem)}] {nameof(OnCreate)}");
             m_ObjectDefinitionQuery = SystemAPI.QueryBuilder()
                 .WithAllRW<Game.Tools.ObjectDefinition>()
                 .WithAll<CreationDefinition, Updated>()
