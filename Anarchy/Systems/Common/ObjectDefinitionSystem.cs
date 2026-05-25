@@ -15,6 +15,7 @@ namespace Anarchy.Systems.Common
     using Game.Prefabs;
     using Game.Routes;
     using Game.Tools;
+    using System;
     using Unity.Collections;
     using Unity.Entities;
     using Unity.Entities.UniversalDelegates;
@@ -36,6 +37,7 @@ namespace Anarchy.Systems.Common
         private float m_ElevationDelta;
         private float m_ElevationVariance;
         private ToolRaycastSystem m_ToolRaycastSystem;
+        private SelectMultiplePrefabsUISystem m_SelectMultiplePrefabsUISystem;
 
         /// <summary>
         /// Sets the elevation delta.
@@ -62,6 +64,7 @@ namespace Anarchy.Systems.Common
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_ToolRaycastSystem = World.GetOrCreateSystemManaged<ToolRaycastSystem>();
+            m_SelectMultiplePrefabsUISystem = World.GetOrCreateSystemManaged<SelectMultiplePrefabsUISystem>();
             m_Log.Info($"[{nameof(ObjectDefinitionSystem)}] {nameof(OnCreate)}");
             m_ObjectDefinitionQuery = SystemAPI.QueryBuilder()
                 .WithAllRW<Game.Tools.ObjectDefinition>()
@@ -88,6 +91,25 @@ namespace Anarchy.Systems.Common
             }
 
             NativeArray<Entity> entities = m_ObjectDefinitionQuery.ToEntityArray(Allocator.Temp);
+
+            if (m_SelectMultiplePrefabsUISystem.MultiplePrefabsSelected)
+            {
+                for (int i = 0; i < entities.Length; i++)
+                {
+                    if (!EntityManager.TryGetComponent(entities[i], out CreationDefinition currentCreationDefinition))
+                    {
+                        continue;
+                    }
+
+                    m_Random.InitState((uint)currentCreationDefinition.m_RandomSeed);
+                    Entity prefabEntity = m_SelectMultiplePrefabsUISystem.GetNextPrefabEntity(ref m_Random);
+                    if (prefabEntity != Entity.Null)
+                    {
+                        currentCreationDefinition.m_Prefab = prefabEntity;
+                        EntityManager.SetComponentData(entities[i], currentCreationDefinition);
+                    }
+                }
+            }
 
             if (AnarchyMod.Instance.Settings.ShowElevationToolOption)
             {

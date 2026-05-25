@@ -151,6 +151,7 @@ namespace Anarchy
             updateSystem.UpdateAt<AnarchyComponentsToolSystem>(SystemUpdatePhase.ToolUpdate);
             updateSystem.UpdateAt<AnarchyComponentsToolUISystem>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateAt<CopyAnarchyComponentsSystem>(SystemUpdatePhase.Modification2);
+            updateSystem.UpdateAt<SelectMultiplePrefabsUISystem>(SystemUpdatePhase.UIUpdate);
 
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Completed.");
         }
