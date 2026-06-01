@@ -9,16 +9,13 @@
 		
 		<!--The file where mod information which is required for publishing mod on PDX mods are stored-->
 		<PublishConfigurationPath>Properties\$(Configuration)\PublishConfiguration.xml</PublishConfigurationPath>
-		<AssemblyVersion>1.7.24</AssemblyVersion>
+		<AssemblyVersion>1.7.24.1</AssemblyVersion>
 		<FileVersion>$(AssemblyVersion)</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
 	</PropertyGroup>
 	<!--Imports must be after PropertyGroup block-->
 	<Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props" />
 	<Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.targets" />
-	<PropertyGroup>
-		<TargetFramework>net472</TargetFramework>
-	</PropertyGroup>
 	<ItemGroup>
 	  <None Remove="StyleCop\stylecop.json" />
 	</ItemGroup>

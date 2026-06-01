@@ -1,6 +1,6 @@
 <Publish>
   <!--Id must be set in order to update existed mod. it is not required for publishing mod for the first time-->
-  <ModId Value="126009" />
+  <ModId Value="" />
   <!--Name of the mod to display to players-->
   <DisplayName Value="Anarchy [Temporary Beta]" />
   <!--Short description of the mod-->
@@ -35,7 +35,7 @@ The mod also has:
 * Opt-In Option to allow multiple copies of unique buildings using toolbar menu. Effects of multiple buildings stack!
 * Option to set minimum clearance below elevated networks even while Anarchy is active in case you don't remove the zoning under a low bridge. It would be better just to remove the zoning.
 * Opt-In Option to automatically disable Anarchy toggle while brushing objects such as trees.
-* Set relative Elevation with Object tool and line tool for props, trees, and plants. (Options to disable and automatically reset elevation) Keybinds are Configurable. alt + r -&gt; reset elevation to 0, alt + e -&gt; change elevation step. Increase and decrease elevation by default matches vanilla keybind but doesn't work with some snapping options from EDT.
+* Set relative Elevation and Elevation Variation with Object tool and line tool for props, trees, and plants. (Options to disable and automatically reset elevation) Keybinds are Configurable. alt + r -&gt; reset elevation to 0, alt + e -&gt; change elevation step. Increase and decrease elevation by default matches vanilla keybind but doesn't work with some snapping options from EDT.
 * Transform Lock to prevent game systems from changing position of props, trees, plants, and decals. You can still change position with mods.
 * Anarchy and Transform Lock can be added or removed after placement via the selected info panel.
 * In Game panel for controlling which error checks are never disabled, disabled with Anarchy, or always disabled.
@@ -44,7 +44,9 @@ The mod also has:
 * Optional Elevation Step slider.
 * Anarchy Components tool for quickly adding or removing Anarchy and Transform Lock components from applicable objects. Radius selection is recommended for Anarchy component since you can see and interact with overriden (invisible) objects and bring them back to normal.
 * Optional Network upgrades assets: Originally part of Extended Road Upgrades and included here with permission from ST-Apps. This option adds Retaining Wall, Quay, Elevated, and Tunnel assets to vanilla menu for asset selection. This mod includes multiple fixes to issues from ERU.
- 
+* Option to Contrain Brush that limits objects placed with the circular brush to within the limits.
+* Multiple Prefab Selection (hold Ctrl) for objects within the same vanilla UI Tab except for trees (use Tree Controller), plants (use Tree Controller), placeholders, and any building with subnetworks or subareas. Works the same as Tree Controller so don't expect perfection. 
+
 Currently it applies to these tools:
 * Object Tool (Option to automatically disable Anarchy toggle while brushing objects. and Set relative elevation while plopping single item, brushing, line and curve mode.)
 * Net Tool (While using the net tool Anarchy will now let you violate the clearance of other networks. I don't recommend having zoning under low bridges.)
@@ -77,14 +79,14 @@ Pro tip: Use the brush mode to remove trees and standalone props. If you unselec
 This mod does NOT allow you to do everything including:
 * If the vanilla net tool would remove an existing network, it will still do that.
 * Even if the mod disables the error check, the UI may still prevent you from doing something.
-* Not much testing is done on the effects of this mod on maps created using the unfinished editor.
+* Not much testing is done on the effects of this mod on maps created using the editor.
 * Retaining walls and tunnels even in Vanilla can have clipping issues that let you see through the terrain.
 * If the net tool locks up and you cannot create any networks, change to the zoning tool and zone something. Hopefully this bug is uncommon and that I can fix it at some point.
 
 **Please save frequently, in multiple files, and learn to use responsibly.**
 
 ## Support
-I will respond on the code modding channels on **Cities: Skylines Modding Discord**
+Please contact me on **Cities: Skylines Modding Discord**.
 
 ## Credits 
 * yenyang - Mod Author
@@ -112,15 +114,14 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="" />
   <!--Version of the mod-->
-  <ModVersion Value="1.7.24" />
+  <ModVersion Value="1.7.24.1" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.5.*" />
   <!--Dependency for the mod, can be set multiple-->
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.13" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog>## Patch V1.7.22.3
-*   Added integration with Move It Alpha for copying Anarchy components.
-*	Fix preview for Force Ground without Constant Slope</ChangeLog>
+  <ChangeLog>
+  </ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />

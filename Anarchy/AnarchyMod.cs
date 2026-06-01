@@ -5,6 +5,7 @@
 // #define VERBOSE
 
 // #define DUMP_VANILLA_LOCALIZATION
+// #define EXPORT_EN_US
 namespace Anarchy
 {
     using System;
@@ -21,7 +22,6 @@ namespace Anarchy
     using Anarchy.Systems.NetworkAnarchy;
     using Anarchy.Systems.ObjectElevation;
     using Anarchy.Systems.OverridePrevention;
-    using Colossal;
     using Colossal.IO.AssetDatabase;
     using Colossal.Localization;
     using Colossal.Logging;
@@ -30,9 +30,13 @@ namespace Anarchy
     using Game.Net;
     using Game.SceneFlow;
     using HarmonyLib;
-    using Newtonsoft.Json;
     using Unity.Entities;
-    using UnityEngine;
+
+#if DEBUG && EXPORT_EN_US
+    using Newtonsoft.Json;
+    using Colossal;
+    using System.Runtime.CompilerServices;
+#endif
 
     /// <summary>
     /// Mod entry point.
@@ -59,6 +63,13 @@ namespace Anarchy
             get;
             private set;
         }
+
+#if DEBUG && EXPORT_EN_US
+        private static string GetThisFilePath([CallerFilePath] string path = null)
+        {
+            return path;
+        }
+#endif
 
         /// <summary>
         /// Gets or sets the mods settings.
@@ -95,18 +106,8 @@ namespace Anarchy
             GameManager.instance.localizationManager.AddSource("en-US", new LocaleEN(Settings));
             Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Loading other languages");
             LoadNonEnglishLocalizations();
-#if DEBUG
-            Log.Info($"{nameof(AnarchyMod)}.{nameof(OnLoad)} Exporting localization");
-            var localeDict = new LocaleEN(Settings).ReadEntries(new List<IDictionaryEntryError>(), new Dictionary<string, int>()).ToDictionary(pair => pair.Key, pair => pair.Value);
-            var str = JsonConvert.SerializeObject(localeDict, Formatting.Indented);
-            try
-            {
-                File.WriteAllText("C:\\Users\\TJ\\source\\repos\\Anarchy\\Anarchy\\UI\\src\\lang\\en-US.json", str);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex.ToString());
-            }
+#if DEBUG && EXPORT_EN_US
+            GenerateLanguageFile();
 #endif
 #if DUMP_VANILLA_LOCALIZATION
             var strings = GameManager.instance.localizationManager.activeDictionary.entries
@@ -213,5 +214,26 @@ namespace Anarchy
                 Log.Error(e, "Exception reading embedded settings localization files");
             }
         }
+
+#if DEBUG && EXPORT_EN_US
+        private void GenerateLanguageFile()
+        {
+            Log.Info($"[{Id}] Exporting localization");
+            var localeDict = new LocaleEN(Settings).ReadEntries(new List<IDictionaryEntryError>(), new Dictionary<string, int>()).ToDictionary(pair => pair.Key, pair => pair.Value);
+            var str = JsonConvert.SerializeObject(localeDict, Formatting.Indented);
+            try
+            {
+                var path = GetThisFilePath();
+                var directory = Path.GetDirectoryName(path);
+
+                var exportPath = $@"{directory}\UI\src\lang\en-US.json";
+                File.WriteAllText(exportPath, str);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.ToString());
+            }
+        }
+#endif
     }
 }
