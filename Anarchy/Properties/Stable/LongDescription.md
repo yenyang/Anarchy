@@ -27,7 +27,7 @@ The mod also has:
 * Opt-In Option to allow multiple copies of unique buildings using toolbar menu. Effects of multiple buildings stack!
 * Option to set minimum clearance below elevated networks even while Anarchy is active in case you don't remove the zoning under a low bridge. It would be better just to remove the zoning.
 * Opt-In Option to automatically disable Anarchy toggle while brushing objects such as trees.
-* Set relative Elevation with Object tool and line tool for props, trees, and plants. (Options to disable and automatically reset elevation) Keybinds are Configurable. alt + r -> reset elevation to 0, alt + e -> change elevation step. Increase and decrease elevation by default matches vanilla keybind but doesn't work with some snapping options from EDT.
+* Set relative Elevation and Elevation Variation with Object tool and line tool for props, trees, and plants. (Options to disable and automatically reset elevation) Keybinds are Configurable. alt + r -> reset elevation to 0, alt + e -> change elevation step. Increase and decrease elevation by default matches vanilla keybind but doesn't work with some snapping options from EDT.
 * Transform Lock to prevent game systems from changing position of props, trees, plants, and decals. You can still change position with mods.
 * Anarchy and Transform Lock can be added or removed after placement via the selected info panel.
 * In Game panel for controlling which error checks are never disabled, disabled with Anarchy, or always disabled.
@@ -36,7 +36,9 @@ The mod also has:
 * Optional Elevation Step slider.
 * Anarchy Components tool for quickly adding or removing Anarchy and Transform Lock components from applicable objects. Radius selection is recommended for Anarchy component since you can see and interact with overriden (invisible) objects and bring them back to normal.
 * Optional Network upgrades assets: Originally part of Extended Road Upgrades and included here with permission from ST-Apps. This option adds Retaining Wall, Quay, Elevated, and Tunnel assets to vanilla menu for asset selection. This mod includes multiple fixes to issues from ERU.
- 
+* Option to Contrain Brush that limits objects placed with the circular brush to within the limits.
+* Multiple Prefab Selection (hold Ctrl) for objects within the same vanilla UI Tab except for trees (use Tree Controller), plants (use Tree Controller), placeholders, and any building with subnetworks or subareas. Works the same as Tree Controller so don't expect perfection. 
+
 Currently it applies to these tools:
 * Object Tool (Option to automatically disable Anarchy toggle while brushing objects. and Set relative elevation while plopping single item, brushing, line and curve mode.)
 * Net Tool (While using the net tool Anarchy will now let you violate the clearance of other networks. I don't recommend having zoning under low bridges.)

@@ -214,7 +214,7 @@ namespace Anarchy
                 Log.Error(e, "Exception reading embedded settings localization files");
             }
         }
-
+        
 #if DEBUG && EXPORT_EN_US
         private void GenerateLanguageFile()
         {
