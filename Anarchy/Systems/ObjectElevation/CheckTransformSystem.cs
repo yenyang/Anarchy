@@ -43,7 +43,6 @@ namespace Anarchy.Systems.ObjectElevation
         private PropertyInfo m_MoveItSelectedEntitiesPropertyInfo;
         private PropertyInfo m_TransformGizmoToolSelectedEntityPropertyInfo;
         private HashSet<Entity> m_MoveItSelectedEntitiesHashSet = new HashSet<Entity>();
-        private EntityQuery m_AppliedTransformRecordQuery;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CheckTransformSystem"/> class.
@@ -102,11 +101,6 @@ namespace Anarchy.Systems.ObjectElevation
                     ComponentType.ReadOnly<Deleted>(),
                 },
             });
-
-            m_AppliedTransformRecordQuery = SystemAPI.QueryBuilder()
-                .WithAll<Game.Common.Applied, Game.Common.Updated, TransformRecord, Game.Objects.Transform>()
-                .WithNone<Game.Common.Created>()
-                .Build();
 
             RequireForUpdate(m_TransformRecordQuery);
             base.OnCreate();
@@ -218,50 +212,7 @@ namespace Anarchy.Systems.ObjectElevation
                     transformRecord.m_Rotation = localTransform.m_Rotation;
                 }
 
-                EntityCommandBuffer buffer = m_ModificationBarrier1.CreateCommandBuffer();
-
-                buffer.SetComponent(m_ToolSystem.selected, transformRecord);
-            }
-            else if (!m_AppliedTransformRecordQuery.IsEmptyIgnoreFilter)
-            {
-                EntityCommandBuffer buffer = m_ModificationBarrier1.CreateCommandBuffer();
-
-                NativeArray<Entity> entities = m_AppliedTransformRecordQuery.ToEntityArray(Allocator.Temp);
-                for (int i = 0; i < entities.Length; i++)
-                {
-                    if (!EntityManager.TryGetComponent(entities[i], out TransformRecord transformRecord1) ||
-                        !EntityManager.TryGetComponent(entities[i], out Game.Objects.Transform originalTransform1) ||
-                        entities[i] == Entity.Null)
-                    {
-                        continue;
-                    }
-
-                    m_Log.Debug($"{nameof(CheckTransformSystem)}.{nameof(OnUpdate)} yeilding transform record for Entity {entities[i].Index}:{entities[i].Version}.");
-
-                    if (!EntityManager.TryGetComponent(entities[i], out Game.Common.Owner owner) ||
-                       (!EntityManager.HasComponent<Game.Objects.Transform>(owner.m_Owner) &&
-                        !EntityManager.HasComponent<Game.Net.Node>(owner.m_Owner)))
-                    {
-                        transformRecord1.m_Position = originalTransform1.m_Position;
-                        transformRecord1.m_Rotation = originalTransform1.m_Rotation;
-                    }
-                    else if (EntityManager.TryGetComponent(owner.m_Owner, out Game.Objects.Transform ownerTransform))
-                    {
-                        Game.Objects.Transform inverseParentTransform = ObjectUtils.InverseTransform(ownerTransform);
-                        Game.Objects.Transform localTransform = ObjectUtils.WorldToLocal(inverseParentTransform, originalTransform1);
-                        transformRecord1.m_Position = localTransform.m_Position;
-                        transformRecord1.m_Rotation = localTransform.m_Rotation;
-                    }
-                    else if (EntityManager.TryGetComponent(owner.m_Owner, out Game.Net.Node node))
-                    {
-                        Game.Objects.Transform inverseParentTransform = ObjectUtils.InverseTransform(new Game.Objects.Transform(node.m_Position, node.m_Rotation));
-                        Game.Objects.Transform localTransform = ObjectUtils.WorldToLocal(inverseParentTransform, originalTransform1);
-                        transformRecord1.m_Position = localTransform.m_Position;
-                        transformRecord1.m_Rotation = localTransform.m_Rotation;
-                    }
-
-                    buffer.SetComponent(entities[i], transformRecord1);
-                }
+                EntityManager.SetComponentData(m_ToolSystem.selected, transformRecord);
             }
             else if (m_TransformGizmoTool is not null &&
                      m_TransformGizmoToolSelectedEntityPropertyInfo is not null &&
@@ -276,7 +227,7 @@ namespace Anarchy.Systems.ObjectElevation
                 }
 
                 m_Log.Debug($"{nameof(CheckTransformSystem)}.{nameof(OnUpdate)} yeilding transform record for Transform Gizmo Tool Selected Entity {entity.Index}:{entity.Version}.");
-                if (!EntityManager.TryGetComponent(m_ToolSystem.selected, out Game.Common.Owner owner) ||
+                if (!EntityManager.TryGetComponent(entity, out Game.Common.Owner owner) ||
                    (!EntityManager.HasComponent<Game.Objects.Transform>(owner.m_Owner) &&
                      !EntityManager.HasComponent<Game.Net.Node>(owner.m_Owner)))
                 {
@@ -298,9 +249,7 @@ namespace Anarchy.Systems.ObjectElevation
                     transformRecord2.m_Rotation = localTransform.m_Rotation;
                 }
 
-                EntityCommandBuffer buffer = m_ModificationBarrier1.CreateCommandBuffer();
-
-                buffer.SetComponent(m_ToolSystem.selected, transformRecord2);
+                EntityManager.SetComponentData(entity, transformRecord2);
             }
         }
 
