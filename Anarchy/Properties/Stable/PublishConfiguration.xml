@@ -114,7 +114,7 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/anarchy.1644970/" />
   <!--Version of the mod-->
-  <ModVersion Value="1.7.24.2" />
+  <ModVersion Value="1.8.0" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.5.*" />
   <!--Dependency for the mod, can be set multiple-->
@@ -126,7 +126,8 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * Multiple Prefab Selection (hold Ctrl) for objects within the same vanilla UI Tab except for trees (use Tree Controller), plants (use Tree Controller), placeholders, and any building with subnetworks or subareas. Works the same as Tree Controller so don't expect perfection. 
 * Updated Localization
 * Fixed EntityCommandBuffer cannot be created error while using Expanded Elevaition Range option and Find It Picker.
-* Implemented multiple compatibility solutions for EDT's TransformGizmoTool and Anarchy's Transform Lock.</ChangeLog>
+* Implemented multiple compatibility solutions for EDT's TransformGizmoTool and Anarchy's Transform Lock.
+* Added keybind for Dev UI's Debug Toggle.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=dJiCmFIxPK0" />
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
