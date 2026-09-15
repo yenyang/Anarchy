@@ -28,6 +28,7 @@ namespace Anarchy.Settings
     [SettingsUIKeyboardAction(ElevationVariationActionName, ActionType.Button, new string[] { Usages.kToolUsage })]
     [SettingsUIKeyboardAction(ElevationVariationStepActionName, ActionType.Button, new string[] { Usages.kToolUsage })]
     [SettingsUIKeyboardAction(ElevationVariationResetActionName, ActionType.Button, new string[] { Usages.kToolUsage })]
+    [SettingsUIKeyboardAction(DebugToggleActionName, ActionType.Button, new string[] { "Anarchy" })]
     public class AnarchyModSettings : ModSetting
     {
         /// <summary>
@@ -114,6 +115,11 @@ namespace Anarchy.Settings
         /// The action name for Elevation Variance Reset keybind.
         /// </summary>
         public const string ElevationVariationResetActionName = "ElevationVariationReset";
+
+        /// <summary>
+        /// The action name for Debug Toggle keybind.
+        /// </summary>
+        public const string DebugToggleActionName = "DebugToggle";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AnarchyModSettings"/> class.
@@ -362,6 +368,13 @@ namespace Anarchy.Settings
         [SettingsUISection(Keybinds, Stable)]
         [SettingsUIKeyboardBinding(BindingKeyboard.E, actionName: ElevationVariationStepActionName, shift: true, alt: true)]
         public ProxyBinding ElevationVariationStep { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the keybinding for Debug Toggle.
+        /// </summary>
+        [SettingsUISection(Keybinds, Stable)]
+        [SettingsUIKeyboardBinding(BindingKeyboard.D, actionName: DebugToggleActionName, alt: true)]
+        public ProxyBinding DebugToggle { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show Elevation Variance or not.

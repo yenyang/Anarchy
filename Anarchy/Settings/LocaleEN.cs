@@ -202,6 +202,9 @@ namespace Anarchy.Settings
                 { m_Setting.GetBindingKeyLocaleID(AnarchyModSettings.ElevationVariationStepActionName), "Elevation Variance Step Keybind" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.ConstrainBrush)), "Constrain Brush" },
                 { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.ConstrainBrush)), "Prevents objects applied with the circular brush from exceeding the visual limits of the brush. You may not always have a visual indicator of where the next one will be if the game wants to place the next one outside the limits." },
+                { m_Setting.GetBindingKeyLocaleID(AnarchyModSettings.DebugToggleActionName), "Debug Toggle Keybind" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(AnarchyModSettings.DebugToggle)), "Debug Toggle" },
+                { m_Setting.GetOptionDescLocaleID(nameof(AnarchyModSettings.DebugToggle)), "Toggles the \"Debug Toggle\" effect from Developer UI Tab Menu that allows you to select subelements, networks, etc." },
             };
         }
 

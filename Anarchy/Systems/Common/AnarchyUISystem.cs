@@ -106,6 +106,7 @@ namespace Anarchy.Systems.Common
         private ProxyAction m_ElevationVariationKey;
         private ProxyAction m_ElevationVariationStepKey;
         private ProxyAction m_ResetElevationVariationKey;
+        private ProxyAction m_DebugToggleKey;
         private ValueBindingHelper<ErrorCheck[]> m_ErrorChecksBinding;
         private bool m_UpdateErrorChecks;
         private ValueBindingHelper<bool> m_ShowAnarchyToggleOptionsPanel;
@@ -113,6 +114,7 @@ namespace Anarchy.Systems.Common
         private bool m_FoundPlater;
         private ComponentType m_PlatterComponent;
         private int m_KeybindHeldFrames = 0;
+        private DefaultToolSystem m_DefaultToolSystem;
 
         /// <summary>
         /// A list of tools ids that Anarchy is applicable to.
@@ -242,6 +244,7 @@ namespace Anarchy.Systems.Common
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_AnarchyPlopSystem = World.GetOrCreateSystemManaged<AnarchyPlopSystem>();
+            m_DefaultToolSystem = World.GetOrCreateSystemManaged<DefaultToolSystem>();
             m_EnableToolErrorsSystem = World.GetOrCreateSystemManaged<EnableToolErrorsSystem>();
             m_ToolSystem.EventToolChanged += OnToolChanged;
             m_ToolSystem.EventPrefabChanged += OnPrefabChanged;
@@ -303,6 +306,7 @@ namespace Anarchy.Systems.Common
             m_ElevationVariationKey = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ElevationVariationActionName);
             m_ElevationVariationStepKey = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ElevationVariationStepActionName);
             m_ResetElevationVariationKey = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ElevationVariationResetActionName);
+            m_DebugToggleKey = AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.DebugToggleActionName);
         }
 
         /// <inheritdoc/>
@@ -360,6 +364,7 @@ namespace Anarchy.Systems.Common
             }
 
             m_ToggleAnarchy.shouldBeEnabled = mode.IsGameOrEditor();
+            m_DebugToggleKey.shouldBeEnabled = mode.IsGameOrEditor();
 
             if (mode.IsEditor() && !AnarchyMod.Instance.Settings.PreventOverrideInEditor)
             {
@@ -398,6 +403,11 @@ namespace Anarchy.Systems.Common
             if (m_ToggleAnarchy.WasPerformedThisFrame())
             {
                 AnarchyToggled();
+            }
+
+            if (m_DebugToggleKey.WasPerformedThisFrame())
+            {
+                m_DefaultToolSystem.debugSelect = !m_DefaultToolSystem.debugSelect;
             }
 
             if (m_ToolSystem.activeTool.toolID != null &&

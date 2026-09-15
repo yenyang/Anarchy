@@ -5,3 +5,4 @@
 * Updated Localization
 * Fixed EntityCommandBuffer cannot be created error while using Expanded Elevaition Range option and Find It Picker.
 * Implemented multiple compatibility solutions for EDT's TransformGizmoTool and Anarchy's Transform Lock.
+* Added keybind for Dev UI's Debug Toggle.

@@ -173,5 +173,8 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationVariationStep]": "A keybind to change the rate in which Elevation Variance changes.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod/ElevationVariationStep/binding]": "Elevation Variance Step Keybind",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ConstrainBrush]": "Constrain Brush",
-  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ConstrainBrush]": "Prevents objects applied with the circular brush from exceeding the visual limits of the brush. You may not always have a visual indicator of where the next one will be if the game wants to place the next one outside the limits."
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ConstrainBrush]": "Prevents objects applied with the circular brush from exceeding the visual limits of the brush. You may not always have a visual indicator of where the next one will be if the game wants to place the next one outside the limits.",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod/DebugToggle/binding]": "Debug Toggle Keybind",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.DebugToggle]": "Debug Toggle",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.DebugToggle]": "Toggles the \"Debug Toggle\" effect from Developer UI Tab Menu that allows you to select subelements, networks, etc."
 }

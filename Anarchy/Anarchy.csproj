@@ -45,7 +45,7 @@
 	
 	<ItemGroup>
 		<Reference Include="cohtml.Net">
-		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\cohtml.Net.dll</HintPath>
+		  <HintPath>$(ManagedPath)\cohtml.Net.dll</HintPath>
 		  <Private>False</Private>
 		</Reference>
 		<Reference Include="Colossal.AssetPipeline">

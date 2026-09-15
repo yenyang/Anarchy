@@ -292,5 +292,15 @@ namespace Anarchy.Bridge
         {
             return ComponentType.ReadWrite<TransformRecord>();
         }
+
+        /// <summary>
+        /// Gets the value of the Anarchy Toggle.
+        /// </summary>
+        /// <returns>True if Anarchy is enabled. False if it is not.</returns>
+        public static bool GetAnarchyToggleState()
+        {
+            AnarchyUISystem uiSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<AnarchyUISystem>();
+            return uiSystem.AnarchyEnabled;
+        }
     }
 }

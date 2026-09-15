@@ -173,5 +173,8 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationVariationStep]": "Skrót klawiszowy do zmiany stopnia zmiany wartości zróżnicowania wysokości.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod/ElevationVariationStep/binding]": "Zmień stopień zmiany zróżnicowania wysokości",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ConstrainBrush]": "Ścisły pędzel",
-  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ConstrainBrush]": "Zapobiega umieszczaniu obiektów poza wizualnymi granicami okrągłego pędzla. W niektórych przypadkach możesz nie widzieć wskaźnika miejsca, w którym zostanie umieszczony kolejny obiekt, jeśli gra próbuje umieścić go poza granicami pędzla."
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ConstrainBrush]": "Zapobiega umieszczaniu obiektów poza wizualnymi granicami okrągłego pędzla. W niektórych przypadkach możesz nie widzieć wskaźnika miejsca, w którym zostanie umieszczony kolejny obiekt, jeśli gra próbuje umieścić go poza granicami pędzla.",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod/DebugToggle/binding]": "Wybór Debug",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.DebugToggle]": "Wybór Debug",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.DebugToggle]": "Przełącza możliwość wybierania <dodatków>, <sieci> itp. (tzw. Debug Toggle z menu Developer UI)."
 }

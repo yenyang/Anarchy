@@ -173,5 +173,8 @@
   "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ElevationVariationStep]": "Raccourci permettant de modifier la vitesse à laquelle la variation d’altitude change.",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod/ElevationVariationStep/binding]": "Raccourci du pas de variation d’altitude",
   "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ConstrainBrush]": "Contraindre le pinceau",
-  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ConstrainBrush]": "Empêche les objets appliqués avec le pinceau circulaire de dépasser les limites visuelles du pinceau. Il se peut que vous n’ayez pas toujours d’indicateur visuel de l’emplacement du prochain objet si le jeu veut le placer en dehors des limites."
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.ConstrainBrush]": "Empêche les objets appliqués avec le pinceau circulaire de dépasser les limites visuelles du pinceau. Il se peut que vous n’ayez pas toujours d’indicateur visuel de l’emplacement du prochain objet si le jeu veut le placer en dehors des limites.",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod/DebugToggle/binding]": "Raccourci d’activation/désactivation du débogage",
+  "Options.OPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.DebugToggle]": "Activation/désactivation du débogage",
+  "Options.OPTION_DESCRIPTION[Anarchy.Anarchy.AnarchyMod.AnarchyModSettings.DebugToggle]": "Active ou désactive l’effet « Debug Toggle » du menu à onglets de l’interface développeur, qui permet de sélectionner des sous-éléments, des networks, etc."
 }
