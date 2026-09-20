@@ -5,9 +5,6 @@
 #define BURST
 namespace Anarchy.Systems.ObjectElevation
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
     using Anarchy;
     using Anarchy.Components;
     using Colossal.Entities;
@@ -17,13 +14,15 @@ namespace Anarchy.Systems.ObjectElevation
     using Game.Common;
     using Game.Objects;
     using Game.Tools;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
     using Unity.Burst;
     using Unity.Burst.Intrinsics;
     using Unity.Collections;
     using Unity.Entities;
+    using Unity.Entities.UniversalDelegates;
     using Unity.Jobs;
-    using UnityEngine;
-    using static Game.Input.UIBaseInputAction;
 
     /// <summary>
     /// A system that prevents objects from being overriden that has a custom component.
@@ -31,15 +30,18 @@ namespace Anarchy.Systems.ObjectElevation
     public partial class CheckTransformSystem : GameSystemBase
     {
         private const string MoveItToolID = "MoveItTool";
+        private const string TransformGizmoToolID = "TransformGizmoTool";
         private ILog m_Log;
         private EntityQuery m_TransformRecordQuery;
         private ToolSystem m_ToolSystem;
         private ToolBaseSystem m_MoveItTool;
+        private ToolBaseSystem m_TransformGizmoTool;
         private ModificationBarrier1 m_ModificationBarrier1;
         private JobHandle m_writeDeps;
         private JobHandle m_readDeps;
         private NativeHashSet<Entity> m_MoveItSelectedEntities = new (0, Allocator.Persistent);
         private PropertyInfo m_MoveItSelectedEntitiesPropertyInfo;
+        private PropertyInfo m_TransformGizmoToolSelectedEntityPropertyInfo;
         private HashSet<Entity> m_MoveItSelectedEntitiesHashSet = new HashSet<Entity>();
 
         /// <summary>
@@ -99,6 +101,7 @@ namespace Anarchy.Systems.ObjectElevation
                     ComponentType.ReadOnly<Deleted>(),
                 },
             });
+
             RequireForUpdate(m_TransformRecordQuery);
             base.OnCreate();
         }
@@ -111,18 +114,35 @@ namespace Anarchy.Systems.ObjectElevation
             if (World.GetOrCreateSystemManaged<ToolSystem>().tools.Find(x => x.toolID.Equals(MoveItToolID)) is ToolBaseSystem moveItTool)
             {
                 // Found it
-                m_Log.Info($"{nameof(ResetTransformSystem)}.{nameof(OnGameLoadingComplete)} found Move It.");
+                m_Log.Info($"{nameof(CheckTransformSystem)}.{nameof(OnGameLoadingComplete)} found Move It.");
                 PropertyInfo moveItSelectedEntities = moveItTool.GetType().GetProperty("SelectedEntities");
                 if (moveItSelectedEntities is not null)
                 {
                     m_MoveItTool = moveItTool;
                     m_MoveItSelectedEntitiesPropertyInfo = moveItSelectedEntities;
-                    m_Log.Info($"{nameof(ResetTransformSystem)}.{nameof(OnGameLoadingComplete)} saved moveItTool");
+                    m_Log.Info($"{nameof(CheckTransformSystem)}.{nameof(OnGameLoadingComplete)} saved moveItTool");
                 }
             }
             else
             {
-                m_Log.Info($"{nameof(ResetTransformSystem)}.{nameof(OnGameLoadingComplete)} move it tool not found");
+                m_Log.Info($"{nameof(CheckTransformSystem)}.{nameof(OnGameLoadingComplete)} move it tool not found");
+            }
+
+            if (World.GetOrCreateSystemManaged<ToolSystem>().tools.Find(x => x.toolID.Equals(TransformGizmoToolID)) is ToolBaseSystem transformGizmoTool)
+            {
+                // Found it
+                m_Log.Info($"{nameof(CheckTransformSystem)}.{nameof(OnGameLoadingComplete)} found Transform Gizmo Tool.");
+                PropertyInfo transformSelectedEntitySelectedEntities = transformGizmoTool.GetType().GetProperty("SelectedEntity");
+                if (transformSelectedEntitySelectedEntities is not null)
+                {
+                    m_TransformGizmoTool = transformGizmoTool;
+                    m_TransformGizmoToolSelectedEntityPropertyInfo = transformSelectedEntitySelectedEntities;
+                    m_Log.Info($"{nameof(CheckTransformSystem)}.{nameof(OnGameLoadingComplete)} saved Transform Gizmo Tool");
+                }
+            }
+            else
+            {
+                m_Log.Info($"{nameof(CheckTransformSystem)}.{nameof(OnGameLoadingComplete)} Transform Gizmo Tool not found");
             }
         }
 
@@ -192,9 +212,44 @@ namespace Anarchy.Systems.ObjectElevation
                     transformRecord.m_Rotation = localTransform.m_Rotation;
                 }
 
-                EntityCommandBuffer buffer = m_ModificationBarrier1.CreateCommandBuffer();
+                EntityManager.SetComponentData(m_ToolSystem.selected, transformRecord);
+            }
+            else if (m_TransformGizmoTool is not null &&
+                     m_TransformGizmoToolSelectedEntityPropertyInfo is not null &&
+                     m_ToolSystem.activeTool == m_TransformGizmoTool)
+            {
+                Entity entity = (Entity)m_TransformGizmoToolSelectedEntityPropertyInfo.GetValue(m_TransformGizmoTool);
+                if (entity == Entity.Null ||
+                    !EntityManager.TryGetComponent(entity, out TransformRecord transformRecord2) ||
+                    !EntityManager.TryGetComponent(entity, out Game.Objects.Transform originalTransform2))
+                {
+                    return;
+                }
 
-                buffer.SetComponent(m_ToolSystem.selected, transformRecord);
+                m_Log.Debug($"{nameof(CheckTransformSystem)}.{nameof(OnUpdate)} yeilding transform record for Transform Gizmo Tool Selected Entity {entity.Index}:{entity.Version}.");
+                if (!EntityManager.TryGetComponent(entity, out Game.Common.Owner owner) ||
+                   (!EntityManager.HasComponent<Game.Objects.Transform>(owner.m_Owner) &&
+                     !EntityManager.HasComponent<Game.Net.Node>(owner.m_Owner)))
+                {
+                    transformRecord2.m_Position = originalTransform2.m_Position;
+                    transformRecord2.m_Rotation = originalTransform2.m_Rotation;
+                }
+                else if (EntityManager.TryGetComponent(owner.m_Owner, out Game.Objects.Transform ownerTransform))
+                {
+                    Game.Objects.Transform inverseParentTransform = ObjectUtils.InverseTransform(ownerTransform);
+                    Game.Objects.Transform localTransform = ObjectUtils.WorldToLocal(inverseParentTransform, originalTransform2);
+                    transformRecord2.m_Position = localTransform.m_Position;
+                    transformRecord2.m_Rotation = localTransform.m_Rotation;
+                }
+                else if (EntityManager.TryGetComponent(owner.m_Owner, out Game.Net.Node node))
+                {
+                    Game.Objects.Transform inverseParentTransform = ObjectUtils.InverseTransform(new Game.Objects.Transform(node.m_Position, node.m_Rotation));
+                    Game.Objects.Transform localTransform = ObjectUtils.WorldToLocal(inverseParentTransform, originalTransform2);
+                    transformRecord2.m_Position = localTransform.m_Position;
+                    transformRecord2.m_Rotation = localTransform.m_Rotation;
+                }
+
+                EntityManager.SetComponentData(entity, transformRecord2);
             }
         }
 

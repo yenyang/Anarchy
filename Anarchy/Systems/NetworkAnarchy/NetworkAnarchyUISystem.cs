@@ -584,12 +584,12 @@ namespace Anarchy.Systems.NetworkAnarchy
             }
 
             NativeArray<Entity> entities = m_HeightRangePlaceableNetQuery.ToEntityArray(Allocator.Temp);
+            EntityCommandBuffer buffer = new EntityCommandBuffer(Allocator.Temp);
             foreach (Entity entity in entities)
             {
                 if (EntityManager.TryGetComponent(entity, out PlaceableNetData placeableNetData) && EntityManager.TryGetComponent(entity, out HeightRangeRecord heightRangeRecord)) 
                 {
                     placeableNetData.m_ElevationRange = new Colossal.Mathematics.Bounds1(heightRangeRecord.min, heightRangeRecord.max);
-                    EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
                     buffer.SetComponent(entity, placeableNetData);
                     buffer.RemoveComponent<HeightRangeRecord>(entity);
 #if DEBUG
@@ -600,6 +600,9 @@ namespace Anarchy.Systems.NetworkAnarchy
 #endif
                 }
             }
+
+            buffer.Playback(EntityManager);
+            buffer.Dispose();
         }
 
         private void ExpandPrefabElevationRange(Entity prefabEntity, PlaceableNetData placeableNetData, PrefabID prefabID)
@@ -611,11 +614,10 @@ namespace Anarchy.Systems.NetworkAnarchy
                     min = placeableNetData.m_ElevationRange.min,
                     max = placeableNetData.m_ElevationRange.max,
                 };
-                EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
-                buffer.AddComponent<HeightRangeRecord>(prefabEntity);
-                buffer.SetComponent(prefabEntity, heightRangeRecord);
+                EntityManager.AddComponent<HeightRangeRecord>(prefabEntity);
+                EntityManager.SetComponentData(prefabEntity, heightRangeRecord);
                 placeableNetData.m_ElevationRange = new Colossal.Mathematics.Bounds1(-1000f, 1000f);
-                buffer.SetComponent(prefabEntity, placeableNetData);
+                EntityManager.SetComponentData(prefabEntity, placeableNetData);
                 m_Log.Debug($"{nameof(NetworkAnarchyUISystem)}.{nameof(ExpandPrefabElevationRange)} Expanded {prefabID.GetName()} elevation range to -1000 to 1000.");
             }
         }

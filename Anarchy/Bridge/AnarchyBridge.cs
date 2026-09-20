@@ -131,6 +131,25 @@ namespace Anarchy.Bridge
         }
 
         /// <summary>
+        /// Tries to update the transform lock component on an Instance Entity.
+        /// </summary>
+        /// <param name="instanceEntity">Instance Entity to update component value.</param>
+        /// <param name="transform">New Position and Rotation.</param>
+        /// <returns>True is value updated. False if not.</returns>
+        public static bool TryUpdateTransformLockComponent(Entity instanceEntity, Game.Objects.Transform transform)
+        {
+            SelectedInfoPanelTogglesSystem uiSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<SelectedInfoPanelTogglesSystem>();
+            if (uiSystem.CheckDisturbable(instanceEntity) &&
+                uiSystem.EntityManager.HasComponent<TransformRecord>(instanceEntity))
+            {
+                uiSystem.EntityManager.SetComponentData(instanceEntity, new TransformRecord() { m_Position = transform.m_Position, m_Rotation = transform.m_Rotation, });
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Tries to add Transform Lock component to entities in a native array.
         /// </summary>c
         /// <param name="entities">Native array of entities to try and add component to.</param>
@@ -272,6 +291,16 @@ namespace Anarchy.Bridge
         public static ComponentType GetTransformLockComponentType()
         {
             return ComponentType.ReadWrite<TransformRecord>();
+        }
+
+        /// <summary>
+        /// Gets the value of the Anarchy Toggle.
+        /// </summary>
+        /// <returns>True if Anarchy is enabled. False if it is not.</returns>
+        public static bool GetAnarchyToggleState()
+        {
+            AnarchyUISystem uiSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<AnarchyUISystem>();
+            return uiSystem.AnarchyEnabled;
         }
     }
 }
